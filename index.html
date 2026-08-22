@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شركة بناء للتطوير الاستراتيجي | م. وائل عويس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --accent-soft: #dbeafe;
+            --light-bg: #f8fafc;
+            --text-color: #334155;
+            --border-color: #e2e8f0;
+            --success-color: #16a34a;
+            --header-h: 3.2rem;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+
+        body { background-color: var(--light-bg); color: var(--text-color); line-height: 1.6; }
+
+        /* ============ HEADER (مصغّر 50%) ============ */
+        header {
+            background: var(--primary-color);
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 2rem; /* كانت 1rem — تقليل 50% */
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            min-height: var(--header-h);
+        }
+
+        .brand-title { display: flex; align-items: center; gap: 0.6rem; text-align: right; }
+
+        .brand-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .brand-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .brand-logo span { color: var(--accent-color); font-weight: 800; font-size: 1rem; }
+
+        .brand-text h1 { font-size: 1.05rem; color: #fff; font-weight: 700; line-height: 1.2; }
+        .brand-text p { font-size: 0.72rem; color: #94a3b8; }
+
+        nav { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+        nav ul { display: flex; list-style: none; gap: 1.1rem; flex-wrap: wrap; }
+        nav ul li a { color: #cbd5e1; text-decoration: none; font-weight: 600; transition: color 0.3s; font-size: 0.85rem; }
+        nav ul li a:hover { color: #fff; }
+
+        .nav-tools { display: flex; align-items: center; gap: 0.5rem; }
+
+        .lang-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.35rem 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .admin-toggle-btn {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .admin-toggle-btn:hover { border-color: var(--accent-color); color: #fff; }
+        .admin-toggle-btn.is-active { background: var(--accent-color); border-color: var(--accent-color); color: #fff; }
+
+        /* ============ AD BANNER ============ */
+        .top-banner-ad {
+            background: linear-gradient(90deg, #1e3a8a, #2563eb 60%, #1e3a8a);
+            background-size: 200% 100%;
+            animation: bannerShift 8s ease infinite;
+            color: #fff;
+            position: sticky;
+            top: var(--header-h);
+            z-index: 999;
+        }
+        @keyframes bannerShift { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+
+        .banner-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.5rem 1.25rem;
+            flex-wrap: wrap;
+        }
+        .banner-tag {
+            background: #f59e0b;
+            color: #1e293b;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            flex-shrink: 0;
+        }
+        .banner-text { font-size: 0.85rem; font-weight: 600; flex: 1; min-width: 180px; }
+        .banner-cta {
+            background: #fff;
+            color: var(--accent-color);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .banner-close {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.2rem;
+        }
+        .banner-close:hover { color: #fff; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .top-banner-ad { animation: none; }
+        }
+
+        /* ============ HERO ============ */
+        #hero {
+            max-width: 1200px;
+            margin: 1.5rem auto 0;
+            padding: 0 2rem;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 2.5rem;
+            align-items: center;
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            color: var(--accent-color);
+            background: var(--accent-soft);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            margin-bottom: 0.9rem;
+        }
+        .hero-content h1 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1.35;
+            margin-bottom: 1rem;
+        }
+        .hero-content h1 span { color: var(--accent-color); }
+        .hero-content p { color: #475569; font-size: 1rem; margin-bottom: 1.5rem; max-width: 46ch; }
+        .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.3rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+        .hero-btn.primary { background: var(--accent-color); color: #fff; }
+        .hero-btn.primary:hover { background: #1d4ed8; }
+        .hero-btn.ghost { background: #fff; color: var(--primary-color); border: 1px solid var(--border-color); }
+        .hero-btn.ghost:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .hero-btn.pdf { background: var(--primary-color); color: #fff; }
+        .hero-btn.pdf:hover { background: #1e293b; }
+
+        /* الجانب الأيسر: لوحة تعبيرية تفاعلية (بديل عن فيديو) */
+        .hero-media {
+            position: relative;
+            aspect-ratio: 4/3.4;
+            border-radius: 14px;
+            background: var(--primary-color);
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .blueprint-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(37,99,235,0.18) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37,99,235,0.18) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+        .hero-media .orbit {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 62%; height: 62%;
+            transform: translate(-50%, -50%);
+            border: 1.5px dashed rgba(148,163,184,0.5);
+            border-radius: 50%;
+            animation: spin 18s linear infinite;
+        }
+        .hero-media .orbit::before {
+            content: '';
+            position: absolute;
+            width: 12px; height: 12px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            top: -6px; left: calc(50% - 6px);
+            box-shadow: 0 0 12px 3px rgba(37,99,235,0.7);
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        .hero-media .compass-icon {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: #e2e8f0;
+            font-size: 2.6rem;
+            opacity: 0.9;
+        }
+        .hero-media .node {
+            position: absolute;
+            width: 8px; height: 8px;
+            background: #f59e0b;
+            border-radius: 50%;
+            animation: pulse 2.4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{ transform: scale(1); opacity:1;} 50%{ transform: scale(1.7); opacity:0.4;} }
+        .hero-media .node:nth-child(1) { top: 20%; left: 25%; animation-delay: 0s; }
+        .hero-media .node:nth-child(2) { top: 30%; right: 18%; animation-delay: 0.6s; }
+        .hero-media .node:nth-child(3) { bottom: 22%; left: 40%; animation-delay: 1.2s; }
+        .hero-media .node:nth-child(4) { bottom: 32%; right: 30%; animation-delay: 1.8s; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-media .orbit, .hero-media .node { animation: none; }
+        }
+
+        @media (max-width: 860px) {
+            .hero-grid { grid-template-columns: 1fr; padding: 1.75rem; }
+            .hero-media { order: -1; aspect-ratio: 16/9; }
+        }
+
+        /* ============ STATS BAR ============ */
+        .stats-bar {
+            max-width: 1200px;
+            margin: 1.5rem auto 0;
+            padding: 0 2rem;
+        }
+        .stats-inner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            background: var(--primary-color);
+            border-radius: 14px;
+            padding: 1.5rem 1rem;
+        }
+        .stat-item { text-align: center; color: #fff; padding: 0.5rem; }
+        .stat-num { font-size: 1.9rem; font-weight: 800; color: #fff; }
+        .stat-num small { font-size: 1.1rem; color: var(--accent-color); }
+        .stat-label { font-size: 0.78rem; color: #94a3b8; margin-top: 0.25rem; }
+        .stats-inner .stat-item:not(:last-child) { border-left: 1px solid rgba(148,163,184,0.2); }
+        [dir="ltr"] .stats-inner .stat-item:not(:last-child) { border-left: none; border-right: 1px solid rgba(148,163,184,0.2); }
+
+        @media (max-width: 700px) {
+            .stats-inner { grid-template-columns: repeat(2, 1fr); }
+            .stats-inner .stat-item:nth-child(2) { border-left: none; }
+        }
+
+        /* ============ EXISTING SECTIONS ============ */
+        section {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-right: 4px solid var(--accent-color);
+            padding-right: 10px;
+        }
+
+        [dir="ltr"] h2 { border-right: none; border-left: 4px solid var(--accent-color); padding-right: 0; padding-left: 10px; }
+
+        .section-desc { color: #64748b; margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+        /* نماذج الرفع — للأدمن فقط */
+        .upload-box {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 2px dashed #cbd5e1;
+        }
+        .upload-box.admin-only { display: none; }
+        body.admin-mode .upload-box.admin-only { display: block; }
+
+        .admin-only-tag {
+            display: none;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            background: var(--accent-soft);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            margin-bottom: 0.75rem;
+            width: fit-content;
+        }
+        body.admin-mode .admin-only-tag { display: flex; }
+
+        .upload-box input, .upload-box textarea { margin-bottom: 0.5rem; width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; }
+        .upload-hint { font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.75rem; }
+        .upload-status { font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600; }
+        .upload-status.error { color: #dc2626; }
+        .upload-status.success { color: var(--success-color); }
+        .upload-status.loading { color: var(--accent-color); }
+
+        .item-card { border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; background: #fff; }
+        .item-card h3 { color: var(--accent-color); margin-bottom: 0.5rem; }
+        .item-card .item-desc { margin-bottom: 0.75rem; color: #475569; }
+
+        .media-container { margin: 1rem 0; background: #000; border-radius: 6px; overflow: hidden; }
+        .media-container video, .media-container iframe { width: 100%; max-height: 350px; display: block; border: none; aspect-ratio: 16/9; }
+        .media-container img { width: 100%; max-height: 400px; object-fit: contain; display: block; background:#111; }
+        .doc-link { display:inline-flex; align-items:center; gap:0.5rem; background:var(--accent-color); color:#fff; padding:0.6rem 1rem; border-radius:6px; text-decoration:none; font-weight:600; }
+
+        .feedback-section { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-color); }
+        .rating-box { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+        .stars { color: #cbd5e1; cursor: pointer; font-size: 1.1rem; }
+        .stars i { margin-left: 2px; }
+
+        .comment-input, .name-input, .file-input, .text-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .submit-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover { background-color: #1d4ed8; }
+        .submit-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        .comments-list { margin-top: 1rem; background: var(--light-bg); padding: 1rem; border-radius: 6px; max-height: 180px; overflow-y: auto; }
+        .comment-item { font-size: 0.9rem; margin-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3rem; }
+        .empty-hint { color: #94a3b8; font-size: 0.9rem; text-align: center; padding: 1rem; }
+
+        .social-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .social-btn {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.75rem 1.5rem; background: var(--primary-color); color: white;
+            text-decoration: none; border-radius: 8px; font-weight: 600;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .social-btn:hover { transform: translateY(-2px); background: var(--accent-color); }
+
+        .badge { display:inline-block; background:#dbeafe; color:var(--accent-color); font-size:0.75rem; font-weight:700; padding:0.15rem 0.6rem; border-radius:999px; margin-bottom:0.5rem; }
+
+        /* ============ ADMIN LOGIN MODAL ============ */
+        .admin-modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .admin-modal-overlay.open { display: flex; }
+        .admin-modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.75rem;
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+        }
+        .admin-modal h3 { color: var(--primary-color); margin-bottom: 0.4rem; font-size: 1.1rem; }
+        .admin-modal p { color: #64748b; font-size: 0.82rem; margin-bottom: 1rem; }
+        .admin-modal input {
+            width: 100%; padding: 0.65rem; margin-bottom: 0.6rem;
+            border: 1px solid var(--border-color); border-radius: 6px; text-align: center;
+            font-family: 'Cairo', sans-serif;
+        }
+        .admin-modal-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .admin-modal-actions button { flex: 1; }
+        .admin-modal-cancel {
+            background: #f1f5f9; color: var(--text-color); border: none;
+            padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;
+        }
+        .admin-modal-error { color: #dc2626; font-size: 0.78rem; margin-top: 0.5rem; min-height: 1em; }
+
+        @media (max-width: 768px) {
+            .nav-container { flex-direction: column; gap: 0.6rem; align-items: flex-start; }
+            nav { width: 100%; justify-content: space-between; }
+            nav ul { gap: 0.7rem; font-size: 0.8rem; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="brand-title">
+                <div class="brand-logo">
+                    <!-- ضع رابط شعار الشركة الفعلي هنا بدل الحرف الافتراضي، مثال: <img src="logo.png" alt="شعار بناء"> -->
+                    <span>ب</span>
+                </div>
+                <div class="brand-text">
+                    <h1 id="brand-name">شركة بناء للتطوير الاستراتيجي</h1>
+                    <p id="brand-owner">المهندس/ وائل عويس</p>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#about" data-i18n="nav-about">نبذة عني</a></li>
+                    <li><a href="#projects" data-i18n="nav-projects">المشاريع</a></li>
+                    <li><a href="#initiatives" data-i18n="nav-initiatives">المبادرات</a></li>
+                    <li><a href="#apps" data-i18n="nav-apps">التطبيقات</a></li>
+                    <li><a href="#books" data-i18n="nav-books">المؤلفات</a></li>
+                    <li><a href="#contact" data-i18n="nav-contact">التواصل</a></li>
+                </ul>
+                <div class="nav-tools">
+                    <button class="admin-toggle-btn" id="admin-toggle" onclick="onAdminToggleClick()" title="لوحة التحكم">
+                        <i class="fas fa-lock" id="admin-toggle-icon"></i>
+                    </button>
+                    <button class="lang-btn" onclick="toggleLanguage()">EN / AR</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- شريط إعلاني -->
+    <div class="top-banner-ad" id="top-banner">
+        <div class="banner-inner">
+            <span class="banner-tag" data-i18n="banner-badge">جديد</span>
+            <span class="banner-text" data-i18n="banner-text">اكتشف أحدث مبادراتنا التوعوية ومؤلفاتنا الاستراتيجية الجديدة</span>
+            <a href="#initiatives" class="banner-cta" data-i18n="banner-cta">اكتشف الآن</a>
+            <button class="banner-close" onclick="document.getElementById('top-banner').style.display='none'" title="إغلاق">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- الواجهة الافتتاحية -->
+    <section id="hero">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <span class="hero-eyebrow" data-i18n="hero-eyebrow">الرؤية الهندسية والقيادة الاستراتيجية</span>
+                <h1 data-i18n="hero-title">نحو <span>تحول رقمي</span> استراتيجي يقوده الفكر الهندسي</h1>
+                <p data-i18n="hero-desc">شركة بناء للتطوير الاستراتيجي تجمع بين الخبرة الهندسية والرؤية القيادية لتقديم مشاريع ومبادرات وحلول ذكية تخدم المجتمع والمؤسسات.</p>
+                <div class="hero-actions">
+                    <a href="#projects" class="hero-btn primary" data-i18n="hero-cta-projects"><i class="fas fa-diagram-project"></i> استعرض المشاريع</a>
+                    <a href="#contact" class="hero-btn ghost" data-i18n="hero-cta-contact"><i class="fas fa-comments"></i> تواصل معنا</a>
+                    <!-- استبدل الرابط بمسار ملف PDF الفعلي للبروفايل المؤسسي -->
+                    <a href="company-profile.pdf" target="_blank" class="hero-btn pdf" data-i18n="hero-cta-pdf"><i class="fas fa-file-pdf"></i> تحميل البروفايل (PDF)</a>
+                </div>
+            </div>
+            <div class="hero-media">
+                <div class="blueprint-grid"></div>
+                <div class="orbit"></div>
+                <i class="fas fa-compass-drafting compass-icon"></i>
+                <span class="node"></span><span class="node"></span><span class="node"></span><span class="node"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- شريط الإحصائيات -->
+    <div class="stats-bar">
+        <div class="stats-inner">
+            <div class="stat-item">
+                <div class="stat-num" data-count="15"><span>0</span><small>+</small></div>
+                <div class="stat-label" data-i18n="stats-years">سنوات الخبرة الهندسية</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" data-count="0" data-section="projects"><span>0</span></div>
+                <div class="stat-label" data-i18n="stats-projects">مشاريع استراتيجية</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" data-count="0" data-section="initiatives"><span>0</span></div>
+                <div class="stat-label" data-i18n="stats-initiatives">مبادرات توعوية</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" data-count="0" data-section="books-apps"><span>0</span></div>
+                <div class="stat-label" data-i18n="stats-books">مؤلفات وتطبيقات ذكية</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نبذة عني -->
+    <section id="about">
+        <h2 data-i18n="sec-about-title">نبذة عني</h2>
+        <div class="upload-box admin-only">
+            <div class="admin-only-tag"><i class="fas fa-user-shield"></i> وضع الأدمن</div>
+            <p><strong data-i18n="upload-label">إضافة صورة أو فيديو للتعريف:</strong></p>
+            <input type="text" class="text-input" data-role="title" placeholder="عنوان...">
+            <input type="file" class="file-input" data-role="file" accept="video/*,image/*">
+            <p class="upload-hint" data-i18n="size-hint">أو الصق رابط فيديو (يوتيوب / فيميو) بدل رفع ملف كبير:</p>
+            <input type="text" class="text-input" data-role="link" placeholder="https://youtube.com/... (اختياري)">
+            <button class="submit-btn" data-role="submit" onclick="addNewItem('about', this)" data-i18n="upload-btn">رفع وعرض</button>
+            <div class="upload-status" data-role="status"></div>
+        </div>
+        <div id="about-container"><div class="empty-hint" data-i18n="loading-text">جاري تحميل المحتوى المحفوظ...</div></div>
+    </section>
+
+    <!-- المشاريع -->
+    <section id="projects">
+        <h2 data-i18n="sec-projects-title">المشاريع الاستراتيجية</h2>
+        <div class="upload-box admin-only">
+            <div class="admin-only-tag"><i class="fas fa-user-shield"></i> وضع الأدمن</div>
+            <p><strong data-i18n="upload-project">إضافة مشروع جديد وفيديو توضيحي:</strong></p>
+            <input type="text" class="text-input" data-role="title" placeholder="اسم المشروع...">
+            <textarea class="text-input" data-role="desc" rows="2" placeholder="وصف مختصر للمشروع..."></textarea>
+            <input type="file" class="file-input" data-role="file" accept="video/*,image/*">
+            <p class="upload-hint" data-i18n="size-hint">أو الصق رابط فيديو (يوتيوب / فيميو) بدل رفع ملف كبير:</p>
+            <input type="text" class="text-input" data-role="link" placeholder="https://youtube.com/... (اختياري)">
+            <button class="submit-btn" data-role="submit" onclick="addNewItem('projects', this)" data-i18n="upload-btn">رفع وعرض</button>
+            <div class="upload-status" data-role="status"></div>
+        </div>
+        <div id="projects-container"><div class="empty-hint" data-i18n="loading-text">جاري تحميل المحتوى المحفوظ...</div></div>
+    </section>
+
+    <!-- المبادرات -->
+    <section id="initiatives">
+        <h2 data-i18n="sec-initiatives-title">المبادرات المجتمعية والتوعوية</h2>
+        <p class="section-desc" data-i18n="sec-initiatives-desc">مبادرات هدفها نشر التوعية والتعليم للمجتمع والزوار.</p>
+        <div class="upload-box admin-only">
+            <div class="admin-only-tag"><i class="fas fa-user-shield"></i> وضع الأدمن</div>
+            <p><strong data-i18n="upload-initiative">إضافة مبادرة جديدة وفيديو توعوي:</strong></p>
+            <input type="text" class="text-input" data-role="title" placeholder="اسم المبادرة...">
+            <textarea class="text-input" data-role="desc" rows="2" placeholder="الهدف التوعوي/التعليمي من المبادرة..."></textarea>
+            <input type="file" class="file-input" data-role="file" accept="video/*,image/*">
+            <p class="upload-hint" data-i18n="size-hint">أو الصق رابط فيديو (يوتيوب / فيميو) بدل رفع ملف كبير:</p>
+            <input type="text" class="text-input" data-role="link" placeholder="https://youtube.com/... (اختياري)">
+            <button class="submit-btn" data-role="submit" onclick="addNewItem('initiatives', this)" data-i18n="upload-btn">رفع وعرض</button>
+            <div class="upload-status" data-role="status"></div>
+        </div>
+        <div id="initiatives-container"><div class="empty-hint" data-i18n="loading-text">جاري تحميل المحتوى المحفوظ...</div></div>
+    </section>
+
+    <!-- التطبيقات -->
+    <section id="apps">
+        <h2 data-i18n="sec-apps-title">التطبيقات الإلكترونية والحلول الذكية</h2>
+        <div class="upload-box admin-only">
+            <div class="admin-only-tag"><i class="fas fa-user-shield"></i> وضع الأدمن</div>
+            <p><strong data-i18n="upload-app">إضافة تطبيق جديد:</strong></p>
+            <input type="text" class="text-input" data-role="title" placeholder="اسم التطبيق...">
+            <textarea class="text-input" data-role="desc" rows="2" placeholder="وصف مختصر للتطبيق..."></textarea>
+            <input type="file" class="file-input" data-role="file" accept="video/*,image/*">
+            <p class="upload-hint" data-i18n="size-hint">أو الصق رابط فيديو (يوتيوب / فيميو) بدل رفع ملف كبير:</p>
+            <input type="text" class="text-input" data-role="link" placeholder="https://youtube.com/... (اختياري)">
+            <button class="submit-btn" data-role="submit" onclick="addNewItem('apps', this)" data-i18n="upload-btn">رفع وعرض</button>
+            <div class="upload-status" data-role="status"></div>
+        </div>
+        <div id="apps-container"><div class="empty-hint" data-i18n="loading-text">جاري تحميل المحتوى المحفوظ...</div></div>
+    </section>
+
+    <!-- المؤلفات -->
+    <section id="books">
+        <h2 data-i18n="sec-books-title">المؤلفات والكتب الاستراتيجية</h2>
+        <div class="upload-box admin-only">
+            <div class="admin-only-tag"><i class="fas fa-user-shield"></i> وضع الأدمن</div>
+            <p><strong data-i18n="upload-book">إضافة كتاب (فيديو عرض أو ملف الكتاب نفسه):</strong></p>
+            <input type="text" class="text-input" data-role="title" placeholder="عنوان الكتاب...">
+            <textarea class="text-input" data-role="desc" rows="2" placeholder="نبذة عن الكتاب..."></textarea>
+            <input type="file" class="file-input" data-role="file" accept="video/*,image/*,application/pdf">
+            <p class="upload-hint" data-i18n="size-hint">أو الصق رابط فيديو/ملف بدل رفع ملف كبير:</p>
+            <input type="text" class="text-input" data-role="link" placeholder="https://... (اختياري)">
+            <button class="submit-btn" data-role="submit" onclick="addNewItem('books', this)" data-i18n="upload-btn">رفع وعرض</button>
+            <div class="upload-status" data-role="status"></div>
+        </div>
+        <div id="books-container"><div class="empty-hint" data-i18n="loading-text">جاري تحميل المحتوى المحفوظ...</div></div>
+    </section>
+
+    <!-- التواصل -->
+    <section id="contact">
+        <h2 data-i18n="sec-contact-title">تواصل معنا</h2>
+        <p style="text-align: center; margin-bottom: 1.5rem;" data-i18n="contact-desc">يسعدنا تواصلكم عبر قناتنا الرسمية:</p>
+        <div class="social-links">
+            <a href="https://linkedin.com" target="_blank" class="social-btn"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            <a href="https://facebook.com" target="_blank" class="social-btn"><i class="fab fa-facebook"></i> Facebook</a>
+            <a href="https://whatsapp.com" target="_blank" class="social-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a href="https://youtube.com" target="_blank" class="social-btn"><i class="fab fa-youtube"></i> YouTube</a>
+        </div>
+        <div class="feedback-section" style="margin-top:2rem;">
+            <p style="margin-bottom:0.75rem;"><strong data-i18n="contact-form-title">أو أرسل رسالة مباشرة:</strong></p>
+            <input type="text" class="name-input" id="contact-name" placeholder="اسمك الكريم...">
+            <input type="text" class="name-input" id="contact-phone" placeholder="رقم التواصل / البريد الإلكتروني...">
+            <textarea class="comment-input" id="contact-message" rows="3" placeholder="اكتب رسالتك..."></textarea>
+            <button class="submit-btn" onclick="sendContactMessage()" data-i18n="send-btn">إرسال</button>
+            <div class="upload-status" id="contact-status"></div>
+        </div>
+    </section>
+
+    <!-- نافذة دخول الأدمن -->
+    <div class="admin-modal-overlay" id="admin-modal-overlay">
+        <div class="admin-modal">
+            <h3 data-i18n="admin-password-title">دخول لوحة التحكم</h3>
+            <p data-i18n="admin-password-desc">أدخل كلمة المرور لإظهار أدوات إضافة المحتوى</p>
+            <input type="password" id="admin-password-input" placeholder="كلمة المرور" data-i18n-placeholder="admin-password-placeholder" onkeydown="if(event.key==='Enter') submitAdminPassword()">
+            <div class="admin-modal-error" id="admin-modal-error"></div>
+            <div class="admin-modal-actions">
+                <button class="admin-modal-cancel" onclick="closeAdminModal()" data-i18n="admin-cancel">إلغاء</button>
+                <button class="submit-btn" onclick="submitAdminPassword()" data-i18n="admin-login-btn">دخول</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            ar: {
+                "brand-name": "شركة بناء للتطوير الاستراتيجي",
+                "brand-owner": "المهندس/ وائل عويس",
+                "nav-about": "نبذة عني", "nav-projects": "المشاريع", "nav-initiatives": "المبادرات",
+                "nav-apps": "التطبيقات", "nav-books": "المؤلفات", "nav-contact": "التواصل",
+                "banner-badge": "جديد",
+                "banner-text": "اكتشف أحدث مبادراتنا التوعوية ومؤلفاتنا الاستراتيجية الجديدة",
+                "banner-cta": "اكتشف الآن",
+                "hero-eyebrow": "الرؤية الهندسية والقيادة الاستراتيجية",
+                "hero-title": 'نحو <span>تحول رقمي</span> استراتيجي يقوده الفكر الهندسي',
+                "hero-desc": "شركة بناء للتطوير الاستراتيجي تجمع بين الخبرة الهندسية والرؤية القيادية لتقديم مشاريع ومبادرات وحلول ذكية تخدم المجتمع والمؤسسات.",
+                "hero-cta-projects": "استعرض المشاريع",
+                "hero-cta-contact": "تواصل معنا",
+                "hero-cta-pdf": "تحميل البروفايل (PDF)",
+                "stats-years": "سنوات الخبرة الهندسية",
+                "stats-projects": "مشاريع استراتيجية",
+                "stats-initiatives": "مبادرات توعوية",
+                "stats-books": "مؤلفات وتطبيقات ذكية",
+                "sec-about-title": "نبذة عني",
+                "sec-projects-title": "المشاريع الاستراتيجية",
+                "sec-initiatives-title": "المبادرات المجتمعية والتوعوية",
+                "sec-initiatives-desc": "مبادرات هدفها نشر التوعية والتعليم للمجتمع والزوار.",
+                "sec-apps-title": "التطبيقات الإلكترونية والحلول الذكية",
+                "sec-books-title": "المؤلفات والكتب الاستراتيجية",
+                "sec-contact-title": "تواصل معنا",
+                "upload-label": "إضافة صورة أو فيديو للتعريف:",
+                "upload-project": "إضافة مشروع جديد وفيديو توضيحي:",
+                "upload-initiative": "إضافة مبادرة جديدة وفيديو توعوي:",
+                "upload-app": "إضافة تطبيق جديد:",
+                "upload-book": "إضافة كتاب (فيديو عرض أو ملف الكتاب نفسه):",
+                "upload-btn": "رفع وعرض",
+                "size-hint": "أو الصق رابط فيديو (يوتيوب / فيميو) بدل رفع ملف كبير:",
+                "loading-text": "جاري تحميل المحتوى المحفوظ...",
+                "rate-label": "التقييم:", "send-btn": "إرسال",
+                "contact-desc": "يسعدنا تواصلكم عبر قناتنا الرسمية:",
+                "contact-form-title": "أو أرسل رسالة مباشرة:",
+                "admin-password-title": "دخول لوحة التحكم",
+                "admin-password-desc": "أدخل كلمة المرور لإظهار أدوات إضافة المحتوى",
+                "admin-password-placeholder": "كلمة المرور",
+                "admin-cancel": "إلغاء",
+                "admin-login-btn": "دخول",
+                "default-bio-title": "الرؤية الهندسية والقيادة الاستراتيجية"
+            },
+            en: {
+                "brand-name": "Bena Strategic Development Co.",
+                "brand-owner": "Eng. Wael Ewis",
+                "nav-about": "About Me", "nav-projects": "Projects", "nav-initiatives": "Initiatives",
+                "nav-apps": "Applications", "nav-books": "Books", "nav-contact": "Contact",
+                "banner-badge": "New",
+                "banner-text": "Discover our latest awareness initiatives and new strategic publications",
+                "banner-cta": "Explore Now",
+                "hero-eyebrow": "Engineering Vision & Strategic Leadership",
+                "hero-title": 'Toward strategic <span>digital transformation</span> led by engineering thinking',
+                "hero-desc": "Bena Strategic Development combines engineering expertise with leadership vision to deliver projects, initiatives and smart solutions that serve communities and institutions.",
+                "hero-cta-projects": "View Projects",
+                "hero-cta-contact": "Contact Us",
+                "hero-cta-pdf": "Download Profile (PDF)",
+                "stats-years": "Years of Engineering Experience",
+                "stats-projects": "Strategic Projects",
+                "stats-initiatives": "Awareness Initiatives",
+                "stats-books": "Publications & Smart Apps",
+                "sec-about-title": "About Me",
+                "sec-projects-title": "Strategic Projects",
+                "sec-initiatives-title": "Community & Awareness Initiatives",
+                "sec-initiatives-desc": "Initiatives aimed at spreading awareness and education for visitors.",
+                "sec-apps-title": "Smart Applications",
+                "sec-books-title": "Strategic Publications",
+                "sec-contact-title": "Contact Us",
+                "upload-label": "Add a photo or intro video:",
+                "upload-project": "Add new project & video:",
+                "upload-initiative": "Add new initiative & awareness video:",
+                "upload-app": "Add new application:",
+                "upload-book": "Add a book (preview video or the file itself):",
+                "upload-btn": "Upload & Display",
+                "size-hint": "Or paste a video link (YouTube/Vimeo) instead of a large file:",
+                "loading-text": "Loading saved content...",
+                "rate-label": "Rating:", "send-btn": "Submit",
+                "contact-desc": "We are glad to connect via our channels:",
+                "contact-form-title": "Or send a direct message:",
+                "admin-password-title": "Admin Login",
+                "admin-password-desc": "Enter the password to reveal content upload tools",
+                "admin-password-placeholder": "Password",
+                "admin-cancel": "Cancel",
+                "admin-login-btn": "Login",
+                "default-bio-title": "Engineering Vision & Strategic Leadership"
+            }
+        };
+
+        // ============================================================
+        // إعداد Supabase — حط بيانات مشروعك هنا (من Settings > API في Supabase)
+        // ============================================================
+        const SUPABASE_URL = 'https://obwgcylupvnodsciapee.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_GbL-OA-GzAZ_y5wZjjtQ1g_uBw0HqQO';
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ============================================================
+        // كلمة مرور لوحة التحكم — غيّرها فوراً قبل النشر.
+        // تنبيه: هذا حماية بسيطة من جهة المتصفح فقط لإخفاء نماذج الرفع عن
+        // الزوار العاديين، وليست حماية أمنية حقيقية. للحماية الفعلية اربط
+        // الدخول بنظام Supabase Auth من جهة الخادم.
+        // ============================================================
+        const ADMIN_PASSWORD = 'bena2026';
+        let isAdmin = false;
+
+        let currentLang = 'ar';
+        const SECTIONS = ['about', 'projects', 'initiatives', 'apps', 'books'];
+        const MAX_FILE_BYTES = 20 * 1024 * 1024; // ~20MB حد أقصى للملف الواحد
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const htmlRoot = document.getElementById('html-root');
+            htmlRoot.setAttribute('lang', currentLang);
+            htmlRoot.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) el.innerHTML = translations[currentLang][key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
+            });
+        }
+
+        // ============ لوحة التحكم (أدمن) ============
+        function onAdminToggleClick() {
+            if (isAdmin) {
+                logoutAdmin();
+            } else {
+                openAdminModal();
+            }
+        }
+
+        function openAdminModal() {
+            document.getElementById('admin-modal-overlay').classList.add('open');
+            document.getElementById('admin-modal-error').textContent = '';
+            const input = document.getElementById('admin-password-input');
+            input.value = '';
+            setTimeout(() => input.focus(), 50);
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal-overlay').classList.remove('open');
+        }
+
+        function submitAdminPassword() {
+            const input = document.getElementById('admin-password-input');
+            if (input.value === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.body.classList.add('admin-mode');
+                document.getElementById('admin-toggle-icon').className = 'fas fa-lock-open';
+                document.getElementById('admin-toggle').classList.add('is-active');
+                closeAdminModal();
+            } else {
+                document.getElementById('admin-modal-error').textContent =
+                    currentLang === 'ar' ? 'كلمة المرور غير صحيحة' : 'Incorrect password';
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.body.classList.remove('admin-mode');
+            document.getElementById('admin-toggle-icon').className = 'fas fa-lock';
+            document.getElementById('admin-toggle').classList.remove('is-active');
+        }
+
+        function embedUrl(url) {
+            try {
+                const u = new URL(url);
+                if (u.hostname.includes('youtube.com') || u.hostname.includes('youtu.be')) {
+                    let id = u.searchParams.get('v');
+                    if (!id && u.hostname.includes('youtu.be')) id = u.pathname.slice(1);
+                    if (id) return `https://www.youtube.com/embed/${id}`;
+                }
+                if (u.hostname.includes('vimeo.com')) {
+                    const id = u.pathname.split('/').filter(Boolean).pop();
+                    if (id) return `https://player.vimeo.com/video/${id}`;
+                }
+            } catch (e) { /* not a valid URL, ignore */ }
+            return null;
+        }
+
+        function renderMedia(item) {
+            if (item.link) {
+                const embed = embedUrl(item.link);
+                if (embed) return `<div class="media-container"><iframe src="${embed}" allowfullscreen></iframe></div>`;
+                return `<div class="media-container" style="padding:1rem;background:#f1f5f9;"><a class="doc-link" href="${item.link}" target="_blank"><i class="fas fa-external-link-alt"></i> فتح الرابط / Open link</a></div>`;
+            }
+            if (item.file_type && item.file_type.startsWith('image/')) {
+                return `<div class="media-container"><img src="${item.file_url}" alt="${item.title}"></div>`;
+            }
+            if (item.file_type === 'application/pdf') {
+                return `<div class="media-container" style="padding:1rem;background:#f1f5f9;"><a class="doc-link" href="${item.file_url}" target="_blank"><i class="fas fa-file-pdf"></i> تحميل الملف / Download file</a></div>`;
+            }
+            if (item.file_url) {
+                return `<div class="media-container"><video controls src="${item.file_url}"></video></div>`;
+            }
+            return '';
+        }
+
+        function itemCardHTML(section, item) {
+            const isAbout = section === 'about';
+            const desc = item.description ? `<p class="item-desc">${item.description}</p>` : '';
+            const feedback = isAbout ? '' : `
+                <div class="feedback-section">
+                    <div class="rating-box">
+                        <span>التقييم:</span>
+                        <span class="stars" data-item="${item.id}">
+                            ${[1,2,3,4,5].map(n => `<i class="${n <= (item.avg_rating||0) ? 'fas' : 'far'} fa-star" onclick="rate('${section}','${item.id}',${n})"></i>`).join('')}
+                        </span>
+                        <span class="rating-count" data-item="${item.id}">(${item.rating_count||0})</span>
+                    </div>
+                    <input type="text" class="name-input" data-item="${item.id}" data-role="name" placeholder="اسمك الكريم...">
+                    <textarea class="comment-input" data-item="${item.id}" data-role="comment" rows="2" placeholder="اكتب تعليقك..."></textarea>
+                    <button class="submit-btn" onclick="addComment('${section}','${item.id}')">إرسال</button>
+                    <div class="comments-list" data-item="${item.id}">
+                        ${(item.comments||[]).map(c => `<div class="comment-item"><strong>${c.name}:</strong> ${c.text}</div>`).join('') || '<div class="empty-hint">لا توجد تعليقات بعد</div>'}
+                    </div>
+                </div>`;
+            return `<div class="item-card" id="card-${item.id}"><h3>${item.title}</h3>${desc}${renderMedia(item)}${feedback}</div>`;
+        }
+
+        async function renderSection(section) {
+            const container = document.getElementById(`${section}-container`);
+            try {
+                const { data: items, error } = await sb
+                    .from('items')
+                    .select('*')
+                    .eq('section', section)
+                    .order('created_at', { ascending: true });
+                if (error) throw error;
+                if (!items || items.length === 0) {
+                    container.innerHTML = '<div class="empty-hint">لا يوجد محتوى بعد</div>';
+                    updateStatCount(section, 0);
+                    return;
+                }
+                container.innerHTML = items.map(item => itemCardHTML(section, item)).join('') || '<div class="empty-hint">لا يوجد محتوى بعد</div>';
+                updateStatCount(section, items.length);
+            } catch (e) {
+                container.innerHTML = '<div class="empty-hint">تعذر تحميل المحتوى، حاول تحديث الصفحة</div>';
+            }
+        }
+
+        // ============ شريط الإحصائيات ============
+        const sectionCounts = { projects: 0, initiatives: 0, books: 0, apps: 0 };
+
+        function updateStatCount(section, count) {
+            if (!(section in sectionCounts)) return;
+            sectionCounts[section] = count;
+            const projectsEl = document.querySelector('.stat-num[data-section="projects"]');
+            const initiativesEl = document.querySelector('.stat-num[data-section="initiatives"]');
+            const booksAppsEl = document.querySelector('.stat-num[data-section="books-apps"]');
+            if (projectsEl) animateCount(projectsEl, sectionCounts.projects);
+            if (initiativesEl) animateCount(initiativesEl, sectionCounts.initiatives);
+            if (booksAppsEl) animateCount(booksAppsEl, sectionCounts.books + sectionCounts.apps);
+        }
+
+        function animateCount(el, target) {
+            const span = el.querySelector('span');
+            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReduced) { span.textContent = target; return; }
+            const start = parseInt(span.textContent, 10) || 0;
+            if (start === target) return;
+            const duration = 700;
+            const startTime = performance.now();
+            function step(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                span.textContent = Math.round(start + (target - start) * progress);
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        function initYearsCounter() {
+            const yearsEl = document.querySelector('.stat-num[data-count]:not([data-section])');
+            if (!yearsEl) return;
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCount(yearsEl, parseInt(yearsEl.dataset.count, 10) || 0);
+                        observer.disconnect();
+                    }
+                });
+            }, { threshold: 0.4 });
+            observer.observe(yearsEl);
+        }
+
+        async function uploadFileToStorage(file, section) {
+            const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
+            const path = `${section}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            const { error } = await sb.storage.from('media').upload(path, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+            if (error) throw error;
+            const { data } = sb.storage.from('media').getPublicUrl(path);
+            return data.publicUrl;
+        }
+
+        async function addNewItem(section, btn) {
+            const box = btn.closest('.upload-box');
+            const titleInput = box.querySelector('[data-role="title"]');
+            const descInput = box.querySelector('[data-role="desc"]');
+            const fileInput = box.querySelector('[data-role="file"]');
+            const linkInput = box.querySelector('[data-role="link"]');
+            const statusEl = box.querySelector('[data-role="status"]');
+
+            const title = (titleInput.value || '').trim() || 'عنوان جديد';
+            const desc = descInput ? (descInput.value || '').trim() : '';
+            const link = (linkInput.value || '').trim();
+            const file = fileInput.files && fileInput.files[0];
+
+            if (!file && !link) {
+                statusEl.textContent = 'الرجاء اختيار ملف أو إدخال رابط.';
+                statusEl.className = 'upload-status error';
+                return;
+            }
+            if (file && file.size > MAX_FILE_BYTES) {
+                statusEl.textContent = 'الملف كبير جداً (الحد الأقصى تقريباً 20 ميجا) — استخدم رابط فيديو بدلاً من ذلك.';
+                statusEl.className = 'upload-status error';
+                return;
+            }
+
+            statusEl.textContent = 'جارٍ الرفع...';
+            statusEl.className = 'upload-status loading';
+            btn.disabled = true;
+
+            try {
+                const fileUrl = file ? await uploadFileToStorage(file, section) : null;
+                const item = {
+                    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                    section, title, description: desc, link: link || null,
+                    file_type: file ? file.type : null,
+                    file_url: fileUrl,
+                    created_at: Date.now(),
+                    avg_rating: 0, rating_sum: 0, rating_count: 0,
+                    comments: []
+                };
+                const { error } = await sb.from('items').insert(item);
+                if (error) throw error;
+
+                statusEl.textContent = 'تم الحفظ بنجاح ✔';
+                statusEl.className = 'upload-status success';
+                titleInput.value = ''; if (descInput) descInput.value = ''; fileInput.value = ''; linkInput.value = '';
+                await renderSection(section);
+            } catch (e) {
+                statusEl.textContent = 'تعذر الحفظ — قد يكون الملف كبيراً جداً، جرب رابط فيديو بدلاً منه.';
+                statusEl.className = 'upload-status error';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function rate(section, itemId, value) {
+            try {
+                const { data: item, error: getErr } = await sb.from('items').select('*').eq('id', itemId).single();
+                if (getErr || !item) return;
+                const ratingSum = (item.rating_sum || 0) + value;
+                const ratingCount = (item.rating_count || 0) + 1;
+                const avgRating = Math.round((ratingSum / ratingCount) * 10) / 10;
+                const { error } = await sb.from('items').update({
+                    rating_sum: ratingSum, rating_count: ratingCount, avg_rating: avgRating
+                }).eq('id', itemId);
+                if (error) throw error;
+                await renderSection(section);
+            } catch (e) { alert('تعذر حفظ التقييم، حاول مرة أخرى'); }
+        }
+
+        async function addComment(section, itemId) {
+            const nameInput = document.querySelector(`[data-item="${itemId}"][data-role="name"]`);
+            const commentInput = document.querySelector(`[data-item="${itemId}"][data-role="comment"]`);
+            const text = (commentInput.value || '').trim();
+            if (!text) return;
+            const name = (nameInput.value || '').trim() || 'زائر';
+            try {
+                const { data: item, error: getErr } = await sb.from('items').select('*').eq('id', itemId).single();
+                if (getErr || !item) return;
+                const comments = item.comments || [];
+                comments.push({ name, text, at: Date.now() });
+                const { error } = await sb.from('items').update({ comments }).eq('id', itemId);
+                if (error) throw error;
+                nameInput.value = ''; commentInput.value = '';
+                await renderSection(section);
+            } catch (e) { alert('تعذر إرسال التعليق، حاول مرة أخرى'); }
+        }
+
+        async function sendContactMessage() {
+            const name = document.getElementById('contact-name');
+            const phone = document.getElementById('contact-phone');
+            const message = document.getElementById('contact-message');
+            const statusEl = document.getElementById('contact-status');
+            const text = (message.value || '').trim();
+            if (!text) {
+                statusEl.textContent = 'الرجاء كتابة رسالة.';
+                statusEl.className = 'upload-status error';
+                return;
+            }
+            try {
+                const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                const msg = { id, name: (name.value||'').trim() || 'زائر', phone: (phone.value||'').trim(), text, created_at: Date.now() };
+                const { error } = await sb.from('messages').insert(msg);
+                if (error) throw error;
+                statusEl.textContent = 'تم إرسال رسالتك بنجاح ✔';
+                statusEl.className = 'upload-status success';
+                name.value = ''; phone.value = ''; message.value = '';
+            } catch (e) {
+                statusEl.textContent = 'تعذر إرسال الرسالة، حاول مرة أخرى.';
+                statusEl.className = 'upload-status error';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            SECTIONS.forEach(section => renderSection(section));
+            initYearsCounter();
+        });
+    </script>
+</body>
+</html>
