@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BENA | موسوعة بناء للتحول الرقمي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEEBE1; --blueprint:#12324A; --blueprint-2:#1E4B6D;
+  --line:#D8D3C4; --orange:#D65A2C; --ink:#1B2A33; --card:#FFFFFF;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'Tajawal',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+[dir="ltr"] body, .ltr{ font-family:'Tajawal',sans-serif; }
+.app{ max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; background:var(--paper); position:relative; }
+
+/* App bar */
+.appbar{
+  background:var(--blueprint); color:#fff;
+  padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:20;
+}
+.appbar .brand{ display:flex; align-items:center; gap:8px; }
+.appbar .brand .mark{ width:26px;height:26px;border:2px solid var(--orange); border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; }
+.appbar h1{ font-family:'Cairo',sans-serif; font-size:15px; font-weight:700; margin:0; }
+.langbtn{
+  background:transparent; border:1px solid #ffffff55; color:#fff; border-radius:14px;
+  padding:6px 12px; font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer;
+}
+
+/* Views */
+main{ flex:1; padding:18px 16px 90px; }
+.view{ display:none; animation:fade .18s ease; }
+.view.active{ display:block; }
+@keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+/* Cards */
+.card{ background:var(--card); border:1px solid var(--line); border-top:3px solid var(--orange); border-radius:6px; padding:18px; margin-bottom:14px; }
+.eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; color:var(--orange); text-transform:uppercase; margin-bottom:6px; }
+h2.title{ font-family:'Cairo',sans-serif; font-weight:800; font-size:19px; color:var(--blueprint); margin:0 0 4px; }
+p.desc{ font-size:13.5px; color:var(--blueprint-2); margin:0 0 14px; line-height:1.6; }
+label{ display:block; font-size:12.5px; font-weight:600; color:var(--blueprint-2); margin:12px 0 5px; }
+input[type=text], input[type=number], input[type=date]{
+  width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:5px;
+  font-family:'IBM Plex Mono',monospace; font-size:14px; background:#FBFAF6; color:var(--ink);
+}
+input:focus{ outline:2px solid var(--orange); outline-offset:1px; }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+button.btn{ border:none; border-radius:6px; padding:11px 16px; font-family:'Cairo',sans-serif; font-weight:700; font-size:13.5px; cursor:pointer; }
+.btn-primary{ background:var(--orange); color:#fff; }
+.btn-outline{ background:transparent; border:1.5px solid var(--blueprint); color:var(--blueprint); }
+.btn-ghost{ background:var(--paper); color:var(--blueprint-2); border:1px solid var(--line); }
+.btn-danger{ background:transparent; color:#B23A2C; border:1px solid #B23A2C55; }
+.btn-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+.btn-row button{ flex:1; min-width:90px; }
+
+/* Home / profile */
+.profile-line{ display:flex; justify-content:space-between; padding:9px 0; border-top:1px solid var(--line); font-size:13px; }
+.profile-line:first-child{ border-top:none; }
+.profile-line b{ color:var(--blueprint); font-family:'Cairo',sans-serif; font-weight:700; }
+a.site{ color:var(--orange); text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:13px; }
+
+/* Project list */
+.proj-item{ background:#fff; border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.proj-item.active{ border-color:var(--orange); background:#FFF6F1; }
+.proj-info b{ font-family:'Cairo',sans-serif; font-size:14px; color:var(--blueprint); display:block; }
+.proj-info span{ font-size:11.5px; color:var(--blueprint-2); font-family:'IBM Plex Mono',monospace; }
+.proj-actions{ display:flex; gap:6px; }
+.icon-btn{ background:transparent; border:1px solid var(--line); border-radius:5px; padding:6px 9px; font-size:12px; cursor:pointer; color:var(--blueprint-2); }
+.empty{ text-align:center; padding:30px 10px; color:var(--blueprint-2); font-size:13.5px; }
+
+/* Notes pager */
+.pager-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.pager-dots{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--blueprint-2); }
+.active-proj-tag{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:var(--blueprint); color:#fff; padding:4px 10px; border-radius:12px; display:inline-block; margin-bottom:12px; }
+.warn{ background:#FFF3CD; border:1px solid #FFE29A; padding:10px 12px; border-radius:6px; font-size:12.5px; color:#8a6d00; margin-bottom:12px; }
+.out-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid var(--line); }
+.out-row:first-child{ border-top:none; }
+.out-row .lbl{ font-size:13px; color:var(--blueprint-2); }
+.out-row .val{ font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--orange); font-size:14px; direction:ltr; }
+.nav-arrows{ display:flex; justify-content:space-between; margin-top:16px; }
+.nav-arrows button{ background:var(--blueprint); color:#fff; border:none; border-radius:6px; padding:10px 18px; font-family:'Cairo',sans-serif; font-weight:700; font-size:13px; cursor:pointer; }
+.nav-arrows button:disabled{ opacity:.35; }
+
+/* Bottom tabs */
+.tabbar{
+  position:fixed; bottom:0; left:0; right:0; z-index:30;
+  background:#fff; border-top:1px solid var(--line);
+  max-width:480px; margin:0 auto;
+  display:flex;
+}
+.tabbar button, .tabbar label{
+  flex:1; background:none; border:none; padding:10px 4px 8px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  color:var(--blueprint-2); font-family:'Cairo',sans-serif; font-size:11px; font-weight:600;
+}
+.tabbar button .dot, .tabbar label .dot{ width:6px; height:6px; border-radius:50%; background:transparent; }
+.tabbar button.active, .tabbar label.active{ color:var(--orange); }
+.tabbar button.active .dot, .tabbar label.active .dot{ background:var(--orange); }
+
+/* No-JS / CSS-only fallback navigation (radio-driven tabs) */
+.jsnav{ position:absolute; opacity:0; pointer-events:none; width:0; height:0; }
+#nav-home:checked ~ main #view-home,
+#nav-projects:checked ~ main #view-projects,
+#nav-notes:checked ~ main #view-notes,
+#nav-report:checked ~ main #view-report{ display:block; }
+#nav-home:checked ~ .tabbar label[for="nav-home"],
+#nav-projects:checked ~ .tabbar label[for="nav-projects"],
+#nav-notes:checked ~ .tabbar label[for="nav-notes"],
+#nav-report:checked ~ .tabbar label[for="nav-report"]{ color:var(--orange); }
+#nav-home:checked ~ .tabbar label[for="nav-home"] .dot,
+#nav-projects:checked ~ .tabbar label[for="nav-projects"] .dot,
+#nav-notes:checked ~ .tabbar label[for="nav-notes"] .dot,
+#nav-report:checked ~ .tabbar label[for="nav-report"] .dot{ background:var(--orange); }
+.nojs-warn{ display:none; }
+.no-js .nojs-warn{ display:block; }
+
+/* Print scoping */
+.print-only{ display:none; }
+@media print{
+  .tabbar, .appbar, .no-print{ display:none !important; }
+  main{ padding:0; }
+  .view{ display:none !important; }
+  .view.printing{ display:block !important; }
+  body{ background:#fff; }
+  .print-only{ display:block; }
+  .card{ border:1px solid #999; box-shadow:none; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- CSS-only fallback tab switches (work even if JavaScript is disabled) -->
+  <input class="jsnav" type="radio" name="navtab" id="nav-home" checked>
+  <input class="jsnav" type="radio" name="navtab" id="nav-projects">
+  <input class="jsnav" type="radio" name="navtab" id="nav-notes">
+  <input class="jsnav" type="radio" name="navtab" id="nav-report">
+
+  <div class="appbar">
+    <div class="brand">
+      <div class="mark">B</div>
+      <h1 id="appTitle">BENA</h1>
+    </div>
+    <button class="langbtn no-print" onclick="setLang(state.lang==='ar'?'en':'ar')" id="langBtn">EN</button>
+  </div>
+
+  <main>
+
+    <!-- HOME / ABOUT -->
+    <section class="view active" id="view-home">
+      <div class="card">
+        <div class="eyebrow" data-t="eyebrowProfile"></div>
+        <h2 class="title" data-t="appNameFull"></h2>
+        <p class="desc" data-t="appTagline"></p>
+        <div class="profile-line"><b data-t="lblProgram"></b><span data-t="valProgram"></span></div>
+        <div class="profile-line"><b data-t="lblConsultant"></b><span data-t="valConsultant"></span></div>
+        <div class="profile-line"><b data-t="lblCreds"></b><span data-t="valCreds"></span></div>
+        <div class="profile-line"><b data-t="lblScope"></b><span data-t="valScope"></span></div>
+        <div class="profile-line"><b data-t="lblSite"></b><a class="site" href="https://www.bena-blackbox.com" target="_blank">bena-blackbox.com</a></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow" data-t="eyebrowHow"></div>
+        <h2 class="title" data-t="howTitle" style="font-size:16px;"></h2>
+        <p class="desc" data-t="howDesc" style="margin-bottom:0;"></p>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="view" id="view-projects">
+      <noscript><div class="warn">⚠️ لتفعيل تسجيل المشروعات وحفظها، يجب تشغيل JavaScript في إعدادات WebView الخاصة بالتطبيق. / To register and save projects, JavaScript must be enabled in the app's WebView settings.</div></noscript>
+      <div class="card">
+        <div class="eyebrow" data-t="eyebrowNewProj"></div>
+        <h2 class="title" data-t="newProjTitle" style="font-size:17px;"></h2>
+        <label data-t="fldProjName"></label>
+        <input type="text" id="pName">
+        <div class="row2">
+          <div><label data-t="fldClient"></label><input type="text" id="pClient"></div>
+          <div><label data-t="fldLocation"></label><input type="text" id="pLocation"></div>
+        </div>
+        <label data-t="fldDate"></label>
+        <input type="date" id="pDate">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="createProject()" data-t="btnCreate"></button>
+        </div>
+      </div>
+
+      <div class="eyebrow" style="margin:18px 0 8px;" data-t="eyebrowRegistry"></div>
+      <div id="projList"></div>
+    </section>
+
+    <!-- NOTES PAGER -->
+    <section class="view" id="view-notes">
+      <noscript><div class="warn">⚠️ لعرض النوت الحسابية وحساب النتائج، يجب تشغيل JavaScript في إعدادات WebView الخاصة بالتطبيق. / To display calculation notes and compute results, JavaScript must be enabled in the app's WebView settings.</div></noscript>
+      <div id="activeProjTagWrap"></div>
+      <div id="noProjWarn" class="warn no-print" style="display:none;" data-t="warnNoProject"></div>
+
+      <div class="pager-head no-print">
+        <span class="pager-dots" id="pagerDots"></span>
+      </div>
+
+      <div id="noteCard"></div>
+
+      <div class="nav-arrows no-print">
+        <button id="prevBtn" onclick="changeNote(-1)">‹</button>
+        <button id="nextBtn" onclick="changeNote(1)">›</button>
+      </div>
+    </section>
+
+    <!-- FINAL REPORT -->
+    <section class="view" id="view-report">
+      <noscript><div class="warn">⚠️ لعرض التقرير النهائي، يجب تشغيل JavaScript في إعدادات WebView الخاصة بالتطبيق. / To display the final report, JavaScript must be enabled in the app's WebView settings.</div></noscript>
+      <div class="card no-print">
+        <div class="eyebrow" data-t="reportEyebrow"></div>
+        <h2 class="title" data-t="reportTitle" style="font-size:17px;"></h2>
+        <p class="desc" data-t="reportDesc"></p>
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="printReport()" data-t="btnPrint"></button>
+          <button class="btn btn-ghost" onclick="copyReport()" data-t="btnCopy"></button>
+        </div>
+        <div class="eyebrow" id="reportMsg" style="margin-top:10px;color:var(--blueprint-2);"></div>
+      </div>
+      <div id="reportWarn" class="warn no-print" style="display:none;" data-t="noProjForReport"></div>
+      <div id="reportBody"></div>
+    </section>
+
+  </main>
+
+  <div class="tabbar no-print">
+    <label for="nav-home" data-view="home" onclick="showView('home')"><span class="dot"></span><span data-t="tabHome"></span></label>
+    <label for="nav-projects" data-view="projects" onclick="showView('projects')"><span class="dot"></span><span data-t="tabProjects"></span></label>
+    <label for="nav-notes" data-view="notes" onclick="showView('notes')"><span class="dot"></span><span data-t="tabNotes"></span></label>
+    <label for="nav-report" data-view="report" onclick="showView('report')"><span class="dot"></span><span data-t="tabReport"></span></label>
+  </div>
+
+</div>
+
+<script>
+/* ============ TRANSLATIONS ============ */
+const T = {
+  ar:{
+    eyebrowProfile:"صفحة تعريفية — Project Profile",
+    appNameFull:"موسوعة بناء للتحول الرقمي",
+    appTagline:"نظام متكامل من 10 مبادرات لإدارة المشاريع الإنشائية رقمياً — النوت الحسابية، سجل المشروعات، وتقارير جاهزة للطباعة.",
+    lblProgram:"اسم البرنامج", valProgram:"موسوعة بناء — 10 مبادرات متكاملة",
+    lblConsultant:"الاستشاري والمعد", valConsultant:"م. وائل علي عويس محمود",
+    lblCreds:"المؤهلات", valCreds:"PMP · FIDIC · QAI · ماجستير سالفورد",
+    lblScope:"نطاق التطبيق", valScope:"مصر · الإمارات · المنطقة",
+    lblSite:"الموقع",
+    eyebrowHow:"طريقة الاستخدام", howTitle:"3 خطوات بسيطة",
+    howDesc:"1) سجّل بيانات مشروعك من تبويب «المشروعات». 2) اختر المشروع كمشروع نشط. 3) افتح تبويب «النوت الحسابية» وأدخل الأرقام لكل مبادرة — يتم الحساب والحفظ تلقائياً، ويمكنك نسخ أو طباعة كل نوتة على حدة.",
+    eyebrowNewProj:"تسجيل مشروع جديد", newProjTitle:"بيانات المشروع",
+    fldProjName:"اسم المشروع", fldClient:"العميل / الجهة", fldLocation:"الموقع",
+    fldDate:"تاريخ البدء", btnCreate:"➕ إنشاء وتفعيل المشروع",
+    eyebrowRegistry:"سجل المشروعات",
+    emptyProjects:"لا توجد مشروعات مسجلة بعد",
+    btnActivate:"تفعيل", btnDelete:"حذف", tagActive:"نشط",
+    tabHome:"تعريف", tabProjects:"المشروعات", tabNotes:"النوت الحسابية", tabReport:"التقرير النهائي",
+    reportEyebrow:"التقرير الشامل", reportTitle:"التقرير النهائي لجميع المبادرات",
+    reportDesc:"يجمع هذا التقرير مدخلات ومخرجات النوت الحسابية العشر للمشروع النشط في تقرير واحد قابل للطباعة أو النسخ.",
+    noProjForReport:"⚠️ لا يوجد مشروع نشط. فعّل مشروعاً من تبويب «المشروعات» لعرض التقرير النهائي.",
+    reportFieldNote:"* المبادرات التي لم تُحفظ بياناتها بعد تظهر بالقيم الافتراضية.",
+    warnNoProject:"⚠️ لا يوجد مشروع نشط. من فضلك أنشئ أو فعّل مشروعاً من تبويب «المشروعات» لحفظ بيانات النوت.",
+    activeProjPrefix:"المشروع النشط: ",
+    noProjSelected:"— لا يوجد —",
+    pageOf:"نوتة", ofWord:"من",
+    btnPrint:"🖨️ طباعة", btnCopy:"📋 نسخ", btnSave:"💾 حفظ",
+    savedMsg:"تم الحفظ ✓", copiedMsg:"تم النسخ ✓",
+    secInputs:"المدخلات", secOutputs:"المخرجات المحسوبة",
+    unitCurrency:"عملة", unitDays:"يوم", unitPercent:"%", unitHours:"ساعة",
+    printedFor:"تقرير — إعداد: م. وائل علي عويس محمود | bena-blackbox.com",
+    confirmDelete:"هل تريد حذف هذا المشروع وكل بياناته؟"
+  },
+  en:{
+    eyebrowProfile:"Project Profile",
+    appNameFull:"BENA Digital Transformation Encyclopedia",
+    appTagline:"An integrated system of 10 initiatives for digital construction project management — calculation notes, project registry, and print-ready reports.",
+    lblProgram:"Program Name", valProgram:"BENA — 10 Integrated Initiatives",
+    lblConsultant:"Consultant & Developer", valConsultant:"Eng. Wael Ali Ewis Mahmoud",
+    lblCreds:"Credentials", valCreds:"PMP · FIDIC · QAI · MSc Candidate, Salford UK",
+    lblScope:"Application Scope", valScope:"Egypt · UAE · MENA Region",
+    lblSite:"Website",
+    eyebrowHow:"How To Use", howTitle:"3 Simple Steps",
+    howDesc:"1) Register your project under the Projects tab. 2) Set it as the active project. 3) Open the Calculation Notes tab and enter figures for each initiative — results are calculated and saved automatically, and each note can be copied or printed individually.",
+    eyebrowNewProj:"Register New Project", newProjTitle:"Project Data",
+    fldProjName:"Project Name", fldClient:"Client / Entity", fldLocation:"Location",
+    fldDate:"Start Date", btnCreate:"➕ Create & Activate Project",
+    eyebrowRegistry:"Project Registry",
+    emptyProjects:"No projects registered yet",
+    btnActivate:"Activate", btnDelete:"Delete", tagActive:"Active",
+    tabHome:"Home", tabProjects:"Projects", tabNotes:"Calc Notes", tabReport:"Final Report",
+    reportEyebrow:"Consolidated Report", reportTitle:"Final Report — All Initiatives",
+    reportDesc:"This report compiles the inputs and outputs of all 10 calculation notes for the active project into one printable or copyable document.",
+    noProjForReport:"⚠️ No active project. Activate a project from the Projects tab to view the final report.",
+    reportFieldNote:"* Initiatives with no saved data yet are shown with default values.",
+    warnNoProject:"⚠️ No active project. Please create or activate a project from the Projects tab to save note data.",
+    activeProjPrefix:"Active project: ",
+    noProjSelected:"— none —",
+    pageOf:"Note", ofWord:"of",
+    btnPrint:"🖨️ Print", btnCopy:"📋 Copy", btnSave:"💾 Save",
+    savedMsg:"Saved ✓", copiedMsg:"Copied ✓",
+    secInputs:"Inputs", secOutputs:"Calculated Outputs",
+    unitCurrency:"currency", unitDays:"days", unitPercent:"%", unitHours:"hrs",
+    printedFor:"Report — Prepared by: Eng. Wael Ali Ewis Mahmoud | bena-blackbox.com",
+    confirmDelete:"Delete this project and all its data?"
+  }
+};
+
+/* ============ INITIATIVES CONFIG ============ */
+const INITIATIVES = [
+  { code:"edai", nameAr:"EDAI — الإدارة بالبيانات والذكاء الاصطناعي", nameEn:"EDAI — Data & AI-Driven Management",
+    fields:[
+      {id:"acv", ar:"قيمة العقد السنوي", en:"Annual Contract Value", unit:"unitCurrency", def:5000000},
+      {id:"decisionTimeDays", ar:"زمن اتخاذ القرار الحالي", en:"Current Decision Time", unit:"unitDays", def:10},
+      {id:"inaccuracyRate", ar:"معدل عدم دقة البيانات الحالي", en:"Current Data Inaccuracy Rate", unit:"unitPercent", def:25}
+    ],
+    compute:(v)=>{
+      const newTime=v.decisionTimeDays*0.65;
+      const newAcc=100-v.inaccuracyRate*0.6;
+      const savings=v.acv*0.015;
+      return [
+        {ar:"زمن القرار الجديد", en:"New Decision Time", val:newTime.toFixed(1), unit:"unitDays"},
+        {ar:"دقة البيانات المتوقعة", en:"Expected Data Accuracy", val:newAcc.toFixed(1), unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"hptg", nameAr:"HPTG — حوكمة الفرق عالية الأداء", nameEn:"HPTG — High-Performance Team Governance",
+    fields:[
+      {id:"headcount", ar:"عدد أعضاء الفريق", en:"Team Headcount", unit:"", def:50},
+      {id:"avgMonthlyCost", ar:"متوسط التكلفة الشهرية للموظف", en:"Avg Monthly Cost per Employee", unit:"unitCurrency", def:15000},
+      {id:"conflictLossRate", ar:"نسبة هدر الوقت بسبب النزاعات", en:"Conflict & Duplication Loss Rate", unit:"unitPercent", def:15}
+    ],
+    compute:(v)=>{
+      const newLoss=v.conflictLossRate*0.4;
+      const savings=v.headcount*v.avgMonthlyCost*12*((v.conflictLossRate-newLoss)/100);
+      return [
+        {ar:"نسبة هدر الوقت الجديدة", en:"New Time-Loss Rate", val:newLoss.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة إنتاجية الفريق", en:"Team Productivity Gain", val:"35.0", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"insiyab", nameAr:"INSIYAB — ذكاء إدارة الاجتماعات", nameEn:"INSIYAB — Meeting Intelligence",
+    fields:[
+      {id:"attendees", ar:"عدد الحاضرين", en:"Attendees", unit:"", def:40},
+      {id:"meetingsPerWeek", ar:"اجتماعات أسبوعياً لكل موظف", en:"Meetings per Employee/Week", unit:"", def:5},
+      {id:"avgDurationHrs", ar:"متوسط مدة الاجتماع", en:"Avg Meeting Duration", unit:"unitHours", def:1.5},
+      {id:"hourlyRate", ar:"التكلفة الساعية للموظف", en:"Avg Hourly Rate", unit:"unitCurrency", def:100}
+    ],
+    compute:(v)=>{
+      const weeklyHours=v.attendees*v.meetingsPerWeek*v.avgDurationHrs;
+      const wastedBefore=weeklyHours*0.45;
+      const wastedAfter=wastedBefore*0.4;
+      const savings=(wastedBefore-wastedAfter)*v.hourlyRate*52;
+      return [
+        {ar:"إجمالي ساعات الاجتماعات أسبوعياً", en:"Total Weekly Meeting Hours", val:weeklyHours.toFixed(1), unit:"unitHours"},
+        {ar:"الساعات المهدرة بعد التطبيق (أسبوعياً)", en:"Wasted Hours After (weekly)", val:wastedAfter.toFixed(1), unit:"unitHours"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"bena", nameAr:"BENA — نظام التدقيق الداخلي", nameEn:"BENA — Internal Audit System",
+    fields:[
+      {id:"annualAudits", ar:"عدد عمليات التدقيق السنوية", en:"Annual Audits", unit:"", def:12},
+      {id:"ncrCount", ar:"عدد حالات عدم المطابقة (NCR)", en:"Non-Conformances (NCRs)", unit:"", def:50},
+      {id:"avgNcrDelayCost", ar:"متوسط تكلفة تأخير الحالة الواحدة", en:"Avg Cost per NCR Delay", unit:"unitCurrency", def:5000}
+    ],
+    compute:(v)=>{
+      const savings=v.ncrCount*v.avgNcrDelayCost*0.5;
+      return [
+        {ar:"الجاهزية الكاملة للتدقيق", en:"Full Audit Readiness", val:"90", unit:"unitDays"},
+        {ar:"نسبة تتبع حالات عدم المطابقة", en:"NCR Traceability", val:"100", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"iqan", nameAr:"IQAN — شبكة التأهيل وتطوير المواهب", nameEn:"IQAN — Talent Development Network",
+    fields:[
+      {id:"headcount2", ar:"إجمالي القوى العاملة", en:"Workforce Headcount", unit:"", def:100},
+      {id:"turnoverRate", ar:"معدل دوران الموظفين الحالي", en:"Current Turnover Rate", unit:"unitPercent", def:15},
+      {id:"replacementCost", ar:"تكلفة استبدال الموظف الواحد", en:"Replacement Cost per Hire", unit:"unitCurrency", def:30000}
+    ],
+    compute:(v)=>{
+      const newTurnover=v.turnoverRate*0.6;
+      const savings=v.headcount2*((v.turnoverRate-newTurnover)/100)*v.replacementCost;
+      return [
+        {ar:"معدل الدوران الجديد", en:"New Turnover Rate", val:newTurnover.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة الإنتاجية", en:"Productivity Increase", val:"25.0", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"iso9001", nameAr:"ISO 9001 — نظام إدارة الجودة", nameEn:"ISO 9001 — Quality Management System",
+    fields:[
+      {id:"annualContractValue", ar:"حجم الأعمال السنوي", en:"Annual Contract Value", unit:"unitCurrency", def:50000000},
+      {id:"reworkRate", ar:"معدل إعادة العمل الحالي", en:"Current Rework Rate", unit:"unitPercent", def:10},
+      {id:"inspectionCost", ar:"تكلفة الفحص التقليدية", en:"Current Inspection Cost", unit:"unitCurrency", def:500000}
+    ],
+    compute:(v)=>{
+      const newRework=v.reworkRate*0.6;
+      const savings=v.annualContractValue*((v.reworkRate-newRework)/100);
+      return [
+        {ar:"معدل إعادة العمل الجديد", en:"New Rework Rate", val:newRework.toFixed(1), unit:"unitPercent"},
+        {ar:"مدة الجاهزية للاعتماد", en:"Certification Readiness", val:"6", unit:""},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"raseen", nameAr:"RASEEN — البناء الرشيق بالذكاء الاصطناعي", nameEn:"RASEEN — AI-Driven Lean Construction",
+    fields:[
+      {id:"annualProjectValue", ar:"قيمة المشروع السنوية", en:"Annual Project Value", unit:"unitCurrency", def:50000000},
+      {id:"siteWasteRate", ar:"نسبة الهدر الميداني الحالي", en:"Current Site Waste Rate", unit:"unitPercent", def:12},
+      {id:"laydownCost", ar:"تكلفة إدارة مواد التشوين", en:"Laydown & Material Mgmt Cost", unit:"unitCurrency", def:1000000}
+    ],
+    compute:(v)=>{
+      const newWaste=v.siteWasteRate*0.6;
+      const savings=v.annualProjectValue*((v.siteWasteRate-newWaste)/100);
+      return [
+        {ar:"نسبة الهدر الميداني الجديدة", en:"New Site Waste Rate", val:newWaste.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة الإنتاجية الميدانية", en:"Field Productivity Increase", val:"30.0", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"ssl", nameAr:"SSL — الربط الذكي لأصحاب المصلحة", nameEn:"SSL — Stakeholder Smart-Link",
+    fields:[
+      {id:"stakeholders", ar:"عدد أصحاب المصلحة الرئيسيين", en:"Key Stakeholders", unit:"", def:25},
+      {id:"annualDisputes", ar:"عدد النزاعات السنوية الحالية", en:"Current Annual Disputes", unit:"", def:10},
+      {id:"avgDisputeCost", ar:"متوسط تكلفة النزاع الواحد", en:"Avg Cost per Dispute", unit:"unitCurrency", def:100000}
+    ],
+    compute:(v)=>{
+      const newDisputes=v.annualDisputes*0.3;
+      const savings=(v.annualDisputes-newDisputes)*v.avgDisputeCost;
+      return [
+        {ar:"عدد النزاعات المتوقع", en:"Expected Disputes", val:newDisputes.toFixed(1), unit:""},
+        {ar:"نسبة الالتزامات الموثقة", en:"Documented Commitments", val:"100", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"dbb", nameAr:"DBB — الصندوق الأسود الرقمي", nameEn:"DBB — Digital Black Box",
+    fields:[
+      {id:"projectDurationDays", ar:"مدة المشروع", en:"Project Duration", unit:"unitDays", def:500},
+      {id:"claimFrequency", ar:"عدد المطالبات القانونية السنوية", en:"Disputed Claim Frequency", unit:"", def:5},
+      {id:"avgClaimCost", ar:"متوسط تكلفة المطالبة الواحدة", en:"Avg Cost per Claim", unit:"unitCurrency", def:250000},
+      {id:"currentCoverage", ar:"نسبة التغطية الميدانية الحالية", en:"Current Site Coverage", unit:"unitPercent", def:40}
+    ],
+    compute:(v)=>{
+      const newClaims=v.claimFrequency*0.1;
+      const savings=(v.claimFrequency-newClaims)*v.avgClaimCost;
+      return [
+        {ar:"نسبة التغطية الجديدة", en:"New Site Coverage", val:"100", unit:"unitPercent"},
+        {ar:"عدد المطالبات المتوقع", en:"Expected Claims", val:newClaims.toFixed(1), unit:""},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"sixsigma", nameAr:"6σ — دراسات السيجما الستة", nameEn:"6σ — Six Sigma Studies (DMAIC)",
+    fields:[
+      {id:"annualMaterialCost", ar:"تكلفة المواد السنوية", en:"Annual Material Cost", unit:"unitCurrency", def:20000000},
+      {id:"copqRate", ar:"معدل تكلفة سوء الجودة (COPQ)", en:"Cost of Poor Quality Rate", unit:"unitPercent", def:10},
+      {id:"productivityIndex", ar:"مؤشر الإنتاجية الحالي", en:"Current Productivity Index", unit:"unitPercent", def:100}
+    ],
+    compute:(v)=>{
+      const materialSavings=v.annualMaterialCost*0.15;
+      const newCopq=v.copqRate*0.5;
+      return [
+        {ar:"الوفر في تكلفة المواد", en:"Material Cost Savings", val:fmt(materialSavings), unit:"unitCurrency"},
+        {ar:"معدل COPQ الجديد", en:"New COPQ Rate", val:newCopq.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة الإنتاجية الميدانية", en:"Field Productivity Increase", val:"25.0", unit:"unitPercent"}
+      ];
+    }}
+];
+
+function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+
+/* ============ SAFE STORAGE (falls back to memory if DOM Storage is disabled) ============ */
+const memoryStore = {};
+const Store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return (k in memoryStore) ? memoryStore[k] : null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){ memoryStore[k]=v; } },
+  remove(k){ try{ localStorage.removeItem(k); }catch(e){ delete memoryStore[k]; } }
+};
+
+/* ============ STATE ============ */
+const state = {
+  lang: Store.get('bena_lang') || 'ar',
+  projects: JSON.parse(Store.get('bena_projects') || '[]'),
+  activeId: Store.get('bena_active') || null,
+  noteIndex: 0
+};
+
+function saveProjects(){ Store.set('bena_projects', JSON.stringify(state.projects)); }
+
+function getActiveProject(){ return state.projects.find(p=>p.id===state.activeId) || null; }
+
+/* ============ LANG ============ */
+function setLang(lang){
+  state.lang = lang;
+  Store.set('bena_lang', lang);
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('htmlRoot').setAttribute('dir', lang==='ar' ? 'rtl':'ltr');
+  document.getElementById('langBtn').textContent = lang==='ar' ? 'EN' : 'AR';
+  applyTranslations();
+  renderProjects();
+  renderNote();
+  renderReport();
+}
+function applyTranslations(){
+  const dict = T[state.lang];
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key = el.getAttribute('data-t');
+    if(dict[key]) el.textContent = dict[key];
+  });
+}
+
+/* ============ VIEWS / TABS ============ */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.tabbar button, .tabbar label').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  const radio = document.getElementById('nav-'+name);
+  if(radio) radio.checked = true;
+  if(name==='notes'){ renderNote(); }
+  if(name==='projects'){ renderProjects(); }
+  if(name==='report'){ renderReport(); }
+}
+
+/* ============ PROJECTS ============ */
+function createProject(){
+  const name = document.getElementById('pName').value.trim();
+  if(!name){ document.getElementById('pName').focus(); return; }
+  const p = {
+    id: 'p_' + Date.now(),
+    name,
+    client: document.getElementById('pClient').value.trim(),
+    location: document.getElementById('pLocation').value.trim(),
+    date: document.getElementById('pDate').value || new Date().toISOString().slice(0,10),
+    data: {}
+  };
+  state.projects.unshift(p);
+  state.activeId = p.id;
+  Store.set('bena_active', p.id);
+  saveProjects();
+  document.getElementById('pName').value='';
+  document.getElementById('pClient').value='';
+  document.getElementById('pLocation').value='';
+  document.getElementById('pDate').value='';
+  renderProjects();
+  renderNote();
+}
+function activateProject(id){
+  state.activeId = id;
+  Store.set('bena_active', id);
+  renderProjects();
+  renderNote();
+}
+function deleteProject(id){
+  const dict = T[state.lang];
+  if(!confirm(dict.confirmDelete)) return;
+  state.projects = state.projects.filter(p=>p.id!==id);
+  if(state.activeId===id){ state.activeId=null; Store.remove('bena_active'); }
+  saveProjects();
+  renderProjects();
+  renderNote();
+}
+function renderProjects(){
+  const dict = T[state.lang];
+  const wrap = document.getElementById('projList');
+  if(state.projects.length===0){
+    wrap.innerHTML = '<div class="empty">'+dict.emptyProjects+'</div>';
+    return;
+  }
+  wrap.innerHTML = state.projects.map(p=>{
+    const isActive = p.id===state.activeId;
+    return '<div class="proj-item '+(isActive?'active':'')+'">'
+      + '<div class="proj-info"><b>'+escapeHtml(p.name)+'</b><span>'+escapeHtml(p.client||'')+(p.location?' · '+escapeHtml(p.location):'')+' · '+p.date+'</span></div>'
+      + '<div class="proj-actions">'
+      + (isActive ? '<span class="icon-btn" style="color:var(--orange);border-color:var(--orange);">'+dict.tagActive+'</span>' : '<button class="icon-btn" onclick="activateProject(\''+p.id+'\')">'+dict.btnActivate+'</button>')
+      + '<button class="icon-btn" onclick="deleteProject(\''+p.id+'\')">'+dict.btnDelete+'</button>'
+      + '</div></div>';
+  }).join('');
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ============ NOTES ============ */
+function changeNote(delta){
+  state.noteIndex = Math.min(INITIATIVES.length-1, Math.max(0, state.noteIndex+delta));
+  renderNote();
+}
+function getInputValues(init){
+  const proj = getActiveProject();
+  const saved = proj && proj.data[init.code] ? proj.data[init.code] : {};
+  const v = {};
+  init.fields.forEach(f=>{ v[f.id] = (saved[f.id] !== undefined) ? saved[f.id] : f.def; });
+  return v;
+}
+function renderNote(){
+  const dict = T[state.lang];
+  const init = INITIATIVES[state.noteIndex];
+  const proj = getActiveProject();
+
+  document.getElementById('pagerDots').textContent = dict.pageOf+' '+(state.noteIndex+1)+' '+dict.ofWord+' '+INITIATIVES.length;
+  document.getElementById('prevBtn').disabled = state.noteIndex===0;
+  document.getElementById('nextBtn').disabled = state.noteIndex===INITIATIVES.length-1;
+  document.getElementById('prevBtn').textContent = state.lang==='ar' ? '›' : '‹';
+  document.getElementById('nextBtn').textContent = state.lang==='ar' ? '‹' : '›';
+
+  document.getElementById('activeProjTagWrap').innerHTML = proj
+    ? '<div class="active-proj-tag">'+dict.activeProjPrefix+escapeHtml(proj.name)+'</div>'
+    : '';
+  document.getElementById('noProjWarn').style.display = proj ? 'none' : 'block';
+
+  const v = getInputValues(init);
+  const outputs = init.compute(v);
+
+  const fieldsHtml = init.fields.map(f=>{
+    return '<label>'+(state.lang==='ar'?f.ar:f.en)+(f.unit?' ('+dict[f.unit]+')':'')+'</label>'
+      +'<input type="number" step="any" data-field="'+f.id+'" value="'+v[f.id]+'" oninput="onFieldInput()">';
+  }).join('');
+
+  const outputsHtml = outputs.map(o=>{
+    return '<div class="out-row"><span class="lbl">'+(state.lang==='ar'?o.ar:o.en)+'</span><span class="val">'+o.val+(o.unit?' '+dict[o.unit]:'')+'</span></div>';
+  }).join('');
+
+  document.getElementById('noteCard').innerHTML =
+    '<div class="card" id="printableNote">'
+    + '<div class="eyebrow">'+String(state.noteIndex+1).padStart(2,'0')+' / '+INITIATIVES.length+'</div>'
+    + '<h2 class="title">'+(state.lang==='ar'?init.nameAr:init.nameEn)+'</h2>'
+    + '<p class="desc print-only">'+dict.printedFor+(proj?' — '+escapeHtml(proj.name):'')+'</p>'
+    + '<div class="eyebrow" style="margin-top:10px;">'+dict.secInputs+'</div>'
+    + fieldsHtml
+    + '<div class="eyebrow" style="margin-top:16px;">'+dict.secOutputs+'</div>'
+    + outputsHtml
+    + '<div class="btn-row no-print">'
+    +   '<button class="btn btn-primary" onclick="saveNote()">'+dict.btnSave+'</button>'
+    +   '<button class="btn btn-outline" onclick="printNote()">'+dict.btnPrint+'</button>'
+    +   '<button class="btn btn-ghost" onclick="copyNote()">'+dict.btnCopy+'</button>'
+    + '</div>'
+    + '<div class="eyebrow" id="noteMsg" style="margin-top:10px;color:var(--blueprint-2);"></div>'
+    + '</div>';
+}
+function onFieldInput(){
+  // live recompute preview without requiring save
+  const init = INITIATIVES[state.noteIndex];
+  const v = {};
+  document.querySelectorAll('#noteCard input[data-field]').forEach(inp=>{
+    v[inp.dataset.field] = parseFloat(inp.value) || 0;
+  });
+  const outputs = init.compute(v);
+  const dict = T[state.lang];
+  const rows = document.querySelectorAll('#noteCard .out-row .val');
+  outputs.forEach((o,i)=>{ if(rows[i]) rows[i].textContent = o.val+(o.unit?' '+dict[o.unit]:''); });
+}
+function collectCurrentValues(){
+  const v = {};
+  document.querySelectorAll('#noteCard input[data-field]').forEach(inp=>{
+    v[inp.dataset.field] = parseFloat(inp.value) || 0;
+  });
+  return v;
+}
+function saveNote(){
+  const dict = T[state.lang];
+  const proj = getActiveProject();
+  const msg = document.getElementById('noteMsg');
+  if(!proj){ msg.textContent = dict.warnNoProject; return; }
+  const init = INITIATIVES[state.noteIndex];
+  proj.data[init.code] = collectCurrentValues();
+  saveProjects();
+  msg.textContent = dict.savedMsg;
+  setTimeout(()=>{ if(msg) msg.textContent=''; }, 2000);
+}
+function printNote(){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('printing'));
+  document.getElementById('view-notes').classList.add('printing');
+  window.print();
+}
+function copyNote(){
+  const dict = T[state.lang];
+  const init = INITIATIVES[state.noteIndex];
+  const proj = getActiveProject();
+  const v = collectCurrentValues();
+  const outputs = init.compute(v);
+  let text = (state.lang==='ar'?init.nameAr:init.nameEn) + '\n';
+  if(proj) text += (dict.activeProjPrefix)+proj.name+'\n';
+  text += '\n'+dict.secInputs+':\n';
+  init.fields.forEach(f=>{ text += '- '+(state.lang==='ar'?f.ar:f.en)+': '+v[f.id]+'\n'; });
+  text += '\n'+dict.secOutputs+':\n';
+  outputs.forEach(o=>{ text += '- '+(state.lang==='ar'?o.ar:o.en)+': '+o.val+(o.unit?' '+dict[o.unit]:'')+'\n'; });
+  text += '\n'+dict.printedFor;
+  navigator.clipboard.writeText(text).then(()=>{
+    const msg = document.getElementById('noteMsg');
+    if(msg){ msg.textContent = dict.copiedMsg; setTimeout(()=>{ if(msg) msg.textContent=''; }, 2000); }
+  });
+}
+
+/* ============ FINAL REPORT ============ */
+function renderReport(){
+  const dict = T[state.lang];
+  const proj = getActiveProject();
+  document.getElementById('reportWarn').style.display = proj ? 'none' : 'block';
+
+  if(!proj){
+    document.getElementById('reportBody').innerHTML = '';
+    return;
+  }
+
+  const sections = INITIATIVES.map((init, idx)=>{
+    const saved = proj.data[init.code] || {};
+    const v = {};
+    init.fields.forEach(f=>{ v[f.id] = (saved[f.id] !== undefined) ? saved[f.id] : f.def; });
+    const outputs = init.compute(v);
+
+    const fieldsHtml = init.fields.map(f=>{
+      return '<div class="out-row"><span class="lbl">'+(state.lang==='ar'?f.ar:f.en)+'</span><span class="val" style="color:var(--blueprint-2);">'+v[f.id]+(f.unit?' '+dict[f.unit]:'')+'</span></div>';
+    }).join('');
+    const outputsHtml = outputs.map(o=>{
+      return '<div class="out-row"><span class="lbl">'+(state.lang==='ar'?o.ar:o.en)+'</span><span class="val">'+o.val+(o.unit?' '+dict[o.unit]:'')+'</span></div>';
+    }).join('');
+
+    return '<div class="card">'
+      + '<div class="eyebrow">'+String(idx+1).padStart(2,'0')+' / '+INITIATIVES.length+'</div>'
+      + '<h2 class="title" style="font-size:16px;">'+(state.lang==='ar'?init.nameAr:init.nameEn)+'</h2>'
+      + '<div class="eyebrow" style="margin-top:8px;">'+dict.secInputs+'</div>'
+      + fieldsHtml
+      + '<div class="eyebrow" style="margin-top:12px;">'+dict.secOutputs+'</div>'
+      + outputsHtml
+      + '</div>';
+  }).join('');
+
+  const projInfoHtml =
+      '<div class="eyebrow">'+dict.reportEyebrow+'</div>'
+    + '<h2 class="title">'+dict.reportTitle+'</h2>'
+    + '<div class="profile-line"><b>'+dict.fldProjName+'</b><span>'+escapeHtml(proj.name)+'</span></div>'
+    + '<div class="profile-line"><b>'+dict.fldClient+'</b><span>'+escapeHtml(proj.client||'—')+'</span></div>'
+    + '<div class="profile-line"><b>'+dict.fldLocation+'</b><span>'+escapeHtml(proj.location||'—')+'</span></div>'
+    + '<div class="profile-line"><b>'+dict.fldDate+'</b><span>'+proj.date+'</span></div>';
+
+  document.getElementById('reportBody').innerHTML =
+    '<div class="card">'+projInfoHtml+'</div>'
+    + sections
+    + '<p class="desc print-only" style="text-align:center;">'+dict.reportFieldNote+'<br>'+dict.printedFor+'</p>';
+}
+function printReport(){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('printing'));
+  document.getElementById('view-report').classList.add('printing');
+  window.print();
+}
+function copyReport(){
+  const dict = T[state.lang];
+  const proj = getActiveProject();
+  if(!proj) return;
+  let text = dict.reportTitle+'\n';
+  text += dict.fldProjName+': '+proj.name+'\n';
+  text += dict.fldClient+': '+(proj.client||'—')+'\n';
+  text += dict.fldLocation+': '+(proj.location||'—')+'\n';
+  text += dict.fldDate+': '+proj.date+'\n';
+  INITIATIVES.forEach((init, idx)=>{
+    const saved = proj.data[init.code] || {};
+    const v = {};
+    init.fields.forEach(f=>{ v[f.id] = (saved[f.id] !== undefined) ? saved[f.id] : f.def; });
+    const outputs = init.compute(v);
+    text += '\n'+String(idx+1).padStart(2,'0')+'. '+(state.lang==='ar'?init.nameAr:init.nameEn)+'\n';
+    text += ' '+dict.secInputs+':\n';
+    init.fields.forEach(f=>{ text += '  - '+(state.lang==='ar'?f.ar:f.en)+': '+v[f.id]+'\n'; });
+    text += ' '+dict.secOutputs+':\n';
+    outputs.forEach(o=>{ text += '  - '+(state.lang==='ar'?o.ar:o.en)+': '+o.val+(o.unit?' '+dict[o.unit]:'')+'\n'; });
+  });
+  text += '\n'+dict.printedFor;
+  navigator.clipboard.writeText(text).then(()=>{
+    const msg = document.getElementById('reportMsg');
+    if(msg){ msg.textContent = dict.copiedMsg; setTimeout(()=>{ if(msg) msg.textContent=''; }, 2000); }
+  });
+}
+
+/* ============ INIT ============ */
+document.getElementById('pDate').value = new Date().toISOString().slice(0,10);
+setLang(state.lang);
+renderProjects();
+renderNote();
+</script>
+</body>
+</html>
