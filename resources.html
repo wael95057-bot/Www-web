@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<title>منظومة سلاسل الإمداد الذكية</title>
+<meta name="theme-color" content="#059669">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="سلاسل الإمداد">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogItmF2YbYuNmI2YXYqSDYs9mE2KfYs9mEINin2YTYpdmF2K/Yp9ivINin2YTYsNmD2YrYqSIsICJzaG9ydF9uYW1lIjogItiz2YTYp9iz2YQg2KfZhNil2YXYr9in2K8iLCAiZGVzY3JpcHRpb24iOiAi2KrYt9io2YrZgiDZhNil2K/Yp9ix2Kkg2LPZhNin2LPZhCDYp9mE2KXZhdiv2KfYr9iMINin2YTZhdmI2LHYr9mK2YbYjCDYp9mE2LnZgtmI2K8g2KfZhNiw2YPZitip2Iwg2YjYp9mE2KfYs9iq2K/Yp9mF2KkiLCAic3RhcnRfdXJsIjogIi4iLCAic2NvcGUiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAib3JpZW50YXRpb24iOiAicG9ydHJhaXQtcHJpbWFyeSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOWZhZmIiLCAidGhlbWVfY29sb3IiOiAiIzA1OTY2OSIsICJsYW5nIjogImFyIiwgImRpciI6ICJydGwiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFNQUFBQURBQ0FJQUFBRGR2dnRRQUFBRW1VbEVRVlI0bk8zZFFXN2JRQkJFMFhFUTU2N09nWnk3WnBVRmdjQ1FZaXRpa1YzRjd2L1dDZGllK1JwS2xpRzl2TDYvTFdDdmIrNEJjRzBFQkFrQlFVSkFrQkFRSkFRRUNRRkJRa0NRRUJBa0JBUUpBVUZDUUpBUUVDUUVCQWtCUVVKQWtCQVFKQVFFQ1FGQlFrQ1FFQkFrQkFRSkFVRkNRSkFRRUNRRUJBa0JRVUpBa0JBUUpBUUVDUUZCUWtDUUVCQWtCQVRKZC9jQWovMStlM2VQNFBUajEwLzNDRjk1eWZ5TXhPSFIvRk5tU1hFQmtjNURVU1VGQlVRNi95K25vWlNBcUdlSGhJd2lBdnE2bm9KbDJwZHZ3bUQyaHN3QmZiRkFOVXVqbjN4bFcvalpxTjZHbkFGNVYrVFltNlkzSTJORGNRRWwzQmQyTTZidmFzZ1cwUDBxWFBIZ3VXYzhpaXdOZWQ3SzZGcFB6U1UyOXl0bWVTVnJDS2h4UGNVWFNtaG95cHVweFNzNzU5ZGExUUZaamgvTGR0WmMxSDRJbVUrZ3J2VlVYdHI3ZTZEU2dPcjMwbjRyYVh6NGJad24wTmtQSFhzOW00SXhqSWZRbENmUk9FbmJnRUtPbjAzVU1NZXFDK2htRWUxdkl6ZHpzNTVseWZZOGdRSWY4WUVqSGFKblFDaERRSkEwRENqMlpoRTdtS0poUUtoRVFKQjBDeWo4TmhFKzNnN2RBa0l4QW9LRWdDQWhJRWdJQ0JJQ2dvU0FJQ0VnU0FnSUVnS0NwRnRBNFgvb0dEN2VEdDBDUWpFQ2dxUmhRTEczaWRqQkZBMERRaVVDZ3FSblFJRTNpOENSRHRFeklKUnBHMURVSXo1cW1HTzFEUWcxT2djVThyZ1BHZU1rblFOYUFadG5IK0JzelFOYTFpMXNYOCthRU5BeWJlU0VldGFRZ0ZiNWRnNnBaODBKYUJWdTZweDYxcWlBVnNuV2pxcG5UUXRvbmJ6QjArcFpsL2phNzhOdDIzelI3d3RMTXpHZ3pWRVpqVTFuTXplZ2paTFI4SFEyMHdQYWZFekIvZzNBMTBKQXQwamtLZU5laGVGWUJBUUpBVUhDYzZCYlBJbCtDZ0d0OWN6TCtJLy9rcGdXQVNtL1NOeis3L0NNNWdaMDFGc1p3ek9hR05BWm4vWTlOcU54cjhKTy9hejRmaDlFLzlDc2dBbzJlRnBEZ3dJcTI5cFJEVTBKcUhoVDV6UTBJaURMZGc1cHFIOUF4bzJjMEZEemdPeGJhQi9nYkowREN0bThrREZPMGprZ0ZHZ2JVTlRqUG1xWVk3VU5DRFY2QmhUNGlBOGM2UkE5QTBJWkFvS2tZVUN4TjR2WXdSUU5BMElsQW9La1cwRGh0NG53OFhib0ZoQ0tFUkFrQkFRSkFVRkNRSkFRRUNRRUJBa0JRVUpBa0JBUUpOMENDdjk0Zy9EeGR1Z1dFSW9SRUNRTkE0cTlUY1FPcG1nWUVDb1JFQ1E5QXdxOFdRU09kQWhiUVAzK05zL0x0WjUxQVUzKzJ0djZZY3F1MlBNV2hqS2RBd281aEFyR01ENGZLQTNvWmlrTGZteDdRNVlCS2kvYStRVGFHQnV5NTF2QUhGRE4yZHY3R1BDK25xME82SDVaV3paa3JLZjRKeldjUUs2RHZleTZjK3BaOWx2WXB1d1FMbGpmQ2M5N1BucDVmWCt6WE5qNDZEbXZWKytQWUduWEZ0QnlyOEt4R1ZWdVhrNDl5eHZRQ2xnTFBhUGluYk92MkExelFPdnpMY3pQS0dSQzc3TXVmMEFyN0l1U0x6VE1jdGV6UWdKYTd0K0dYWlM5bnBVVDBLS2haeVNrc3drS2FFTkdEK1hVc3dJRDJwRFJ2YWh1L2dvTjZLUGhNV1YyODljRkFrS3lpUGZDY0YwRUJBa0JRVUpBa0JBUUpBUUVDUUZCUWtDUUVCQWtCQVFKQVVGQ1FKQVFFQ1FFQkFrQlFVSkFrQkFRSkFRRUNRRkJRa0NRRUJBa0JBUUpBVUZDUUpBUUVDUUVCQWtCUVVKQWtCQVFKQVFFQ1FGQlFrQ1FFQkFrZndBaDlIenM1SUpiSXdBQUFBQkpSVTVFcmtKZ2dnPT0iLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQWdBQUFBSUFDQUlBQUFCN0drT3RBQUFPRjBsRVFWUjRuTzNkWFc3YldCYUZVVmVqS25OMUJ1VE1OVS85WUVBUUpFb203eis1MXhwQWwzWEllejVTU1R2Ly9QZjErUUZBbnYvTi9nRUFtRU1BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQWdBUVNnQUFRZ2tBUUNnQkFBZ2xBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBcUg5bi93Q1UrUHY1TmZ0SGdFZS8vdnllL1NOd3pELy9mWDNPL2huNGdYWFBTVW5DNGdSZ1VaWStWNklFYXhLQXRkajdYSjRZckVNQVZtSDFFMFVHVmlBQWs5bjdoRk9DaVFSZ0dxc2ZibVJnQ2dHWXdPcUhUVEl3bUFBTVpmWERleG93a2dDTVkvdkRUakl3aGdDTVlQWERVUm93Z0FCMFovdERNUm5veWkrRDY4djJoeHBPVUZmZUFIcHg0MEpEWGdWNjhBYlFoZTBQYlRsVFBYZ0RhRy9NbmVxQjZONzQ3V0QrRDl6Mlp5UUFqZlU3Qm03OVp5czhGYm91bXh5RVV4Q0FscHJmOU83MVRTdnMvV2N1MXFZZUY4dW9XeEdBWnRyZTZHN3hUV3V1L25zdTNDc095SUlFb0kxV043ZmJldFA2ZS8rWlM3bXA0YVUwNFhvQzBFQ1RlOXJkdk9tTXEvK2V5N3JKQTlNaUJLQ1c3ZC9KMlZmL1BkZDNrN016blFCVXFiK0QzYjdQcnJUNjc3bldteHlpaWZ3ZndjcTVjWHU0NnZiL3VQUkhxMUYvQ2d5MjJMK3pmNEJRVnYremhHUDgvUmxkL1FmZkEwbTRBVmJqRGFCUXpjM3EvRCtMT3Z4UkgzYS9tbk5ocEdYOEdVQUoyNytoNUtQclpuam1jSTNrRGVBd04yaER5ZHYvSS83amIvSWVNSklBakdQN1AzQmNQd3hoaTVNeWpLK0FqaWsrcnU3cGU3YmVNM2ZJQTJkdEFHOEFCN2dqbTdEOU54bkxBNmRtQUFIb3puMTh6NXA3dzNBZWxKMGRZOXhQQVBZcXU2dHMvM3RPNW8rTTZJRUdkQ1VBSGRuKzk1ekpuUXpxZ1hQVWp3RHM0a3hXTXNCRGpLdWVHZTRoQUwxNGJMbHhGQXNZMmoybnFSTUIrRm5CVVhTLzNsaGt4WXp1WHNHWk1zQWZDUUFkT1lHVkRKQ3VCS0E5ai8vZkxLOG1qUEhHeVdwT0FINXc5UGk1Ujc5Wld3MFpaakdqZTA4QWdOUHdnTldXQUx6ajhiK014NjdtakxTWTBiMGhBRFRtdkhWaXNOODhaalVrQUxSa1NYVmx2TFFsQUMvNS9nZldkUFNzQ2VjckFrQXpqdGtBaGt4REF0Q0d4MytMYVJpai9uRGlHaEVBZ0ZBQ3NNMUQxaUhHTlppQkgyVmltd1NBV283V0ZNWk9QUUZvd05lUk1KNXpWMDhBcU9JNWRDTERwNUlBQUlRU0FNcDVBcDNPSmFDR0FHeHdxT0I2bk90bkFsQXI5aytpSEtkRkpGK0kyTlBYaWdBQWhCSUFnRkFDUUlua3J4MFc1SEpRUmdBQVFna0FoM25lWEpDTFFnRUJBQWdsQUFDaEJJQmpmTld3TEplR293UUFJSlFBQUlRU0FBN3dKY1BpWENBT0VRQ0FVQUlBRUVvQUFFSUpBSHY1ZnZrVVhDYjJFd0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FTQVhmemx3aE54c2RoSkFBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFzQXV2Lzc4bnYwanNKZUx4VTRDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFMQ1h2MXg0Q2k0VCt3a0FRQ2dCQUFnbEFBQ2hCSUFEZkwrOE9CZUlRd1FBSUpRQUFJUVNBSTd4SmNPeVhCcU9FZ0NBVUFJQUVFb0FPTXhYRFF0eVVTZ2dBQUNoQklBU25qZVg0bkpRUmdBQVFna0FRQ2dCb0pDdkhSYmhRbEJNQUFCQ0NRRGxQSHRPNXhKUVF3QUFRZ2tBVlR5QlRtVDRWQklBZ0ZBQ1FDM1BvVk1ZTy9VRWdBWXNvOEVNbkNZRUFDQ1VBTkNHWjlKaGpKcFdCSUJtTEtZQkRKbUdCQUFnbEFEUWt1ZlRyb3lYdGdTQXhpeXBUZ3lXNWdTQTlxeXE1b3lVSGdRQUlKUUEwSVVuMW9ZTWswNEVnRjZzclNhTWtYNEVnSTRzcjBvR1NGY0NRRjlXV0RHam96Y0JvRHVMcklDaE1ZQUFNSUoxZG9oeE1ZWUFNSWlsdHBOQk1Zd0FNSTdWOWlNallpUUJZQ2dMN2czRFlUQUJZRFJyYnBPeE1ONi9zMzhBRW4wdnU3K2ZYN04va0NWWS9jemlEWUJwTEw0UFEyQXFBV0NtOFBVWC92R1p6bGRBVEpiNWRaRFZ6d3E4QWJDRXFJVVk5V0ZabVRjQVZwSHdLbUQxc3hSdkFLemx3aXZ5d2grTmsvSUd3SEt1OXlwZzliTW1BV0JSMThpQTFjL0tCSUNsblRjRFZqL3JFd0JPNExaTTF5K0J2YytKQ0FCbnN2SUxnZFhQNlFnQTU3UFVDNEc5ejNrSkFDYzJzUVQyUGhjZ0FGekIvVHJ1RndOTG40c1JBSzVtYzAwZnJZSmRUd0lCSUlLRkRzLzhLZ2lBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWpsdDRFU3dhK0RobWNDd05VMCtRZGhOdjlIVklHTEVRQ3VZTXcvQ1huL1h4RURMa0FBT0xHSi95ajg3VCt0Qkp5WEFIQStFL2YrTXlYZ3ZBU0FNMWxxOVQvNC90bGtnQk1SQUU1ZzViMy93QXNCSnlJQUxPMUVxLytCRndMV0p3QXM2cnlyLzU0TXNESUJZRG5YV1AzM1pJQTErVlVRck9WNjIvL213aCtOay9JR3dDb1M5cU5YQVpiaURZQWxKR3ovbTZnUHk4cThBVEJaNWpiMEtzQUt2QUV3VStiMnZ3bi8rRXduQUV4ai9YMFlBbFA1Q29nSmJMMTd2ZzVpRm04QWpHYjdieklXeGhNQWhyTG0zakFjQmhNQXhySGdmbVJFakNRQURHSzE3V1JRRENNQWpHQ3BIV0pjakNFQWRHZWRGVEEwQmhBQStyTElpaGtkdlFrQUhWbGhsUXlRcmdTQVhpeXZKb3lSZmdTQUxxeXRoZ3lUVGdRQUlKUUEwSjRuMXVhTWxCNEVnTWFzcWs0TWx1WUVnSllzcWE2TWw3WUVBQ0NVQU5DTTU5TUJESm1HQklBMkxLWmhqSnBXQkFBZ2xBRFFnR2ZTd1F5Y0pnU0FXcGJSRk1aT1BRRUFDQ1VBVlBFY09wSGhVMGtBQUVJSkFPVThnVTduRWxCREFBQkNDUUNGUEhzdXdvV2dtQUFBaEJJQWdGQUNRQWxmT3l6RjVhQ01BQUNFRWdBTzg3eTVJQmVGQWdJQUVFb0FBRUlKQU1mNHFtRlpMZzFIQ1FCQUtBRUFDQ1VBSE9CTGhzVzVRQndpQUFDaEJBQWdsQUFBaEJJQTl2TDk4aW00VE93bkFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUM3K011RkorSmlzWk1BQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFZ0YxKy9mazkrMGRnTHhlTG5RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCWUM5L3VmQVVYQ2IyRXdDQVVBSUFFRW9BQUVJSkFBZjRmbmx4TGhDSENBQkFLQUVBQ0NVQUhPTkxobVc1TkJ3bEFBQ2hCQUFnbEFCd21LOGFGdVNpVUVBQUFFSUpBQ1U4Ynk3RjVhQ01BQUNFRWdDQVVBSkFJVjg3TE1LRm9KZ0ExUHI3K1RYN1I0QlFUbDhsQWRqZ2tXb25nNXJPSmRqUHJKNEpBRUFvQWFDS3A2cUpESjlLQWdBUVNnQWFDUCtUS00raFV4aDcrTGxyUWdCb3dESWF6TUNQTXJGTkFyRE43UUpjbmdDMDRXMVVNb2N4Nmc4bnJoRUJvQm1MYVFCRHBpRUJlTWxKZzJ0d2xsOFJnR2E4azM0NGFaMFo3emRuclJVQm9ERkxxaE9EcFRrQmFNbUR5VGVycWpranZUbDZ5b3p1RFFGNHg2MERYSmdBTk9ZbDRKdDJObVNZTjg1WFd3THdBMmV2bU5FMVlZdzFUTzg5QVdqUFE4cU40MWZKQU84NVdjMEpBSDFaWWNXTXJwSUIva2dBZmxad0czbFV1ZWNjRmpDMEI4NVVEd0xRaS92MW5uVjJpSEU5Y0pvNkVZQmRITWg2WnJpVFFUMG8yLzdHdUljQWRPU3g1WUV6K1NNamFzSVlkeEtBdmNwdUtRMTQ0R1MrWVRqUG5LQ3VCT0FBRFdqQ210dGtMTTk4K2RPYkFJeWdBUTkrL2ZudGxONll4aWFuWmdBQk9LYjRvTHFibjlsNkg0YndRdkY1TWM5REJPQXdEV2dvL0xpR2YveFhiUDloQkdBb0RYaVcrUVZJNXFmZXd4a1pTUUJLMUJ4ZDkvZW1xRzBZOVdFUHFUa2RwbHJnbi8rK1BtZi9ER2ZsWnUzaDJvRjAzVitwdk80R1c4WWJ3QngvUDcrdXZlbUtYZmdrWC9palZiTDlaL0VHVUtWK2lidDNYN2xTSUYzbE54eWlpUVNnVnBNOTVRNSs1ZXdaY0dYZmNIYW1FNEFHV2kwcHQvSXJaOHlBcS9tR0k3TUlBV2lqNFlaeVQ3K3hmZ2xjdnZlY2xLVUlRRE50ZDVPYis0MDFNK0NTdmVlQUxFZ0FXbXErbU56bDc2MVFBdGZvdlI3WHlNeGJFWURHK3Ewa04vMGI0MHZnY3J6bklKeUNBTFEzWmhrNUJxOVlQVk80N2M5SUFMcFk0YXNKdUJqYnZ6a0I2RVVEb0JXcnZ4TUI2RXNHb0pMdDM0L2ZCZFNYZXhkcU9FRmRlUU1Zd1hzQUhHWDFEeUFBNDhnQTdHVDdqeUVBbzhrQXZHSDFqeVFBRTJnQVBMUDZ4eE9BYVdRQWJtei9LUVJnTWhrZ21iMC9sd0NzUWdtSVl2V3ZRQURXSWdOY203Mi9GQUZZbEJKd0pmYittZ1RnQk1TQU03TDAxeWNBcHlRSkxNakdQeDBCQUFqbGw4RUJoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQWdBUVNnQUFRZ2tBUUNnQkFBZ2xBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlEvd2Q4bTlnV1ZrNGJaQUFBQUFCSlJVNUVya0pnZ2c9PSIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55In0sIHsic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBZ0FBQUFJQUNBSUFBQUI3R2tPdEFBQU9GMGxFUVZSNG5PM2RYVzdiV0JhRlVWZWpLbk4xQnVUTU5VLzlZRUFRSkVvbTd6KzUxeHBBbDNYSWV6NVNTVHYvL1BmMStRRkFudi9OL2dFQW1FTUFBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQWdBUVNnQUFRZ2tBUUNnQkFBZ2xBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFxSDluL3dDVStQdjVOZnRIZ0VlLy92eWUvU053ekQvL2ZYM08vaG40Z1hYUFNVbkM0Z1JnVVpZK1Y2SUVheEtBdGRqN1hKNFlyRU1BVm1IMUUwVUdWaUFBazluN2hGT0NpUVJnR3FzZmJtUmdDZ0dZd09xSFRUSXdtQUFNWmZYRGV4b3drZ0NNWS92RFRqSXdoZ0NNWVBYRFVSb3dnQUIwWi90RE1Sbm95aStENjh2Mmh4cE9VRmZlQUhweDQwSkRYZ1Y2OEFiUWhlMFBiVGxUUFhnRGFHL01uZXFCNk43NDdXRCtEOXoyWnlRQWpmVTdCbTc5WnlzOEZib3VteHlFVXhDQWxwcmY5TzcxVFN2cy9XY3UxcVllRjh1b1d4R0FadHJlNkc3eFRXdXUvbnN1M0NzT3lJSUVvSTFXTjdmYmV0UDZlLytaUzdtcDRhVTA0WG9DMEVDVGU5cmR2T21NcS8rZXk3ckpBOU1pQktDVzdkL0oyVmYvUGRkM2s3TXpuUUJVcWIrRDNiN1ByclQ2NzduV214eWlpZndmd2NxNWNYdTQ2dmIvdVBSSHExRi9DZ3kyMkwremY0QlFWdit6aEdQOC9SbGQvUWZmQTBtNEFWYmpEYUJRemMzcS9EK0xPdnhSSDNhL21uTmhwR1g4R1VBSjI3K2g1S1ByWm5qbWNJM2tEZUF3TjJoRHlkdi9JLzdqYi9JZU1KSUFqR1A3UDNCY1B3eGhpNU15aksrQWppaytydTdwZTdiZU0zZklBMmR0QUc4QUI3Z2ptN0Q5TnhuTEE2ZG1BQUhvem4xOHo1cDd3M0FlbEowZFk5eFBBUFlxdTZ0cy8zdE81bytNNklFR2RDVUFIZG4rOTV6Sm5RenFnWFBVandEczRreFdNc0JEakt1ZUdlNGhBTDE0YkxseEZBc1kyajJucVJNQitGbkJVWFMvM2xoa3hZenVYc0daTXNBZkNRQWRPWUdWREpDdUJLQTlqLy9mTEs4bWpQSEd5V3BPQUg1dzlQaTVSNzlaV3cwWlpqR2plMDhBZ05Qd2dOV1dBTHpqOGIrTXg2N21qTFNZMGIwaEFEVG12SFZpc044OFpqVWtBTFJrU1hWbHZMUWxBQy81L2dmV2RQU3NDZWNyQWtBemp0a0Foa3hEQXRDR3gzK0xhUmlqL25EaUdoRUFnRkFDc00xRDFpSEdOWmlCSDJWaW13U0FXbzdXRk1aT1BRRm93TmVSTUo1elYwOEFxT0k1ZENMRHA1SUFBSVFTQU1wNUFwM09KYUNHQUd4d3FPQjZuT3RuQWxBcjlrK2lIS2RGSkYrSTJOUFhpZ0FBaEJJQWdGQUNRSW5rcngwVzVISlFSZ0FBUWdrQWgzbmVYSkNMUWdFQkFBZ2xBQUNoQklCamZOV3dMSmVHb3dRQUlKUUFBSVFTQUE3d0pjUGlYQ0FPRVFDQVVBSUFFRW9BQUVJSkFIdjVmdmtVWENiMkV3Q0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVNBWGZ6bHdoTnhzZGhKQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQXNBdXYvNzhudjBqc0plTHhVNENBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUxDWHYxeDRDaTRUK3drQVFDZ0JBQWdsQUFDaEJJQURmTCs4T0JlSVF3UUFJSlFBQUlRU0FJN3hKY095WEJxT0VnQ0FVQUlBRUVvQU9NeFhEUXR5VVNnZ0FBQ2hCSUFTbmplWDRuSlFSZ0FBUWdrQVFDZ0JvSkN2SFJiaFFsQk1BQUJDQ1FEbFBIdE81eEpRUXdBQVFna0FWVHlCVG1UNFZCSUFnRkFDUUMzUG9WTVlPL1VFZ0FZc284RU1uQ1lFQUNDVUFOQ0daOUpoakpwV0JJQm1MS1lCREptR0JBQWdsQURRa3VmVHJveVh0Z1NBeGl5cFRneVc1Z1NBOXF5cTVveVVIZ1FBSUpRQTBJVW4xb1lNazA0RWdGNnNyU2FNa1g0RWdJNHNyMG9HU0ZjQ1FGOVdXREdqb3pjQm9EdUxySUNoTVlBQU1JSjFkb2h4TVlZQU1JaWx0cE5CTVl3QU1JN1Y5aU1qWWlRQllDZ0w3ZzNEWVRBQllEUnJicE94TU42L3MzOEFFbjB2dTcrZlg3Ti9rQ1ZZL2N6aURZQnBMTDRQUTJBcUFXQ204UFVYL3ZHWnpsZEFUSmI1ZFpEVnp3cThBYkNFcUlVWTlXRlptVGNBVnBId0ttRDFzeFJ2QUt6bHdpdnl3aCtOay9JR3dIS3U5eXBnOWJNbUFXQlIxOGlBMWMvS0JJQ2xuVGNEVmovckV3Qk80TFpNMXkrQnZjK0pDQUJuc3ZJTGdkWFA2UWdBNTdQVUM0Rzl6M2tKQUNjMnNRVDJQaGNnQUZ6Qi9UcnVGd05MbjRzUkFLNW1jMDBmcllKZFR3SUJJSUtGRHMvOEtnaUFVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQWdBUVNnQUFRZ2tBUUNnQkFBamx0NEVTd2ErRGhtY0N3TlUwK1FkaE52OUhWSUdMRVFDdVlNdy9DWG4vWHhFRExrQUFPTEdKL3lqODdUK3RCSnlYQUhBK0UvZitNeVhndkFTQU0xbHE5VC80L3Rsa2dCTVJBRTVnNWIzL3dBc0JKeUlBTE8xRXEvK0JGd0xXSndBczZyeXIvNTRNc0RJQllEblhXUDMzWklBMStWVVFyT1Y2Mi8vbXdoK05rL0lHd0NvUzlxTlhBWmJpRFlBbEpHei9tNmdQeThxOEFUQlo1amIwS3NBS3ZBRXdVK2IydnduLytFd25BRXhqL1gwWUFsUDVDb2dKYkwxN3ZnNWlGbThBakdiN2J6SVd4aE1BaHJMbTNqQWNCaE1BeHJIZ2ZtUkVqQ1FBREdLMTdXUlFEQ01BakdDcEhXSmNqQ0VBZEdlZEZUQTBCaEFBK3JMSWloa2R2UWtBSFZsaGxReVFyZ1NBWGl5dkpveVJmZ1NBTHF5dGhneVRUZ1FBSUpRQTBKNG4xdWFNbEI0RWdNYXNxazRNbHVZRWdKWXNxYTZNbDdZRUFDQ1VBTkNNNTlNQkRKbUdCSUEyTEtaaGpKcFdCQUFnbEFEUWdHZlN3UXljSmdTQVdwYlJGTVpPUFFFQUNDVUFWUEVjT3BIaFUwa0FBRUlKQU9VOGdVN25FbEJEQUFCQ0NRQ0ZQSHN1d29XZ21BQUFoQklBZ0ZBQ1FBbGZPeXpGNWFDTUFBQ0VFZ0FPODd5NUlCZUZBZ0lBRUVvQUFFSUpBTWY0cW1GWkxnMUhDUUJBS0FFQUNDVUFIT0JMaHNXNVFCd2lBQUNoQkFBZ2xBQUFoQklBOXZMOThpbTRUT3duQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQzcrTXVGSitKaXNaTUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVnRjErL2ZrOSswZGdMeGVMblFRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JZQzkvdWZBVVhDYjJFd0NBVUFJQUVFb0FBRUlKQUFmNGZubHhMaENIQ0FCQUtBRUFDQ1VBSE9OTGhtVzVOQndsQUFDaEJBQWdsQUJ3bUs4YUZ1U2lVRUFBQUVJSkFDVThieTdGNWFDTUFBQ0VFZ0NBVUFKQUlWODdMTUtGb0pnQTFQcjcrVFg3UjRCUVRsOGxBZGpna1dvbmc1ck9KZGpQcko0SkFFQW9BYUNLcDZxSkRKOUtBZ0FRU2dBYUNQK1RLTStoVXhoNytMbHJRZ0Jvd0RJYXpNQ1BNckZOQXJETjdRSmNuZ0MwNFcxVU1vY3g2ZzhucmhFQm9CbUxhUUJEcGlFQmVNbEpnMnR3bGw4UmdHYThrMzQ0YVowWjd6ZG5yUlVCb0RGTHFoT0RwVGtCYU1tRHlUZXJxamtqdlRsNnlvenVEUUY0eDYwRFhKZ0FOT1lsNEp0Mk5tU1lOODVYV3dMd0EyZXZtTkUxWVl3MVRPODlBV2pQUThxTjQxZkpBTzg1V2MwSkFIMVpZY1dNcnBJQi9rZ0FmbFp3RzNsVXVlY2NGakMwQjg1VUR3TFFpL3Yxbm5WMmlIRTljSm82RVlCZEhNaDZacmlUUVQwbzIvN0d1SWNBZE9TeDVZRXorU01qYXNJWWR4S0F2Y3B1S1ExNDRHUytZVGpQbktDdUJPQUFEV2pDbXR0a0xNOTgrZE9iQUl5Z0FROSsvZm50bE42WXhpYW5aZ0FCT0tiNG9McWJuOWw2SDRid1F2RjVNYzlEQk9Bd0RXZ28vTGlHZi94WGJQOWhCR0FvRFhpVytRVkk1cWZld3hrWlNRQksxQnhkOS9lbXFHMFk5V0VQcVRrZHBscmduLysrUG1mL0RHZmxadTNoMm9GMDNWK3B2TzRHVzhZYndCeC9QNyt1dmVtS1hmZ2tYL2lqVmJMOVovRUdVS1YraWJ0M1g3bFNJRjNsTnh5aWlRU2dWcE05NVE1KzVld1pjR1hmY0hhbUU0QUdXaTBwdC9Jclo4eUFxL21HSTdNSUFXaWo0WVp5VDcreGZnbGN2dmVjbEtVSVFETnRkNU9iKzQwMU0rQ1N2ZWVBTEVnQVdtcSttTnpsNzYxUUF0Zm92UjdYeU14YkVZREcrcTBrTi8wYjQwdmdjcnpuSUp5Q0FMUTNaaGs1QnE5WVBWTzQ3YzlJQUxwWTRhc0p1QmpidnprQjZFVURvQldydnhNQjZFc0dvSkx0MzQvZkJkU1hleGRxT0VGZGVRTVl3WHNBSEdYMUR5QUE0OGdBN0dUN2p5RUFvOGtBdkdIMWp5UUFFMmdBUExQNnh4T0FhV1FBYm16L0tRUmdNaGtnbWIwL2x3Q3NRZ21JWXZXdlFBRFdJZ05jbTcyL0ZBRllsQkp3SmZiK21nVGdCTVNBTTdMMDF5Y0FweVFKTE1qR1B4MEJBQWpsbDhFQmhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQWdBUVNnQUFRZ2tBUUNnQkFBZ2xBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUS93ZDhtOWdXVms0YlpBQUFBQUJKUlU1RXJrSmdnZz09IiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9wbmciLCAicHVycG9zZSI6ICJtYXNrYWJsZSJ9XX0=">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEmUlEQVR4nO3dQW7bQBBE0XEQ567OgZy7ZpUFgcCQYitikV3F7v/WCdie+RpKliG9vL6/LWCvb+4BcG0EBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBATJd/cAj/1+e3eP4PTj10/3CF95yfyMxOHR/FNmSXEBkc5DUSUFBUQ6/y+noZSAqGeHhIwiAvq6noJl2pdvwmD2hswBfbFANUujn3xlW/jZqN6GnAF5V+TYm6Y3I2NDcQEl3Bd2M6bvasgW0P0qXPHguWc8iiwNed7K6FpPzSU29ytmeSVrCKhxPcUXSmhoypupxSs759da1QFZjh/LdtZc1H4ImU+grvVUXtr7e6DSgOr30n4raXz4bZwn0NkPHXs9m4IxjIfQlCfROEnbgEKOn03UMMeqC+hmEe1vIzdzs55lyfY8gQIf8YEjHaJnQChDQJA0DCj2ZhE7mKJhQKhEQJB0Cyj8NhE+3g7dAkIxAoKEgCAhIEgICBICgoSAICEgSAgIEgKCpFtA4X/oGD7eDt0CQjECgqRhQLG3idjBFA0DQiUCgqRnQIE3i8CRDtEzIJRpG1DUIz5qmGO1DQg1OgcU8rgPGeMknQNaAZtnH+BszQNa1i1sX8+aENAybeSEetaQgFb5dg6pZ80JaBVu6px61qiAVsnWjqpnTQtonbzB0+pZl/ja78Nt23zR7wtLMzGgzVEZjU1nMzegjZLR8HQ20wPafEzB/g3A10JAt0jkKeNeheFYBAQJAUHCc6BbPIl+CgGt9czL+I//kpgWASm/SNz+7/CM5gZ01FsZwzOaGNAZn/Y9NqNxr8JO/az4fh9E/9CsgAo2eFpDgwIq29pRDU0JqHhT5zQ0IiDLdg5pqH9Axo2c0FDzgOxbaB/gbJ0DCtm8kDFO0jkgFGgbUNTjPmqYY7UNCDV6BhT4iA8c6RA9A0IZAoKkYUCxN4vYwRQNA0IlAoKkW0Dht4nw8XboFhCKERAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJN0CCv94g/DxdugWEIoRECQNA4q9TcQOpmgYECoRECQ9Awq8WQSOdAhbQP3+Ns/LtZ51AU3+2tv6Ycqu2PMWhjKdAwo5hArGMD4fKA3oZikLfmx7Q5YBKi/a+QTaGBuy51vAHFDN2dv7GPC+nq0O6H5ZWzZkrKf4JzWcQK6Dvey6c+pZ9lvYpuwQLljfCc97Pnp5fX+zXNj46DmvV++PYGnXFtByr8KxGVVuXk49yxvQClgLPaPinbOv2A1zQOvzLczPKGRC77Muf0Ar7IuSLzTMctezQgJa7t+GXZS9npUT0KKhZySkswkKaENGD+XUswID2pDRvahu/goN6KPhMWV289cFAkKyiPfCcF0EBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkfwAh9Hzs5IJbIwAAAABJRU5ErkJggg==">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEmUlEQVR4nO3dQW7bQBBE0XEQ567OgZy7ZpUFgcCQYitikV3F7v/WCdie+RpKliG9vL6/LWCvb+4BcG0EBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBATJd/cAj/1+e3eP4PTj10/3CF95yfyMxOHR/FNmSXEBkc5DUSUFBUQ6/y+noZSAqGeHhIwiAvq6noJl2pdvwmD2hswBfbFANUujn3xlW/jZqN6GnAF5V+TYm6Y3I2NDcQEl3Bd2M6bvasgW0P0qXPHguWc8iiwNed7K6FpPzSU29ytmeSVrCKhxPcUXSmhoypupxSs759da1QFZjh/LdtZc1H4ImU+grvVUXtr7e6DSgOr30n4raXz4bZwn0NkPHXs9m4IxjIfQlCfROEnbgEKOn03UMMeqC+hmEe1vIzdzs55lyfY8gQIf8YEjHaJnQChDQJA0DCj2ZhE7mKJhQKhEQJB0Cyj8NhE+3g7dAkIxAoKEgCAhIEgICBICgoSAICEgSAgIEgKCpFtA4X/oGD7eDt0CQjECgqRhQLG3idjBFA0DQiUCgqRnQIE3i8CRDtEzIJRpG1DUIz5qmGO1DQg1OgcU8rgPGeMknQNaAZtnH+BszQNa1i1sX8+aENAybeSEetaQgFb5dg6pZ80JaBVu6px61qiAVsnWjqpnTQtonbzB0+pZl/ja78Nt23zR7wtLMzGgzVEZjU1nMzegjZLR8HQ20wPafEzB/g3A10JAt0jkKeNeheFYBAQJAUHCc6BbPIl+CgGt9czL+I//kpgWASm/SNz+7/CM5gZ01FsZwzOaGNAZn/Y9NqNxr8JO/az4fh9E/9CsgAo2eFpDgwIq29pRDU0JqHhT5zQ0IiDLdg5pqH9Axo2c0FDzgOxbaB/gbJ0DCtm8kDFO0jkgFGgbUNTjPmqYY7UNCDV6BhT4iA8c6RA9A0IZAoKkYUCxN4vYwRQNA0IlAoKkW0Dht4nw8XboFhCKERAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJN0CCv94g/DxdugWEIoRECQNA4q9TcQOpmgYECoRECQ9Awq8WQSOdAhbQP3+Ns/LtZ51AU3+2tv6Ycqu2PMWhjKdAwo5hArGMD4fKA3oZikLfmx7Q5YBKi/a+QTaGBuy51vAHFDN2dv7GPC+nq0O6H5ZWzZkrKf4JzWcQK6Dvey6c+pZ9lvYpuwQLljfCc97Pnp5fX+zXNj46DmvV++PYGnXFtByr8KxGVVuXk49yxvQClgLPaPinbOv2A1zQOvzLczPKGRC77Muf0Ar7IuSLzTMctezQgJa7t+GXZS9npUT0KKhZySkswkKaENGD+XUswID2pDRvahu/goN6KPhMWV289cFAkKyiPfCcF0EBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkfwAh9Hzs5IJbIwAAAABJRU5ErkJggg==">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: { colors: {
+      brand: { 50:'#f0fdf4',100:'#dcfce7',500:'#10b981',600:'#059669',700:'#047857',800:'#065f46' },
+      purple:{ 50:'#faf5ff',100:'#f3e8ff',600:'#9333ea',700:'#7e22ce',800:'#6b21a8' },
+      amber2:{ 50:'#fffbeb',100:'#fef3c7',600:'#d97706',700:'#b45309' }
+    }}}
+  }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+  body { font-family:'Cairo','Inter',sans-serif; -webkit-tap-highlight-color:transparent; }
+  .safe-top{padding-top:env(safe-area-inset-top)} .safe-bottom{padding-bottom:env(safe-area-inset-bottom)}
+  @media print { .no-print{display:none!important} body{background:#fff!important;color:#000!important} .bottom-nav,aside{display:none!important} }
+  .nav-btn{display:flex;align-items:center;gap:.7rem;padding:.65rem .75rem;border-radius:.75rem;font-size:.85rem;font-weight:600;color:#4b5563}
+  .nav-btn.active{background:#f0fdf4;color:#047857}
+  .bottom-nav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .bottom-nav::-webkit-scrollbar{display:none}
+  .bn-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:0 0 auto;min-width:64px;padding:.4rem .3rem .3rem;color:#9ca3af;font-size:.58rem;font-weight:600}
+  .bn-item.active{color:#059669}
+  .bn-item i{font-size:1rem}
+  ::-webkit-scrollbar{height:6px;width:6px} ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:10px}
+  .tab-content{animation:fadeIn .2s ease} @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .badge{font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;white-space:nowrap}
+  .field-input{width:100%;border:1px solid #d1d5db;border-radius:.6rem;padding:.5rem .7rem;font-size:.82rem}
+  .field-label{font-size:.72rem;font-weight:600;color:#4b5563;margin-bottom:.25rem;display:block}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:1rem;padding:1rem}
+  .upload-drop{border:2px dashed #d1d5db;border-radius:.9rem;padding:1.1rem;text-align:center;cursor:pointer;transition:.15s}
+  .upload-drop:hover,.upload-drop.drag{border-color:#059669;background:#f0fdf4}
+  .file-row{display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;background:#f9fafb;border-radius:.6rem;border:1px solid #f3f4f6}
+  .thumb{width:42px;height:42px;object-fit:cover;border-radius:.4rem;border:1px solid #e5e7eb;cursor:pointer;flex-shrink:0}
+  #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:none;flex-direction:column}
+  #lightbox.open{display:flex}
+  #lightboxPages{min-height:0}
+  .lb-btn{color:#fff;width:2.6rem;height:2.6rem;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:rgba(255,255,255,.1);border-radius:999px}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col pb-16 md:pb-0">
+
+<header class="bg-white border-b border-gray-200 sticky top-0 z-40 no-print safe-top">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md shrink-0"><i class="fa-solid fa-cubes text-lg"></i></div>
+      <div class="min-w-0">
+        <h1 class="font-bold text-base md:text-lg text-gray-900 truncate" data-i18n="brandTitle">منظومة سلاسل الإمداد الذكية</h1>
+        <p class="text-[11px] md:text-xs text-gray-500 truncate" data-i18n="brandSub">إشراف: م. وائل علي عويس | UAE Vision 2050</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="toggleLanguage()" class="w-9 h-9 md:w-auto md:px-3 md:py-1.5 flex items-center justify-center gap-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full md:rounded-lg font-medium">
+        <i class="fa-solid fa-globe"></i><span id="langBtnText" class="hidden md:inline">English</span>
+      </button>
+      <button onclick="window.print()" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium">
+        <i class="fa-solid fa-print"></i><span data-i18n="printBtn">طباعة / PDF</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div id="fileProtocolWarning" class="hidden no-print bg-amber-50 border-b border-amber-200 text-amber-800 text-xs md:text-sm px-4 py-2.5 text-center">
+  <i class="fa-solid fa-triangle-exclamation"></i>
+  <span id="fileProtocolWarningText"></span>
+</div>
+
+<div class="max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-6 flex-1 w-full grid grid-cols-1 md:grid-cols-4 gap-5">
+  <aside class="hidden md:block md:col-span-1 bg-white p-4 rounded-2xl shadow-sm border border-gray-200 h-fit sticky top-20">
+    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-2" data-i18n="navTitle">صفحات المنظومة (7)</h3>
+    <nav class="space-y-1" id="sideNav"></nav>
+  </aside>
+
+  <main class="md:col-span-3 space-y-6">
+
+    <!-- PAGE 1: Executive Command Center -->
+    <section id="page-p1" class="tab-content space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base md:text-lg font-bold text-gray-900" data-i18n="p1_title">1. لوحة التحكم التنفيذية</h2>
+          <p class="text-xs md:text-sm text-gray-500" data-i18n="p1_desc">تجمع النتائج والمؤشرات آلياً من كل الصفحات الست الأخرى</p>
+        </div>
+        <button onclick="refreshDashboard()" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg font-medium flex items-center gap-1.5"><i class="fa-solid fa-rotate"></i><span data-i18n="refreshBtn">تحديث</span></button>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div class="card">
+          <p class="text-xs text-gray-500 font-medium" data-i18n="kpiSupply">مؤشر صحة الموردين</p>
+          <h3 class="text-xl md:text-2xl font-bold text-gray-900 mt-1" id="kpiSupplyVal">--</h3>
+          <p class="text-[11px] text-gray-400 mt-1" id="kpiSupplySub"></p>
+        </div>
+        <div class="card">
+          <p class="text-xs text-gray-500 font-medium" data-i18n="kpiFinance">الموقف المالي (مدفوع/متبقي)</p>
+          <h3 class="text-xl md:text-2xl font-bold text-gray-900 mt-1" id="kpiFinanceVal">--</h3>
+          <p class="text-[11px] text-gray-400 mt-1" id="kpiFinanceSub"></p>
+        </div>
+        <div class="card">
+          <p class="text-xs text-gray-500 font-medium" data-i18n="kpiDisputes">النزاعات والمخاطر</p>
+          <h3 class="text-xl md:text-2xl font-bold text-amber2-600 mt-1" id="kpiDisputesVal">--</h3>
+          <p class="text-[11px] text-gray-400 mt-1" id="kpiDisputesSub"></p>
+        </div>
+        <div class="card">
+          <p class="text-xs text-gray-500 font-medium" data-i18n="kpiCarbon">مؤشر الاستدامة (BDCT)</p>
+          <h3 class="text-xl md:text-2xl font-bold text-brand-600 mt-1" id="kpiCarbonVal">--</h3>
+          <p class="text-[11px] text-gray-400 mt-1" id="kpiCarbonSub"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3" data-i18n="vaultSummary">ملخص المستندات المرفوعة (كل الصفحات)</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2" id="vaultSummaryGrid"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3" data-i18n="reorderAlerts">تنبيهات إعادة الطلب (المخازن)</h3>
+        <div id="reorderAlertsList" class="space-y-2 text-sm text-gray-500"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 2: Supplier & RFQ Portal -->
+    <section id="page-p2" class="tab-content hidden space-y-5">
+      <div>
+        <h2 class="text-base md:text-lg font-bold text-gray-900" data-i18n="p2_title">2. الموردين ومنصة عروض الأسعار (RFQ)</h2>
+        <p class="text-xs md:text-sm text-gray-500" data-i18n="p2_desc">يرفع المقاول/المورد مستنداته، ويحسب النظام تصنيف الخطورة والأداء تلقائياً</p>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="uploadDocsTitle">رفع مستندات المورد</h3>
+        <div id="uploadWidget-p2"></div>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="p2_calcTitle">النواة الحسابية: تقييم وتصنيف المورد</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="field-label" data-i18n="supName">اسم المورد</label><input id="sup_name" class="field-input" placeholder="مثال: شركة النيل للخرسانة"></div>
+          <div><label class="field-label" data-i18n="supPrice">تنافسية السعر (0-100)</label><input id="sup_price" type="number" min="0" max="100" class="field-input" value="80"></div>
+          <div><label class="field-label" data-i18n="supDelivery">الالتزام بالمواعيد % (0-100)</label><input id="sup_delivery" type="number" min="0" max="100" class="field-input" value="90"></div>
+          <div><label class="field-label" data-i18n="supQuality">مطابقة الجودة % (0-100)</label><input id="sup_quality" type="number" min="0" max="100" class="field-input" value="85"></div>
+        </div>
+        <button onclick="addSupplier()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg font-medium flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i><span data-i18n="calcAddBtn">احسب وأضف للسجل</span></button>
+        <p class="text-[11px] text-gray-400" data-i18n="p2_formula">المعادلة: النتيجة = (السعر×30% + الالتزام×40% + الجودة×30%). ≥85 مفضل، 60-84 مشروط، أقل من 60 محظور/عالي الخطورة.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3" data-i18n="p2_resultsTitle">النتائج: سجل الموردين المصنّف</h3>
+        <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <table class="w-full text-right text-xs md:text-sm min-w-[520px]">
+            <thead class="bg-gray-50 text-gray-600">
+              <tr>
+                <th class="p-2" data-i18n="supName">اسم المورد</th>
+                <th class="p-2" data-i18n="scoreCol">النتيجة</th>
+                <th class="p-2" data-i18n="classCol">التصنيف</th>
+                <th class="p-2" data-i18n="thAction">إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="suppliersTableBody" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3: Smart Contracts & Payment Terms -->
+    <section id="page-p3" class="tab-content hidden space-y-5">
+      <div>
+        <h2 class="text-base md:text-lg font-bold text-gray-900" data-i18n="p3_title">3. العقود الذكية وشروط الدفع</h2>
+        <p class="text-xs md:text-sm text-gray-500" data-i18n="p3_desc">ربط مراحل الإنجاز بالدفعات المالية آلياً حسب المستندات المرفوعة</p>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="uploadDocsTitle2">رفع مستندات العقد والدفعات</h3>
+        <div id="uploadWidget-p3"></div>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="p3_calcTitle">النواة الحسابية: قيمة الدفعة المستحقة</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="field-label" data-i18n="milestoneName">اسم المرحلة</label><input id="ct_name" class="field-input" placeholder="مثال: توريد الدفعة الأولى"></div>
+          <div><label class="field-label" data-i18n="contractValue">قيمة العقد الكلية ($)</label><input id="ct_value" type="number" class="field-input" value="1000000"></div>
+          <div><label class="field-label" data-i18n="milestonePct">نسبة المرحلة %</label><input id="ct_pct" type="number" class="field-input" value="30"></div>
+          <div><label class="field-label" data-i18n="retentionPct">نسبة ضمان محتجز %</label><input id="ct_retention" type="number" class="field-input" value="5"></div>
+          <div><label class="field-label" data-i18n="deductions">خصومات/غرامات ($)</label><input id="ct_deduct" type="number" class="field-input" value="0"></div>
+        </div>
+        <button onclick="addMilestonePayment()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg font-medium flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i><span data-i18n="calcAddBtn2">احسب الدفعة وأضفها</span></button>
+        <p class="text-[11px] text-gray-400" data-i18n="p3_formula">المعادلة: الدفعة المستحقة = (قيمة العقد × نسبة المرحلة%) × (1 − نسبة الضمان%) − الخصومات</p>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3" data-i18n="p3_resultsTitle">النتائج: جدول الدفعات وحالة التدفق النقدي</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+          <div class="p-3 bg-gray-50 rounded-xl border"><p class="text-[11px] text-gray-400" data-i18n="totalContract">قيمة العقد</p><p class="font-bold text-sm" id="ct_totalContract">$0</p></div>
+          <div class="p-3 bg-brand-50 rounded-xl border border-brand-100"><p class="text-[11px] text-brand-600" data-i18n="totalPaid">إجمالي المدفوع</p><p class="font-bold text-sm text-brand-700" id="ct_totalPaid">$0</p></div>
+          <div class="p-3 bg-gray-50 rounded-xl border"><p class="text-[11px] text-gray-400" data-i18n="totalRemaining">المتبقي</p><p class="font-bold text-sm" id="ct_totalRemaining">$0</p></div>
+        </div>
+        <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <table class="w-full text-right text-xs md:text-sm min-w-[520px]">
+            <thead class="bg-gray-50 text-gray-600"><tr>
+              <th class="p-2" data-i18n="milestoneName">المرحلة</th><th class="p-2" data-i18n="milestonePct">النسبة%</th>
+              <th class="p-2" data-i18n="dueCol">المستحق</th><th class="p-2" data-i18n="thAction">إجراء</th>
+            </tr></thead>
+            <tbody id="paymentsTableBody" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 4: Field Operations & Smart Inventory -->
+    <section id="page-p4" class="tab-content hidden space-y-5">
+      <div>
+        <h2 class="text-base md:text-lg font-bold text-gray-900" data-i18n="p4_title">4. العمليات الميدانية والمخازن الذكية</h2>
+        <p class="text-xs md:text-sm text-gray-500" data-i18n="p4_desc">رفع محاضر الاستلام وصور الفحص، مع حساب موعد إعادة الطلب تلقائياً</p>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="uploadDocsTitle3">رفع صور ومحاضر الاستلام</h3>
+        <div id="uploadWidget-p4"></div>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="p4_calcTitle">النواة الحسابية: موعد إعادة الطلب</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="field-label" data-i18n="itemName">اسم المادة</label><input id="inv_name" class="field-input" placeholder="مثال: حديد تسليح 16مم"></div>
+          <div><label class="field-label" data-i18n="currentStock">الكمية الحالية</label><input id="inv_stock" type="number" class="field-input" value="120"></div>
+          <div><label class="field-label" data-i18n="dailyUse">معدل الاستهلاك اليومي</label><input id="inv_rate" type="number" class="field-input" value="6"></div>
+          <div><label class="field-label" data-i18n="reorderDays">حد التنبيه (أيام قبل النفاد)</label><input id="inv_threshold" type="number" class="field-input" value="7"></div>
+        </div>
+        <button onclick="addInventoryItem()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg font-medium flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i><span data-i18n="calcAddBtn3">احسب وأضف للمخزون</span></button>
+        <p class="text-[11px] text-gray-400" data-i18n="p4_formula">المعادلة: الأيام المتبقية = الكمية الحالية ÷ معدل الاستهلاك اليومي. إذا كانت أقل من أو تساوي حد التنبيه يظهر تحذير "أعد الطلب الآن".</p>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3" data-i18n="p4_resultsTitle">النتائج: حالة المخزون</h3>
+        <div id="inventoryList" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 5: Smart Legal Shield & Variations -->
+    <section id="page-p5" class="tab-content hidden space-y-5">
+      <div>
+        <h2 class="text-base md:text-lg font-bold text-gray-900" data-i18n="p5_title">5. الأدوات القانونية وحل النزاعات</h2>
+        <p class="text-xs md:text-sm text-gray-500" data-i18n="p5_desc">رفع إشعارات المطالبات وأوامر التغيير مع احتساب المهل الزمنية القانونية والأثر المالي</p>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="uploadDocsTitle4">رفع إشعارات وأدلة</h3>
+        <div id="uploadWidget-p5"></div>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="p5_calcTitle">النواة الحسابية: المهلة الزمنية للمطالبة</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="field-label" data-i18n="claimTitle">عنوان المطالبة</label><input id="lg_title" class="field-input" placeholder="مثال: تأخير توريد حديد التسليح"></div>
+          <div><label class="field-label" data-i18n="noticeDate">تاريخ الإشعار</label><input id="lg_date" type="date" class="field-input"></div>
+          <div><label class="field-label" data-i18n="deadlineDays">المهلة التعاقدية (أيام)</label><input id="lg_days" type="number" class="field-input" value="14"></div>
+        </div>
+        <button onclick="addClaim()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg font-medium flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i><span data-i18n="calcAddBtn4">احسب وأضف المطالبة</span></button>
+
+        <div class="pt-3 border-t">
+          <h4 class="font-bold text-xs mb-2" data-i18n="varOrderTitle">أمر تغيير: الأثر المالي</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div><label class="field-label" data-i18n="baseValue">قيمة العقد الأصلي ($)</label><input id="vo_base" type="number" class="field-input" value="1000000"></div>
+            <div><label class="field-label" data-i18n="varPct">نسبة الزيادة/التغيير %</label><input id="vo_pct" type="number" class="field-input" value="15"></div>
+          </div>
+          <button onclick="addVariation()" class="mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-4 py-2 rounded-lg font-medium flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i><span data-i18n="calcAddBtn5">احسب الأثر المالي</span></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3" data-i18n="p5_resultsTitle">النتائج: المطالبات النشطة وأوامر التغيير</h3>
+        <div id="claimsList" class="space-y-2 mb-4"></div>
+        <div id="variationsList" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 6: Sustainability & Carbon Tracker -->
+    <section id="page-p6" class="tab-content hidden space-y-5">
+      <div>
+        <h2 class="text-base md:text-lg font-bold text-gray-900" data-i18n="p6_title">6. الاستدامة والتحول الأخضر (BDCT)</h2>
+        <p class="text-xs md:text-sm text-gray-500" data-i18n="p6_desc">رفع شهادات المنشأ وبيانات المواد، مع حساب البصمة الكربونية آلياً</p>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="uploadDocsTitle5">رفع شهادات كربونية وبيانات مواد</h3>
+        <div id="uploadWidget-p6"></div>
+      </div>
+
+      <div class="card space-y-3">
+        <h3 class="font-bold text-sm" data-i18n="p6_calcTitle">النواة الحسابية: حاسبة البصمة الكربونية (BDCT)</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="field-label" data-i18n="matName">اسم المادة</label><input id="cb_name" class="field-input" placeholder="مثال: أسمنت بورتلاندي"></div>
+          <div><label class="field-label" data-i18n="matQty">الكمية (طن)</label><input id="cb_qty" type="number" class="field-input" value="50"></div>
+          <div><label class="field-label" data-i18n="matDist">مسافة النقل (كم)</label><input id="cb_dist" type="number" class="field-input" value="120"></div>
+          <div><label class="field-label" data-i18n="emFactor">معامل الانبعاثات (kg CO2 / طن.كم)</label><input id="cb_factor" type="number" step="0.01" class="field-input" value="0.12"></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="field-label" data-i18n="carbonCap">الحد المسموح للمشروع (طن CO2e)</label><input id="cb_cap" type="number" class="field-input" value="2000"></div>
+        </div>
+        <button onclick="addCarbonEntry()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg font-medium flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i><span data-i18n="calcAddBtn6">احسب الانبعاثات وأضفها</span></button>
+        <p class="text-[11px] text-gray-400" data-i18n="p6_formula">المعادلة: الانبعاثات (طن CO2e) = الكمية(طن) × المسافة(كم) × المعامل ÷ 1000</p>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3" data-i18n="p6_resultsTitle">النتائج: إجمالي البصمة الكربونية</h3>
+        <div class="p-4 bg-gray-50 rounded-xl border mb-4">
+          <div class="flex justify-between text-sm font-semibold mb-2">
+            <span data-i18n="totalEmissions">إجمالي الانبعاثات الحالية</span>
+            <span class="text-brand-600" id="cb_totalVal">0 CO2e</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-brand-600 h-2.5 rounded-full" id="cb_progressBar" style="width:0%"></div></div>
+          <p class="text-xs text-gray-400 mt-2" id="cb_capLabel"></p>
+        </div>
+        <div id="carbonList" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 7: Reports & Document Vault -->
+    <section id="page-p7" class="tab-content hidden space-y-5">
+      <div id="printableArea">
+        <div class="flex items-start justify-between flex-wrap gap-2 mb-4">
+          <div>
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900" data-i18n="p7_title">7. التقرير الشامل وأرشيف المستندات</h2>
+            <p class="text-xs md:text-sm text-gray-500 mt-1" id="reportDate"></p>
+          </div>
+          <span class="bg-brand-100 text-brand-800 text-xs px-3 py-1.5 rounded-full font-semibold" data-i18n="compBadge">تقرير معتمد آلياً</span>
+        </div>
+
+        <div class="card space-y-4 mb-4">
+          <h3 class="font-bold text-sm" data-i18n="p7_kpiTitle">ملخص المؤشرات التنفيذية</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm" id="reportKpiGrid"></div>
+        </div>
+
+        <div class="card space-y-3 mb-4">
+          <h3 class="font-bold text-sm" data-i18n="p7_vaultTitle">أرشيف المستندات الكامل</h3>
+          <div class="flex flex-wrap gap-2 no-print" id="vaultFilterBtns"></div>
+          <div id="fullVaultList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        </div>
+
+        <div class="flex gap-3 pt-2 no-print flex-wrap">
+          <button onclick="copyReportText()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-copy"></i><span data-i18n="copyBtn">نسخ التقرير</span></button>
+          <button onclick="window.print()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-4 py-2 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-file-pdf"></i><span data-i18n="pdfBtn">حفظ كملف PDF</span></button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<nav class="bottom-nav no-print fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 flex md:hidden safe-bottom" id="bottomNav"></nav>
+
+<!-- File preview modal: renders the PDF pages directly as images inside the app (no external app needed) -->
+<div id="lightbox" class="no-print">
+  <div class="flex items-center justify-between px-4 py-3 shrink-0">
+    <span id="lightboxTitle" class="text-white text-xs truncate"></span>
+    <button onclick="closeLightbox()" class="lb-btn"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div id="lightboxPages" class="flex-1 w-full overflow-y-auto px-3"></div>
+  <div class="flex items-center justify-center gap-3 py-3 px-4 shrink-0">
+    <button id="lightboxShare" onclick="shareOrSaveLightboxFile()" class="lb-btn !w-auto px-4 gap-2 text-xs font-semibold flex items-center">
+      <i class="fa-solid fa-share-nodes"></i><span id="lightboxShareLabel"></span>
+    </button>
+  </div>
+</div>
+
+<!-- pdf.js: renders PDF pages as images directly inside the page (works on any mobile browser, no external app needed) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<script>
+/* ============ PDF handling: store the raw file, render pages in-page on demand ============ */
+function isPdfFile(file) {
+  return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+}
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+let pdfWorkerReady = null;
+async function ensurePdfWorker() {
+  if (pdfWorkerReady) return pdfWorkerReady;
+  pdfWorkerReady = (async () => {
+    const cdnUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    try {
+      // Fetch the worker as text and run it from a same-origin blob URL.
+      // Some mobile WebViews block creating Workers from cross-origin script URLs directly.
+      const resp = await withTimeout(fetch(cdnUrl), 10000);
+      const code = await resp.text();
+      const blobUrl = URL.createObjectURL(new Blob([code], { type: 'application/javascript' }));
+      pdfjsLib.GlobalWorkerOptions.workerSrc = blobUrl;
+    } catch (e) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = cdnUrl; // fallback: direct CDN URL
+    }
+  })();
+  return pdfWorkerReady;
+}
+
+async function renderPdfPages(blob, container) {
+  if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
+  await ensurePdfWorker();
+  const buf = await blob.arrayBuffer();
+  const pdf = await withTimeout(pdfjsLib.getDocument({ data: buf }).promise, 20000);
+  container.innerHTML = '';
+  const maxPages = Math.min(pdf.numPages, 30);
+  const targetWidth = Math.min(container.clientWidth || 340, 900);
+  for (let i = 1; i <= maxPages; i++) {
+    const page = await withTimeout(pdf.getPage(i), 15000);
+    const unscaled = page.getViewport({ scale: 1 });
+    const scale = targetWidth / unscaled.width;
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    canvas.style.cssText = 'width:100%;display:block;margin-bottom:10px;background:#fff;border-radius:6px;';
+    container.appendChild(canvas);
+    await withTimeout(page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise, 15000);
+  }
+  if (pdf.numPages > maxPages) {
+    const note = document.createElement('p');
+    note.className = 'text-white text-xs text-center py-3';
+    note.innerText = currentLang==='ar' ? `تم عرض أول ${maxPages} صفحة من ${pdf.numPages}` : `Showing first ${maxPages} of ${pdf.numPages} pages`;
+    container.appendChild(note);
+  }
+}
+
+/* ============ File preview modal ============ */
+/* NOTE: we intentionally never navigate the page or click an <a download> link
+   to a blob: URL. On many Android WebViews / installed (standalone) PWAs, that
+   kind of link hands the request off to the system and the running app instance
+   gets replaced/closed. Everything below stays inside the app: preview renders
+   to <canvas>, and "save" goes through the native Share Sheet (an overlay, not
+   a navigation) with a same-window blob fallback only as a last resort. */
+let lbObjectUrl = null;
+let lbCurrentBlob = null;
+let lbCurrentName = null;
+
+async function openFilePreview(blob, title) {
+  if (!blob) { alert(t().noBlob); return; }
+  lbCurrentBlob = blob;
+  lbCurrentName = title || 'file.pdf';
+  document.getElementById('lightboxTitle').innerText = title || '';
+  const container = document.getElementById('lightboxPages');
+  container.innerHTML = `<p class="text-white text-sm text-center py-10">${t().renderingFile}</p>`;
+  document.getElementById('lightbox').classList.add('open');
+
+  if (lbObjectUrl) { URL.revokeObjectURL(lbObjectUrl); lbObjectUrl = null; }
+  document.getElementById('lightboxShareLabel').innerText = t().shareSave;
+
+  try {
+    await renderPdfPages(blob, container);
+  } catch (e) {
+    console.error('PDF render failed:', e);
+    container.innerHTML = `<div class="text-white text-sm text-center py-10 px-4">
+      <i class="fa-solid fa-triangle-exclamation text-2xl mb-3 block"></i>
+      ${t().previewFailed}
+    </div>`;
+  }
+}
+
+async function shareOrSaveLightboxFile() {
+  if (!lbCurrentBlob) { alert(t().noBlob); return; }
+  const fileName = lbCurrentName || 'file.pdf';
+  try {
+    const file = new File([lbCurrentBlob], fileName, { type: lbCurrentBlob.type || 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+      // Native share sheet: an overlay on top of the app, it does NOT close/replace the running PWA.
+      await navigator.share({ files: [file], title: fileName });
+      return;
+    }
+  } catch (err) {
+    // AbortError just means the user dismissed the share sheet — not a failure.
+    if (err && err.name === 'AbortError') return;
+    console.warn('Web Share failed, falling back:', err);
+  }
+  // Fallback for browsers without file sharing support: open the same tab is what
+  // actually causes the "app closes" symptom, so instead we open a NEW background
+  // tab/window for the blob. The installed app keeps running underneath.
+  try {
+    if (!lbObjectUrl) lbObjectUrl = URL.createObjectURL(lbCurrentBlob);
+    const win = window.open(lbObjectUrl, '_blank', 'noopener');
+    if (!win) alert(t().shareFailed);
+  } catch (err) {
+    console.error('Fallback open failed:', err);
+    alert(t().shareFailed);
+  }
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxPages').innerHTML = '';
+  if (lbObjectUrl) { URL.revokeObjectURL(lbObjectUrl); lbObjectUrl = null; }
+  lbCurrentBlob = null;
+  lbCurrentName = null;
+}
+
+/* ============ CONFIG: 7 PAGES ============ */
+const PAGES = [
+  { id:'p1', icon:'fa-gauge-high', key:'p1_nav' },
+  { id:'p2', icon:'fa-truck-ramp-box', key:'p2_nav' },
+  { id:'p3', icon:'fa-file-contract', key:'p3_nav' },
+  { id:'p4', icon:'fa-warehouse', key:'p4_nav' },
+  { id:'p5', icon:'fa-scale-balanced', key:'p5_nav' },
+  { id:'p6', icon:'fa-leaf', key:'p6_nav' },
+  { id:'p7', icon:'fa-folder-tree', key:'p7_nav' }
+];
+const BOTTOM_IDS = ['p1','p2','p3','p4','p5','p6','p7'];
+
+const CATEGORIES = {
+  p2: [ ['iso','ISO 9001 / شهادة جودة'], ['cr','السجل التجاري'], ['quote','عرض السعر RFQ'], ['insurance','تأمين / ضمان بنكي'] ],
+  p3: [ ['contract','عقد موقّع'], ['pod','محضر استلام (POD)'], ['engreport','تقرير مهندس'], ['invoice','فاتورة'] ],
+  p4: [ ['photo','صورة شحنة'], ['pod','محضر استلام'], ['qc','تقرير فحص جودة'] ],
+  p5: [ ['notice','إشعار مطالبة'], ['evidence','دليل / إثبات'], ['variation','أمر تغيير'] ],
+  p6: [ ['carboncert','شهادة بصمة كربونية'], ['matdata','بيانات مادة'], ['ecoalt','بديل صديق للبيئة'] ]
+};
+
+/* ============ i18n (UI chrome) ============ */
+const translations = {
+  ar: {
+    brandTitle:"منظومة سلاسل الإمداد الذكية", brandSub:"إشراف: م. وائل علي عويس | UAE Vision 2050",
+    printBtn:"طباعة / PDF", navTitle:"صفحات المنظومة (7)", refreshBtn:"تحديث",
+    p1_nav:"لوحة التحكم", p2_nav:"الموردين وRFQ", p3_nav:"العقود الذكية", p4_nav:"المخازن الميدانية",
+    p5_nav:"الشؤون القانونية", p6_nav:"الاستدامة والكربون", p7_nav:"التقارير والأرشيف",
+    p1_title:"1. لوحة التحكم التنفيذية", p1_desc:"تجمع النتائج والمؤشرات آلياً من كل الصفحات الست الأخرى",
+    kpiSupply:"مؤشر صحة الموردين", kpiFinance:"الموقف المالي (مدفوع/متبقي)", kpiDisputes:"النزاعات والمخاطر", kpiCarbon:"مؤشر الاستدامة (BDCT)",
+    vaultSummary:"ملخص المستندات المرفوعة (كل الصفحات)", reorderAlerts:"تنبيهات إعادة الطلب (المخازن)",
+    p2_title:"2. الموردين ومنصة عروض الأسعار (RFQ)", p2_desc:"يرفع المقاول/المورد مستنداته، ويحسب النظام تصنيف الخطورة والأداء تلقائياً",
+    uploadDocsTitle:"رفع مستندات المورد", p2_calcTitle:"النواة الحسابية: تقييم وتصنيف المورد",
+    supName:"اسم المورد", supPrice:"تنافسية السعر (0-100)", supDelivery:"الالتزام بالمواعيد % (0-100)", supQuality:"مطابقة الجودة % (0-100)",
+    calcAddBtn:"احسب وأضف للسجل", p2_formula:"المعادلة: النتيجة = (السعر×30% + الالتزام×40% + الجودة×30%). ≥85 مفضل، 60-84 مشروط، أقل من 60 محظور/عالي الخطورة.",
+    p2_resultsTitle:"النتائج: سجل الموردين المصنّف", scoreCol:"النتيجة", classCol:"التصنيف", thAction:"إجراء",
+    p3_title:"3. العقود الذكية وشروط الدفع", p3_desc:"ربط مراحل الإنجاز بالدفعات المالية آلياً حسب المستندات المرفوعة",
+    uploadDocsTitle2:"رفع مستندات العقد والدفعات", p3_calcTitle:"النواة الحسابية: قيمة الدفعة المستحقة",
+    milestoneName:"اسم المرحلة", contractValue:"قيمة العقد الكلية ($)", milestonePct:"نسبة المرحلة %", retentionPct:"نسبة ضمان محتجز %", deductions:"خصومات/غرامات ($)",
+    calcAddBtn2:"احسب الدفعة وأضفها", p3_formula:"المعادلة: الدفعة المستحقة = (قيمة العقد × نسبة المرحلة%) × (1 − نسبة الضمان%) − الخصومات",
+    p3_resultsTitle:"النتائج: جدول الدفعات وحالة التدفق النقدي", totalContract:"قيمة العقد", totalPaid:"إجمالي المدفوع", totalRemaining:"المتبقي", dueCol:"المستحق",
+    p4_title:"4. العمليات الميدانية والمخازن الذكية", p4_desc:"رفع محاضر الاستلام وصور الفحص، مع حساب موعد إعادة الطلب تلقائياً",
+    uploadDocsTitle3:"رفع صور ومحاضر الاستلام", p4_calcTitle:"النواة الحسابية: موعد إعادة الطلب",
+    itemName:"اسم المادة", currentStock:"الكمية الحالية", dailyUse:"معدل الاستهلاك اليومي", reorderDays:"حد التنبيه (أيام قبل النفاد)",
+    calcAddBtn3:"احسب وأضف للمخزون", p4_formula:"المعادلة: الأيام المتبقية = الكمية الحالية ÷ معدل الاستهلاك اليومي. إذا كانت أقل من أو تساوي حد التنبيه يظهر تحذير \"أعد الطلب الآن\".",
+    p4_resultsTitle:"النتائج: حالة المخزون",
+    p5_title:"5. الأدوات القانونية وحل النزاعات", p5_desc:"رفع إشعارات المطالبات وأوامر التغيير مع احتساب المهل الزمنية القانونية والأثر المالي",
+    uploadDocsTitle4:"رفع إشعارات وأدلة", p5_calcTitle:"النواة الحسابية: المهلة الزمنية للمطالبة",
+    claimTitle:"عنوان المطالبة", noticeDate:"تاريخ الإشعار", deadlineDays:"المهلة التعاقدية (أيام)", calcAddBtn4:"احسب وأضف المطالبة",
+    varOrderTitle:"أمر تغيير: الأثر المالي", baseValue:"قيمة العقد الأصلي ($)", varPct:"نسبة الزيادة/التغيير %", calcAddBtn5:"احسب الأثر المالي",
+    p5_resultsTitle:"النتائج: المطالبات النشطة وأوامر التغيير",
+    p6_title:"6. الاستدامة والتحول الأخضر (BDCT)", p6_desc:"رفع شهادات المنشأ وبيانات المواد، مع حساب البصمة الكربونية آلياً",
+    uploadDocsTitle5:"رفع شهادات كربونية وبيانات مواد", p6_calcTitle:"النواة الحسابية: حاسبة البصمة الكربونية (BDCT)",
+    matName:"اسم المادة", matQty:"الكمية (طن)", matDist:"مسافة النقل (كم)", emFactor:"معامل الانبعاثات (kg CO2 / طن.كم)", carbonCap:"الحد المسموح للمشروع (طن CO2e)",
+    calcAddBtn6:"احسب الانبعاثات وأضفها", p6_formula:"المعادلة: الانبعاثات (طن CO2e) = الكمية(طن) × المسافة(كم) × المعامل ÷ 1000",
+    p6_resultsTitle:"النتائج: إجمالي البصمة الكربونية", totalEmissions:"إجمالي الانبعاثات الحالية",
+    p7_title:"7. التقرير الشامل وأرشيف المستندات", compBadge:"تقرير معتمد آلياً", p7_kpiTitle:"ملخص المؤشرات التنفيذية", p7_vaultTitle:"أرشيف المستندات الكامل",
+    copyBtn:"نسخ التقرير", pdfBtn:"حفظ كملف PDF",
+    dropText:"اسحب ملف PDF هنا أو اضغط للاختيار (PDF فقط)", chooseCategory:"اختر التصنيف", noFiles:"لا توجد ملفات مرفوعة بعد",
+    saving:"جارٍ الحفظ...", viewFile:"عرض / فتح الملف", downloadOpen:"تحميل / فتح الملف",
+    shareSave:"مشاركة / حفظ", shareFailed:"تعذّرت المشاركة. جرّب مرة أخرى.",
+    pdfOnly:"يُسمح برفع ملفات PDF فقط", noBlob:"تعذّر تحميل الملف",
+    renderingFile:"جارٍ عرض الملف...", previewFailed:"تعذّر عرض الملف داخل التطبيق. اضغط زر «مشاركة / حفظ» أدناه لحفظه أو فتحه بتطبيق آخر — التطبيق هيفضل شغّال في الخلفية.",
+    fileProtoWarn:"⚠️ أنت تفتح التطبيق كملف محلي (مش من رابط إنترنت)، وهذا يمنع حفظ الملفات المرفوعة تمامًا على أندرويد. ارفع ملفات التطبيق على استضافة مجانية مثل app.netlify.com/drop وافتح الرابط الناتج (يبدأ بـ https) بدلاً من فتح الملف مباشرة.",
+    reportCopied:"تم نسخ التقرير بنجاح!", allCat:"الكل", deleteConfirm:"حذف هذا العنصر؟",
+    preferred:"مورد مفضل", conditional:"مشروط", blacklisted:"محظور / عالي الخطورة",
+    reorderNow:"أعد الطلب الآن", safeLevel:"مستوى آمن", daysLeft:"يوم متبقي",
+    open:"مفتوحة", urgent:"عاجلة", expired:"منتهية المهلة",
+    filesCount:"ملف", noReorder:"لا توجد عناصر تحتاج إعادة طلب حالياً"
+  },
+  en: {
+    brandTitle:"Smart Supply Chain Ecosystem", brandSub:"Supervised by: Eng. Wael Ali Oueiss | UAE Vision 2050",
+    printBtn:"Print / PDF", navTitle:"System Pages (7)", refreshBtn:"Refresh",
+    p1_nav:"Dashboard", p2_nav:"Suppliers & RFQ", p3_nav:"Smart Contracts", p4_nav:"Field & Inventory",
+    p5_nav:"Legal Affairs", p6_nav:"Sustainability", p7_nav:"Reports & Vault",
+    p1_title:"1. Executive Command Center", p1_desc:"Aggregates results and indicators automatically from the other six pages",
+    kpiSupply:"Supplier Health Index", kpiFinance:"Financial Status (Paid/Remaining)", kpiDisputes:"Disputes & Risks", kpiCarbon:"Sustainability Index (BDCT)",
+    vaultSummary:"Uploaded Documents Summary (all pages)", reorderAlerts:"Reorder Alerts (Inventory)",
+    p2_title:"2. Suppliers & Competitive RFQ Portal", p2_desc:"Contractors/suppliers upload documents; the system auto-scores and classifies risk",
+    uploadDocsTitle:"Upload Supplier Documents", p2_calcTitle:"Computational Core: Supplier Scoring & Classification",
+    supName:"Supplier Name", supPrice:"Price Competitiveness (0-100)", supDelivery:"On-time Delivery % (0-100)", supQuality:"Quality Compliance % (0-100)",
+    calcAddBtn:"Calculate & Add", p2_formula:"Formula: Score = (Price×30% + Delivery×40% + Quality×30%). ≥85 Preferred, 60-84 Conditional, <60 Blacklisted/High-risk.",
+    p2_resultsTitle:"Results: Classified Supplier Registry", scoreCol:"Score", classCol:"Classification", thAction:"Action",
+    p3_title:"3. Smart Contracts & Payment Terms", p3_desc:"Linking milestones to payments automatically based on uploaded documents",
+    uploadDocsTitle2:"Upload Contract & Payment Documents", p3_calcTitle:"Computational Core: Milestone Payment Due",
+    milestoneName:"Milestone Name", contractValue:"Total Contract Value ($)", milestonePct:"Milestone %", retentionPct:"Retention %", deductions:"Deductions/Penalties ($)",
+    calcAddBtn2:"Calculate & Add Payment", p3_formula:"Formula: Payment Due = (Contract Value × Milestone%) × (1 − Retention%) − Deductions",
+    p3_resultsTitle:"Results: Payment Schedule & Cash Flow", totalContract:"Contract Value", totalPaid:"Total Paid", totalRemaining:"Remaining", dueCol:"Due",
+    p4_title:"4. Field Operations & Smart Inventory", p4_desc:"Upload receiving records and QC photos, with automatic reorder-point calculation",
+    uploadDocsTitle3:"Upload Photos & Receiving Records", p4_calcTitle:"Computational Core: Reorder Point",
+    itemName:"Item Name", currentStock:"Current Stock", dailyUse:"Daily Usage Rate", reorderDays:"Alert Threshold (days left)",
+    calcAddBtn3:"Calculate & Add to Inventory", p4_formula:"Formula: Days Left = Current Stock ÷ Daily Usage Rate. If ≤ threshold, shows \"Reorder Now\" warning.",
+    p4_resultsTitle:"Results: Inventory Status",
+    p5_title:"5. Legal Tools & Dispute Resolution", p5_desc:"Upload claim notices and variation orders with legal time-bar and financial impact calculations",
+    uploadDocsTitle4:"Upload Notices & Evidence", p5_calcTitle:"Computational Core: Claim Time-Bar",
+    claimTitle:"Claim Title", noticeDate:"Notice Date", deadlineDays:"Contractual Deadline (days)", calcAddBtn4:"Calculate & Add Claim",
+    varOrderTitle:"Variation Order: Financial Impact", baseValue:"Original Contract Value ($)", varPct:"Increase/Change %", calcAddBtn5:"Calculate Impact",
+    p5_resultsTitle:"Results: Active Claims & Variation Orders",
+    p6_title:"6. Sustainability & Green Transformation (BDCT)", p6_desc:"Upload origin certificates and material data, with automatic carbon footprint calculation",
+    uploadDocsTitle5:"Upload Carbon Certs & Material Data", p6_calcTitle:"Computational Core: Carbon Footprint Calculator (BDCT)",
+    matName:"Material Name", matQty:"Quantity (tons)", matDist:"Transport Distance (km)", emFactor:"Emission Factor (kg CO2/ton.km)", carbonCap:"Project Allowed Cap (tons CO2e)",
+    calcAddBtn6:"Calculate & Add Emissions", p6_formula:"Formula: Emissions (t CO2e) = Quantity(t) × Distance(km) × Factor ÷ 1000",
+    p6_resultsTitle:"Results: Total Carbon Footprint", totalEmissions:"Current Total Emissions",
+    p7_title:"7. Comprehensive Report & Document Vault", compBadge:"Auto-approved report", p7_kpiTitle:"Executive KPI Summary", p7_vaultTitle:"Full Document Archive",
+    copyBtn:"Copy Report", pdfBtn:"Save as PDF",
+    dropText:"Drag a PDF here or click to choose (PDF only)", chooseCategory:"Select category", noFiles:"No files uploaded yet",
+    saving:"Saving...", viewFile:"View / Open file", downloadOpen:"Download / Open file",
+    shareSave:"Share / Save", shareFailed:"Sharing failed. Please try again.",
+    pdfOnly:"Only PDF files are allowed", noBlob:"Failed to load the file",
+    renderingFile:"Rendering file...", previewFailed:"Could not preview the file in-app. Use the Share / Save button below — the app stays running in the background.",
+    fileProtoWarn:"⚠️ You are opening this app as a local file (not a real web link), which completely blocks file storage on Android. Host the app files on a free service like app.netlify.com/drop and open the resulting https link instead of the file directly.",
+    reportCopied:"Report copied successfully!", allCat:"All", deleteConfirm:"Delete this item?",
+    preferred:"Preferred", conditional:"Conditional", blacklisted:"Blacklisted / High-risk",
+    reorderNow:"Reorder Now", safeLevel:"Safe level", daysLeft:"days left",
+    open:"Open", urgent:"Urgent", expired:"Expired",
+    filesCount:"files", noReorder:"No items currently need reordering"
+  }
+};
+let currentLang = 'ar';
+const t = () => translations[currentLang];
+
+/* ============ IndexedDB File Vault ============ */
+let dbPromise = null;
+function openDbAttempt() {
+  return new Promise((resolve, reject) => {
+    let req;
+    try {
+      req = indexedDB.open('supplyChainVault'); // no fixed version -> avoids version-conflict errors
+    } catch (e) { reject(e); return; }
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains('files')) {
+        const store = db.createObjectStore('files', { keyPath:'id', autoIncrement:true });
+        store.createIndex('page', 'page');
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error('IndexedDB open failed'));
+    req.onblocked = () => reject(new Error('IndexedDB blocked'));
+  });
+}
+function deleteDb() {
+  return new Promise((resolve) => {
+    try {
+      const req = indexedDB.deleteDatabase('supplyChainVault');
+      req.onsuccess = () => resolve();
+      req.onerror = () => resolve();
+      req.onblocked = () => resolve();
+    } catch (e) { resolve(); }
+  });
+}
+function openDB() {
+  if (dbPromise) return dbPromise;
+  if (!window.indexedDB) {
+    dbPromise = Promise.reject(new Error(currentLang==='ar' ? 'المتصفح لا يدعم تخزين الملفات (IndexedDB) في هذا السياق' : 'This browser context does not support file storage (IndexedDB)'));
+    return dbPromise;
+  }
+  dbPromise = (async () => {
+    try {
+      let db = await openDbAttempt();
+      if (!db.objectStoreNames.contains('files')) {
+        // Corrupted / mismatched leftover database from a previous test — wipe and recreate cleanly
+        db.close();
+        await deleteDb();
+        db = await openDbAttempt();
+      }
+      return db;
+    } catch (e) {
+      dbPromise = null; // allow retry on next call instead of staying stuck on a failed attempt
+      throw e;
+    }
+  })();
+  return dbPromise;
+}
+async function vaultAdd(page, category, file) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files','readwrite');
+    tx.objectStore('files').add({ page, category, name:file.name, size:file.size, type:file.type, date:new Date().toISOString(), blob:file });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function vaultList(page) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files','readonly');
+    const store = tx.objectStore('files');
+    const idx = page ? store.index('page') : null;
+    const req = page ? idx.getAll(page) : store.getAll();
+    req.onsuccess = () => resolve(req.result.sort((a,b)=> new Date(b.date)-new Date(a.date)));
+    req.onerror = () => reject(req.error);
+  });
+}
+async function vaultDelete(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files','readwrite');
+    tx.objectStore('files').delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+
+async function handleUpload(page, cat, file, dropEl) {
+  if (!isPdfFile(file)) {
+    alert(t().pdfOnly);
+    return;
+  }
+  const spanEl = dropEl ? dropEl.querySelector('span') : null;
+  const original = spanEl ? spanEl.innerText : '';
+  if (spanEl) spanEl.innerText = t().saving;
+  try {
+    await vaultAdd(page, cat, file);
+    renderFileList(page);
+    refreshDashboard();
+  } catch (err) {
+    console.error('Upload failed:', err);
+    const msg = (err && err.message) ? err.message : String(err);
+    if (/backing store|IndexedDB|QuotaExceeded|VersionError/i.test(msg) || (location.protocol !== 'http:' && location.protocol !== 'https:')) {
+      alert(t().fileProtoWarn);
+    } else {
+      alert((currentLang==='ar' ? 'فشل رفع الملف: ' : 'Upload failed: ') + msg);
+    }
+  } finally {
+    if (spanEl) spanEl.innerText = original;
+  }
+}
+
+async function buildUploadWidget(page) {
+  const host = document.getElementById('uploadWidget-'+page);
+  if (!host) return;
+  const cats = CATEGORIES[page] || [];
+  host.innerHTML = `
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <select id="cat-${page}" class="field-input">
+        ${cats.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('')}
+      </select>
+      <label class="upload-drop flex items-center justify-center gap-2 text-xs md:text-sm text-gray-500" id="drop-${page}">
+        <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+        <span>${t().dropText}</span>
+        <input type="file" id="file-${page}" accept="application/pdf,.pdf" class="hidden">
+      </label>
+    </div>
+    <div id="filelist-${page}" class="space-y-2 mt-3"></div>
+  `;
+  const dropEl = document.getElementById(`drop-${page}`);
+  const inputEl = document.getElementById(`file-${page}`);
+  inputEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const cat = document.getElementById(`cat-${page}`).value;
+    await handleUpload(page, cat, file, dropEl);
+    inputEl.value = '';
+  });
+  ['dragover','dragleave','drop'].forEach(evt => {
+    dropEl.addEventListener(evt, (e) => {
+      e.preventDefault();
+      if (evt==='dragover') dropEl.classList.add('drag');
+      else dropEl.classList.remove('drag');
+      if (evt==='drop' && e.dataTransfer.files[0]) {
+        const file = e.dataTransfer.files[0];
+        const cat = document.getElementById(`cat-${page}`).value;
+        handleUpload(page, cat, file, dropEl);
+      }
+    });
+  });
+  renderFileList(page);
+}
+
+function catLabel(page, code) {
+  const cats = CATEGORIES[page] || [];
+  const found = cats.find(c=>c[0]===code);
+  return found ? found[1] : code;
+}
+
+const fileCache = {};
+async function renderFileList(page) {
+  const list = await vaultList(page);
+  list.forEach(f => fileCache[f.id] = f);
+  const host = document.getElementById(`filelist-${page}`);
+  if (!host) return;
+  if (!list.length) { host.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">${t().noFiles}</p>`; return; }
+  host.innerHTML = list.map(f => `
+    <div class="file-row">
+      <div class="thumb bg-red-50 flex items-center justify-center" onclick="openLightboxFor(${f.id})">
+        <i class="fa-solid fa-file-pdf text-red-500"></i>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-xs font-medium text-gray-800 truncate">${f.name}</p>
+        <p class="text-[10px] text-gray-400">${catLabel(page,f.category)} · ${fmtSize(f.size)} · ${new Date(f.date).toLocaleDateString(currentLang==='ar'?'ar-EG':'en-US')}</p>
+        <button onclick="openLightboxFor(${f.id})" class="text-[10px] text-brand-600 font-semibold mt-0.5"><i class="fa-solid fa-eye"></i> ${t().viewFile}</button>
+      </div>
+      <button onclick="removeFile(${f.id},'${page}')" class="text-red-400 hover:text-red-600 shrink-0"><i class="fa-solid fa-trash"></i></button>
+    </div>`).join('');
+}
+function openLightboxFor(id) {
+  const f = fileCache[id];
+  if (!f) return;
+  openFilePreview(f.blob, f.name);
+}
+async function removeFile(id, page) {
+  await vaultDelete(id);
+  renderFileList(page);
+  refreshDashboard();
+}
+
+/* ============ localStorage data records ============ */
+function getRecords(key) { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
+function setRecords(key, arr) { localStorage.setItem(key, JSON.stringify(arr)); }
+
+/* ---------- Page 2: Suppliers ---------- */
+function addSupplier() {
+  const name = document.getElementById('sup_name').value.trim();
+  const price = parseFloat(document.getElementById('sup_price').value) || 0;
+  const delivery = parseFloat(document.getElementById('sup_delivery').value) || 0;
+  const quality = parseFloat(document.getElementById('sup_quality').value) || 0;
+  if (!name) return;
+  const score = Math.round(price*0.3 + delivery*0.4 + quality*0.3);
+  let cls = 'blacklisted';
+  if (score >= 85) cls = 'preferred'; else if (score >= 60) cls = 'conditional';
+  const list = getRecords('suppliers');
+  list.push({ id:Date.now(), name, price, delivery, quality, score, cls });
+  setRecords('suppliers', list);
+  document.getElementById('sup_name').value = '';
+  renderSuppliers();
+  refreshDashboard();
+}
+function deleteSupplier(id) {
+  setRecords('suppliers', getRecords('suppliers').filter(s=>s.id!==id));
+  renderSuppliers(); refreshDashboard();
+}
+function clsBadge(cls) {
+  const map = {
+    preferred: 'bg-green-100 text-green-700',
+    conditional: 'bg-amber-100 text-amber-700',
+    blacklisted: 'bg-red-100 text-red-700'
+  };
+  return `<span class="badge ${map[cls]}">${t()[cls]}</span>`;
+}
+function renderSuppliers() {
+  const body = document.getElementById('suppliersTableBody');
+  const list = getRecords('suppliers');
+  body.innerHTML = list.map(s => `
+    <tr>
+      <td class="p-2 font-medium">${s.name}</td>
+      <td class="p-2">${s.score}</td>
+      <td class="p-2">${clsBadge(s.cls)}</td>
+      <td class="p-2"><button onclick="deleteSupplier(${s.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td>
+    </tr>`).join('');
+}
+
+/* ---------- Page 3: Payments ---------- */
+function addMilestonePayment() {
+  const name = document.getElementById('ct_name').value.trim();
+  const value = parseFloat(document.getElementById('ct_value').value) || 0;
+  const pct = parseFloat(document.getElementById('ct_pct').value) || 0;
+  const retention = parseFloat(document.getElementById('ct_retention').value) || 0;
+  const deduct = parseFloat(document.getElementById('ct_deduct').value) || 0;
+  if (!name) return;
+  const due = (value * pct/100) * (1 - retention/100) - deduct;
+  const list = getRecords('payments');
+  list.push({ id:Date.now(), name, value, pct, due:Math.round(due) });
+  setRecords('payments', list);
+  document.getElementById('ct_name').value = '';
+  renderPayments();
+  refreshDashboard();
+}
+function deletePayment(id) {
+  setRecords('payments', getRecords('payments').filter(p=>p.id!==id));
+  renderPayments(); refreshDashboard();
+}
+function renderPayments() {
+  const list = getRecords('payments');
+  const body = document.getElementById('paymentsTableBody');
+  body.innerHTML = list.map(p => `
+    <tr>
+      <td class="p-2 font-medium">${p.name}</td>
+      <td class="p-2">${p.pct}%</td>
+      <td class="p-2 text-brand-700 font-semibold">$${p.due.toLocaleString()}</td>
+      <td class="p-2"><button onclick="deletePayment(${p.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td>
+    </tr>`).join('');
+  const totalContract = list.length ? Math.max(...list.map(p=>p.value)) : 0;
+  const totalPaid = list.reduce((a,p)=>a+p.due,0);
+  document.getElementById('ct_totalContract').innerText = '$'+totalContract.toLocaleString();
+  document.getElementById('ct_totalPaid').innerText = '$'+totalPaid.toLocaleString();
+  document.getElementById('ct_totalRemaining').innerText = '$'+Math.max(totalContract-totalPaid,0).toLocaleString();
+}
+
+/* ---------- Page 4: Inventory ---------- */
+function addInventoryItem() {
+  const name = document.getElementById('inv_name').value.trim();
+  const stock = parseFloat(document.getElementById('inv_stock').value) || 0;
+  const rate = parseFloat(document.getElementById('inv_rate').value) || 1;
+  const threshold = parseFloat(document.getElementById('inv_threshold').value) || 0;
+  if (!name) return;
+  const daysLeft = Math.round(stock / rate);
+  const needsReorder = daysLeft <= threshold;
+  const list = getRecords('inventory');
+  list.push({ id:Date.now(), name, stock, rate, threshold, daysLeft, needsReorder });
+  setRecords('inventory', list);
+  document.getElementById('inv_name').value = '';
+  renderInventory();
+  refreshDashboard();
+}
+function deleteInvItem(id) {
+  setRecords('inventory', getRecords('inventory').filter(i=>i.id!==id));
+  renderInventory(); refreshDashboard();
+}
+function renderInventory() {
+  const list = getRecords('inventory');
+  const host = document.getElementById('inventoryList');
+  if (!list.length) { host.innerHTML = `<p class="text-xs text-gray-400">${t().noFiles}</p>`; return; }
+  host.innerHTML = list.map(i => {
+    const pct = Math.max(0, Math.min(100, Math.round((i.daysLeft / Math.max(i.threshold*3,1))*100)));
+    return `
+    <div class="p-3 bg-gray-50 rounded-xl border">
+      <div class="flex justify-between text-sm mb-1">
+        <span class="font-medium">${i.name}</span>
+        <button onclick="deleteInvItem(${i.id})" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2 mb-1"><div class="${i.needsReorder?'bg-red-500':'bg-brand-600'} h-2 rounded-full" style="width:${pct}%"></div></div>
+      <p class="text-xs ${i.needsReorder?'text-red-600 font-semibold':'text-gray-400'}">${i.needsReorder? t().reorderNow : t().safeLevel} — ${i.daysLeft} ${t().daysLeft}</p>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Page 5: Legal ---------- */
+function addClaim() {
+  const title = document.getElementById('lg_title').value.trim();
+  const date = document.getElementById('lg_date').value;
+  const days = parseFloat(document.getElementById('lg_days').value) || 0;
+  if (!title || !date) return;
+  const deadline = new Date(date); deadline.setDate(deadline.getDate()+days);
+  const list = getRecords('claims');
+  list.push({ id:Date.now(), title, date, days, deadline: deadline.toISOString() });
+  setRecords('claims', list);
+  document.getElementById('lg_title').value = '';
+  renderClaims();
+  refreshDashboard();
+}
+function deleteClaim(id) {
+  setRecords('claims', getRecords('claims').filter(c=>c.id!==id));
+  renderClaims(); refreshDashboard();
+}
+function claimStatus(deadlineISO) {
+  const remainMs = new Date(deadlineISO) - new Date();
+  const remainH = Math.round(remainMs/3600000);
+  if (remainH <= 0) return { status:'expired', remainH };
+  if (remainH <= 48) return { status:'urgent', remainH };
+  return { status:'open', remainH };
+}
+function renderClaims() {
+  const list = getRecords('claims');
+  const host = document.getElementById('claimsList');
+  const map = { open:'bg-green-100 text-green-700', urgent:'bg-amber-100 text-amber-700', expired:'bg-red-100 text-red-700' };
+  host.innerHTML = list.map(c => {
+    const st = claimStatus(c.deadline);
+    return `
+    <div class="p-3 bg-gray-50 rounded-xl border flex justify-between items-center gap-2 flex-wrap">
+      <div class="min-w-0">
+        <p class="text-sm font-medium truncate">${c.title}</p>
+        <p class="text-[11px] text-gray-400">${st.remainH > 0 ? st.remainH + ' h' : ''}</p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="badge ${map[st.status]}">${t()[st.status]}</span>
+        <button onclick="deleteClaim(${c.id})" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function addVariation() {
+  const base = parseFloat(document.getElementById('vo_base').value) || 0;
+  const pct = parseFloat(document.getElementById('vo_pct').value) || 0;
+  const impact = Math.round(base * pct/100);
+  const list = getRecords('variations');
+  list.push({ id:Date.now(), base, pct, impact });
+  setRecords('variations', list);
+  renderVariations();
+  refreshDashboard();
+}
+function deleteVariation(id) {
+  setRecords('variations', getRecords('variations').filter(v=>v.id!==id));
+  renderVariations(); refreshDashboard();
+}
+function renderVariations() {
+  const list = getRecords('variations');
+  const host = document.getElementById('variationsList');
+  host.innerHTML = list.map(v => `
+    <div class="p-3 bg-purple-50 rounded-xl border border-purple-100 flex justify-between items-center gap-2">
+      <span class="text-sm">${v.pct}% × $${v.base.toLocaleString()}</span>
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-purple-700 text-sm">$${v.impact.toLocaleString()}</span>
+        <button onclick="deleteVariation(${v.id})" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+/* ---------- Page 6: Carbon ---------- */
+function addCarbonEntry() {
+  const name = document.getElementById('cb_name').value.trim();
+  const qty = parseFloat(document.getElementById('cb_qty').value) || 0;
+  const dist = parseFloat(document.getElementById('cb_dist').value) || 0;
+  const factor = parseFloat(document.getElementById('cb_factor').value) || 0;
+  const cap = parseFloat(document.getElementById('cb_cap').value) || 2000;
+  if (!name) return;
+  const emissions = (qty * dist * factor) / 1000;
+  const list = getRecords('carbon');
+  list.push({ id:Date.now(), name, qty, dist, factor, emissions: Math.round(emissions*100)/100 });
+  setRecords('carbon', list);
+  setRecords('carbonCap', [cap]);
+  document.getElementById('cb_name').value = '';
+  renderCarbon();
+  refreshDashboard();
+}
+function deleteCarbonEntry(id) {
+  setRecords('carbon', getRecords('carbon').filter(c=>c.id!==id));
+  renderCarbon(); refreshDashboard();
+}
+function renderCarbon() {
+  const list = getRecords('carbon');
+  const cap = (getRecords('carbonCap')[0]) || 2000;
+  const total = list.reduce((a,c)=>a+c.emissions,0);
+  const host = document.getElementById('carbonList');
+  host.innerHTML = list.map(c => `
+    <div class="p-3 bg-gray-50 rounded-xl border flex justify-between items-center gap-2">
+      <span class="text-sm">${c.name} — ${c.qty}t × ${c.dist}km × ${c.factor}</span>
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-brand-700 text-sm">${c.emissions} CO2e</span>
+        <button onclick="deleteCarbonEntry(${c.id})" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+  document.getElementById('cb_totalVal').innerText = Math.round(total*100)/100 + ' CO2e';
+  const pct = Math.min(100, Math.round((total/cap)*100));
+  document.getElementById('cb_progressBar').style.width = pct+'%';
+  document.getElementById('cb_progressBar').className = 'h-2.5 rounded-full ' + (pct>=100?'bg-red-500':pct>=80?'bg-amber-500':'bg-brand-600');
+  document.getElementById('cb_capLabel').innerText = (currentLang==='ar' ? `الحد المسموح: ${cap} CO2e (${pct}% مستخدم)` : `Allowed cap: ${cap} CO2e (${pct}% used)`);
+}
+
+/* ============ Dashboard aggregation (Page 1) ============ */
+async function refreshDashboard() {
+  const suppliers = getRecords('suppliers');
+  const payments = getRecords('payments');
+  const claims = getRecords('claims');
+  const variations = getRecords('variations');
+  const carbon = getRecords('carbon');
+  const cap = (getRecords('carbonCap')[0]) || 2000;
+  const inventory = getRecords('inventory');
+
+  // Supply health
+  const avgScore = suppliers.length ? Math.round(suppliers.reduce((a,s)=>a+s.score,0)/suppliers.length) : 0;
+  document.getElementById('kpiSupplyVal').innerText = suppliers.length ? avgScore+'%' : '--';
+  document.getElementById('kpiSupplySub').innerText = suppliers.length ? `${suppliers.length} ${currentLang==='ar'?'مورد مسجل':'suppliers registered'}` : (currentLang==='ar'?'لا يوجد موردين بعد':'No suppliers yet');
+
+  // Finance
+  const totalContract = payments.length ? Math.max(...payments.map(p=>p.value)) : 0;
+  const totalPaid = payments.reduce((a,p)=>a+p.due,0);
+  document.getElementById('kpiFinanceVal').innerText = payments.length ? `$${(totalPaid/1000).toFixed(0)}K` : '--';
+  document.getElementById('kpiFinanceSub').innerText = totalContract ? `${currentLang==='ar'?'من':'of'} $${(totalContract/1000).toFixed(0)}K` : (currentLang==='ar'?'لا توجد دفعات بعد':'No payments yet');
+
+  // Disputes
+  const openClaims = claims.filter(c => claimStatus(c.deadline).status !== 'expired').length;
+  const totalVarImpact = variations.reduce((a,v)=>a+v.impact,0);
+  document.getElementById('kpiDisputesVal').innerText = claims.length + variations.length;
+  document.getElementById('kpiDisputesSub').innerText = `${openClaims} ${currentLang==='ar'?'مطالبة مفتوحة':'open claims'}` + (totalVarImpact? ` · $${(totalVarImpact/1000).toFixed(0)}K`:'');
+
+  // Sustainability
+  const totalCarbon = carbon.reduce((a,c)=>a+c.emissions,0);
+  const sustIndex = carbon.length ? Math.max(0, Math.round(100 - (totalCarbon/cap)*100)) : 100;
+  document.getElementById('kpiCarbonVal').innerText = sustIndex + '/100';
+  document.getElementById('kpiCarbonSub').innerText = carbon.length ? `${Math.round(totalCarbon)} CO2e ${currentLang==='ar'?'مسجلة':'recorded'}` : (currentLang==='ar'?'لا توجد بيانات بعد':'No data yet');
+
+  // Vault summary
+  const grid = document.getElementById('vaultSummaryGrid');
+  const rows = await Promise.all(PAGES.filter(p=>p.id!=='p1'&&p.id!=='p7').map(async p => {
+    const files = await vaultList(p.id);
+    return { label: t()[p.key], count: files.length };
+  }));
+  grid.innerHTML = rows.map(r => `
+    <div class="p-2 bg-gray-50 rounded-lg border text-center">
+      <p class="text-lg font-bold text-gray-800">${r.count}</p>
+      <p class="text-[10px] text-gray-500">${r.label}</p>
+    </div>`).join('');
+
+  // Reorder alerts
+  const needReorder = inventory.filter(i=>i.needsReorder);
+  const alertHost = document.getElementById('reorderAlertsList');
+  alertHost.innerHTML = needReorder.length
+    ? needReorder.map(i => `<div class="flex items-center gap-2 text-red-600"><i class="fa-solid fa-triangle-exclamation"></i><span>${i.name} — ${i.daysLeft} ${t().daysLeft}</span></div>`).join('')
+    : `<p class="text-gray-400">${t().noReorder}</p>`;
+
+  renderReportPage(totalContract, totalPaid, avgScore, sustIndex, openClaims);
+}
+
+/* ============ Page 7: Report + full vault ============ */
+let vaultFilter = 'all';
+async function renderReportPage(totalContract, totalPaid, avgScore, sustIndex, openClaims) {
+  const d = new Date();
+  document.getElementById('reportDate').innerText = (currentLang==='ar'?'تاريخ الإصدار: ':'Issue date: ') + d.toLocaleDateString(currentLang==='ar'?'ar-EG':'en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  const kpis = [
+    { label:t().kpiSupply, val: (avgScore||0)+'%' },
+    { label:t().kpiFinance, val: '$'+(totalPaid||0).toLocaleString()+' / $'+(totalContract||0).toLocaleString() },
+    { label:t().kpiDisputes, val: (openClaims||0) },
+    { label:t().kpiCarbon, val: (sustIndex||100)+'/100' }
+  ];
+  document.getElementById('reportKpiGrid').innerHTML = kpis.map(k => `
+    <div class="p-3 bg-gray-50 rounded-xl border">
+      <p class="text-[11px] text-gray-400">${k.label}</p>
+      <p class="font-bold text-base">${k.val}</p>
+    </div>`).join('');
+
+  const filterHost = document.getElementById('vaultFilterBtns');
+  const opts = [['all', t().allCat], ...PAGES.filter(p=>p.id!=='p1'&&p.id!=='p7').map(p=>[p.id, t()[p.key]])];
+  filterHost.innerHTML = opts.map(([id,label]) => `
+    <button onclick="setVaultFilter('${id}')" class="text-xs px-3 py-1.5 rounded-full border ${vaultFilter===id?'bg-brand-600 text-white border-brand-600':'bg-white text-gray-600 border-gray-300'}">${label}</button>
+  `).join('');
+
+  await renderFullVault();
+}
+function setVaultFilter(id) { vaultFilter = id; renderFullVault(); document.getElementById('vaultFilterBtns') && renderReportPage(); }
+async function renderFullVault() {
+  const pagesToQuery = vaultFilter==='all' ? PAGES.filter(p=>p.id!=='p1'&&p.id!=='p7').map(p=>p.id) : [vaultFilter];
+  let all = [];
+  for (const p of pagesToQuery) {
+    const files = await vaultList(p);
+    files.forEach(f => fileCache[f.id] = f);
+    all = all.concat(files.map(f=>({...f, pageLabel: t()[PAGES.find(pg=>pg.id===p).key]})));
+  }
+  all.sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const host = document.getElementById('fullVaultList');
+  if (!host) return;
+  host.innerHTML = all.length ? all.map(f => `
+    <div class="file-row">
+      <div class="thumb bg-red-50 flex items-center justify-center" onclick="openLightboxFor(${f.id})">
+        <i class="fa-solid fa-file-pdf text-red-500"></i>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-xs font-medium text-gray-800 truncate">${f.name}</p>
+        <p class="text-[10px] text-gray-400">${f.pageLabel} · ${catLabel(f.page,f.category)} · ${fmtSize(f.size)}</p>
+        <button onclick="openLightboxFor(${f.id})" class="text-[10px] text-brand-600 font-semibold mt-0.5"><i class="fa-solid fa-eye"></i> ${t().viewFile}</button>
+      </div>
+    </div>`).join('') : `<p class="text-xs text-gray-400 text-center py-4">${t().noFiles}</p>`;
+}
+function copyReportText() {
+  const text = document.getElementById('printableArea').innerText;
+  navigator.clipboard.writeText(text).then(()=> alert(t().reportCopied));
+}
+
+/* ============ Navigation ============ */
+function buildNav() {
+  document.getElementById('sideNav').innerHTML = PAGES.map(p => `
+    <button onclick="switchPage('${p.id}')" id="side-${p.id}" class="nav-btn w-full">
+      <i class="fa-solid ${p.icon} w-5"></i><span>${t()[p.key]}</span>
+    </button>`).join('');
+
+  document.getElementById('bottomNav').innerHTML = BOTTOM_IDS.map(id => {
+    const p = PAGES.find(x=>x.id===id);
+    return `<button onclick="switchPage('${id}')" id="bn-${id}" class="bn-item"><i class="fa-solid ${p.icon}"></i><span>${t()[p.key]}</span></button>`;
+  }).join('');
+}
+function switchPage(id) {
+  document.querySelectorAll('.tab-content').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('page-'+id).classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const side = document.getElementById('side-'+id); if (side) side.classList.add('active');
+  const bn = document.getElementById('bn-'+id); if (bn) bn.classList.add('active');
+  window.scrollTo({top:0, behavior:'instant'});
+  if (id==='p1') refreshDashboard();
+  if (id==='p7') refreshDashboard();
+}
+
+/* ============ Language toggle ============ */
+async function toggleLanguage() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  const root = document.getElementById('htmlRoot');
+  root.setAttribute('dir', currentLang==='ar'?'rtl':'ltr');
+  root.setAttribute('lang', currentLang);
+  document.getElementById('langBtnText').innerText = currentLang==='ar'?'English':'العربية';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t()[key]) el.innerText = t()[key];
+  });
+  buildNav();
+  if (!document.getElementById('fileProtocolWarning').classList.contains('hidden')) {
+    document.getElementById('fileProtocolWarningText').innerText = t().fileProtoWarn;
+  }
+  renderSuppliers(); renderPayments(); renderInventory(); renderClaims(); renderVariations(); renderCarbon();
+  for (const p of Object.keys(CATEGORIES)) { await buildUploadWidget(p); }
+  await refreshDashboard();
+}
+
+/* ============ Init ============ */
+function checkFileProtocol() {
+  if (location.protocol !== 'http:' && location.protocol !== 'https:') {
+    const box = document.getElementById('fileProtocolWarning');
+    document.getElementById('fileProtocolWarningText').innerText = t().fileProtoWarn;
+    box.classList.remove('hidden');
+  }
+}
+
+async function init() {
+  checkFileProtocol();
+  buildNav();
+  switchPage('p1');
+  renderSuppliers(); renderPayments(); renderInventory(); renderClaims(); renderVariations(); renderCarbon();
+  for (const p of Object.keys(CATEGORIES)) { await buildUploadWidget(p); }
+  await refreshDashboard();
+}
+init();
+
+/* No separate sw.js: this build is a single self-contained index.html so it works on
+   hosts that only serve/recognize one file. Browsers do not allow registering a Service
+   Worker from a data:/blob: URL, so there is no offline app-shell cache here — but that
+   does NOT affect your uploaded documents: those are stored in IndexedDB, which is
+   per-origin browser storage and works fully offline regardless of any service worker. */
+</script>
+</body>
+</html>

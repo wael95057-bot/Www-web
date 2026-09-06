@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<title>متتبع الكربون الرقمي — PM/ Wael Ewis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1A18;
+    --concrete:#2B2B28;
+    --paper:#F2F0EB;
+    --sage:#4A7C59;
+    --sage-dim:#3c6549;
+    --sand:#C9BEA6;
+    --amber:#C77D3D;
+    --line: rgba(26,26,24,0.14);
+    --line-strong: rgba(26,26,24,0.28);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/40px 40px,
+      var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans Arabic', 'Space Mono', sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    min-height:100vh;
+  }
+  .mono{ font-family:'Space Mono', monospace; direction:ltr; unicode-bidi:plaintext; }
+  h1,h2,h3,.display{ font-family:'Tajawal', sans-serif; }
+  html[dir="ltr"] .sec-desc{ text-align:right; direction:ltr; }
+  html[dir="ltr"] .swap-label, html[dir="ltr"] .swap-val{ text-align:right; }
+
+  header{
+    border-bottom:2px solid var(--ink);
+    padding:28px 6vw 22px;
+    display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;
+    background:var(--paper);
+  }
+  .brandmark{ display:flex; align-items:center; gap:14px; }
+  .brandmark .box{
+    width:52px; height:52px; border:2px solid var(--ink);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font-family:'Space Mono',monospace; font-weight:700; font-size:12px;
+    background:var(--amber); color:var(--paper);
+  }
+  header h1{ font-size:clamp(22px,3.2vw,36px); font-weight:900; margin:0; letter-spacing:-0.01em;}
+  header .sub{ font-size:13px; color:var(--concrete); margin-top:4px; font-family:'Space Mono',monospace; direction:ltr; text-align:right;}
+
+  /* language toggle */
+  .lang-toggle{
+    display:flex; align-items:center; border:1px solid var(--ink); border-radius:20px;
+    overflow:hidden; font-family:'Space Mono',monospace; font-size:12px; font-weight:700;
+    height:34px;
+  }
+  .lang-toggle button{
+    all:unset; cursor:pointer; padding:0 16px; height:100%; display:flex; align-items:center;
+    color:var(--ink); background:transparent; transition:background .15s ease, color .15s ease;
+  }
+  .lang-toggle button.active{ background:var(--ink); color:var(--paper); }
+  .lang-toggle button:not(.active):hover{ background:var(--sand); }
+
+  main{ padding:0 6vw 90px; max-width:1280px; margin:0 auto; }
+
+  section{ margin-top:56px; }
+  .sec-head{
+    display:flex; align-items:baseline; gap:14px; margin-bottom:22px;
+    border-bottom:1px solid var(--line-strong); padding-bottom:12px; flex-wrap:wrap;
+  }
+  .sec-num{
+    font-family:'Space Mono',monospace; font-size:13px; color:var(--sage-dim);
+    border:1px solid var(--sage-dim); padding:2px 8px; border-radius:2px;
+  }
+  .sec-head h2{ font-size:clamp(19px,2.2vw,27px); margin:0; font-weight:700;}
+  .sec-desc{ font-size:13px; color:var(--concrete); margin-right:auto; text-align:left; max-width:360px; direction:rtl;}
+  .tag{ font-family:'Space Mono',monospace; font-size:11px; padding:3px 9px; border-radius:12px; letter-spacing:0.02em; }
+  .tag.advisory{ background:var(--sand); color:var(--ink); }
+  .tag.official{ background:var(--sage); color:var(--paper); }
+
+  .card{ background:#fff; border:1px solid var(--line-strong); border-radius:3px; padding:22px 24px; }
+  .card.advisory-card{ border-style:dashed; border-color:var(--sand); background:repeating-linear-gradient(135deg,#fff 0 14px,#faf8f3 14px 28px); }
+  .card.identity-card{ background:var(--ink); color:var(--paper); }
+  .grid2{ display:grid; grid-template-columns:1.1fr 1fr; gap:24px; }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .grid4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  @media (max-width:860px){ .grid2, .grid3, .grid4{ grid-template-columns:1fr; } }
+
+  label{ display:block; font-size:12px; color:var(--concrete); margin-bottom:6px; font-weight:500;}
+  .identity-card label{ color:var(--sand); }
+  select, input[type=number], input[type=text], input[type=date]{
+    width:100%; padding:10px 12px; border:1px solid var(--line-strong); border-radius:2px;
+    font-family:'IBM Plex Sans Arabic', sans-serif; font-size:14px; background:var(--paper); color:var(--ink);
+  }
+  input[type=number]{ font-family:'Space Mono',monospace; direction:ltr; }
+  .identity-card input, .identity-card select{ background:#232320; color:var(--paper); border-color:rgba(255,255,255,0.2); }
+  .identity-card input::placeholder{ color:#8a8a82; }
+
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px; }
+  @media (max-width:860px){ .row3{ grid-template-columns:1fr; } }
+
+  button{
+    cursor:pointer; border:none; border-radius:2px; padding:12px 20px;
+    font-family:'Tajawal',sans-serif; font-weight:700; font-size:14px;
+    background:var(--ink); color:var(--paper); transition:background .15s ease, transform .1s ease;
+  }
+  button:hover{ background:var(--sage-dim); }
+  button:active{ transform:scale(0.98); }
+  button.secondary{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
+  button.secondary:hover{ background:var(--ink); color:var(--paper); }
+  button.amber{ background:var(--amber); }
+  button.amber:hover{ background:#a8632c; }
+  .identity-card button.secondary{ color:var(--paper); border-color:var(--paper); }
+  .identity-card button.secondary:hover{ background:var(--paper); color:var(--ink); }
+
+  .swap-viz{ margin-top:22px; }
+  .swap-row{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .swap-label{ width:170px; font-size:12px; font-family:'Space Mono',monospace; flex-shrink:0; text-align:left; direction:ltr; color:var(--concrete);}
+  .swap-track{ flex:1; height:26px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 12px); position:relative; border:1px solid var(--line-strong); }
+  .swap-fill{ height:100%; transition:width .6s cubic-bezier(.2,.8,.2,1); }
+  .swap-fill.before{ background:var(--concrete); }
+  .swap-fill.after{ background:var(--sand); }
+  .swap-val{ width:110px; font-family:'Space Mono',monospace; font-size:12px; text-align:left; direction:ltr; flex-shrink:0;}
+  .saved-banner{
+    margin-top:18px; padding:16px 18px; background:var(--sand); color:var(--ink);
+    border-radius:2px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .saved-banner .big{ font-family:'Space Mono',monospace; font-weight:700; font-size:22px; }
+  .advisory-note{ font-size:12px; color:var(--concrete); margin-top:14px; padding-top:14px; border-top:1px dashed var(--line-strong); font-style:italic; }
+
+  .boq-table{ width:100%; border-collapse:collapse; margin-top:6px; }
+  .boq-table th{ font-family:'Space Mono',monospace; font-size:11px; text-align:right; padding:8px 10px; background:var(--ink); color:var(--paper); font-weight:400; }
+  html[dir="ltr"] .boq-table th{ text-align:left; }
+  .boq-table td{ padding:8px 10px; border-bottom:1px solid var(--line); font-size:13px; vertical-align:middle;}
+  .boq-table td.qty-cell input{ padding:6px 8px; font-size:13px; }
+  .boq-table td.num{ font-family:'Space Mono',monospace; direction:ltr; text-align:left; color:var(--concrete);}
+
+  .stat{ border:1px solid var(--line-strong); border-radius:3px; padding:18px; background:#fff; position:relative; overflow:hidden; }
+  .stat::before{ content:''; position:absolute; top:0; right:0; width:4px; height:100%; background:var(--sand); }
+  html[dir="ltr"] .stat::before{ right:auto; left:0; }
+  .stat.official::before{ background:var(--sage); }
+  .stat .label{ font-size:12px; color:var(--concrete); margin-bottom:8px;}
+  .stat .value{ font-family:'Space Mono',monospace; font-size:21px; font-weight:700; direction:ltr; text-align:left;}
+  .stat .unit{ font-size:12px; color:var(--sage-dim); margin-right:4px;}
+
+  .checklist{ display:flex; flex-direction:column; gap:2px; margin-top:10px; }
+  .check-item{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-bottom:1px solid var(--line); font-size:13.5px; cursor:pointer; }
+  .check-item:hover{ background:var(--paper); }
+  .check-item input{ width:18px; height:18px; accent-color:var(--sage); cursor:pointer; }
+
+  .badge{ display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border:1px solid var(--ink); border-radius:20px; font-size:13px; font-weight:700; font-family:'Tajawal',sans-serif; }
+  .badge.gold{ background:#E8C468; border-color:#E8C468; }
+  .badge.silver{ background:var(--sand); border-color:var(--sand); }
+  .badge.bronze{ background:#CD8B5C; border-color:#CD8B5C; color:#fff; }
+  .badge.weak{ background:#E3A08D; border-color:#E3A08D; }
+  .progress-bar{ height:10px; background:var(--line); border-radius:20px; overflow:hidden; margin-top:10px;}
+  .progress-fill{ height:100%; background:var(--sage); transition:width .5s ease;}
+
+  pre.report{ background:var(--ink); color:#D9E6DC; padding:22px; border-radius:3px; font-family:'Space Mono',monospace; font-size:12px; line-height:1.7; overflow-x:auto; direction:ltr; text-align:left; }
+  .report-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .save-status{ font-size:12.5px; color:var(--sage-dim); margin-top:10px; font-family:'Space Mono',monospace; direction:ltr; text-align:left; display:none;}
+
+  .density-note{ font-size:12px; color:var(--concrete); margin-top:10px; font-family:'Space Mono',monospace; direction:ltr; text-align:left; }
+
+  .share-box{ margin-top:14px; padding-top:14px; border-top:1px dashed var(--line-strong); }
+  .share-box .report-actions{ margin-top:8px; }
+  .log-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+  .log-actions button{ padding:6px 10px; font-size:11.5px; }
+  #logTable td.num{ font-family:'Space Mono',monospace; direction:ltr; text-align:left; }
+  #logBody tr:hover{ background:var(--paper); }
+
+  footer{ border-top:2px solid var(--ink); padding:22px 6vw; margin-top:70px; font-family:'Space Mono',monospace; font-size:11px; color:var(--concrete); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--sand); border-radius:4px; }
+  @media (prefers-reduced-motion: reduce){ .swap-fill, .progress-fill{ transition:none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brandmark">
+    <div class="box">BDCT<br>UAE</div>
+    <div>
+      <h1 data-i18n="brandTitle">متتبع الكربون الرقمي</h1>
+      <div class="sub">PM/ Wael Ewis</div>
+    </div>
+  </div>
+  <div class="lang-toggle">
+    <button id="btnLangAr" class="active">AR</button>
+    <button id="btnLangEn">EN</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- 0. PROJECT IDENTITY (INTERACTIVE) -->
+  <section id="sec0" style="margin-top:36px;">
+    <div class="sec-head">
+      <span class="sec-num">00</span>
+      <h2 data-i18n="sec0Title">بيانات المشروع والمنشأة</h2>
+      <span class="sec-desc" data-i18n="sec0Desc">خانات إدخال حرة — تُستخدم مباشرة في رأس التقرير النهائي</span>
+    </div>
+    <div class="card identity-card">
+      <div class="row3">
+        <div>
+          <label data-i18n="labelProjectName">اسم المشروع</label>
+          <input type="text" id="projectName" value="مشروع أبراج دبي الخضراء المتكاملة">
+        </div>
+        <div>
+          <label data-i18n="labelOwnerEntity">الجهة المالكة</label>
+          <input type="text" id="ownerEntity" value="هيئة التطوير العمراني دبي">
+        </div>
+        <div>
+          <label data-i18n="labelExecutingEntity">الجهة المنفذة</label>
+          <input type="text" id="executingEntity" value="شركة المقاولات الإنشائية الحديثة ش.ذ.م.م">
+        </div>
+      </div>
+      <div class="row3">
+        <div>
+          <label data-i18n="labelFacilityType">نوع المنشأة</label>
+          <select id="facilityType">
+            <option>مراكز بيانات (Data Center Facility)</option>
+            <option>محطات تحلية مياه (Water Desalination Plant)</option>
+            <option>أبراج سكنية وإدارية (Residential & Commercial Towers)</option>
+            <option>مشاريع بنية تحتية تقليدية (Traditional Infrastructure Projects)</option>
+            <option>منشآت طاقة متجددة ونظيفة (Renewable Energy Facilities)</option>
+            <option>مجمعات تجارية كبرى (Mega Shopping Malls)</option>
+            <option>مستشفيات ومنشآت صحية (Healthcare Facilities)</option>
+            <option value="__other" data-i18n="optOther">نوع آخر (تحديد يدوي)…</option>
+          </select>
+          <input type="text" id="facilityTypeOther" data-i18n-placeholder="placeholderFacilityOther" placeholder="اكتب نوع المنشأة هنا" style="display:none; margin-top:8px;">
+        </div>
+        <div>
+          <label data-i18n="labelTotalArea">المساحة الإجمالية (م²)</label>
+          <input type="number" id="totalArea" value="5500" step="1" min="0">
+        </div>
+        <div>
+          <label data-i18n="labelReportDate">تاريخ التقرير</label>
+          <input type="date" id="reportDate">
+        </div>
+      </div>
+      <div class="row" style="margin-bottom:0;">
+        <div>
+          <label data-i18n="labelDevPM">مدير المشروع / المطوّر</label>
+          <input type="text" id="devPM" value="PM/ Wael Ewis">
+        </div>
+        <div>
+          <label data-i18n="labelTaxRate">معدل ضريبة الكربون ($ / طن)</label>
+          <input type="number" id="taxRate" value="45" step="1">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. ADVISORY WHAT-IF -->
+  <section id="sec1">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 data-i18n="sec1Title">محاكاة "ماذا لو" الاستشادية</h2>
+      <span class="tag advisory" data-i18n="sec1Tag">استرشادي — غير مُدرج في الضريبة النهائية</span>
+      <span class="sec-desc" data-i18n="sec1Desc">مقارنة توضيحية منفصلة تماماً عن حسابات الضريبة الرسمية</span>
+    </div>
+    <div class="card advisory-card">
+      <div class="row">
+        <div>
+          <label data-i18n="labelMaterial">المادة الإنشائية</label>
+          <select id="materialSelect"></select>
+        </div>
+        <div>
+          <label data-i18n="labelQty">الكمية</label>
+          <input type="number" id="qtyInput" value="60000" min="0" step="1">
+        </div>
+      </div>
+      <button id="runSim" data-i18n="btnRunSim">تشغيل المحاكاة الاستشادية</button>
+
+      <div class="swap-viz" id="swapViz" style="display:none;">
+        <div class="swap-row">
+          <div class="swap-label" data-i18n="swapBefore">المادة التقليدية</div>
+          <div class="swap-track"><div class="swap-fill before" id="fillBefore" style="width:0%"></div></div>
+          <div class="swap-val" id="valBefore">—</div>
+        </div>
+        <div class="swap-row">
+          <div class="swap-label" id="supplierLabel" data-i18n="swapAfter">البديل الأخضر</div>
+          <div class="swap-track"><div class="swap-fill after" id="fillAfter" style="width:0%"></div></div>
+          <div class="swap-val" id="valAfter">—</div>
+        </div>
+        <div class="saved-banner" id="savedBanner">
+          <div data-i18n="savedBannerLabel">الكربون الموفّر لو تم الاستبدال</div>
+          <div class="big"><span id="savedVal">0</span> kgCO2e — <span id="savedPct">0</span>%</div>
+        </div>
+        <div class="advisory-note" data-i18n="advisoryNote">* هذا البند استرشادي بحت لدعم اتخاذ القرار، ولا يدخل ضمن حساب الضريبة الرسمية في القسم 02.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ACTUAL TAX (BOQ + ENERGY + WATER) -->
+  <section id="sec2">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2 data-i18n="sec2Title">الضريبة الفعلية للموقع</h2>
+      <span class="tag official" data-i18n="sec2Tag">رسمي — أساس التقرير النهائي</span>
+      <span class="sec-desc" data-i18n="sec2Desc">قائمة الكميات (BOQ) الفعلية + استهلاك الكهرباء والمياه في الموقع</span>
+    </div>
+    <div class="card">
+      <table class="boq-table">
+        <thead><tr>
+          <th data-i18n="thMaterial">المادة</th>
+          <th data-i18n="thFactor">معامل الانبعاث</th>
+          <th data-i18n="thQty">الكمية الفعلية</th>
+        </tr></thead>
+        <tbody id="boqBody"></tbody>
+      </table>
+
+      <div class="row" style="margin-top:20px;">
+        <div>
+          <label data-i18n="labelEnergy">استهلاك الكهرباء الفعلي (kWh) — معامل 0.45 kgCO2e/kWh</label>
+          <input type="number" id="energyInput" value="35000" step="1">
+        </div>
+        <div>
+          <label data-i18n="labelWater">استهلاك المياه الفعلي (لتر) — معامل 0.0025 kgCO2e/لتر</label>
+          <input type="number" id="waterInput" value="9000" step="1">
+        </div>
+      </div>
+      <button id="calcTax" data-i18n="btnCalcTax">احتساب الضريبة الفعلية</button>
+
+      <div class="grid4" style="margin-top:20px;">
+        <div class="stat official">
+          <div class="label" data-i18n="statMatCarbon">كربون المواد</div>
+          <div class="value" id="matCarbonOut">—<span class="unit">kg</span></div>
+        </div>
+        <div class="stat official">
+          <div class="label" data-i18n="statElecCarbon">كربون الكهرباء</div>
+          <div class="value" id="elecCarbonOut">—<span class="unit">kg</span></div>
+        </div>
+        <div class="stat official">
+          <div class="label" data-i18n="statWaterCarbon">كربون المياه</div>
+          <div class="value" id="waterCarbonOut">—<span class="unit">kg</span></div>
+        </div>
+        <div class="stat official">
+          <div class="label" data-i18n="statTotalCarbon">إجمالي الانبعاثات</div>
+          <div class="value" id="totalCarbonOut">—<span class="unit">kg</span></div>
+        </div>
+      </div>
+      <div class="density-note" id="densityNote"></div>
+      <div class="saved-banner" style="background:var(--sage); color:var(--paper); margin-top:18px;">
+        <div><span data-i18n="taxBannerPrefix">الضريبة المتوقعة</span> (<span id="tonsOut">0</span> <span data-i18n="tonsWord">طن</span> × <span id="rateOut">45</span> $/<span data-i18n="perTonWord">طن</span>)</div>
+        <div class="big">$<span id="taxOut">0</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. GAMIFIED CHECKLIST -->
+  <section id="sec3">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2 data-i18n="sec3Title">مؤشر الأداء التحفيزي للفريق</h2>
+      <span class="tag official" data-i18n="sec3Tag">رسمي</span>
+      <span class="sec-desc" data-i18n="sec3Desc">قائمة تحقق تفاعلية بمهام الاستدامة الميدانية</span>
+    </div>
+    <div class="card">
+      <div class="checklist" id="checklist"></div>
+      <div style="margin-top:18px;">
+        <div id="badgeOut"></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="mono" style="font-size:12px; margin-top:8px; color:var(--concrete);" id="taskCountOut"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. FINAL REPORT -->
+  <section id="sec4">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 data-i18n="sec4Title">تقرير الامتثال النهائي</h2>
+      <span class="tag official">LEED / ESG</span>
+      <span class="sec-desc" data-i18n="sec4Desc">تقرير موحّد يضم بيانات المشروع، الضريبة الفعلية، وأداء الفريق</span>
+    </div>
+    <div class="card">
+      <button id="genReport" class="amber" data-i18n="btnGenReport">توليد ونسخ وحفظ التقرير النهائي</button>
+      <div class="report-actions" id="reportActions" style="display:none;">
+        <button id="copyReport" class="secondary" data-i18n="btnCopyReport">نسخ محتوى التقرير الرقمي</button>
+        <button id="downloadReport" class="secondary" data-i18n="btnDownloadReport">إعادة حفظ الملف — BDCT_Active_Compliance_Report.json</button>
+        <button id="saveToLog" class="secondary" data-i18n="btnSaveToLog">حفظ التقرير في السجل</button>
+      </div>
+      <div class="share-box" id="shareBox" style="display:none;">
+        <label data-i18n="labelShare">مشاركة هذا التقرير</label>
+        <div class="report-actions">
+          <button id="shareNative" class="secondary" data-i18n="btnShareNative">مشاركة (القائمة الأصلية)</button>
+          <button id="shareWhatsapp" class="secondary" data-i18n="btnShareWhatsapp">مشاركة عبر واتساب</button>
+          <button id="shareEmail" class="secondary" data-i18n="btnShareEmail">مشاركة عبر البريد</button>
+          <button id="shareCopySummary" class="secondary" data-i18n="btnShareCopySummary">نسخ ملخص للمشاركة</button>
+        </div>
+      </div>
+      <div class="save-status" id="saveStatus"></div>
+      <pre class="report" id="reportOut" style="display:none;"></pre>
+    </div>
+  </section>
+
+  <!-- 5. SAVED REPORTS LOG -->
+  <section id="sec5">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2 data-i18n="sec5Title">السجل المحفوظ للتقارير</h2>
+      <span class="tag official" data-i18n="sec5Tag">محفوظ محلياً على هذا الجهاز</span>
+      <span class="sec-desc" data-i18n="sec5Desc">أرشيف بكل التقارير التي تم حفظها لهذا المشروع، مع إمكانية الاستعراض والمشاركة والحذف</span>
+    </div>
+    <div class="card">
+      <div class="report-actions" style="margin-bottom:16px;">
+        <button id="exportAllLog" class="secondary" data-i18n="btnExportAllLog">تصدير كل السجل (JSON)</button>
+        <button id="clearLog" class="secondary" data-i18n="btnClearLog">مسح كل السجل</button>
+      </div>
+      <div id="logEmptyState" class="advisory-note" data-i18n="logEmptyState">لا توجد تقارير محفوظة بعد. اضغط "حفظ التقرير في السجل" بعد توليد تقرير في القسم 04.</div>
+      <table class="boq-table" id="logTable" style="display:none;">
+        <thead><tr>
+          <th data-i18n="thLogDate">التاريخ / الوقت</th>
+          <th data-i18n="thLogProject">المشروع</th>
+          <th data-i18n="thLogPM">مدير المشروع</th>
+          <th data-i18n="thLogTotal">إجمالي الانبعاثات (كجم)</th>
+          <th data-i18n="thLogTax">الضريبة ($)</th>
+          <th data-i18n="thLogActions">إجراءات</th>
+        </tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+      <pre class="report" id="logViewOut" style="display:none; margin-top:16px;"></pre>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div data-i18n="footerTitle">متتبع الكربون الرقمي</div>
+  <div id="footerDev">PM/ Wael Ewis</div>
+</footer>
+
+<script>
+/* ============================================================
+   طبقة الترجمة (i18n) — عربي / إنجليزي
+   ============================================================ */
+let currentLang = 'ar';
+
+const I18N = {
+  ar: {
+    brandTitle: "متتبع الكربون الرقمي",
+    sec0Title: "بيانات المشروع والمنشأة",
+    sec0Desc: "خانات إدخال حرة — تُستخدم مباشرة في رأس التقرير النهائي",
+    labelProjectName: "اسم المشروع",
+    labelOwnerEntity: "الجهة المالكة",
+    labelExecutingEntity: "الجهة المنفذة",
+    labelFacilityType: "نوع المنشأة",
+    optOther: "نوع آخر (تحديد يدوي)…",
+    placeholderFacilityOther: "اكتب نوع المنشأة هنا",
+    labelTotalArea: "المساحة الإجمالية (م²)",
+    labelReportDate: "تاريخ التقرير",
+    labelDevPM: "مدير المشروع / المطوّر",
+    labelTaxRate: "معدل ضريبة الكربون ($ / طن)",
+
+    sec1Title: `محاكاة "ماذا لو" الاستشادية`,
+    sec1Tag: "استرشادي — غير مُدرج في الضريبة النهائية",
+    sec1Desc: "مقارنة توضيحية منفصلة تماماً عن حسابات الضريبة الرسمية",
+    labelMaterial: "المادة الإنشائية",
+    labelQty: "الكمية",
+    btnRunSim: "تشغيل المحاكاة الاستشادية",
+    swapBefore: "المادة التقليدية",
+    swapAfter: "البديل الأخضر",
+    savedBannerLabel: "الكربون الموفّر لو تم الاستبدال",
+    advisoryNote: "* هذا البند استرشادي بحت لدعم اتخاذ القرار، ولا يدخل ضمن حساب الضريبة الرسمية في القسم 02.",
+    simErrorNotFound: "المادة غير مسجلة في قاعدة البيانات.",
+    moduleStatusAdvisory: "استرشادي بحت (What-If Advisory Simulation)",
+
+    sec2Title: "الضريبة الفعلية للموقع",
+    sec2Tag: "رسمي — أساس التقرير النهائي",
+    sec2Desc: "قائمة الكميات (BOQ) الفعلية + استهلاك الكهرباء والمياه في الموقع",
+    thMaterial: "المادة",
+    thFactor: "معامل الانبعاث",
+    thQty: "الكمية الفعلية",
+    labelEnergy: "استهلاك الكهرباء الفعلي (kWh) — معامل 0.45 kgCO2e/kWh",
+    labelWater: "استهلاك المياه الفعلي (لتر) — معامل 0.0025 kgCO2e/لتر",
+    btnCalcTax: "احتساب الضريبة الفعلية",
+    statMatCarbon: "كربون المواد",
+    statElecCarbon: "كربون الكهرباء",
+    statWaterCarbon: "كربون المياه",
+    statTotalCarbon: "إجمالي الانبعاثات",
+    taxBannerPrefix: "الضريبة المتوقعة",
+    tonsWord: "طن",
+    perTonWord: "طن",
+    densityTemplate: (density, area) => `كثافة الكربون: ${density} kgCO2e / m² (على أساس مساحة ${area} م² من قسم بيانات المشروع)`,
+
+    sec3Title: "مؤشر الأداء التحفيزي للفريق",
+    sec3Tag: "رسمي",
+    sec3Desc: "قائمة تحقق تفاعلية بمهام الاستدامة الميدانية",
+    taskCountTemplate: (done, total) => `${done} / ${total} مهام منجزة`,
+    checklistError: "لا توجد مهام.",
+
+    sec4Title: "تقرير الامتثال النهائي",
+    sec4Desc: "تقرير موحّد يضم بيانات المشروع، الضريبة الفعلية، وأداء الفريق",
+    btnGenReport: "توليد ونسخ وحفظ التقرير النهائي",
+    btnCopyReport: "نسخ محتوى التقرير الرقمي",
+    btnDownloadReport: "إعادة حفظ الملف — BDCT_Active_Compliance_Report.json",
+    copiedFeedback: "تم النسخ ✓",
+    saveStatusOK: "تم نسخ محتوى التقرير الرقمي، وتم حفظ التقرير بنجاح في الملف: BDCT_Active_Compliance_Report.json",
+    saveStatusErrorPrefix: "خطأ في الحفظ: ",
+    geoScope: "دولة الإمارات العربية المتحدة (UAE Market)",
+    complianceStatement: "تقرير رسمي شامل ومطابق لمتطلبات التدقيق والشهادات الخضراء (LEED / ESG) في دولة الإمارات.",
+
+    footerTitle: "متتبع الكربون الرقمي",
+
+    badgeGold: "مهندس أخضر ذهبي 🥇",
+    badgeSilver: "مهندس أخضر فضي 🥈",
+    badgeBronze: "مهندس أخضر برونزي 🥉",
+    badgeWeak: "بحاجة إلى تحسين ⚠️",
+
+    btnSaveToLog: "حفظ التقرير في السجل",
+    savedToLogMsg: "تم حفظ التقرير في السجل المحفوظ (القسم 05).",
+    labelShare: "مشاركة هذا التقرير",
+    btnShareNative: "مشاركة (القائمة الأصلية)",
+    btnShareWhatsapp: "مشاركة عبر واتساب",
+    btnShareEmail: "مشاركة عبر البريد",
+    btnShareCopySummary: "نسخ ملخص للمشاركة",
+    shareCopiedFeedback: "تم نسخ الملخص ✓",
+    shareNotSupported: "المشاركة عبر القائمة الأصلية غير مدعومة على هذا الجهاز/المتصفح — جرّب واتساب أو البريد أو نسخ الملخص.",
+    shareTitle: "تقرير الامتثال — متتبع الكربون الرقمي",
+    shareSummaryTemplate: (p) => `تقرير الامتثال البيئي — ${p.project}\nالجهة المالكة: ${p.owner}\nمدير المشروع: ${p.pm}\nإجمالي الانبعاثات: ${p.total} kgCO2e\nالضريبة المتوقعة: $${p.tax}\nالتاريخ: ${p.date}\n— أُعد بواسطة متتبع الكربون الرقمي (BDCT)`,
+
+    sec5Title: "السجل المحفوظ للتقارير",
+    sec5Tag: "محفوظ محلياً على هذا الجهاز",
+    sec5Desc: "أرشيف بكل التقارير التي تم حفظها لهذا المشروع، مع إمكانية الاستعراض والمشاركة والحذف",
+    btnExportAllLog: "تصدير كل السجل (JSON)",
+    btnClearLog: "مسح كل السجل",
+    logEmptyState: `لا توجد تقارير محفوظة بعد. اضغط "حفظ التقرير في السجل" بعد توليد تقرير في القسم 04.`,
+    thLogDate: "التاريخ / الوقت",
+    thLogProject: "المشروع",
+    thLogPM: "مدير المشروع",
+    thLogTotal: "إجمالي الانبعاثات (كجم)",
+    thLogTax: "الضريبة ($)",
+    thLogActions: "إجراءات",
+    logBtnView: "عرض",
+    logBtnShare: "مشاركة",
+    logBtnDownload: "تنزيل",
+    logBtnDelete: "حذف",
+    confirmClearLog: "هل أنت متأكد من مسح كل السجل المحفوظ؟ لا يمكن التراجع عن هذا الإجراء.",
+    confirmDeleteEntry: "هل تريد حذف هذا التقرير من السجل؟",
+    logExportEmpty: "لا توجد تقارير لتصديرها.",
+    noReportYet: "الرجاء توليد التقرير أولاً من القسم 04."
+  },
+  en: {
+    brandTitle: "Digital Carbon Tracker",
+    sec0Title: "Project & Facility Details",
+    sec0Desc: "Free-entry fields — used directly in the final report header",
+    labelProjectName: "Project Name",
+    labelOwnerEntity: "Owner Entity",
+    labelExecutingEntity: "Executing Entity",
+    labelFacilityType: "Facility Type",
+    optOther: "Other type (manual entry)…",
+    placeholderFacilityOther: "Type the facility type here",
+    labelTotalArea: "Total Area (m²)",
+    labelReportDate: "Report Date",
+    labelDevPM: "Project Manager / Developer",
+    labelTaxRate: "Carbon Tax Rate ($ / ton)",
+
+    sec1Title: `Advisory "What-If" Simulation`,
+    sec1Tag: "Advisory — not included in final tax",
+    sec1Desc: "An illustrative comparison, fully separate from the official tax calculations",
+    labelMaterial: "Construction Material",
+    labelQty: "Quantity",
+    btnRunSim: "Run Advisory Simulation",
+    swapBefore: "Conventional Material",
+    swapAfter: "Green Alternative",
+    savedBannerLabel: "Carbon saved if replaced",
+    advisoryNote: "* This item is purely advisory to support decision-making, and is not included in the official tax calculation in Section 02.",
+    simErrorNotFound: "Material not registered in the database.",
+    moduleStatusAdvisory: "Purely Advisory (What-If Advisory Simulation)",
+
+    sec2Title: "Actual Site Carbon Tax",
+    sec2Tag: "Official — basis of final report",
+    sec2Desc: "Actual Bill of Quantities (BOQ) + on-site electricity and water consumption",
+    thMaterial: "Material",
+    thFactor: "Emission Factor",
+    thQty: "Actual Quantity",
+    labelEnergy: "Actual electricity consumption (kWh) — factor 0.45 kgCO2e/kWh",
+    labelWater: "Actual water consumption (liters) — factor 0.0025 kgCO2e/liter",
+    btnCalcTax: "Calculate Actual Tax",
+    statMatCarbon: "Materials Carbon",
+    statElecCarbon: "Electricity Carbon",
+    statWaterCarbon: "Water Carbon",
+    statTotalCarbon: "Total Emissions",
+    taxBannerPrefix: "Expected Tax",
+    tonsWord: "t",
+    perTonWord: "t",
+    densityTemplate: (density, area) => `Carbon density: ${density} kgCO2e / m² (based on ${area} m² from the project details section)`,
+
+    sec3Title: "Team Gamified Performance Index",
+    sec3Tag: "Official",
+    sec3Desc: "An interactive checklist of on-site sustainability tasks",
+    taskCountTemplate: (done, total) => `${done} / ${total} tasks completed`,
+    checklistError: "No tasks available.",
+
+    sec4Title: "Final Compliance Report",
+    sec4Desc: "A unified report combining project details, actual tax, and team performance",
+    btnGenReport: "Generate, Copy & Save Final Report",
+    btnCopyReport: "Copy Report Content",
+    btnDownloadReport: "Re-save File — BDCT_Active_Compliance_Report.json",
+    copiedFeedback: "Copied ✓",
+    saveStatusOK: "Report content copied, and the report was saved successfully to: BDCT_Active_Compliance_Report.json",
+    saveStatusErrorPrefix: "Save error: ",
+    geoScope: "United Arab Emirates (UAE Market)",
+    complianceStatement: "A comprehensive official report compliant with audit requirements and green certifications (LEED / ESG) in the UAE.",
+
+    footerTitle: "Digital Carbon Tracker",
+
+    badgeGold: "Gold Green Engineer 🥇",
+    badgeSilver: "Silver Green Engineer 🥈",
+    badgeBronze: "Bronze Green Engineer 🥉",
+    badgeWeak: "Needs Improvement ⚠️",
+
+    btnSaveToLog: "Save Report to Log",
+    savedToLogMsg: "Report saved to the log (Section 05).",
+    labelShare: "Share this report",
+    btnShareNative: "Share (Native Menu)",
+    btnShareWhatsapp: "Share via WhatsApp",
+    btnShareEmail: "Share via Email",
+    btnShareCopySummary: "Copy Share Summary",
+    shareCopiedFeedback: "Summary copied ✓",
+    shareNotSupported: "Native sharing isn't supported on this device/browser — try WhatsApp, Email, or Copy Summary instead.",
+    shareTitle: "Compliance Report — Digital Carbon Tracker",
+    shareSummaryTemplate: (p) => `Environmental Compliance Report — ${p.project}\nOwner Entity: ${p.owner}\nProject Manager: ${p.pm}\nTotal Emissions: ${p.total} kgCO2e\nExpected Tax: $${p.tax}\nDate: ${p.date}\n— Generated by Digital Carbon Tracker (BDCT)`,
+
+    sec5Title: "Saved Reports Log",
+    sec5Tag: "Saved locally on this device",
+    sec5Desc: "An archive of every report saved for this project, with view, share, and delete options",
+    btnExportAllLog: "Export Entire Log (JSON)",
+    btnClearLog: "Clear Entire Log",
+    logEmptyState: `No saved reports yet. Click "Save Report to Log" after generating a report in Section 04.`,
+    thLogDate: "Date / Time",
+    thLogProject: "Project",
+    thLogPM: "Project Manager",
+    thLogTotal: "Total Emissions (kg)",
+    thLogTax: "Tax ($)",
+    thLogActions: "Actions",
+    logBtnView: "View",
+    logBtnShare: "Share",
+    logBtnDownload: "Download",
+    logBtnDelete: "Delete",
+    confirmClearLog: "Are you sure you want to clear the entire saved log? This cannot be undone.",
+    confirmDeleteEntry: "Delete this report from the log?",
+    logExportEmpty: "There are no reports to export.",
+    noReportYet: "Please generate a report first in Section 04."
+  }
+};
+
+function t(key){
+  const v = I18N[currentLang][key];
+  return v !== undefined ? v : key;
+}
+
+/* ============================================================
+   بيانات المواد — بمسمّيات ثنائية اللغة (المفاتيح تبقى ثابتة إنجليزية)
+   ============================================================ */
+const materialsDB = {
+  ordinary_portland_concrete_c30: { label_ar: "خرسانة بورتلاندية عادية C30", label_en: "Ordinary Portland Concrete C30", gwp: 310.0, unit: "m3", green_alt_ar: "خرسانة GGBS منخفضة الكربون C30", green_alt_en: "GGBS Low-Carbon Concrete C30", alt_gwp: 220.0, supplier: "Emirates National Factory" },
+  ordinary_portland_concrete_c40: { label_ar: "خرسانة بورتلاندية عادية C40", label_en: "Ordinary Portland Concrete C40", gwp: 360.0, unit: "m3", green_alt_ar: "خرسانة مخلوطة بدخان السيليكا C40", green_alt_en: "Silica Fume Blended Concrete C40", alt_gwp: 260.0, supplier: "Unimix UAE" },
+  rebar_virgin_steel: { label_ar: "حديد تسليح خام (Virgin Steel)", label_en: "Virgin Steel Rebar", gwp: 1.95, unit: "kg", green_alt_ar: "حديد تسليح 100% معاد تدويره (EAF)", green_alt_en: "100% Recycled EAF Rebar", alt_gwp: 0.45, supplier: "Emirates Steel Arkan" },
+  structural_steel_sections: { label_ar: "مقاطع حديد إنشائي", label_en: "Structural Steel Sections", gwp: 2.50, unit: "kg", green_alt_ar: "حديد إنشائي منخفض الكربون (EAF)", green_alt_en: "Low-Carbon EAF Structural Steel", alt_gwp: 0.70, supplier: "Conares Steel" },
+  insulation_xps_boards: { label_ar: "ألواح عزل XPS", label_en: "XPS Insulation Boards", gwp: 3.10, unit: "kg", green_alt_ar: "بوليسترين مبثوق صفري ODP", green_alt_en: "Zero-ODP Extruded Polystyrene", alt_gwp: 1.40, supplier: "Fosroc / DOW UAE" },
+  rock_wool_insulation: { label_ar: "عزل الصوف الصخري", label_en: "Rock Wool Insulation", gwp: 1.30, unit: "kg", green_alt_ar: "صوف بازلتي أخضر", green_alt_en: "Green Basalt Rockwool", alt_gwp: 0.70, supplier: "GlassRock Insulation" },
+  clear_float_glass_6mm: { label_ar: "زجاج شفاف عائم 6مم", label_en: "Clear Float Glass 6mm", gwp: 14.50, unit: "m2", green_alt_ar: "زجاج Low-E متحكم شمسياً", green_alt_en: "Solar-Control Low-E Glass", alt_gwp: 9.20, supplier: "Emirates Glass LLC" },
+  ceramic_wall_tiles: { label_ar: "بلاط سيراميك للحوائط", label_en: "Ceramic Wall Tiles", gwp: 11.00, unit: "m2", green_alt_ar: "بلاط سيراميك بمحتوى معاد تدويره", green_alt_en: "Recycled Content Ceramic Tiles", alt_gwp: 6.50, supplier: "RAK Ceramics" }
+};
+
+const checklistItems = [
+  { id: "green_materials",   ar: "اعتماد وتوريد المواد الخضراء",              en: "Approve and supply green materials" },
+  { id: "waste_sorting",     ar: "تفعيل نظام فرز المخلفات بموقع المشروع",       en: "Activate on-site waste sorting system" },
+  { id: "emissions_monitor", ar: "مراقبة انبعاثات المولدات والأحمال",           en: "Monitor generator and load emissions" },
+  { id: "sensors_install",   ar: "تركيب وصيانة حساسات المياه والطاقة",          en: "Install and maintain water/energy sensors" },
+  { id: "reports_delivery",  ar: "تسليم التقارير البيئية الدورية",              en: "Deliver periodic environmental reports" },
+  { id: "thermal_standards", ar: "تطبيق معايير العزل الحراري",                  en: "Apply thermal insulation standards" },
+  { id: "team_training",     ar: "تدريب فريق العمل على الاستدامة",              en: "Train the team on sustainability" },
+  { id: "final_audit",       ar: "التدقيق النهائي للبصمة الكربونية",            en: "Final audit of the carbon footprint" }
+];
+const checklistDone = {};
+checklistItems.forEach(item => checklistDone[item.id] = true);
+
+const state = {
+  electricityFactor: 0.45,
+  waterFactor: 0.0025,
+  boq: {
+    rebar_virgin_steel: 50000.0,
+    ordinary_portland_concrete_c30: 2000.0,
+    insulation_xps_boards: 3500.0
+  },
+  lastTaxData: null,
+  lastReport: null
+};
+
+// --- default report date = today ---
+document.getElementById('reportDate').value = new Date().toISOString().slice(0,10);
+
+// --- facility type "other" toggle ---
+const facilitySelect = document.getElementById('facilityType');
+const facilityOther = document.getElementById('facilityTypeOther');
+facilitySelect.addEventListener('change', () => {
+  facilityOther.style.display = facilitySelect.value === '__other' ? 'block' : 'none';
+});
+function getFacilityType(){
+  return facilitySelect.value === '__other' && facilityOther.value.trim()
+    ? facilityOther.value.trim()
+    : facilitySelect.value;
+}
+
+// --- footer reflects PM live ---
+document.getElementById('devPM').addEventListener('input', updateFooter);
+function updateFooter(){
+  document.getElementById('footerDev').textContent = document.getElementById('devPM').value;
+}
+
+// --- material select (advisory sim) ---
+const materialSelect = document.getElementById('materialSelect');
+function renderMaterialSelect(){
+  const prevValue = materialSelect.value || "rebar_virgin_steel";
+  materialSelect.innerHTML = '';
+  Object.entries(materialsDB).forEach(([key, m]) => {
+    const opt = document.createElement('option');
+    opt.value = key;
+    const label = currentLang === 'ar' ? m.label_ar : m.label_en;
+    opt.textContent = `${label} — ${m.gwp} kgCO2e/${m.unit}`;
+    materialSelect.appendChild(opt);
+  });
+  materialSelect.value = prevValue;
+}
+renderMaterialSelect();
+
+// --- 1. Advisory What-If Simulation ---
+function runWhatIfSimulation(materialKey, quantity){
+  const mat = materialsDB[materialKey];
+  if(!mat) return { error: t('simErrorNotFound') };
+  const orig = quantity * mat.gwp;
+  const green = quantity * mat.alt_gwp;
+  const saved = orig - green;
+  const pct = orig > 0 ? (saved/orig)*100 : 0;
+  return {
+    "Module Status": t('moduleStatusAdvisory'),
+    Material: materialKey,
+    "Original Emissions (kgCO2e)": Math.round(orig*100)/100,
+    "Green Alternative": currentLang === 'ar' ? mat.green_alt_ar : mat.green_alt_en,
+    "Green Alternative Supplier": mat.supplier,
+    "Green Emissions (kgCO2e)": Math.round(green*100)/100,
+    "Carbon Saved (kgCO2e)": Math.round(saved*100)/100,
+    "Saving Percentage (%)": Math.round(pct*100)/100
+  };
+}
+
+let lastSimKey = null, lastSimQty = null;
+document.getElementById('runSim').addEventListener('click', () => {
+  const key = materialSelect.value;
+  const qty = parseFloat(document.getElementById('qtyInput').value) || 0;
+  lastSimKey = key; lastSimQty = qty;
+  renderSimResult();
+});
+
+function renderSimResult(){
+  if(lastSimKey === null) return;
+  const r = runWhatIfSimulation(lastSimKey, lastSimQty);
+  const viz = document.getElementById('swapViz');
+  viz.style.display = 'block';
+  if(r.error) return;
+
+  const before = r["Original Emissions (kgCO2e)"];
+  const after = r["Green Emissions (kgCO2e)"];
+  const maxVal = Math.max(before, after) || 1;
+  document.getElementById('fillBefore').style.width = (before/maxVal*100) + '%';
+  document.getElementById('fillAfter').style.width = (after/maxVal*100) + '%';
+  document.getElementById('valBefore').textContent = before.toLocaleString('en-US') + ' kg';
+  document.getElementById('valAfter').textContent = after.toLocaleString('en-US') + ' kg';
+  document.getElementById('supplierLabel').textContent = r["Green Alternative"];
+  document.getElementById('savedBanner').innerHTML =
+    `<div>${t('savedBannerLabel')}</div><div class="big"><span id="savedVal">${r["Carbon Saved (kgCO2e)"].toLocaleString('en-US')}</span> kgCO2e — <span id="savedPct">${r["Saving Percentage (%)"]}</span>%</div>`;
+}
+
+// --- 2. Actual carbon tax (BOQ + energy + water), linked to project area ---
+function renderBOQ(){
+  const body = document.getElementById('boqBody');
+  body.innerHTML = '';
+  Object.entries(materialsDB).forEach(([key, m]) => {
+    const tr = document.createElement('tr');
+    const qty = state.boq[key] !== undefined ? state.boq[key] : 0;
+    const label = currentLang === 'ar' ? m.label_ar : m.label_en;
+    tr.innerHTML = `
+      <td>${label}</td>
+      <td class="num">${m.gwp} /${m.unit}</td>
+      <td class="qty-cell"><input type="number" data-key="${key}" value="${qty}" step="1" min="0"></td>
+    `;
+    body.appendChild(tr);
+  });
+  body.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      state.boq[e.target.dataset.key] = parseFloat(e.target.value) || 0;
+    });
+  });
+}
+renderBOQ();
+
+function calculateTotalActualCarbonTax(boq, energyKwh, waterLiters, taxRate){
+  let actualMaterialsCarbon = 0;
+  Object.entries(boq).forEach(([key, qty]) => {
+    const mat = materialsDB[key];
+    if(mat && qty > 0) actualMaterialsCarbon += qty * mat.gwp;
+  });
+  const electricityCarbon = energyKwh * state.electricityFactor;
+  const waterCarbon = waterLiters * state.waterFactor;
+  const totalKg = actualMaterialsCarbon + electricityCarbon + waterCarbon;
+  const totalTons = totalKg / 1000.0;
+  const expectedTax = totalTons * taxRate;
+  return {
+    "Actual Materials Carbon (kgCO2e)": Math.round(actualMaterialsCarbon*100)/100,
+    "Actual Electricity Carbon (kgCO2e)": Math.round(electricityCarbon*100)/100,
+    "Actual Water Carbon (kgCO2e)": Math.round(waterCarbon*100)/100,
+    "Total Actual Emissions (kgCO2e)": Math.round(totalKg*100)/100,
+    "Total Actual Tons (t)": Math.round(totalTons*1000)/1000,
+    "Applied Tax Rate ($/t)": taxRate,
+    "Expected Tax (USD)": Math.round(expectedTax*100)/100
+  };
+}
+
+document.getElementById('calcTax').addEventListener('click', () => {
+  const energy = parseFloat(document.getElementById('energyInput').value) || 0;
+  const water = parseFloat(document.getElementById('waterInput').value) || 0;
+  const rate = parseFloat(document.getElementById('taxRate').value) || 0;
+  const area = parseFloat(document.getElementById('totalArea').value) || 0;
+  const data = calculateTotalActualCarbonTax(state.boq, energy, water, rate);
+  state.lastTaxData = data;
+  renderTaxResult(area);
+});
+
+function renderTaxResult(area){
+  const data = state.lastTaxData;
+  if(!data) return;
+  document.getElementById('matCarbonOut').innerHTML = data["Actual Materials Carbon (kgCO2e)"].toLocaleString('en-US') + '<span class="unit">kg</span>';
+  document.getElementById('elecCarbonOut').innerHTML = data["Actual Electricity Carbon (kgCO2e)"].toLocaleString('en-US') + '<span class="unit">kg</span>';
+  document.getElementById('waterCarbonOut').innerHTML = data["Actual Water Carbon (kgCO2e)"].toLocaleString('en-US') + '<span class="unit">kg</span>';
+  document.getElementById('totalCarbonOut').innerHTML = data["Total Actual Emissions (kgCO2e)"].toLocaleString('en-US') + '<span class="unit">kg</span>';
+  document.getElementById('tonsOut').textContent = data["Total Actual Tons (t)"].toLocaleString('en-US');
+  document.getElementById('rateOut').textContent = data["Applied Tax Rate ($/t)"];
+  document.getElementById('taxOut').textContent = data["Expected Tax (USD)"].toLocaleString('en-US');
+
+  const areaVal = area !== undefined ? area : (parseFloat(document.getElementById('totalArea').value) || 0);
+  const density = areaVal > 0 ? (data["Total Actual Emissions (kgCO2e)"] / areaVal) : 0;
+  document.getElementById('densityNote').textContent =
+    areaVal > 0 ? t('densityTemplate')(density.toFixed(2), areaVal.toLocaleString('en-US')) : '';
+}
+
+// --- 3. Gamified checklist ---
+function renderChecklist(){
+  const el = document.getElementById('checklist');
+  el.innerHTML = '';
+  checklistItems.forEach(item => {
+    const text = currentLang === 'ar' ? item.ar : item.en;
+    const row = document.createElement('label');
+    row.className = 'check-item';
+    row.innerHTML = `<input type="checkbox" data-task="${item.id}" ${checklistDone[item.id] ? 'checked' : ''}> <span>${text}</span>`;
+    el.appendChild(row);
+  });
+  el.querySelectorAll('input').forEach(cb => {
+    cb.addEventListener('change', e => {
+      checklistDone[e.target.dataset.task] = e.target.checked;
+      updatePerformanceDisplay();
+    });
+  });
+}
+renderChecklist();
+
+function calculateTeamGamifiedPerformance(checklist){
+  const total = Object.keys(checklist).length;
+  if(total === 0) return { error: t('checklistError') };
+  const completed = Object.values(checklist).filter(v => v === true).length;
+  const pct = (completed/total)*100;
+  let badge, cls;
+  if(pct >= 90){ badge = t('badgeGold'); cls = "gold"; }
+  else if(pct >= 75){ badge = t('badgeSilver'); cls = "silver"; }
+  else if(pct >= 50){ badge = t('badgeBronze'); cls = "bronze"; }
+  else { badge = t('badgeWeak'); cls = "weak"; }
+  return { total, completed, pct: Math.round(pct*100)/100, badge, cls };
+}
+
+function updatePerformanceDisplay(){
+  const r = calculateTeamGamifiedPerformance(checklistDone);
+  document.getElementById('badgeOut').innerHTML = `<span class="badge ${r.cls}">${r.badge} — ${r.pct}%</span>`;
+  document.getElementById('progressFill').style.width = Math.min(r.pct,100) + '%';
+  document.getElementById('taskCountOut').textContent = t('taskCountTemplate')(r.completed, r.total);
+}
+updatePerformanceDisplay();
+
+// --- 4. Final report (pulls live project identity fields) ---
+document.getElementById('genReport').addEventListener('click', () => {
+  const taxData = state.lastTaxData || calculateTotalActualCarbonTax(
+    state.boq,
+    parseFloat(document.getElementById('energyInput').value) || 0,
+    parseFloat(document.getElementById('waterInput').value) || 0,
+    parseFloat(document.getElementById('taxRate').value) || 45
+  );
+  const perfData = calculateTeamGamifiedPerformance(checklistDone);
+
+  const report = {
+    "Header Information": {
+      "Project Name": document.getElementById('projectName').value,
+      "Owner Entity": document.getElementById('ownerEntity').value,
+      "Executing Entity": document.getElementById('executingEntity').value,
+      "Developer / PM": document.getElementById('devPM').value,
+      "Geographic Scope": t('geoScope'),
+      "Report Date": document.getElementById('reportDate').value
+    },
+    "Facility Specifications": {
+      "Facility Type": getFacilityType(),
+      "Total Area (m2)": parseFloat(document.getElementById('totalArea').value) || 0
+    },
+    "Item 3: Actual Carbon Tax Summary (Based on Site Actuals)": taxData,
+    "Item 4: Team Gamified Performance (Checklist Evaluation)": {
+      "Total Tasks": perfData.total,
+      "Completed Tasks": perfData.completed,
+      "Performance Percentage (%)": perfData.pct,
+      "Assigned Badge": perfData.badge
+    },
+    "Compliance Statement": t('complianceStatement')
+  };
+
+  const json = JSON.stringify(report, null, 4);
+  state.lastReport = json;
+  state.lastReportMeta = {
+    project: report["Header Information"]["Project Name"],
+    owner: report["Header Information"]["Owner Entity"],
+    pm: report["Header Information"]["Developer / PM"],
+    total: taxData["Total Actual Emissions (kgCO2e)"],
+    tax: taxData["Expected Tax (USD)"],
+    date: report["Header Information"]["Report Date"]
+  };
+  const out = document.getElementById('reportOut');
+  out.textContent = json;
+  out.style.display = 'block';
+  document.getElementById('reportActions').style.display = 'flex';
+  document.getElementById('shareBox').style.display = 'block';
+
+  // يحاكي سلوك copy_and_save_report: نسخ فوري للحافظة + حفظ فوري للملف في خطوة واحدة
+  copyReportToClipboard(true);
+  downloadReportFile(true);
+});
+
+function copyReportToClipboard(silent){
+  if(!state.lastReport) return;
+  navigator.clipboard.writeText(state.lastReport).then(() => {
+    if(!silent){
+      const btn = document.getElementById('copyReport');
+      const orig = btn.textContent;
+      btn.textContent = t('copiedFeedback');
+      setTimeout(() => btn.textContent = t('btnCopyReport'), 1500);
+    }
+  });
+}
+
+function downloadReportFile(silent){
+  if(!state.lastReport) return;
+  const status = document.getElementById('saveStatus');
+  try {
+    const blob = new Blob([state.lastReport], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'BDCT_Active_Compliance_Report.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    status.style.display = 'block';
+    status.textContent = t('saveStatusOK');
+  } catch(e) {
+    status.style.display = 'block';
+    status.textContent = t('saveStatusErrorPrefix') + e.message;
+  }
+}
+
+document.getElementById('copyReport').addEventListener('click', () => copyReportToClipboard(false));
+document.getElementById('downloadReport').addEventListener('click', () => downloadReportFile(false));
+
+/* ============================================================
+   5. السجل المحفوظ للتقارير — localStorage
+   Saved Reports Log — persisted in the browser's localStorage
+   on this device. Nothing is sent to any server.
+   ============================================================ */
+const LOG_STORAGE_KEY = 'bdct_saved_reports_v1';
+
+function loadLog(){
+  try {
+    const raw = localStorage.getItem(LOG_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function persistLog(list){
+  try { localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(list)); } catch(e) {}
+}
+
+function saveCurrentReportToLog(){
+  if(!state.lastReport){
+    alert(t('noReportYet'));
+    return;
+  }
+  const list = loadLog();
+  const meta = state.lastReportMeta || {};
+  list.unshift({
+    id: 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+    savedAt: new Date().toISOString(),
+    project: meta.project || '',
+    pm: meta.pm || '',
+    total: meta.total || 0,
+    tax: meta.tax || 0,
+    reportJson: state.lastReport
+  });
+  persistLog(list);
+  renderSavedLog();
+  const status = document.getElementById('saveStatus');
+  status.style.display = 'block';
+  status.textContent = t('savedToLogMsg');
+}
+document.getElementById('saveToLog').addEventListener('click', saveCurrentReportToLog);
+
+function renderSavedLog(){
+  const list = loadLog();
+  const empty = document.getElementById('logEmptyState');
+  const table = document.getElementById('logTable');
+  const body = document.getElementById('logBody');
+  body.innerHTML = '';
+
+  if(list.length === 0){
+    empty.style.display = 'block';
+    table.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  table.style.display = 'table';
+
+  list.forEach(entry => {
+    const tr = document.createElement('tr');
+    const dt = new Date(entry.savedAt);
+    const dateStr = isNaN(dt) ? entry.savedAt : dt.toLocaleString('en-US');
+    tr.innerHTML = `
+      <td class="num">${dateStr}</td>
+      <td>${entry.project || '—'}</td>
+      <td>${entry.pm || '—'}</td>
+      <td class="num">${(entry.total || 0).toLocaleString('en-US')}</td>
+      <td class="num">$${(entry.tax || 0).toLocaleString('en-US')}</td>
+      <td>
+        <div class="log-actions">
+          <button class="secondary" data-act="view" data-id="${entry.id}">${t('logBtnView')}</button>
+          <button class="secondary" data-act="share" data-id="${entry.id}">${t('logBtnShare')}</button>
+          <button class="secondary" data-act="download" data-id="${entry.id}">${t('logBtnDownload')}</button>
+          <button class="secondary" data-act="delete" data-id="${entry.id}">${t('logBtnDelete')}</button>
+        </div>
+      </td>
+    `;
+    body.appendChild(tr);
+  });
+
+  body.querySelectorAll('button[data-act]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      const entry = loadLog().find(e => e.id === id);
+      if(!entry) return;
+      if(act === 'view') viewLogEntry(entry);
+      else if(act === 'share') shareText(buildShareSummaryFromLog(entry), t('shareTitle'));
+      else if(act === 'download') downloadLogEntry(entry);
+      else if(act === 'delete') deleteLogEntry(id);
+    });
+  });
+}
+
+function viewLogEntry(entry){
+  const out = document.getElementById('logViewOut');
+  out.textContent = entry.reportJson;
+  out.style.display = 'block';
+  out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function downloadLogEntry(entry){
+  const blob = new Blob([entry.reportJson], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `BDCT_Report_${(entry.project || 'project').replace(/[^a-z0-9\u0600-\u06FF]+/gi,'_')}_${entry.savedAt.slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function deleteLogEntry(id){
+  if(!confirm(t('confirmDeleteEntry'))) return;
+  const list = loadLog().filter(e => e.id !== id);
+  persistLog(list);
+  renderSavedLog();
+}
+
+document.getElementById('clearLog').addEventListener('click', () => {
+  if(loadLog().length === 0) return;
+  if(!confirm(t('confirmClearLog'))) return;
+  persistLog([]);
+  document.getElementById('logViewOut').style.display = 'none';
+  renderSavedLog();
+});
+
+document.getElementById('exportAllLog').addEventListener('click', () => {
+  const list = loadLog();
+  if(list.length === 0){ alert(t('logExportEmpty')); return; }
+  const blob = new Blob([JSON.stringify(list, null, 4)], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'BDCT_Saved_Reports_Log.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+/* ============================================================
+   مشاركة التقارير — Report Sharing
+   ============================================================ */
+function buildShareSummaryFromMeta(meta){
+  return t('shareSummaryTemplate')({
+    project: meta.project || '',
+    owner: meta.owner || '',
+    pm: meta.pm || '',
+    total: (meta.total || 0).toLocaleString('en-US'),
+    tax: (meta.tax || 0).toLocaleString('en-US'),
+    date: meta.date || ''
+  });
+}
+function buildShareSummaryFromLog(entry){
+  return t('shareSummaryTemplate')({
+    project: entry.project || '',
+    owner: '',
+    pm: entry.pm || '',
+    total: (entry.total || 0).toLocaleString('en-US'),
+    tax: (entry.tax || 0).toLocaleString('en-US'),
+    date: (entry.savedAt || '').slice(0,10)
+  });
+}
+
+async function shareText(text, title){
+  if(navigator.share){
+    try {
+      await navigator.share({ title: title || t('shareTitle'), text });
+      return;
+    } catch(e) { /* user cancelled or unsupported — fall through */ }
+  }
+  copyPlainText(text);
+  alert(t('shareNotSupported'));
+}
+
+function copyPlainText(text){
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+document.getElementById('shareNative').addEventListener('click', () => {
+  if(!state.lastReportMeta){ alert(t('noReportYet')); return; }
+  const summary = buildShareSummaryFromMeta(state.lastReportMeta);
+  if(navigator.share){
+    navigator.share({ title: t('shareTitle'), text: summary }).catch(() => {});
+  } else {
+    copyPlainText(summary);
+    alert(t('shareNotSupported'));
+  }
+});
+
+document.getElementById('shareWhatsapp').addEventListener('click', () => {
+  if(!state.lastReportMeta){ alert(t('noReportYet')); return; }
+  const summary = buildShareSummaryFromMeta(state.lastReportMeta);
+  window.open('https://wa.me/?text=' + encodeURIComponent(summary), '_blank');
+});
+
+document.getElementById('shareEmail').addEventListener('click', () => {
+  if(!state.lastReportMeta){ alert(t('noReportYet')); return; }
+  const summary = buildShareSummaryFromMeta(state.lastReportMeta);
+  const subject = t('shareTitle') + ' — ' + (state.lastReportMeta.project || '');
+  window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(summary);
+});
+
+document.getElementById('shareCopySummary').addEventListener('click', () => {
+  if(!state.lastReportMeta){ alert(t('noReportYet')); return; }
+  const summary = buildShareSummaryFromMeta(state.lastReportMeta);
+  navigator.clipboard.writeText(summary).then(() => {
+    const btn = document.getElementById('shareCopySummary');
+    const orig = btn.textContent;
+    btn.textContent = t('shareCopiedFeedback');
+    setTimeout(() => btn.textContent = t('btnShareCopySummary'), 1500);
+  });
+});
+
+renderSavedLog();
+
+/* ============================================================
+   فرض الأرقام اللاتينية (0-9) في كل حقول الإدخال الرقمية
+   Force Latin (English) digits across all numeric inputs
+   ============================================================ */
+function forceLatinDigitsOnInputs(){
+  document.querySelectorAll('input[type="number"]').forEach(inp => {
+    inp.setAttribute('lang', 'en');
+    inp.setAttribute('inputmode', 'decimal');
+  });
+}
+forceLatinDigitsOnInputs();
+
+/* ============================================================
+   تبديل اللغة — يحدّث الاتجاه، النصوص الثابتة، والمحتوى الديناميكي
+   ============================================================ */
+function applyStaticTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+}
+
+function setLanguage(lang){
+  currentLang = lang;
+  const html = document.getElementById('htmlRoot');
+  html.lang = lang;
+  html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.body.style.fontFamily = lang === 'ar'
+    ? "'IBM Plex Sans Arabic', 'Space Mono', sans-serif"
+    : "'Space Mono', 'IBM Plex Sans Arabic', sans-serif";
+
+  document.getElementById('btnLangAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnLangEn').classList.toggle('active', lang === 'en');
+
+  applyStaticTranslations();
+  renderMaterialSelect();
+  renderBOQ();
+  renderChecklist();
+  updatePerformanceDisplay();
+  renderSimResult();
+  if(state.lastTaxData) renderTaxResult();
+  renderSavedLog();
+  forceLatinDigitsOnInputs();
+
+  // إن كان هناك تقرير مولّد سابقاً، يُعاد توليده بلغة العرض الحالية عند الطلب اليدوي فقط
+  document.getElementById('saveStatus').style.display = 'none';
+}
+
+document.getElementById('btnLangAr').addEventListener('click', () => setLanguage('ar'));
+document.getElementById('btnLangEn').addEventListener('click', () => setLanguage('en'));
+</script>
+</body>
+</html>

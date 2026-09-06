@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>منصة صياغة عقود الفيديك | FIDIC Contract Drafter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16222E;
+    --navy:#0E2A44;
+    --navy-2:#163A5C;
+    --navy-3:#1F4E79;
+    --paper:#F6F5F1;
+    --paper-2:#FFFFFF;
+    --line:#DCD8CC;
+    --steel:#748094;
+    --amber:#D98E2B;
+    --amber-ink:#5C3B0C;
+    --success:#3F7A5C;
+    --success-bg:#E9F2ED;
+    --border:#D8D4C8;
+    --radius:4px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans Arabic','IBM Plex Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  [dir="ltr"] body{font-family:'IBM Plex Sans','IBM Plex Sans Arabic',sans-serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+
+  /* ===== Header ===== */
+  header.topbar{
+    position:sticky;top:0;z-index:40;
+    background:var(--navy);
+    color:#EAF0F5;
+    display:flex;align-items:center;gap:12px;
+    padding:12px 16px;
+    border-bottom:3px solid var(--amber);
+  }
+  .hamburger{
+    display:none;
+    background:transparent;border:1px solid rgba(255,255,255,.25);
+    border-radius:var(--radius);
+    width:38px;height:38px;
+    flex:0 0 auto;
+    align-items:center;justify-content:center;
+    color:#EAF0F5;
+  }
+  .hamburger span{display:block;width:18px;height:2px;background:#EAF0F5;position:relative;}
+  .hamburger span::before,.hamburger span::after{content:"";position:absolute;right:0;left:0;width:18px;height:2px;background:#EAF0F5;}
+  .hamburger span::before{top:-6px;}
+  .hamburger span::after{top:6px;}
+
+  .brand{display:flex;flex-direction:column;line-height:1.15;flex:1;min-width:0;}
+  .brand .mark{display:flex;align-items:center;gap:8px;}
+  .brand .mark .sq{width:10px;height:10px;background:var(--amber);flex:0 0 auto;}
+  .brand strong{font-size:15px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .brand small{font-size:11px;color:#AFC1D1;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;}
+
+  .langtoggle{
+    flex:0 0 auto;
+    display:flex;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:999px;overflow:hidden;
+  }
+  .langtoggle button{
+    border:0;background:transparent;color:#CBD8E3;
+    padding:7px 12px;font-size:12px;font-weight:600;font-family:'IBM Plex Mono',monospace;
+    letter-spacing:.5px;
+  }
+  .langtoggle button.active{background:var(--amber);color:var(--amber-ink);}
+
+  /* ===== Layout ===== */
+  .app{display:flex;align-items:flex-start;min-height:calc(100vh - 62px);}
+  .sidebar{
+    width:280px;flex:0 0 280px;
+    background:var(--navy);
+    color:#DCE6EE;
+    min-height:calc(100vh - 62px);
+    padding:18px 14px 40px;
+    position:sticky;top:62px;
+    border-inline-end:3px solid var(--border);
+  }
+  .sidebar .sheet-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;
+    text-transform:uppercase;color:#7E93A6;margin:4px 6px 10px;
+  }
+  .steplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+  .steplist li{}
+  .steplist button{
+    width:100%;text-align:inherit;
+    display:flex;align-items:center;gap:10px;
+    background:transparent;border:0;border-inline-start:3px solid transparent;
+    color:#C4D2DE;padding:11px 10px;border-radius:2px;font-size:13.5px;
+  }
+  .steplist button .num{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    width:24px;height:24px;border:1px solid #3C5D78;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:#9FB4C6;
+  }
+  .steplist button.active{background:var(--navy-2);border-inline-start-color:var(--amber);color:#fff;}
+  .steplist button.active .num{background:var(--amber);border-color:var(--amber);color:var(--amber-ink);}
+  .steplist button:not(.active):hover{background:rgba(255,255,255,.05);}
+
+  .backdrop{display:none;position:fixed;inset:0;background:rgba(10,18,28,.5);z-index:30;}
+
+  main{flex:1;min-width:0;padding:22px 26px 60px;max-width:920px;margin:0 auto;}
+
+  /* ===== Title block (signature element) ===== */
+  .titleblock{
+    background:var(--paper-2);border:1px solid var(--border);
+    margin-bottom:20px;overflow:hidden;
+    display:grid;grid-template-columns:1.3fr 1.3fr .9fr .7fr;
+  }
+  .titleblock .cell{
+    border-inline-start:1px solid var(--border);
+    padding:9px 12px;min-width:0;overflow:hidden;
+  }
+  .titleblock .cell:first-child{border-inline-start:0;}
+  .titleblock .cell .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:3px;}
+  .titleblock .cell .v{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+  .titleblock .cell.sheet{background:var(--navy);border-inline-start-color:var(--navy);}
+  .titleblock .cell.sheet .k{color:#8FA6BA;}
+  .titleblock .cell.sheet .v{color:#fff;font-family:'IBM Plex Mono',monospace;}
+
+  /* ===== Content card ===== */
+  .card{background:var(--paper-2);border:1px solid var(--border);padding:22px 20px;margin-bottom:18px;}
+  .card + .card{margin-top:0;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--amber-ink);background:#FBF0DC;display:inline-block;padding:3px 8px;margin-bottom:10px;}
+  h1.stitle{font-size:20px;margin:0 0 4px;font-weight:700;}
+  p.ssub{color:var(--steel);font-size:13.5px;margin:0 0 18px;line-height:1.6;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+  @media (max-width:640px){.grid2{grid-template-columns:1fr;}}
+
+  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+  .field label{font-size:12.5px;font-weight:600;color:var(--navy);}
+  .field .hint{font-size:11.5px;color:var(--steel);}
+  .field input[type=text],.field input[type=date],.field select,.field textarea{
+    border:1px solid var(--border);background:var(--paper);
+    padding:10px 11px;font-size:14px;font-family:inherit;color:var(--ink);
+    border-radius:2px;width:100%;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--navy-3);outline-offset:0;border-color:var(--navy-3);}
+  .field textarea{resize:vertical;min-height:110px;line-height:1.7;}
+
+  .doc-preview{
+    background:#FCFBF8;border:1px dashed var(--border);
+    padding:18px;white-space:pre-wrap;line-height:2;font-size:13.5px;
+    max-height:60vh;overflow:auto;font-family:'IBM Plex Mono',monospace;
+  }
+  [dir="rtl"] .doc-preview{font-family:'IBM Plex Sans Arabic',monospace;}
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .btn{
+    border:1px solid var(--navy);background:var(--navy);color:#fff;
+    padding:10px 18px;font-size:13.5px;font-weight:600;border-radius:2px;
+  }
+  .btn.amber{background:var(--amber);border-color:var(--amber);color:var(--amber-ink);}
+  .btn.ghost{background:transparent;color:var(--navy);}
+  .btn:active{transform:translateY(1px);}
+
+  .notice{background:var(--success-bg);border-inline-start:3px solid var(--success);color:#204436;padding:11px 14px;font-size:13px;margin-top:14px;line-height:1.6;}
+  .info{background:#EAF1F7;border-inline-start:3px solid var(--navy-3);color:#122E44;padding:11px 14px;font-size:13px;margin-top:6px;line-height:1.6;}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px;}
+  .chip{
+    border:1px solid var(--navy-3);color:var(--navy-3);background:#fff;
+    padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;
+  }
+  .chip:hover{background:#EAF1F7;}
+
+  ul.bullets{margin:0;padding-inline-start:20px;font-size:13.5px;line-height:1.9;color:var(--ink);}
+  ul.bullets li{margin-bottom:6px;}
+  ul.bullets b{color:var(--navy);}
+
+  .signoff{
+    display:flex;justify-content:flex-end;align-items:center;gap:8px;
+    margin:14px 2px 0;padding-top:12px;border-top:1px dashed var(--border);
+    font-size:12px;color:var(--steel);
+  }
+  .signoff strong{font-family:'IBM Plex Mono',monospace;color:var(--navy);font-size:12.5px;letter-spacing:.3px;}
+  .signoff .stampbox{border:1px solid var(--navy-3);color:var(--navy-3);padding:3px 8px;border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;}
+
+  .templaterow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:4px 0 16px;}
+  .templaterow .field{flex:1;min-width:200px;margin-bottom:0;}
+
+  .clausetable{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  .clausetable tr{border-bottom:1px solid var(--border);}
+  .clausetable td{padding:9px 8px;vertical-align:top;}
+  .clausetable td.cnum{
+    width:34px;font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fff;
+    background:var(--navy);text-align:center;border-radius:2px;
+  }
+  .clausetable td.ctitle{font-weight:600;color:var(--navy);width:38%;}
+  .clausetable td.cdesc{color:var(--ink);}
+
+  /* ===== 6 Key clauses to customize (Screen 5) ===== */
+  .keyclause-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 20px;}
+  @media (max-width:760px){.keyclause-grid{grid-template-columns:1fr;}}
+  .keyclause-card{
+    background:#FCFBF8;border:1px solid var(--border);border-inline-start:3px solid var(--amber);
+    padding:14px 14px 14px;display:flex;flex-direction:column;
+  }
+  .kc-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .kc-num{
+    width:22px;height:22px;flex:0 0 auto;border-radius:50%;background:var(--navy);color:#fff;
+    font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  .kc-ref{font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--steel);}
+  .keyclause-card h3{font-size:14px;margin:0 0 8px;color:var(--navy);font-weight:700;line-height:1.4;}
+  .kc-gap{font-size:12px;color:var(--amber-ink);background:#FBF0DC;padding:7px 9px;margin-bottom:9px;line-height:1.6;}
+  .kc-gap b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;color:var(--amber-ink);}
+  .kc-custom-label{font-size:11.5px;font-weight:700;color:var(--navy-3);margin-bottom:4px;}
+  .keyclause-card ul{margin:0 0 12px;padding-inline-start:18px;font-size:12.5px;line-height:1.75;color:var(--ink);flex:1;}
+  .keyclause-card ul li{margin-bottom:4px;}
+  .kc-add{width:100%;font-size:12.5px;padding:9px 12px;margin-top:auto;}
+
+  /* ===== Final output — Screen 8 master document ===== */
+  .masterdoc{background:#fff;border:1px solid var(--border);overflow:hidden;margin-bottom:2px;}
+  .mdoc-head{background:var(--navy);color:#EAF0F5;padding:20px 22px 16px;border-bottom:3px solid var(--amber);}
+  .mdoc-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#AFC1D1;}
+  .mdoc-head h2{margin:8px 0 4px;font-size:18px;font-weight:700;color:#fff;line-height:1.4;}
+  .mdoc-sub{font-size:12.5px;color:#CBD8E3;}
+  .msum{padding:16px 22px;border-bottom:1px solid var(--border);background:#FCFBF8;}
+  .msum-title{font-weight:700;color:var(--navy);font-size:13px;margin-bottom:10px;}
+  .msum-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 22px;}
+  @media (max-width:640px){.msum-grid{grid-template-columns:1fr;}}
+  .msum-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;border-bottom:1px dotted var(--border);padding-bottom:5px;}
+  .msum-k{color:var(--steel);white-space:nowrap;}
+  .msum-v{font-weight:600;color:var(--ink);text-align:end;}
+  .msec{padding:16px 22px;border-bottom:1px solid var(--border);}
+  .msec:last-of-type{border-bottom:0;}
+  .msec-title{margin:0 0 8px;font-size:13.5px;font-weight:700;color:var(--navy);padding-inline-start:10px;border-inline-start:3px solid var(--amber);}
+  .msec-body{font-size:13px;line-height:1.9;color:var(--ink);white-space:pre-wrap;}
+  .mdoc-foot{padding:14px 22px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--steel);background:#FCFBF8;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy);color:#fff;padding:10px 18px;border-radius:3px;
+    font-size:13px;border-inline-start:3px solid var(--amber);
+    opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ===== Print / Export PDF (Final Output only) ===== */
+  @media print{
+    body *{visibility:hidden;}
+    .masterdoc, .masterdoc *{visibility:visible;}
+    .masterdoc{position:absolute;inset:0 0 auto 0;width:100%;border:0;}
+    .mdoc-head{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+
+  .footnav{display:flex;justify-content:space-between;margin-top:22px;}
+
+  /* Mobile */
+  @media (max-width:900px){
+    .sidebar{
+      position:fixed;top:0;bottom:0;inset-inline-start:0;
+      transform:translateX(-105%);
+      transition:transform .22s ease;
+      z-index:35;width:82%;max-width:320px;
+      padding-top:70px;box-shadow:2px 0 18px rgba(0,0,0,.25);
+    }
+    [dir="rtl"] .sidebar{transform:translateX(105%);}
+    .sidebar.open{transform:translateX(0);}
+    .hamburger{display:flex;}
+    main{padding:16px 14px 50px;}
+    .titleblock{grid-template-columns:1fr 1fr;}
+    .titleblock .cell.sheet{grid-column:span 2;display:flex;justify-content:space-between;align-items:center;}
+    .brand strong{font-size:13.5px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="menu"><span></span></button>
+  <div class="brand">
+    <div class="mark"><span class="sq"></span><strong id="brandTitle">منصة صياغة عقود الفيديك</strong></div>
+    <small id="brandSub">FIDIC CONTRACT DRAFTER</small>
+  </div>
+  <div class="langtoggle">
+    <button id="btnAr">AR</button>
+    <button id="btnEn">EN</button>
+  </div>
+</header>
+
+<div class="backdrop" id="backdrop"></div>
+
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="sheet-label" id="sidebarLabel">مجموعة المستندات — ٨ شاشات</div>
+    <ul class="steplist" id="steplist"></ul>
+  </nav>
+
+  <main id="mainContent"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DATA ============ */
+const FIDIC_BOOKS = {
+  red:   {ar:{label:"الكتاب الأحمر (Red Book 1999/2017)", desc:"تشييد الأعمال المدنية بتصميم المالك — عقد قياس (Measurement Contract)، حيث يُصمم المشروع من قِبَل المهندس/المالك ويتولى المقاول التنفيذ فقط."},
+          en:{label:"Red Book (1999/2017)", desc:"Construction of civil works designed by the Employer — a measurement contract where the Engineer/Employer designs and the Contractor builds."}},
+  yellow:{ar:{label:"الكتاب الأصفر (Yellow Book 1999/2017)", desc:"تصميم وتشييد (Plant & Design-Build) — يتولى المقاول تصميم وتوريد وتنفيذ الأعمال طبقاً لمتطلبات المالك."},
+          en:{label:"Yellow Book (1999/2017)", desc:"Plant & Design-Build — the Contractor designs, supplies and executes the works to the Employer's Requirements."}},
+  silver:{ar:{label:"الكتاب الفضي (Silver Book 2017)", desc:"تسليم مفتاح EPC / تمويل وشمول — يتحمل المقاول القدر الأكبر من المخاطر مقابل سعر ومدة شبه ثابتين، ومناسب لمشاريع التمويل الذاتي."},
+          en:{label:"Silver Book (2017)", desc:"EPC / Turnkey — the Contractor bears the greater share of risk for a largely fixed price and time; common in privately-financed projects."}},
+  green: {ar:{label:"الكتاب الأخضر (Green Book)", desc:"صيغة مختصرة للمشاريع قصيرة الأجل وصغيرة أو بسيطة القيمة، ببنود مبسطة وإدارة أخف."},
+          en:{label:"Green Book", desc:"Short Form of Contract for small-value or short-duration works, with simplified clauses and lighter administration."}},
+  pink:  {ar:{label:"الكتاب البنفسجي (Pink Book)", desc:"نسخة منسّقة لمشاريع بنوك التنمية متعددة الأطراف (MDB Harmonised Edition)، متوافقة مع اشتراطات التمويل الدولي."},
+          en:{label:"Pink Book", desc:"MDB Harmonised Edition for projects financed by multilateral development banks, aligned with international procurement rules."}}
+};
+
+const DEFAULTS = {
+  ar:{ name:"مشروع إنشاء مبنى إداري", employer:"شركة الاستثمار العقاري الكبرى", contractor:"شركة المقاولات الهندسية الحديثة",
+      engineer:"مكتب الاستشاريون العرب للتصميم والإشراف", date:"2026-08-16", price:"٥٬٠٠٠٬٠٠٠ دولار أمريكي",
+      currency:"دولار أمريكي (USD) بالإضافة إلى جنيه مصري (EGP)", duration:"18 شهراً",
+      tenderDate:"2026-05-10", letterNo:"LOA-2026-014", approvedValue:"٤٬٩٥٠٬٠٠٠ دولار أمريكي بعد التفاوض",
+      tenderNotes:"العطاء مطابق للمواصفات الفنية، وتمت مراجعته وتدقيقه مالياً من لجنة البت.",
+      specialConditions:"١. تعديل أسعار المواد المحلية بمعادلة تصحيح سعرية.\n٢. غرامة تأخير قدرها 0.1% من قيمة العقد يومياً، بحد أقصى 10%.\n٣. تُصرف الدفعات المستحقة خلال 28 يوماً من تاريخ اعتماد المستخلص.",
+      technicalSpecs:"المواصفات الفنية القياسية للأعمال الإنشائية والمعمارية والتشطيبات وفق الكود المصري لتصميم وتنفيذ المنشآت الخرسانية، بالإضافة إلى مواصفات ASTM/ACI الأمريكية حيثما ينطبق." },
+  en:{ name:"Administrative Building Construction Project", employer:"Grand Real-Estate Investment Co.", contractor:"Modern Engineering Contracting Co.",
+      engineer:"Arab Consulting Office for Design & Supervision", date:"2026-08-16", price:"USD 5,000,000",
+      currency:"US Dollar (USD) plus Egyptian Pound (EGP)", duration:"18 months",
+      tenderDate:"2026-05-10", letterNo:"LOA-2026-014", approvedValue:"USD 4,950,000 after negotiation",
+      tenderNotes:"The tender complies with the technical specifications and has been technically and financially reviewed by the evaluation committee.",
+      specialConditions:"1. Local material price adjustment by a correction formula.\n2. Delay damages of 0.1% of the Contract Price per day, capped at 10%.\n3. Certified payments to be released within 28 days of interim certificate approval.",
+      technicalSpecs:"Standard technical specifications for structural, architectural and finishing works, in accordance with the Egyptian Code for Design and Construction of Concrete Structures, supplemented by ASTM/ACI standards where applicable." }
+};
+
+const GENERAL_CLAUSES = [
+  {ar:{title:"أحكام عامة",desc:"التعريفات، لغة العقد والقانون الحاكم، الإخطارات، وأولوية المستندات."}, en:{title:"General Provisions",desc:"Definitions, governing law and language, notices, and priority of documents."}},
+  {ar:{title:"المالك (Employer)",desc:"حق الدخول للموقع، تصاريح المالك، وتعيين موظفي المالك بالموقع."}, en:{title:"The Employer",desc:"Right of access to the site, Employer's permits, and Employer's personnel."}},
+  {ar:{title:"المهندس (Engineer)",desc:"واجبات وصلاحيات المهندس، التفويض، والتعليمات الصادرة عنه."}, en:{title:"The Engineer",desc:"Engineer's duties and authority, delegation, and instructions."}},
+  {ar:{title:"المقاول (Contractor)",desc:"الالتزامات العامة، ضمان الأداء، ممثل المقاول، وتنظيم العمالة."}, en:{title:"The Contractor",desc:"General obligations, performance security, Contractor's representative, and organisation."}},
+  {ar:{title:"المقاولون من الباطن / التصميم",desc:"اعتماد المقاولين من الباطن المعينين، ومسؤولية التصميم إن وُجدت."}, en:{title:"Nominated Subcontractors / Design",desc:"Approval of nominated subcontractors, and design responsibility where applicable."}},
+  {ar:{title:"الموظفون والعمالة",desc:"تعيين العمالة، ساعات العمل، السلامة والصحة المهنية، وسجلات العمالة."}, en:{title:"Staff and Labour",desc:"Engagement of staff, working hours, health & safety, and labour records."}},
+  {ar:{title:"المعدات والمواد وجودة التنفيذ",desc:"الفحص والاختبار، الرفض، والملكية والتخزين."}, en:{title:"Plant, Materials and Workmanship",desc:"Inspection and testing, rejection, ownership and storage."}},
+  {ar:{title:"بدء الأعمال والتأخيرات والتعليق",desc:"تاريخ البدء، البرنامج الزمني، التمديدات، والتعليق المؤقت للأعمال."}, en:{title:"Commencement, Delays and Suspension",desc:"Commencement date, programme, extensions of time, and suspension of works."}},
+  {ar:{title:"اختبارات الإتمام",desc:"إجراءات وتأخير اختبارات إتمام الأعمال قبل الاستلام."}, en:{title:"Tests on Completion",desc:"Procedures and delayed tests prior to Taking-Over."}},
+  {ar:{title:"استلام الأعمال (Taking-Over)",desc:"شروط وإجراءات استلام الأعمال أو الأقسام من قِبل المالك."}, en:{title:"Employer's Taking-Over",desc:"Conditions and procedure for taking over the works or sections."}},
+  {ar:{title:"فترة الإخطار بالعيوب",desc:"إصلاح العيوب، التكاليف، والفشل في الإصلاح."}, en:{title:"Defects Notification Period",desc:"Remedying defects, related costs, and failure to remedy."}},
+  {ar:{title:"القياس والتقييم",desc:"طرق القياس والتقييم لبنود الأعمال المنفذة."}, en:{title:"Measurement and Evaluation",desc:"Methods of measurement and evaluation of executed work items."}},
+  {ar:{title:"التغييرات والتعديلات",desc:"حق إصدار الأوامر التغييرية، وتسوية الأسعار الناتجة عنها."}, en:{title:"Variations and Adjustments",desc:"Right to instruct variations and the resulting price adjustments."}},
+  {ar:{title:"قيمة العقد والدفعات",desc:"المستخلصات، الدفعة المقدمة، الاحتجازات، والدفع النهائي."}, en:{title:"Contract Price and Payment",desc:"Interim certificates, advance payment, retention, and final payment."}},
+  {ar:{title:"الإنهاء من قِبل المالك",desc:"حالات وإجراءات إنهاء العقد بمبادرة من المالك."}, en:{title:"Termination by Employer",desc:"Grounds and procedure for termination initiated by the Employer."}},
+  {ar:{title:"التعليق والإنهاء من قِبل المقاول",desc:"حق المقاول في تعليق العمل أو إنهاء العقد لعدم الدفع أو الإخلال الجسيم."}, en:{title:"Suspension and Termination by Contractor",desc:"Contractor's right to suspend or terminate for non-payment or material breach."}},
+  {ar:{title:"المخاطر والمسؤولية",desc:"توزيع المخاطر بين الطرفين، ومخاطر المالك الاستثنائية."}, en:{title:"Risk and Responsibility",desc:"Allocation of risk between the parties, and Employer's exceptional risks."}},
+  {ar:{title:"التأمين",desc:"أنواع التأمينات المطلوبة (الأعمال، الطرف الثالث، الإصابات) والحدود الدنيا."}, en:{title:"Insurance",desc:"Required insurances (works, third-party, personal injury) and minimum limits."}},
+  {ar:{title:"القوة القاهرة",desc:"تعريف القوة القاهرة، الإخطار بها، وآثارها على الالتزامات التعاقدية."}, en:{title:"Force Majeure",desc:"Definition, notice requirements, and effect on contractual obligations."}},
+  {ar:{title:"المطالبات والنزاعات والتحكيم",desc:"إجراءات المطالبات، لجنة فض المنازعات (DAB)، والتحكيم النهائي."}, en:{title:"Claims, Disputes and Arbitration",desc:"Claims procedure, the Dispute Adjudication Board (DAB), and final arbitration."}}
+];
+
+const PROJECT_TEMPLATES = {
+  buildings:{ar:{label:"مبانٍ سكنية / إدارية / تجارية"},en:{label:"Residential / Administrative / Commercial Buildings"},
+    ar_text:"١. التزام المقاول بتنسيق الأعمال المعمارية والإنشائية والكهروميكانيكية بما يضمن عدم التعارض بين التخصصات.\n٢. غرامة تأخير 0.1% من قيمة العقد يومياً بحد أقصى 10%.\n٣. ضمان صيانة لمدة سنة على أعمال التشطيبات وسنتين على الأعمال الإنشائية.\n٤. التزام المقاول بتوريد شهادات مطابقة لمواد التشطيبات المستوردة.",
+    en_text:"1. Contractor to coordinate architectural, structural and electromechanical works to avoid clashes between disciplines.\n2. Delay damages of 0.1% of the Contract Price per day, capped at 10%.\n3. One-year maintenance warranty on finishing works and two years on structural works.\n4. Contractor to supply conformity certificates for imported finishing materials."},
+  roads:{ar:{label:"طرق وبنية تحتية"},en:{label:"Roads & Infrastructure"},
+    ar_text:"١. التزام المقاول بإجراء اختبارات دمك التربة والرصف طبقاً للمواصفات القياسية المعتمدة.\n٢. تعويض عن التأخير الناتج عن تعارضات المرافق (كهرباء/مياه/صرف) غير المتوقعة أثناء الحفر.\n٣. ضمان صيانة الرصف لمدة سنتين من تاريخ الاستلام الابتدائي.\n٤. التزام المقاول بخطة تحويل مروري معتمدة من الجهات المختصة أثناء التنفيذ.",
+    en_text:"1. Contractor to carry out soil and pavement compaction tests per approved standard specifications.\n2. Compensation for delay caused by unforeseen utility conflicts (power/water/sewage) during excavation.\n3. Two-year pavement maintenance warranty from the date of Taking-Over.\n4. Contractor to implement an approved traffic diversion plan during execution."},
+  water:{ar:{label:"محطات مياه وصرف صحي"},en:{label:"Water & Wastewater Treatment Plants"},
+    ar_text:"١. التزام المقاول باختبارات التشغيل التجريبي (Commissioning) لمدة لا تقل عن 30 يوماً قبل الاستلام الابتدائي.\n٢. ضمان كفاءة المعدات الميكانيكية والكهربائية طبقاً لمنحنيات الأداء المعتمدة.\n٣. تدريب الكوادر التشغيلية التابعة للمالك لمدة شهر بعد بدء التشغيل.\n٤. توريد قطع الغيار الأساسية لمدة سنتين تشغيل كحد أدنى.",
+    en_text:"1. Contractor to perform trial commissioning runs for at least 30 days before Taking-Over.\n2. Warranty on mechanical/electrical equipment efficiency per approved performance curves.\n3. One-month training of the Employer's operating staff after start-up.\n4. Supply of critical spare parts for a minimum of two years of operation."},
+  bridges:{ar:{label:"كباري وإنشاءات خاصة"},en:{label:"Bridges & Special Structures"},
+    ar_text:"١. التزام المقاول بتقديم حسابات تصميم تفصيلية معتمدة من مكتب استشاري متخصص في الإنشاءات الخاصة.\n٢. إجراء اختبارات تحميل (Load Test) للكمرات والبلاطات الرئيسية قبل الاستلام.\n٣. ضمان إنشائي ممتد لمدة 10 سنوات ضد عيوب التصميم والتنفيذ الجسيمة.\n٤. خطة سلامة مرورية خاصة بمناطق العبور فوق الطرق القائمة أثناء التنفيذ.",
+    en_text:"1. Contractor to submit detailed design calculations certified by a specialist structural consultant.\n2. Load testing of main beams and slabs prior to Taking-Over.\n3. Extended 10-year structural warranty against material design and workmanship defects.\n4. Dedicated traffic safety plan for crossings over existing roads during construction."},
+  electromechanical:{ar:{label:"أعمال كهروميكانيكية"},en:{label:"Electromechanical Works"},
+    ar_text:"١. التزام المقاول بتوريد شهادات المنشأ (Certificate of Origin) وشهادات الفحص من المصنع (FAT) لجميع المعدات الرئيسية.\n٢. ضمان المعدات لمدة سنتين من تاريخ التشغيل الفعلي.\n٣. توفير قطع غيار حرجة لمدة 3 سنوات تشغيل.\n٤. تدريب فني على أنظمة التحكم والتشغيل الآلي (SCADA/PLC).",
+    en_text:"1. Contractor to supply Certificates of Origin and Factory Acceptance Test (FAT) reports for all major equipment.\n2. Two-year equipment warranty from the date of actual operation.\n3. Supply of critical spare parts for 3 years of operation.\n4. Technical training on control and automation systems (SCADA/PLC)."},
+  industrial:{ar:{label:"منشآت صناعية ومصانع"},en:{label:"Industrial Facilities & Factories"},
+    ar_text:"١. التزام المقاول بمعايير السلامة المهنية الصناعية (OSHA أو ما يعادلها محلياً) طوال فترة التنفيذ.\n٢. إجراء اختبار الأحمال الإنتاجية الفعلية (Performance Test) قبل الاستلام النهائي.\n٣. ضمان خطوط الإنتاج ضد عيوب التصنيع لمدة سنتين.\n٤. تسليم كتيبات التشغيل والصيانة (O&M Manuals) باللغتين العربية والإنجليزية.",
+    en_text:"1. Contractor to comply with industrial occupational safety standards (OSHA or local equivalent) throughout execution.\n2. Actual production Performance Test prior to final acceptance.\n3. Two-year warranty on production lines against manufacturing defects.\n4. Delivery of Operation & Maintenance (O&M) manuals in both Arabic and English."}
+};
+
+const CLAUSE_LIBRARY = [
+  {ar:"حد أقصى للمسؤولية بما لا يتجاوز قيمة العقد، باستثناء الغش والإهمال الجسيم.",
+   en:"Liability capped at the Contract Price, excluding fraud and gross negligence."},
+  {ar:"غرامة تأخير 0.1% من قيمة العقد يومياً بحد أقصى 10% من القيمة الإجمالية.",
+   en:"Delay damages of 0.1% of the Contract Price per day, capped at 10% of the total value."},
+  {ar:"ضمان حسن التنفيذ بنسبة 10% وخطاب ضمان صيانة بنسبة 5% لمدة سنة من الاستلام الابتدائي.",
+   en:"Performance security of 10% and a 5% maintenance retention bond for one year from Taking-Over."},
+  {ar:"تسوية النزاعات عبر لجنة فض المنازعات (DAB) ثم التحكيم وفق قواعد غرفة التجارة الدولية.",
+   en:"Disputes referred to a Dispute Adjudication Board (DAB), then ICC arbitration if unresolved."},
+  {ar:"تعديل الأسعار وفق معادلة تصحيح مرتبطة بمؤشرات أسعار المواد والعمالة المحلية.",
+   en:"Price adjustment via a correction formula linked to local material and labour price indices."}
+];
+
+/* ============ 6 KEY CLAUSES TO CUSTOMIZE ============ */
+const KEY_CLAUSES = [
+  { ref:"Clause 4.2",
+    ar:{ title:"التأمينات وخطاب ضمان حسن التنفيذ",
+         gap:"الشروط العامة: عائمة — تطلب ضمان حسن تنفيذ بنسبة وتاريخ دون تحديد رقم ثابت.",
+         items:["تحديد نسبة خطاب الضمان النهائي بدقة (مثلاً 10% من إجمالي قيمة العقد).","تحديد مدة سريانه (حتى الاستلام الابتدائي أو صدور شهادة أداء الأقساط)."],
+         insertText:"٤.٢ التأمينات وضمان حسن التنفيذ:\n- خطاب ضمان حسن تنفيذ بنسبة 10% من إجمالي قيمة العقد، ساري حتى تاريخ الاستلام الابتدائي للأعمال.\n- خطاب ضمان صيانة (Retention Bond) بنسبة 5% من قيمة العقد، ساري حتى انتهاء فترة الإخطار بالعيوب." },
+    en:{ title:"Performance Security & Guarantees",
+         gap:"General Conditions: open-ended — requires a performance security by percentage and date without a fixed figure.",
+         items:["Fix the exact performance security percentage (e.g. 10% of the total Contract Price).","Fix its validity period (until Taking-Over or issuance of the Performance Certificate)."],
+         insertText:"4.2 Performance Security & Guarantees:\n- A Performance Security of 10% of the total Contract Price, valid until the Taking-Over of the Works.\n- A 5% maintenance Retention Bond, valid until the end of the Defects Notification Period." } },
+  { ref:"Clause 8.7",
+    ar:{ title:"غرامات التأخير (Delay Damages)",
+         gap:"الشروط العامة: تُترك للطرفين لتحديد النسبة عند التعاقد مع وضع حد أقصى عام فقط.",
+         items:["تحديد نسبة الغرامة اليومية بدقة (مثلاً 0.1% عن كل يوم تأخير).","تحديد الحد الأقصى الإجمالي لغرامات التأخير (مثلاً بحد أقصى 10% من قيمة العقد)."],
+         insertText:"٨.٧ غرامات التأخير:\n- غرامة تأخير قدرها 0.1% من قيمة العقد الإجمالية عن كل يوم تأخير عن تاريخ الإنجاز المحدد.\n- بحد أقصى إجمالي لا يتجاوز 10% من قيمة العقد." },
+    en:{ title:"Delay Damages / Liquidated Damages",
+         gap:"General Conditions: left for the parties to set the percentage at contract signature, with only a generic cap.",
+         items:["Fix the exact daily delay-damages rate (e.g. 0.1% per day of delay).","Fix the overall cap on total delay damages (e.g. 10% of the Contract Price)."],
+         insertText:"8.7 Delay Damages:\n- Delay damages of 0.1% of the total Contract Price for each day of delay beyond the Time for Completion.\n- Capped at an aggregate maximum of 10% of the Contract Price." } },
+  { ref:"Clause 14",
+    ar:{ title:"المستخلصات والدفعة المقدمة ومدد الدفع",
+         gap:"الشروط العامة: تُصرف المستخلصات خلال مدد تقليدية طويلة نسبياً (غالباً 56 يوماً في الفيديك القياسي).",
+         items:["تقليل مدة سداد المستخلصات الشهرية لضمان التدفقات النقدية (مثلاً 28 يوماً من اعتماد المهندس).","تحديد نسبة الدفعة المقدمة (Advance Payment) وشروط استردادها من كل مستخلص."],
+         insertText:"١٤. المستخلصات والدفعة المقدمة:\n- تُسدَّد المستخلصات الشهرية المعتمدة خلال 28 يوماً من تاريخ اعتماد المهندس لشهادة الدفع.\n- دفعة مقدمة بنسبة 10% من قيمة العقد، تُسترد بالخصم النسبي من كل مستخلص حتى استردادها بالكامل." },
+    en:{ title:"Interim Payments, Advance Payment & Payment Periods",
+         gap:"General Conditions: interim payments are released within relatively long standard periods (often 56 days under the standard FIDIC text).",
+         items:["Shorten the monthly certified-payment period to protect the Contractor's cash flow (e.g. 28 days from the Engineer's certificate).","Fix the Advance Payment percentage and its repayment/deduction terms from each certificate."],
+         insertText:"14. Interim Payments & Advance Payment:\n- Certified monthly payments to be released within 28 days of the Engineer's certificate of approval.\n- An Advance Payment of 10% of the Contract Price, recovered by proportionate deduction from each certificate until fully repaid." } },
+  { ref:"Clause 13.7",
+    ar:{ title:"تعديل الأسعار ومواجهة التضخم",
+         gap:"الشروط العامة: قد تكون اختيارية ولا تُطبَّق تلقائياً إلا إذا تم تفعيلها صراحة.",
+         items:["إضافة جدول أو معادلة تصحيح سعرية واضحة (Formula) لمواجهة تقلبات أسعار المواد والعمالة.","تحديد المؤشرات المرجعية (محلية/مستوردة) المستخدمة في المعادلة وتاريخ الأساس."],
+         insertText:"١٣.٧ تعديل الأسعار لمواجهة التضخم:\n- تُطبَّق معادلة تصحيح سعرية شهرية على بنود الأعمال الرئيسية، مرتبطة بمؤشرات أسعار مواد البناء المحلية والمستوردة وأجور العمالة الصادرة عن الجهة الرسمية المختصة.\n- تاريخ الأساس هو تاريخ تقديم العطاء، وتُراجع القيم شهرياً مع كل مستخلص." },
+    en:{ title:"Adjustments for Changes in Cost (Price Escalation)",
+         gap:"General Conditions: may be optional and does not apply automatically unless expressly activated.",
+         items:["Add a clear price-correction table or formula to address local/imported material and labour price fluctuations.","Fix the reference indices (local/imported) used in the formula and the base date."],
+         insertText:"13.7 Adjustments for Changes in Cost:\n- A monthly price-correction formula applies to the main work items, linked to official indices for local and imported construction material prices and labour wages.\n- The base date is the tender submission date; values are reviewed monthly with each certificate." } },
+  { ref:"Clause 20",
+    ar:{ title:"تسوية النزاعات — لجنة DAAB والتحكيم",
+         gap:"الشروط العامة: تذكر خطوات تشكيل اللجنة والقواعد بصيغة عامة دون تفاصيل تنفيذية.",
+         items:["تحديد عدد أعضاء لجنة فض النزاعات (عضو واحد أم 3 أعضاء).","تحديد مركز التحكيم المؤسسي المعتمد (مثل CRCICA أو ICC).","تحديد مقر التحكيم ولغته القانونية."],
+         insertText:"٢٠. تسوية النزاعات والتحكيم:\n- تُشكَّل لجنة فض المنازعات (DAAB) من عضو واحد يتفق عليه الطرفان خلال 28 يوماً من تاريخ بدء الأعمال.\n- في حال عدم الالتزام بقرار اللجنة، يُحال النزاع للتحكيم وفق قواعد مركز القاهرة الإقليمي للتحكيم التجاري الدولي (CRCICA).\n- مقر التحكيم: القاهرة، جمهورية مصر العربية، ولغة التحكيم هي اللغة العربية." },
+    en:{ title:"Dispute Resolution — DAAB & Arbitration",
+         gap:"General Conditions: describe the board-formation steps and rules in generic terms without operative detail.",
+         items:["Fix the number of Dispute Avoidance/Adjudication Board members (sole member or 3 members).","Fix the appointed institutional arbitration centre (e.g. CRCICA or ICC).","Fix the seat and legal language of the arbitration."],
+         insertText:"20. Dispute Resolution & Arbitration:\n- A Dispute Avoidance/Adjudication Board (DAAB) of a sole member agreed by both parties shall be appointed within 28 days of the Commencement Date.\n- Where the Board's decision is not complied with, the dispute shall be referred to arbitration under the Rules of the Cairo Regional Centre for International Commercial Arbitration (CRCICA).\n- Seat of arbitration: Cairo, Arab Republic of Egypt; language of arbitration: Arabic." } },
+  { ref:"Clause 1.4",
+    ar:{ title:"القانون الواجب التطبيق ولغة العقد",
+         gap:"الشروط العامة: تُترك مفتوحة ليتم ملؤها بدولة التنفيذ ولغته.",
+         items:["النص صراحةً على خضوع العقد حصراً لقوانين دولة تنفيذ المشروع (مثلاً قوانين جمهورية مصر العربية).","تحديد اللغة الحاكمة للتفسير عند اختلاف النسخ (عربي/إنجليزي)."],
+         insertText:"١.٤ القانون الحاكم ولغة العقد:\n- يخضع هذا العقد حصراً لقوانين جمهورية مصر العربية ويُفسَّر وفقاً لها.\n- اللغة العربية هي اللغة الحاكمة للتفسير عند وجود أي اختلاف بين النسخة العربية والإنجليزية من العقد." },
+    en:{ title:"Governing Law and Language",
+         gap:"General Conditions: left open to be filled in with the country and language of implementation.",
+         items:["State expressly that the Contract is governed exclusively by the laws of the project's country of implementation (e.g. the laws of the Arab Republic of Egypt).","Fix the ruling language for interpretation where versions differ (Arabic/English)."],
+         insertText:"1.4 Governing Law & Language:\n- This Contract is governed exclusively by, and construed in accordance with, the laws of the Arab Republic of Egypt.\n- Arabic is the ruling language for interpretation in the event of any discrepancy between the Arabic and English versions of the Contract." } }
+];
+
+/* ============ STATE ============ */
+const state = {
+  lang:'ar',
+  step:1,
+  touched:{},
+  projectType:'buildings',
+  data:{...DEFAULTS.ar, fidic:'red'}
+};
+
+function fieldVal(key){
+  if(state.touched[key]) return state.data[key];
+  return DEFAULTS[state.lang][key] !== undefined ? DEFAULTS[state.lang][key] : state.data[key];
+}
+function setField(key,val){
+  state.data[key]=val; state.touched[key]=true;
+}
+
+/* ============ UI TEXT ============ */
+const T = {
+  ar:{
+    brand:"منصة صياغة عقود الفيديك", brandSub:"FIDIC CONTRACT DRAFTER",
+    sidebarLabel:"مجموعة المستندات — ٨ شاشات",
+    steps:["البيانات العامة","اتفاقية العقد","كتاب القبول","مستندات العطاء","الشروط الخاصة","الشروط العامة للفيديك","المواصفات والجداول","توليد العقد الكامل"],
+    sheetOf:(n)=>`الورقة ${n.toLocaleString('ar-EG')} / ٨`,
+    tb:{project:"المشروع",fidic:"كتاب الفيديك",date:"التاريخ",sheet:"الورقة"},
+    s1:{eyebrow:"الشاشة ١ من ٨",title:"البيانات العامة وإعداد المشروع",sub:"أدخل بيانات المشروع الرئيسية وأطراف العقد ونوع كتاب الفيديك المستخدم — تُستخدم هذه البيانات تلقائياً في جميع الشاشات التالية.",
+      lname:"اسم المشروع",lemployer:"الطرف الأول (المالك)",lcontractor:"الطرف الثاني (المقاول)",lengineer:"الطرف الثالث / المهندس الاستشاري",
+      ldate:"تاريخ تحرير العقد",lfidic:"نوع كتاب الفيديك",lprice:"إجمالي قيمة العقد",lcurrency:"العملات المتفق عليها",lduration:"مدة التنفيذ",
+      notice:"تم تحديث البيانات العامة بنجاح. انتقل للشاشات التالية لاستعراض صياغة كل مستند."},
+    s2:{eyebrow:"الشاشة ٢ من ٨",title:"اتفاقية العقد",sub:"يُولَّد نص اتفاقية العقد تلقائياً من بيانات الشاشة الأولى.",
+      info:"يمكنك استخدام هذا النص مباشرة أو نسخه إلى المستند النهائي."},
+    s3:{eyebrow:"الشاشة ٣ من ٨",title:"كتاب القبول (Letter of Acceptance)",sub:"أدخل تفاصيل العطاء وتاريخ الترسية لصياغة خطاب القبول الرسمي.",
+      ltenderDate:"تاريخ تقديم العطاء",lletterNo:"رقم الخطاب",lapproved:"القيمة النهائية المعتمدة بعد التفاوض"},
+    s4:{eyebrow:"الشاشة ٤ من ٨",title:"مستندات العطاء (عرض المقاول)",sub:"إدارة وفهرسة العرض الفني والعرض المالي المقدَّمين من المقاول.",
+      tech:"العرض الفني",techdesc:"المنهجية المقترحة، البرنامج الزمني، والسيرة الذاتية لفريق العمل الرئيسي.",
+      fin:"العرض المالي",findesc:"جدول الكميات الإجمالي (BOQ)، تحليل الأسعار، وشروط الدفع.",
+      lnotes:"ملاحظات إضافية على العطاء"},
+    s5:{eyebrow:"الشاشة ٥ من ٨",title:"الشروط الخاصة (Particular Conditions)",sub:"أضف البنود والتعديلات الخاصة بالمشروع التي تُعدّل أو تضيف على الشروط العامة.",
+      keyTitle:"أهم ٦ بنود جوهرية يجب تخصيصها في الشروط الخاصة",
+      keyHint:"هذه البنود تُترك عائمة أو عامة في الشروط العامة للفيديك، ولا بد من تخصيصها رقمياً وإجرائياً بما يناسب المشروع وقوانين دولة التنفيذ.",
+      keyGapLabel:"الوضع في الشروط العامة:",keyCustomLabel:"التخصيص المطلوب في الشروط الخاصة:",keyAddBtn:"➕ إضافة نص هذا البند",
+      templateLabel:"قوالب جاهزة حسب نوع المشروع",templateHint:"اختر نوع المشروع ثم اضغط «تطبيق القالب» لإضافة بنود خاصة جاهزة مناسبة له.",
+      applyBtn:"تطبيق القالب",
+      libLabel:"مكتبة البنود الشائعة — اضغط لإضافة البند إلى النص:",lconds:"نص الشروط الخاصة",
+      info:"هذه الشروط تُعدِّل أو تضيف على الشروط العامة للفيديك بما يتناسب مع سياسة المشروع وقوانين الدولة."},
+    s6:{eyebrow:"الشاشة ٦ من ٨",title:"الشروط العامة (كتاب الفيديك المختار)",sub:"تُوثَّق تلقائياً الشروط النمطية الخاصة بكتاب الفيديك المُختار في الشاشة الأولى.",
+      selected:"الكتاب المختار حالياً",structTitle:"هيكل الشروط العامة الكامل — البنود ١ إلى ٢٠"},
+    s7:{eyebrow:"الشاشة ٧ من ٨",title:"المواصفات الفنية والرسومات والجداول",sub:"فهرسة وتضمين المواصفات الفنية القياسية وجداول الكميات ومراجع الرسومات.",
+      lspecs:"المواصفات الفنية والمراجع القياسية",
+      dTitle:"الرسومات الهندسية",dDesc:"الرسومات المعتمدة الصادرة عن الاستشاري والمرفقة بالعقد.",
+      bTitle:"جداول الكميات",bDesc:"الجداول الرسمية المقاسة والمسعرة من الطرفين."},
+    s8:{eyebrow:"الشاشة ٨ من ٨",title:"توليد العقد الكامل (Master Contract)",sub:"يدمج التطبيق جميع الشاشات السابقة بترتيب الأولوية التعاقدية القانونية في مستند واحد متكامل، جاهز للطباعة أو النسخ.",
+      previewTitle:"الإخراج النهائي — معاينة العقد الكامل",download:"تنزيل العقد الكامل (نص)",copy:"نسخ العقد بالكامل",copied:"تم نسخ العقد بالكامل ✓",print:"طباعة / تصدير PDF",
+      notice:"تم دمج وترتيب جميع مستندات العقد بناءً على الأولوية التعاقدية بنجاح تام. المستند أدناه جاهز للنسخ أو الطباعة كإخراج نهائي."},
+    nav:{prev:"◂ السابق",next:"التالي ▸"},
+    preparedBy:"إعداد ومراجعة",
+    docHeadings:{agreement:"اتفاقية العقد",loa:"كتاب القبول",masterTitle:"العقد النهائي المجمَّع والموحَّد",
+      secProject:"١. بيانات المشروع والأطراف",secAgreement:"٢. اتفاقية العقد",secLoa:"٣. كتاب القبول",
+      secSpecial:"٤. الشروط الخاصة",secGeneral:"٥. الشروط العامة للفيديك",secSpecs:"٦. المواصفات الفنية والرسومات وجداول الكميات",
+      end:"نهاية المستند التعاقدي الرسمي الموحَّد"}
+  },
+  en:{
+    brand:"FIDIC Contract Drafter", brandSub:"CONTRACT DRAFTING PLATFORM",
+    sidebarLabel:"DOCUMENT SET — 8 SHEETS",
+    steps:["Project Setup","Contract Agreement","Letter of Acceptance","Tender Documents","Particular Conditions","General Conditions (FIDIC)","Specs & Schedules","Master Contract Generation"],
+    sheetOf:(n)=>`SHEET ${n} / 8`,
+    tb:{project:"Project",fidic:"FIDIC Book",date:"Date",sheet:"Sheet"},
+    s1:{eyebrow:"Screen 1 of 8",title:"Project Setup & General Data",sub:"Enter the project's core data, the contracting parties, and the FIDIC book in use — this data feeds every following screen automatically.",
+      lname:"Project Name",lemployer:"First Party (Employer)",lcontractor:"Second Party (Contractor)",lengineer:"Third Party / Engineer",
+      ldate:"Contract Date",lfidic:"FIDIC Book Type",lprice:"Total Contract Price",lcurrency:"Agreed Currencies",lduration:"Time for Completion",
+      notice:"General data updated successfully. Move to the next screens to review each document."},
+    s2:{eyebrow:"Screen 2 of 8",title:"Contract Agreement",sub:"The Contract Agreement text is generated automatically from Screen 1 data.",
+      info:"You can copy this text directly into the final document."},
+    s3:{eyebrow:"Screen 3 of 8",title:"Letter of Acceptance",sub:"Enter the tender submission details and award date to draft the official Letter of Acceptance.",
+      ltenderDate:"Tender Submission Date",lletterNo:"Letter Number",lapproved:"Final Value Approved After Negotiation"},
+    s4:{eyebrow:"Screen 4 of 8",title:"Tender Documents (Contractor's Proposal)",sub:"Manage and index the Technical and Financial Proposals submitted by the Contractor.",
+      tech:"Technical Proposal",techdesc:"Proposed methodology, programme, and CVs of the key personnel.",
+      fin:"Financial Proposal",findesc:"Bill of Quantities (BOQ), price analysis, and payment terms.",
+      lnotes:"Additional Notes on the Tender"},
+    s5:{eyebrow:"Screen 5 of 8",title:"Particular Conditions",sub:"Add project-specific clauses that amend or supplement the General Conditions.",
+      keyTitle:"Top 6 Critical Clauses to Customize in the Particular Conditions",
+      keyHint:"These clauses are left open-ended or generic in the FIDIC General Conditions and must be customized numerically and procedurally to fit the project and the governing country's law.",
+      keyGapLabel:"Position in the General Conditions:",keyCustomLabel:"Required customization in the Particular Conditions:",keyAddBtn:"➕ Add this clause's text",
+      templateLabel:"Ready-made templates by project type",templateHint:"Choose a project type, then tap “Apply Template” to add suitable ready-made particular conditions.",
+      applyBtn:"Apply Template",
+      libLabel:"Common clause library — tap to add a clause to the text:",lconds:"Particular Conditions Text",
+      info:"These conditions amend or supplement the FIDIC General Conditions to suit the project's policy and local law."},
+    s6:{eyebrow:"Screen 6 of 8",title:"General Conditions (Selected FIDIC Book)",sub:"The standard conditions of the FIDIC book chosen in Screen 1 are documented automatically.",
+      selected:"Currently Selected Book",structTitle:"Full General Conditions Structure — Clauses 1 to 20"},
+    s7:{eyebrow:"Screen 7 of 8",title:"Technical Specifications, Drawings & Schedules",sub:"Index and include standard technical specifications, bills of quantities, and drawing references.",
+      lspecs:"Technical Specifications & Reference Standards",
+      dTitle:"Engineering Drawings",dDesc:"Approved drawings issued by the Engineer and appended to the Contract.",
+      bTitle:"Bills of Quantities",bDesc:"Official schedules measured and priced by both parties."},
+    s8:{eyebrow:"Screen 8 of 8",title:"Master Contract Generation",sub:"All previous screens are merged in correct contractual priority order into one integrated document, ready to print or copy.",
+      previewTitle:"Final Output — Full Master Contract Preview",download:"Download Master Contract (.txt)",copy:"Copy Full Contract",copied:"Full contract copied ✓",print:"Print / Export PDF",
+      notice:"All contract documents were merged and ordered by contractual priority successfully. The document below is ready to copy or print as the final output."},
+    nav:{prev:"◂ Previous",next:"Next ▸"},
+    preparedBy:"Prepared & Reviewed by",
+    docHeadings:{agreement:"CONTRACT AGREEMENT",loa:"LETTER OF ACCEPTANCE",masterTitle:"MASTER CONTRACT DOCUMENT",
+      secProject:"1. Project & Party Data",secAgreement:"2. Contract Agreement",secLoa:"3. Letter of Acceptance",
+      secSpecial:"4. Particular Conditions",secGeneral:"5. FIDIC General Conditions",secSpecs:"6. Technical Specifications, Drawings & BOQ",
+      end:"End of the Unified Contractual Document"}
+  }
+};
+
+/* ============ RENDER HELPERS ============ */
+function esc(s){return (s||'').toString();}
+
+function fidicLabel(){ return FIDIC_BOOKS[state.data.fidic][state.lang].label; }
+function fidicDesc(){ return FIDIC_BOOKS[state.data.fidic][state.lang].desc; }
+
+function agreementText(){
+  const t = T[state.lang].docHeadings;
+  if(state.lang==='ar'){
+    return `[${t.agreement} / CONTRACT AGREEMENT]
+
+حُررت هذه الاتفاقية بتاريخ: ${fieldVal('date')}
+
+بين كل من:
+١. الطرف الأول (المالك): ${fieldVal('employer')}
+٢. الطرف الثاني (المقاول): ${fieldVal('contractor')}
+٣. المهندس / الاستشاري: ${fieldVal('engineer')}
+
+حيث أن المالك يرغب في تنفيذ مشروع: ${fieldVal('name')}
+وقد وافق المقاول على تنفيذ الأعمال بمبلغ إجمالي قدره: ${fieldVal('price')}
+خلال مدة تنفيذ قدرها: ${fieldVal('duration')}
+بالإشارة إلى شروط: ${fidicLabel()}
+
+وقد وقّع الطرفان هذه الاتفاقية التزاماً بالبنود والشروط المرفقة.`;
+  }
+  return `[${t.agreement}]
+
+This Agreement is made on: ${fieldVal('date')}
+
+Between:
+1. First Party (Employer): ${fieldVal('employer')}
+2. Second Party (Contractor): ${fieldVal('contractor')}
+3. Engineer / Consultant: ${fieldVal('engineer')}
+
+Whereas the Employer wishes to execute the project: ${fieldVal('name')}
+And the Contractor has agreed to execute the Works for a total sum of: ${fieldVal('price')}
+Within a Time for Completion of: ${fieldVal('duration')}
+With reference to the conditions of: ${fidicLabel()}
+
+Both parties have signed this Agreement in accordance with the attached terms and conditions.`;
+}
+
+function loaText(){
+  const t = T[state.lang].docHeadings;
+  if(state.lang==='ar'){
+    return `[${t.loa} / LETTER OF ACCEPTANCE]
+
+إلى: ${fieldVal('contractor')}
+التاريخ: ${fieldVal('date')}
+الموضوع: إحالة وقبول العطاء لمشروع ${fieldVal('name')}
+
+تحية طيبة وبعد،
+نحيطكم علماً بأنه قد تم دراسة وقبول عطائكم المقدّم بتاريخ ${fieldVal('tenderDate')} (رقم الخطاب: ${fieldVal('letterNo')})
+لتنفيذ المشروع المذكور، بقيمة إجمالية معتمدة قدرها: ${fieldVal('approvedValue')}
+وذلك طبقاً لشروط ${fidicLabel()} والمستندات المرفقة.
+
+وتفضلوا بقبول فائق الاحترام،
+عن المالك: ${fieldVal('employer')}`;
+  }
+  return `[${t.loa}]
+
+To: ${fieldVal('contractor')}
+Date: ${fieldVal('date')}
+Subject: Award and Acceptance of Tender for ${fieldVal('name')}
+
+Dear Sirs,
+We are pleased to confirm that your tender submitted on ${fieldVal('tenderDate')} (Letter No. ${fieldVal('letterNo')})
+has been reviewed and accepted for execution of the above project, at an approved total value of: ${fieldVal('approvedValue')}
+in accordance with the conditions of ${fidicLabel()} and the appended documents.
+
+Yours faithfully,
+For the Employer: ${fieldVal('employer')}`;
+}
+
+function masterText(){
+  const t = T[state.lang].docHeadings;
+  const bar = "==================================================";
+  if(state.lang==='ar'){
+    return `${bar}
+        ${t.masterTitle}
+${bar}
+
+${t.secProject}
+- اسم المشروع: ${fieldVal('name')}
+- الطرف الأول (المالك): ${fieldVal('employer')}
+- الطرف الثاني (المقاول): ${fieldVal('contractor')}
+- المهندس / الاستشاري: ${fieldVal('engineer')}
+- تاريخ التحرير: ${fieldVal('date')}
+- نوع كتاب الفيديك: ${fidicLabel()}
+- العملات المتفق عليها: ${fieldVal('currency')}
+- القيمة الإجمالية: ${fieldVal('price')}
+- مدة التنفيذ: ${fieldVal('duration')}
+
+--------------------------------------------------
+${t.secAgreement}
+حُررت هذه الاتفاقية لتأكيد الارتباط القانوني بين الأطراف لتنفيذ الأعمال المذكورة وفق الشروط والمواصفات المعتمدة.
+
+--------------------------------------------------
+${t.secLoa}
+تم قبول عطاء المقاول رسمياً بالقيمة المعتمدة ${fieldVal('approvedValue')} وطبقاً لشروط العقد المرفقة (خطاب رقم ${fieldVal('letterNo')}).
+
+--------------------------------------------------
+${t.secSpecial}
+${fieldVal('specialConditions')}
+
+--------------------------------------------------
+${t.secGeneral}
+تُطبَّق الشروط العامة القياسية الخاصة بـ ${fidicLabel()}.
+${fidicDesc()}
+
+--------------------------------------------------
+${t.secSpecs}
+${fieldVal('technicalSpecs')}
+
+${bar}
+        ${t.end}
+${bar}`;
+  }
+  return `${bar}
+        ${t.masterTitle}
+${bar}
+
+${t.secProject}
+- Project Name: ${fieldVal('name')}
+- First Party (Employer): ${fieldVal('employer')}
+- Second Party (Contractor): ${fieldVal('contractor')}
+- Engineer / Consultant: ${fieldVal('engineer')}
+- Contract Date: ${fieldVal('date')}
+- FIDIC Book Type: ${fidicLabel()}
+- Agreed Currencies: ${fieldVal('currency')}
+- Total Contract Price: ${fieldVal('price')}
+- Time for Completion: ${fieldVal('duration')}
+
+--------------------------------------------------
+${t.secAgreement}
+This Agreement confirms the legal engagement between the parties to execute the above works under the approved terms and specifications.
+
+--------------------------------------------------
+${t.secLoa}
+The Contractor's tender was formally accepted at the approved value of ${fieldVal('approvedValue')}, in accordance with the attached Contract conditions (Letter No. ${fieldVal('letterNo')}).
+
+--------------------------------------------------
+${t.secSpecial}
+${fieldVal('specialConditions')}
+
+--------------------------------------------------
+${t.secGeneral}
+The standard General Conditions of ${fidicLabel()} apply.
+${fidicDesc()}
+
+--------------------------------------------------
+${t.secSpecs}
+${fieldVal('technicalSpecs')}
+
+${bar}
+        ${t.end}
+${bar}`;
+}
+
+function masterMeta(){
+  const ar = state.lang==='ar';
+  return [
+    {k: ar?'اسم المشروع':'Project Name', v: fieldVal('name')},
+    {k: ar?'الطرف الأول (المالك)':'First Party (Employer)', v: fieldVal('employer')},
+    {k: ar?'الطرف الثاني (المقاول)':'Second Party (Contractor)', v: fieldVal('contractor')},
+    {k: ar?'المهندس / الاستشاري':'Engineer / Consultant', v: fieldVal('engineer')},
+    {k: ar?'تاريخ التحرير':'Contract Date', v: fieldVal('date')},
+    {k: ar?'كتاب الفيديك':'FIDIC Book', v: fidicLabel()},
+    {k: ar?'العملات المتفق عليها':'Agreed Currencies', v: fieldVal('currency')},
+    {k: ar?'القيمة الإجمالية':'Total Contract Price', v: fieldVal('price')},
+    {k: ar?'مدة التنفيذ':'Time for Completion', v: fieldVal('duration')}
+  ];
+}
+
+function stripBracketHeading(txt){
+  return (txt||'').replace(/^\[[^\]]*\]\n\n/,'');
+}
+
+function renderMasterHTML(){
+  const ar = state.lang==='ar';
+  const t = T[state.lang].docHeadings;
+  const meta = masterMeta().map(m=>`<div class="msum-row"><span class="msum-k">${esc(m.k)}</span><span class="msum-v">${esc(m.v)}</span></div>`).join('');
+  const sec = (title,body)=>`<div class="msec"><h3 class="msec-title">${esc(title)}</h3><div class="msec-body">${esc(body)}</div></div>`;
+  const generalBody = `${ar?'تُطبَّق الشروط العامة القياسية الخاصة بـ':'The standard General Conditions of'} ${fidicLabel()}.\n${fidicDesc()}`;
+  return `
+    <div class="masterdoc" id="masterPreview">
+      <div class="mdoc-head">
+        <span class="mdoc-eyebrow">${ar?'مستند تعاقدي موحّد — إخراج نهائي':'UNIFIED CONTRACT DOCUMENT — FINAL OUTPUT'}</span>
+        <h2>${esc(fieldVal('name'))}</h2>
+        <div class="mdoc-sub">${esc(fidicLabel())}</div>
+      </div>
+      <div class="msum">
+        <div class="msum-title">${esc(t.secProject)}</div>
+        <div class="msum-grid">${meta}</div>
+      </div>
+      ${sec(t.secAgreement, stripBracketHeading(agreementText()))}
+      ${sec(t.secLoa, stripBracketHeading(loaText()))}
+      ${sec(t.secSpecial, fieldVal('specialConditions'))}
+      ${sec(t.secGeneral, generalBody)}
+      ${sec(t.secSpecs, fieldVal('technicalSpecs'))}
+      <div class="mdoc-foot">${esc(t.end)} — PM/ Wael Ewis · ${esc(fieldVal('date'))}</div>
+    </div>`;
+}
+
+/* ============ STEP RENDERERS ============ */
+function renderStep1(){
+  const s = T[state.lang].s1;
+  const opts = Object.keys(FIDIC_BOOKS).map(k=>`<option value="${k}" ${state.data.fidic===k?'selected':''}>${FIDIC_BOOKS[k][state.lang].label}</option>`).join('');
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+      <div class="grid2">
+        <div class="field"><label>${s.lname}</label><input type="text" value="${esc(fieldVal('name'))}" oninput="setField('name',this.value)"></div>
+        <div class="field"><label>${s.ldate}</label><input type="text" value="${esc(fieldVal('date'))}" oninput="setField('date',this.value)"></div>
+        <div class="field"><label>${s.lemployer}</label><input type="text" value="${esc(fieldVal('employer'))}" oninput="setField('employer',this.value)"></div>
+        <div class="field"><label>${s.lcontractor}</label><input type="text" value="${esc(fieldVal('contractor'))}" oninput="setField('contractor',this.value)"></div>
+        <div class="field"><label>${s.lengineer}</label><input type="text" value="${esc(fieldVal('engineer'))}" oninput="setField('engineer',this.value)"></div>
+        <div class="field"><label>${s.lfidic}</label>
+          <select onchange="state.data.fidic=this.value; render();">${opts}</select>
+        </div>
+        <div class="field"><label>${s.lprice}</label><input type="text" value="${esc(fieldVal('price'))}" oninput="setField('price',this.value)"></div>
+        <div class="field"><label>${s.lduration}</label><input type="text" value="${esc(fieldVal('duration'))}" oninput="setField('duration',this.value)"></div>
+        <div class="field" style="grid-column:1/-1;"><label>${s.lcurrency}</label><input type="text" value="${esc(fieldVal('currency'))}" oninput="setField('currency',this.value)"></div>
+      </div>
+      <div class="info">${fidicDesc()}</div>
+      <div class="notice">${s.notice}</div>
+    </div>`;
+}
+
+function renderStep2(){
+  const s = T[state.lang].s2;
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+      <div class="doc-preview">${esc(agreementText())}</div>
+      <div class="info">${s.info}</div>
+    </div>`;
+}
+
+function renderStep3(){
+  const s = T[state.lang].s3;
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+      <div class="grid2">
+        <div class="field"><label>${s.ltenderDate}</label><input type="text" value="${esc(fieldVal('tenderDate'))}" oninput="setField('tenderDate',this.value)"></div>
+        <div class="field"><label>${s.lletterNo}</label><input type="text" value="${esc(fieldVal('letterNo'))}" oninput="setField('letterNo',this.value)"></div>
+        <div class="field" style="grid-column:1/-1;"><label>${s.lapproved}</label><input type="text" value="${esc(fieldVal('approvedValue'))}" oninput="setField('approvedValue',this.value)"></div>
+      </div>
+      <div class="doc-preview">${esc(loaText())}</div>
+    </div>`;
+}
+
+function renderStep4(){
+  const s = T[state.lang].s4;
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+      <ul class="bullets">
+        <li><b>${s.tech}:</b> ${s.techdesc}</li>
+        <li><b>${s.fin}:</b> ${s.findesc}</li>
+      </ul>
+      <div class="field" style="margin-top:14px;"><label>${s.lnotes}</label>
+        <input type="text" value="${esc(fieldVal('tenderNotes'))}" oninput="setField('tenderNotes',this.value)">
+      </div>
+    </div>`;
+}
+
+function renderStep5(){
+  const s = T[state.lang].s5;
+  const chips = CLAUSE_LIBRARY.map((c,i)=>`<button class="chip" onclick="appendClause(${i})">${esc(c[state.lang]).slice(0,26)}…</button>`).join('');
+  const projOpts = Object.keys(PROJECT_TEMPLATES).map(k=>`<option value="${k}" ${state.projectType===k?'selected':''}>${PROJECT_TEMPLATES[k][state.lang].label}</option>`).join('');
+  const keyCards = KEY_CLAUSES.map((kc,i)=>{
+    const d = kc[state.lang];
+    const items = d.items.map(it=>`<li>${esc(it)}</li>`).join('');
+    return `<div class="keyclause-card">
+        <div class="kc-top"><span class="kc-num">${i+1}</span><span class="kc-ref mono">${esc(kc.ref)}</span></div>
+        <h3>${esc(d.title)}</h3>
+        <div class="kc-gap"><b>${s.keyGapLabel}</b> ${esc(d.gap)}</div>
+        <div class="kc-custom-label">${s.keyCustomLabel}</div>
+        <ul>${items}</ul>
+        <button class="btn amber kc-add" onclick="appendKeyClause(${i})">${s.keyAddBtn}</button>
+      </div>`;
+  }).join('');
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+
+      <p style="font-weight:600;font-size:14.5px;margin:0 0 4px;color:var(--navy);">${s.keyTitle}</p>
+      <p class="hint" style="font-size:12.5px;color:var(--steel);margin:0 0 12px;">${s.keyHint}</p>
+      <div class="keyclause-grid">${keyCards}</div>
+
+      <p style="font-weight:600;font-size:13.5px;margin:0 0 4px;color:var(--navy);">${s.templateLabel}</p>
+      <p class="hint" style="font-size:12.5px;color:var(--steel);margin:0 0 10px;">${s.templateHint}</p>
+      <div class="templaterow">
+        <div class="field">
+          <select onchange="state.projectType=this.value;">${projOpts}</select>
+        </div>
+        <button class="btn" onclick="applyProjectTemplate()">${s.applyBtn}</button>
+      </div>
+
+      <div class="hint" style="margin-bottom:6px;font-size:12.5px;color:var(--steel);">${s.libLabel}</div>
+      <div class="chips">${chips}</div>
+      <div class="field"><label>${s.lconds}</label>
+        <textarea id="specialTextarea" oninput="setField('specialConditions',this.value)" rows="8">${esc(fieldVal('specialConditions'))}</textarea>
+      </div>
+      <div class="info">${s.info}</div>
+    </div>`;
+}
+
+function renderStep6(){
+  const s = T[state.lang].s6;
+  const rows = GENERAL_CLAUSES.map((c,i)=>{
+    const n = i+1;
+    const cl = c[state.lang];
+    return `<tr><td class="cnum mono">${n}</td><td class="ctitle">${esc(cl.title)}</td><td class="cdesc">${esc(cl.desc)}</td></tr>`;
+  }).join('');
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+      <div class="info"><b>${s.selected}:</b> ${fidicLabel()}<br>${fidicDesc()}</div>
+      <p style="font-weight:600;font-size:13.5px;margin:18px 0 4px;color:var(--navy);">${s.structTitle}</p>
+      <table class="clausetable">${rows}</table>
+    </div>`;
+}
+
+function renderStep7(){
+  const s = T[state.lang].s7;
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+      <div class="field"><label>${s.lspecs}</label>
+        <textarea oninput="setField('technicalSpecs',this.value)" rows="6">${esc(fieldVal('technicalSpecs'))}</textarea>
+      </div>
+      <ul class="bullets">
+        <li><b>${s.dTitle}:</b> ${s.dDesc}</li>
+        <li><b>${s.bTitle}:</b> ${s.bDesc}</li>
+      </ul>
+    </div>`;
+}
+
+function renderStep8(){
+  const s = T[state.lang].s8;
+  return `
+    <div class="card">
+      <span class="eyebrow">${s.eyebrow}</span>
+      <h1 class="stitle">${s.title}</h1>
+      <p class="ssub">${s.sub}</p>
+      <p style="font-weight:600;font-size:13.5px;margin:0 0 8px;color:var(--navy);">${s.previewTitle}</p>
+      ${renderMasterHTML()}
+      <div class="btnrow">
+        <button class="btn amber" onclick="copyMaster()">${s.copy}</button>
+        <button class="btn" onclick="downloadMaster()">${s.download}</button>
+        <button class="btn ghost" onclick="printMaster()">${s.print}</button>
+      </div>
+      <div class="notice">${s.notice}</div>
+    </div>`;
+}
+
+const STEP_RENDERERS = [renderStep1,renderStep2,renderStep3,renderStep4,renderStep5,renderStep6,renderStep7,renderStep8];
+
+function appendClause(i){
+  const txt = CLAUSE_LIBRARY[i][state.lang];
+  const current = fieldVal('specialConditions');
+  const sep = current && !current.endsWith('\n') ? '\n' : '';
+  setField('specialConditions', current + sep + '• ' + txt);
+  render();
+}
+
+function appendKeyClause(i){
+  const item = KEY_CLAUSES[i][state.lang];
+  const current = fieldVal('specialConditions');
+  const sep = current && !current.endsWith('\n') ? '\n\n' : '\n';
+  setField('specialConditions', current + sep + item.insertText);
+  render();
+  showToast(state.lang==='ar' ? 'تمت إضافة البند إلى نص الشروط الخاصة' : 'Clause added to the Particular Conditions text');
+}
+
+function applyProjectTemplate(){
+  const type = state.projectType || Object.keys(PROJECT_TEMPLATES)[0];
+  const tpl = PROJECT_TEMPLATES[type];
+  const headingAr = `— بنود خاصة بمشروع: ${tpl.ar.label} —`;
+  const headingEn = `— Particular conditions for: ${tpl.en.label} —`;
+  const block = state.lang==='ar' ? `${headingAr}\n${tpl.ar_text}` : `${headingEn}\n${tpl.en_text}`;
+  const current = fieldVal('specialConditions');
+  const sep = current && !current.endsWith('\n') ? '\n\n' : '\n';
+  setField('specialConditions', current + sep + block);
+  render();
+}
+
+let toastTimer=null;
+function showToast(msg){
+  const el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+function copyMaster(){
+  const content = masterText();
+  const done = ()=>showToast(T[state.lang].s8.copied);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(content).then(done).catch(()=>fallbackCopy(content,done));
+  } else {
+    fallbackCopy(content,done);
+  }
+}
+function fallbackCopy(text,cb){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  if(cb) cb();
+}
+
+function downloadMaster(){
+  const content = masterText();
+  const blob = new Blob([content], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = state.lang==='ar' ? 'العقد_النهائي.txt' : 'Master_Contract.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function printMaster(){
+  window.print();
+}
+
+/* ============ SHELL RENDER ============ */
+function renderShell(){
+  const L = T[state.lang];
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = state.lang==='ar' ? 'rtl':'ltr';
+  document.getElementById('brandTitle').textContent = L.brand;
+  document.getElementById('brandSub').textContent = L.brandSub;
+  document.getElementById('sidebarLabel').textContent = L.sidebarLabel;
+  document.getElementById('btnAr').classList.toggle('active', state.lang==='ar');
+  document.getElementById('btnEn').classList.toggle('active', state.lang==='en');
+
+  const steplist = document.getElementById('steplist');
+  steplist.innerHTML = L.steps.map((name,idx)=>{
+    const n = idx+1;
+    return `<li><button class="${state.step===n?'active':''}" onclick="goStep(${n})">
+      <span class="num">${n}</span><span>${name}</span>
+    </button></li>`;
+  }).join('');
+}
+
+function renderTitleblock(){
+  const L = T[state.lang];
+  return `
+    <div class="titleblock">
+      <div class="cell"><span class="k">${L.tb.project}</span><span class="v">${esc(fieldVal('name'))}</span></div>
+      <div class="cell"><span class="k">${L.tb.fidic}</span><span class="v">${fidicLabel()}</span></div>
+      <div class="cell"><span class="k">${L.tb.date}</span><span class="v mono">${esc(fieldVal('date'))}</span></div>
+      <div class="cell sheet"><span class="k">${L.tb.sheet}</span><span class="v">${L.sheetOf(state.step)}</span></div>
+    </div>`;
+}
+
+function renderSignoff(){
+  const L = T[state.lang];
+  return `<div class="signoff">
+      <span>${L.preparedBy}:</span> <strong>PM/ Wael Ewis</strong>
+      <span class="stampbox">${L.sheetOf(state.step)}</span>
+    </div>`;
+}
+
+function render(){
+  renderShell();
+  const L = T[state.lang];
+  const main = document.getElementById('mainContent');
+  const nav = `<div class="footnav">
+      <button class="btn ghost" ${state.step===1?'disabled style="opacity:.35"':''} onclick="goStep(${state.step-1})">${L.nav.prev}</button>
+      <button class="btn" ${state.step===8?'disabled style="opacity:.35"':''} onclick="goStep(${state.step+1})">${L.nav.next}</button>
+    </div>`;
+  main.innerHTML = renderTitleblock() + STEP_RENDERERS[state.step-1]() + renderSignoff() + nav;
+}
+
+function goStep(n){
+  if(n<1||n>8) return;
+  state.step = n;
+  closeSidebar();
+  window.scrollTo({top:0,behavior:'smooth'});
+  render();
+}
+
+function setLang(l){
+  if(state.lang===l) return;
+  state.lang = l;
+  state.data.currency = fieldVal('currency');
+  render();
+}
+// expose for inline handlers
+window.setField = setField;
+window.goStep = goStep;
+window.appendClause = appendClause;
+window.appendKeyClause = appendKeyClause;
+window.downloadMaster = downloadMaster;
+window.applyProjectTemplate = applyProjectTemplate;
+window.copyMaster = copyMaster;
+window.printMaster = printMaster;
+
+/* ============ SIDEBAR (mobile) ============ */
+const sidebar = document.getElementById('sidebar');
+const backdrop = document.getElementById('backdrop');
+function openSidebar(){ sidebar.classList.add('open'); backdrop.style.display='block'; }
+function closeSidebar(){ sidebar.classList.remove('open'); backdrop.style.display='none'; }
+document.getElementById('hamburgerBtn').addEventListener('click', ()=>{
+  sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+});
+backdrop.addEventListener('click', closeSidebar);
+document.getElementById('btnAr').addEventListener('click', ()=>setLang('ar'));
+document.getElementById('btnEn').addEventListener('click', ()=>setLang('en'));
+
+/* ============ INIT ============ */
+render();
+</script>
+</body>
+</html>
