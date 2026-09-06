@@ -1,0 +1,2714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>محرك الاستراتيجية الشامل | Strategic Engine</title>
+<style>
+:root{
+  --bg:#0F1720;
+  --surface:#16212C;
+  --surface2:#1C2A38;
+  --line:#26374A;
+  --gold:#C9A96A;
+  --gold-dim:#8f7a4d;
+  --teal:#2FA490;
+  --red:#D9534F;
+  --amber:#E0A83E;
+  --text:#E8EAED;
+  --muted:#8B97A5;
+  --display: Georgia, 'Times New Roman', serif;
+  --body-en: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --body-ar: Tahoma, 'Segoe UI', system-ui, sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--body-ar);}
+body.lang-en{font-family:var(--body-en);}
+[dir="rtl"] body{font-family:var(--body-ar);}
+h1,h2,h3,.display{font-family:var(--display);}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+
+/* ---------- layout ---------- */
+.app-shell{max-width:1100px;margin:0 auto;padding:16px;padding-bottom:90px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 4px 18px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .mark{width:34px;height:34px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:16px;color:var(--gold);flex-shrink:0;}
+.brand-name{font-family:var(--display);font-size:18px;letter-spacing:.3px;}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:-2px;}
+.brand-credit{font-size:10.5px;color:var(--gold);letter-spacing:.3px;margin-top:1px;}
+.calc-subhead{font-size:13.5px;color:var(--gold);margin:18px 0 8px;font-family:var(--display);}
+.slider-row{margin-bottom:12px;}
+.slider-row .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;}
+.slider-row input[type=range]{width:100%;accent-color:#C9A96A;}
+.index-stat{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;flex:1;min-width:130px;}
+.index-stat .val{font-family:var(--display);font-size:20px;color:var(--gold);}
+.index-stat .lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+.index-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.lang-toggle{display:flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;}
+.lang-toggle button{background:transparent;border:none;color:var(--muted);padding:6px 14px;font-size:12px;}
+.lang-toggle button.on{background:var(--gold);color:#1a1305;font-weight:600;}
+
+/* nav tabs */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:18px;-webkit-overflow-scrolling:touch;}
+.tabs::-webkit-scrollbar{height:0;}
+.tab-btn{flex:0 0 auto;background:var(--surface);border:1px solid var(--line);color:var(--muted);padding:9px 14px;border-radius:10px;font-size:13px;white-space:nowrap;transition:.15s;}
+.tab-btn.active{background:var(--surface2);color:var(--gold);border-color:var(--gold-dim);}
+
+.page{display:none;animation:fade .25s ease;}
+.page.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;}
+.card h2{margin:0 0 4px;font-size:18px;color:var(--gold);}
+.card .hint{color:var(--muted);font-size:12.5px;margin:0 0 16px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media (max-width:620px){.grid{grid-template-columns:1fr;}}
+label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;}
+.field{margin-bottom:14px;}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);
+  padding:10px 12px;border-radius:9px;font-size:14px;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold-dim);}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:#1a1305;border:none;
+  padding:10px 18px;border-radius:9px;font-size:13.5px;font-weight:600;}
+.btn.secondary{background:transparent;border:1px solid var(--line);color:var(--text);}
+.btn.small{padding:6px 12px;font-size:12px;}
+.btn:disabled{opacity:.4;}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.essentials{background:#2c3b2c;color:#8fd18f;}
+.badge.professional{background:#2c3348;color:#8faee8;}
+.badge.enterprise{background:#3a2c1a;color:var(--gold);}
+
+/* pulse meter */
+.pulse-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+.pulse-ring{position:relative;width:150px;height:150px;flex-shrink:0;}
+.pulse-ring svg{transform:rotate(-90deg);}
+.pulse-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.pulse-center .num{font-family:var(--display);font-size:28px;}
+.pulse-center .lbl{font-size:10px;color:var(--muted);}
+.metric-list{flex:1;min-width:180px;}
+.metric-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line);}
+.metric-row:last-child{border-bottom:none;}
+.status-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block;margin-top:8px;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:9px 8px;text-align:start;border-bottom:1px solid var(--line);}
+th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;}
+.tbl-wrap{overflow-x:auto;}
+
+.bar{height:10px;border-radius:6px;background:var(--bg);overflow:hidden;border:1px solid var(--line);}
+.bar > span{display:block;height:100%;background:var(--gold);}
+.alloc-row{margin-bottom:12px;}
+.alloc-row .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;}
+
+.task-card{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:var(--bg);}
+.task-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
+.task-name{font-weight:600;font-size:14px;}
+.task-meta{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.7;}
+.status-select{width:auto;padding:5px 10px;font-size:12px;}
+.reminder{font-size:11.5px;color:var(--amber);margin-top:5px;}
+
+.chip{display:inline-block;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:12px;margin:3px 4px 3px 0;}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media (max-width:620px){.swot-grid{grid-template-columns:1fr;}}
+.swot-box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);}
+.swot-box h4{margin:0 0 8px;font-size:13px;color:var(--gold);}
+.swot-box ul{margin:0;padding-inline-start:18px;font-size:13px;line-height:1.8;}
+.swotq-box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);}
+.swotq-box h4{margin:0 0 10px;font-size:13px;color:var(--gold);}
+.swotq-add-row{display:flex;gap:6px;margin-bottom:10px;}
+.swotq-add-row input[type="text"]{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font-size:12.5px;}
+.swotq-add-row select{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 6px;font-size:12.5px;width:64px;flex:0 0 auto;}
+.swotq-add-row button{flex:0 0 auto;}
+.swotq-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+.swotq-items li{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12.5px;}
+.swotq-items .txt{flex:1;min-width:0;overflow-wrap:anywhere;}
+.swotq-items .score-badge{flex:0 0 auto;color:var(--gold);font-family:var(--display);font-size:12px;background:var(--bg);border:1px solid var(--gold-dim);border-radius:6px;padding:1px 7px;}
+.swotq-items .rm-btn{flex:0 0 auto;background:transparent;border:none;color:var(--muted);font-size:15px;line-height:1;cursor:pointer;padding:2px 4px;}
+.swotq-items .rm-btn:hover{color:var(--red);}
+.swotq-empty{font-size:12px;color:var(--muted);padding:4px 2px;}
+.quadrant-pill{display:inline-block;border-radius:10px;padding:10px 14px;font-size:13px;font-family:var(--display);margin-top:4px;}
+.recommendation-box{margin-top:12px;border:1px solid var(--gold-dim);border-radius:10px;padding:12px;background:var(--surface2);font-size:13px;line-height:1.9;}
+.chip-select{display:flex;flex-wrap:wrap;gap:8px;}
+.chip-toggle{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12.5px;cursor:pointer;user-select:none;}
+.chip-toggle input{accent-color:#C9A96A;}
+.chip-toggle.on{border-color:var(--gold-dim);color:var(--gold);}
+.yn-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;flex-wrap:wrap;}
+.yn-row .q{font-size:12.5px;flex:1;min-width:180px;}
+.yn-toggle{display:flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;flex:0 0 auto;}
+.yn-toggle button{background:transparent;border:none;color:var(--muted);padding:5px 12px;font-size:12px;}
+.yn-toggle button.on{background:var(--gold);color:#1a1305;font-weight:600;}
+.wireframe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-top:8px;}
+.wireframe-box{border:1px dashed var(--gold-dim);border-radius:10px;padding:14px 8px;text-align:center;font-size:11.5px;color:var(--muted);background:var(--bg);}
+.gap-list{margin:0;padding-inline-start:18px;font-size:13px;line-height:1.8;}
+
+.risk-row{display:grid;grid-template-columns:2fr 1fr 2fr auto;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:9px 0;font-size:13px;}
+@media (max-width:700px){.risk-row{grid-template-columns:1fr;gap:3px;}}
+.prob-tag{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block;width:fit-content;}
+.prob-High{background:#3a1e1e;color:#e88585;}
+.prob-Medium{background:#3a301a;color:var(--amber);}
+.prob-Low{background:#1e3320;color:#7fce9a;}
+.prob-User-Defined{background:#22283a;color:#9aa8e8;}
+
+.roi-stats{display:flex;gap:14px;flex-wrap:wrap;}
+.roi-stat{flex:1;min-width:130px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;}
+.roi-stat .val{font-family:var(--display);font-size:20px;color:var(--gold);}
+.roi-stat .lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+
+.log-entry{font-size:12px;color:var(--muted);border-bottom:1px dashed var(--line);padding:6px 0;font-family:monospace;}
+.empty-state{color:var(--muted);font-size:13px;text-align:center;padding:30px 10px;}
+
+.fab-bar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(0deg,var(--bg) 60%,transparent);padding:14px 16px 18px;display:flex;justify-content:center;gap:10px;z-index:20;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--gold-dim);color:var(--text);padding:9px 18px;border-radius:20px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:30;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+
+.owner-select,.task-date{margin-top:6px;}
+.stack{display:flex;flex-direction:column;gap:8px;}
+
+@media print{
+  .topbar,.tabs,.fab-bar,.no-print{display:none !important;}
+  body{background:#fff;color:#000;}
+  .card{background:#fff;border:1px solid #ccc;break-inside:avoid;}
+  .app-shell{padding:0;max-width:100%;}
+  .page{display:none !important;}
+  .page.print-active{display:block !important;}
+  a{color:#000;}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">S</div>
+      <div>
+        <div class="brand-name" data-t="appName">محرك الاستراتيجية الشامل</div>
+        <div class="brand-credit">PM / Wael Ewis</div>
+        <div class="brand-sub" data-t="appSub">تخطيط استراتيجي بلا اتصال بالإنترنت</div>
+      </div>
+    </div>
+    <div class="lang-toggle no-print">
+      <button id="btnAr" class="on" onclick="setLang('ar')">AR</button>
+      <button id="btnEn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+
+  <div class="tabs no-print" id="tabs"></div>
+
+  <!-- ================= PAGE 0: DASHBOARD / SETUP ================= -->
+  <section class="page active" id="page-dash" data-page="dash">
+    <div class="card">
+      <h2 data-t="setupTitle">لوحة القيادة التنفيذية — بيانات المشروع</h2>
+      <p class="hint" data-t="setupHint">أدخل بيانات العميل، وسيحدد النظام الباقة الاستراتيجية والمدة تلقائيًا عبر معادلات محلية.</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="companyName">اسم الشركة</label>
+          <input type="text" id="inCompany" placeholder="—">
+        </div>
+        <div class="field">
+          <label data-t="budget">الميزانية ($)</label>
+          <input type="number" id="inBudget" placeholder="15000">
+        </div>
+        <div class="field">
+          <label data-t="employees">عدد الموظفين</label>
+          <input type="number" id="inEmployees" placeholder="40">
+        </div>
+        <div class="field">
+          <label data-t="goal">الهدف الأساسي</label>
+          <select id="inGoal">
+            <option value="startup" data-t="goalStartup">تأسيس (Startup)</option>
+            <option value="scale" data-t="goalScale">توسع (Scale)</option>
+            <option value="enterprise" data-t="goalEnterprise">مؤسسي (Enterprise)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-t="startDate">تاريخ البدء</label>
+          <input type="date" id="inStartDate">
+        </div>
+        <div class="field">
+          <label data-t="targetMarket">السوق المستهدف</label>
+          <input type="text" id="inDashTargetMarket" placeholder="—">
+        </div>
+        <div class="field">
+          <label data-t="industryType">نوع الصناعة</label>
+          <select id="inDashIndustry">
+            <option value="construction" data-t="indConstruction">مقاولات وهندسة</option>
+            <option value="manufacturing" data-t="indManufacturing">صناعة وتصنيع</option>
+            <option value="retail" data-t="indRetail">تجزئة وسلع استهلاكية</option>
+            <option value="tech" data-t="indTech">تقنية وبرمجيات</option>
+            <option value="healthcare" data-t="indHealthcare">رعاية صحية</option>
+            <option value="finance" data-t="indFinance">خدمات مالية</option>
+            <option value="education" data-t="indEducation">تعليم</option>
+            <option value="hospitality" data-t="indHospitality">ضيافة وسياحة</option>
+            <option value="logistics" data-t="indLogistics">لوجستيات ونقل</option>
+            <option value="other" data-t="indOther">أخرى</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.initProject()" data-t="btnBuild">إنشاء المشروع</button>
+        <button class="btn secondary" onclick="App.loadSaved()" data-t="btnLoad">تحميل آخر نسخة محفوظة</button>
+      </div>
+    </div>
+
+    <div class="card" id="packageResultCard" style="display:none;">
+      <h2 data-t="packageTitle">الباقة الاستراتيجية المحددة</h2>
+      <div id="packageBadge"></div>
+      <div class="metric-list" style="margin-top:10px;">
+        <div class="metric-row"><span data-t="durationLbl">المدة</span><span id="pkgDuration">—</span></div>
+        <div class="metric-row"><span data-t="startLbl">تاريخ البدء</span><span id="pkgStart">—</span></div>
+        <div class="metric-row"><span data-t="endLbl">تاريخ الانتهاء المتوقع</span><span id="pkgEnd">—</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="healthCard" style="display:none;">
+      <h2 data-t="healthTitle">مؤشر صحة الشركة (Pulse Meter)</h2>
+      <p class="hint" data-t="healthHint">أدخل درجات الأداء الخام؛ يقوم النظام بحساب المؤشرات والمعادلة العامة محليًا.</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="finScore">الأداء المالي الخام (0-100)</label>
+          <input type="number" id="inFin" value="80" min="0" max="100" oninput="App.updateHealth()">
+        </div>
+        <div class="field">
+          <label data-t="defectRate">معدل عيوب الجودة (%)</label>
+          <input type="number" id="inDefect" value="3" min="0" max="20" oninput="App.updateHealth()">
+        </div>
+        <div class="field">
+          <label data-t="opsScore">الأداء التشغيلي الخام (0-100)</label>
+          <input type="number" id="inOps" value="85" min="0" max="100" oninput="App.updateHealth()">
+        </div>
+      </div>
+      <div class="pulse-wrap">
+        <div class="pulse-ring">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="62" stroke="#26374A" stroke-width="14" fill="none"/>
+            <circle id="pulseArc" cx="75" cy="75" r="62" stroke="#2FA490" stroke-width="14" fill="none"
+              stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6"/>
+          </svg>
+          <div class="pulse-center">
+            <div class="num" id="pulseNum">0%</div>
+            <div class="lbl" data-t="overallLbl">الصحة العامة</div>
+          </div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row"><span data-t="finIdx">المؤشر المالي</span><span id="finIdxVal">—</span></div>
+          <div class="metric-row"><span data-t="qualIdx">مؤشر الجودة</span><span id="qualIdxVal">—</span></div>
+          <div class="metric-row"><span data-t="opsIdx">المؤشر التشغيلي</span><span id="opsIdxVal">—</span></div>
+          <span class="status-pill" id="pulseStatusPill">—</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE 1: BUDGET ================= -->
+  <section class="page" id="page-budget" data-page="budget">
+    <div class="card">
+      <h2 data-t="budgetTitle">التخطيط المالي وتوزيع الميزانية</h2>
+      <p class="hint" data-t="budgetHint">توزيع تلقائي للميزانية على مراحل المشروع (Milestones) بناءً على الباقة.</p>
+      <div id="budgetAllocList"></div>
+      <div class="roi-stats" style="margin-top:14px;">
+        <div class="roi-stat"><div class="val" id="totalBudgetVal">—</div><div class="lbl" data-t="totalBudget">إجمالي الميزانية</div></div>
+        <div class="roi-stat"><div class="val" id="milestoneCountVal">—</div><div class="lbl" data-t="milestoneCount">عدد المراحل</div></div>
+      </div>
+    </div>
+    <div class="card no-print" id="printBudgetCard">
+      <div class="row-actions">
+        <button class="btn small secondary" onclick="Report.printPage('page-budget')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('budget')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE 2: TASKS ================= -->
+  <section class="page" id="page-tasks" data-page="tasks">
+    <div class="card">
+      <h2 data-t="tasksTitle">قائمة المهام والخطة الزمنية</h2>
+      <p class="hint" data-t="tasksHint">مواعيد كل مهمة تُحسب تلقائيًا من تاريخ البدء، مع تنبيه محلي (بدون إنترنت) قبل موعد الانتهاء بيومين.</p>
+      <div id="taskList" class="stack"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="domainAuditTitle">نوتة حسابية: تدقيق شامل لخمسة مجالات استراتيجية</h2>
+      <p class="hint" data-t="domainAuditHint">قيّم كل مجال من 0 إلى 100 ليحسب النظام مؤشر الصحة العامة والتشخيص فورًا ومحليًا.</p>
+      <div class="grid" id="domainAuditInputs"></div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcDomainAudit()" data-t="btnCalcDomainAudit">احسب مؤشر الصحة العامة</button>
+      </div>
+      <div id="domainAuditResults" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="roadmapTitle">نوتة حسابية: تصميم خارطة استراتيجية لـ 3 سنوات</h2>
+      <p class="hint" data-t="roadmapHint">أدخل بيانات التوجه الاستراتيجي ليقوم النظام بتوليد بطاقة الأهداف المتوازنة وخارطة الطريق تلقائيًا ومحليًا.</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="growthPctLbl">نسبة النمو السنوي المستهدف (%)</label>
+          <input type="number" id="inRoadmapGrowth" value="20" min="0" max="200">
+        </div>
+        <div class="field">
+          <label data-t="prioritiesLbl">عدد الأولويات الاستراتيجية العليا (1-5)</label>
+          <input type="number" id="inRoadmapPriorities" value="3" min="1" max="5">
+        </div>
+        <div class="field">
+          <label data-t="focusLbl">التركيز الاستراتيجي الأساسي</label>
+          <select id="inRoadmapFocus">
+            <option value="marketShare" data-t="focusMarketShare">زيادة الحصة السوقية</option>
+            <option value="profitability" data-t="focusProfitability">تعزيز الربحية</option>
+            <option value="newMarkets" data-t="focusNewMarkets">دخول أسواق جديدة</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-t="challengeLbl">أهم تحدي يواجه الشركة</label>
+          <select id="inRoadmapChallenge">
+            <option value="pricing" data-t="challengePricing">المنافسة السعرية</option>
+            <option value="opsEfficiency" data-t="challengeOpsEfficiency">الكفاءة التشغيلية</option>
+            <option value="talentGap" data-t="challengeTalentGap">نقص الكفاءات</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcRoadmap()" data-t="btnGenRoadmap">توليد الخارطة الاستراتيجية الأولية</button>
+      </div>
+      <div id="roadmapResults" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="isoGapTitle">نوتة حسابية: تحليل فجوة نظام إدارة الجودة ISO 9001</h2>
+      <p class="hint" data-t="isoGapHint">أجب على أسئلة الفحص الذاتي السريع للحصول على مؤشر الجاهزية وخطة المعالجة فورًا ومحليًا.</p>
+      <div class="stack" id="isoGapInputs"></div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcIsoGap()" data-t="btnCalcIso">تحليل الفجوة وتوليد خطة المعالجة</button>
+      </div>
+      <div id="isoGapResults" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="dashDesignTitle">نوتة حسابية: نشر لوحة تحكم تنفيذية</h2>
+      <p class="hint" data-t="dashDesignHint">حدد احتياجات البيانات ليقوم النظام بتوليد مسودة لوحة التحكم (Wireframe) فورًا ومحليًا.</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="deptCountLbl">عدد الأقسام الرئيسية</label>
+          <input type="number" id="inDashDeptCount" value="4" min="1" max="12">
+        </div>
+        <div class="field">
+          <label data-t="vizTypeLbl">نوع العرض المفضل</label>
+          <select id="inDashVizType">
+            <option value="bar" data-t="vizBar">رسوم بيانية عمودية</option>
+            <option value="gauge" data-t="vizGauge">عدادات</option>
+            <option value="table" data-t="vizTable">جداول</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-t="refreshLbl">تكرار تحديث البيانات</label>
+          <select id="inDashRefresh">
+            <option value="daily" data-t="refreshDaily">يومي</option>
+            <option value="weekly" data-t="refreshWeekly">أسبوعي</option>
+            <option value="monthly" data-t="refreshMonthly">شهري</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label data-t="kpiLbl">مؤشرات الأداء (KPIs) الرئيسية</label>
+        <div class="chip-select" id="dashKpiChoices"></div>
+      </div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcDashDesign()" data-t="btnGenDash">توليد مسودة لوحة التحكم</button>
+      </div>
+      <div id="dashDesignResults" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card no-print">
+      <div class="row-actions">
+        <button class="btn small secondary" onclick="Report.printPage('page-tasks')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('tasks')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE 3: RACI ================= -->
+  <section class="page" id="page-raci" data-page="raci">
+    <div class="card">
+      <h2 data-t="raciTitle">الدليل الرقمي ومصفوفة المسؤوليات (RACI)</h2>
+      <p class="hint" data-t="raciHint">تتوسع المصفوفة تلقائيًا لتشمل «مدير عام الفرع» عند تجاوز عدد الموظفين 50.</p>
+      <div id="raciRoles" style="margin-bottom:14px;"></div>
+      <div class="tbl-wrap">
+        <table id="raciTable"></table>
+      </div>
+    </div>
+    <div class="card no-print">
+      <div class="row-actions">
+        <button class="btn small secondary" onclick="Report.printPage('page-raci')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('raci')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE ORG: STRUCTURE & JOB TITLES ================= -->
+  <section class="page" id="page-org" data-page="org">
+    <div class="card">
+      <h2 data-t="orgCalcTitle">نوتة حسابية: الهيكل الوظيفي والمسميات الوظيفية</h2>
+      <p class="hint" data-t="orgCalcHint">يحسب النظام توزيع المستويات الإدارية تلقائيًا بناءً على عدد الموظفين ونمط الإدارة.</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="orgEmployees">إجمالي عدد الموظفين</label>
+          <input type="number" id="inOrgEmployees" placeholder="40">
+        </div>
+        <div class="field">
+          <label data-t="orgDepartments">عدد الأقسام</label>
+          <input type="number" id="inOrgDepartments" placeholder="5" value="5">
+        </div>
+        <div class="field">
+          <label data-t="orgStyle">نمط الإدارة</label>
+          <select id="inOrgStyle">
+            <option value="flat" data-t="orgFlat">مسطح (نطاق إشراف واسع)</option>
+            <option value="standard" selected data-t="orgStandard">قياسي</option>
+            <option value="hierarchical" data-t="orgHierarchical">هرمي (طبقات متعددة)</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcOrgStructure()" data-t="btnCalcOrg">احسب الهيكل الوظيفي</button>
+      </div>
+      <div id="orgLevelsResult" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="jobTitlesTitle">المسميات الوظيفية للموظفين</h2>
+      <p class="hint" data-t="jobTitlesHint">أضف كل مسمى وظيفي مع القسم وعدد شاغليه والجهة التي يتبع لها.</p>
+      <p class="hint" data-t="autoGenHint">يستنتج النظام أسماء الإدارات والأقسام والمسمى الوظيفي لكل موظف تلقائيًا بناءً على عدد الموظفين، نمط الإدارة ونوع الصناعة.</p>
+      <div class="row-actions" style="margin-bottom:14px;">
+        <button class="btn" onclick="App.autoGenerateJobTitles()" data-t="btnAutoGenTitles">توليد الهيكل الوظيفي تلقائيًا</button>
+      </div>
+      <div class="grid">
+        <div class="field"><label data-t="jtDept">القسم</label><input type="text" id="inJtDept"></div>
+        <div class="field"><label data-t="jtTitle">المسمى الوظيفي</label><input type="text" id="inJtTitle"></div>
+        <div class="field"><label data-t="jtCount">العدد</label><input type="number" id="inJtCount" value="1" min="1"></div>
+        <div class="field"><label data-t="jtReports">يتبع إلى</label><input type="text" id="inJtReports"></div>
+      </div>
+      <div class="row-actions">
+        <button class="btn small" onclick="App.addJobTitle()" data-t="btnAddTitle">إضافة المسمى</button>
+      </div>
+      <div class="tbl-wrap" style="margin-top:14px;">
+        <table id="jobTitlesTable"></table>
+      </div>
+    </div>
+
+    <div class="card no-print">
+      <div class="row-actions">
+        <button class="btn small secondary" onclick="Report.printPage('page-org')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('org')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE 4: ADVISORY / ROI / SWOT / PESTEL / PORTER ================= -->
+  <section class="page" id="page-advisory" data-page="advisory">
+    <div class="card">
+      <h2 data-t="roiTitle">تحليل العائد على الاستثمار (ROI)</h2>
+      <div class="roi-stats">
+        <div class="roi-stat"><div class="val" id="roiInvest">—</div><div class="lbl" data-t="roiInvestLbl">تكلفة الاستثمار</div></div>
+        <div class="roi-stat"><div class="val" id="roiBenefit">—</div><div class="lbl" data-t="roiBenefitLbl">العائد التقديري</div></div>
+        <div class="roi-stat"><div class="val" id="roiPct">—</div><div class="lbl" data-t="roiPctLbl">نسبة العائد الصافي</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="stratCalcTitle">نوتة حسابية: PESTEL + قوى بورتر الخمس + SWOT</h2>
+      <p class="hint" data-t="stratCalcHint">حدد السوق المستهدف ونوع الصناعة، وقيّم كل عامل من 1 إلى 5 ليحسب النظام المؤشرات محليًا.</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="targetMarket">السوق المستهدف</label>
+          <input type="text" id="inTargetMarket" placeholder="—">
+        </div>
+        <div class="field">
+          <label data-t="industryType">نوع الصناعة</label>
+          <select id="inIndustry">
+            <option value="construction" data-t="indConstruction">مقاولات وهندسة</option>
+            <option value="manufacturing" data-t="indManufacturing">صناعة وتصنيع</option>
+            <option value="retail" data-t="indRetail">تجزئة وسلع استهلاكية</option>
+            <option value="tech" data-t="indTech">تقنية وبرمجيات</option>
+            <option value="healthcare" data-t="indHealthcare">رعاية صحية</option>
+            <option value="finance" data-t="indFinance">خدمات مالية</option>
+            <option value="education" data-t="indEducation">تعليم</option>
+            <option value="hospitality" data-t="indHospitality">ضيافة وسياحة</option>
+            <option value="logistics" data-t="indLogistics">لوجستيات ونقل</option>
+            <option value="other" data-t="indOther">أخرى</option>
+          </select>
+        </div>
+      </div>
+
+      <h3 class="calc-subhead" data-t="pestelCalcTitle">PESTEL — تقييم الأثر من 1 (ضعيف) إلى 5 (قوي)</h3>
+      <div class="grid" id="pestelInputs"></div>
+
+      <h3 class="calc-subhead" data-t="porterCalcTitle">قوى بورتر الخمس — تقييم الشدة من 1 إلى 5</h3>
+      <div class="grid" id="porterInputs"></div>
+
+      <h3 class="calc-subhead" data-t="swotCalcTitle">SWOT — عنصر واحد في كل سطر</h3>
+      <div class="swot-grid">
+        <div class="field"><label data-t="swotS">نقاط القوة</label><textarea id="inSwotS" rows="3"></textarea></div>
+        <div class="field"><label data-t="swotW">نقاط الضعف</label><textarea id="inSwotW" rows="3"></textarea></div>
+        <div class="field"><label data-t="swotO">الفرص</label><textarea id="inSwotO" rows="3"></textarea></div>
+        <div class="field"><label data-t="swotT">التهديدات</label><textarea id="inSwotT" rows="3"></textarea></div>
+      </div>
+
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcStrategy()" data-t="btnCalcStrategy">احسب المؤشرات</button>
+      </div>
+      <div id="stratCalcResults" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="swotQuantTitle">نوتة حسابية: تحليل SWOT الرباعي الكمي</h2>
+      <p class="hint" data-t="swotQuantHint">أدخل نقاط القوة والضعف والفرص والتهديدات، وامنح كل نقطة درجة تأثير من 1 إلى 5.</p>
+      <div class="swot-grid" id="swotQuantGrid"></div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcSwotQuant()" data-t="btnCalcSwotQuant">حساب المؤشر الاستراتيجي للـ SWOT</button>
+      </div>
+      <div id="swotQuantResults" style="margin-top:16px;"></div>
+      <div class="row-actions no-print" style="margin-top:10px;">
+        <button class="btn small secondary" onclick="Report.printPage('page-advisory')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('advisory')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="govTitle">ملفات الحوكمة</h2>
+      <div id="govChips"></div>
+    </div>
+    <div class="card no-print">
+      <div class="row-actions">
+        <button class="btn small secondary" onclick="Report.printPage('page-advisory')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('advisory')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE 5: RISK ================= -->
+  <section class="page" id="page-risk" data-page="risk">
+    <div class="card">
+      <h2 data-t="riskTitle">مؤشر التنبؤ بالمخاطر</h2>
+      <p class="hint" data-t="riskHint">يمكنك إضافة مخاطر مخصصة خاصة بالمشروع.</p>
+      <div id="riskList"></div>
+      <div class="field" style="margin-top:14px;">
+        <label data-t="customRiskLbl">إضافة خطر مخصص</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="inCustomRisk" placeholder="—">
+          <button class="btn small" onclick="App.addRisk()" data-t="btnAdd">إضافة</button>
+        </div>
+      </div>
+    </div>
+    <div class="card no-print">
+      <div class="row-actions">
+        <button class="btn small secondary" onclick="Report.printPage('page-risk')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('risk')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE 6: MARKETING ================= -->
+  <section class="page" id="page-marketing" data-page="marketing">
+    <div class="card">
+      <h2 data-t="mktTitle">خطة التسويق المقترحة</h2>
+      <div class="field">
+        <label data-t="mktStrategy">الاستراتيجية</label>
+        <div id="mktStrategy" style="font-size:14px;"></div>
+      </div>
+      <div class="field">
+        <label data-t="mktChannels">القنوات</label>
+        <div id="mktChannels"></div>
+      </div>
+      <div class="field">
+        <label data-t="mktSteps">خطوات التنفيذ</label>
+        <ol id="mktSteps" style="font-size:13px;line-height:1.9;padding-inline-start:20px;"></ol>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="mktCalcTitle">نوتة حسابية: خطة التسويق التفصيلية</h2>
+      <p class="hint" data-t="mktCalcHint">أدخل الميزانية والقناة الأساسية ليقوم النظام بتوزيع الميزانية وحساب العائد المتوقع محليًا.</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="mktBudgetLbl">الميزانية المخصصة للتسويق ($)</label>
+          <input type="number" id="inMktBudget" value="10000" min="0">
+        </div>
+        <div class="field">
+          <label data-t="mktPrimaryChannelLbl">القناة التسويقية المستهدفة الأساسية</label>
+          <select id="inMktPrimaryChannel">
+            <option value="mktCh1" data-t="mktCh1">الريادة الفكرية على LinkedIn</option>
+            <option value="mktCh2" data-t="mktCh2">عروض مباشرة موجهة</option>
+            <option value="mktCh3" data-t="mktCh3">عرض دراسات الحالة</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-t="mktTargetingLbl">التوجيه المستهدف</label>
+          <input type="text" value="B2B" data-t="mktTargetingB2B" disabled style="opacity:.8;">
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.calcMarketing()" data-t="btnCalcMkt">حساب خطة التسويق</button>
+      </div>
+      <div id="mktCalcResults" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card no-print">
+      <div class="row-actions">
+        <button class="btn small secondary" onclick="Report.printPage('page-marketing')" data-t="btnPrintPage">طباعة هذه الصفحة</button>
+        <button class="btn small secondary" onclick="Report.copyPage('marketing')" data-t="btnCopyPage">نسخ محتوى الصفحة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGE 7: REPORTS / EXPORT / LOG ================= -->
+  <section class="page" id="page-reports" data-page="reports">
+    <div class="card">
+      <h2 data-t="exportTitle">تصدير التقرير النهائي والنسخ الاحتياطي</h2>
+      <p class="hint" data-t="exportHint">تصدير شامل بكل الصفحات، نسخة احتياطية محلية (JSON) قابلة للاستيراد لاحقًا، وطباعة/نسخ كاملة — كل ذلك بدون إنترنت.</p>
+      <div class="row-actions">
+        <button class="btn" onclick="Report.printFull()" data-t="btnPrintFull">طباعة التقرير الكامل</button>
+        <button class="btn secondary" onclick="Report.copyFull()" data-t="btnCopyFull">نسخ التقرير الكامل</button>
+        <button class="btn secondary" onclick="Report.downloadBackup()" data-t="btnBackup">تنزيل نسخة احتياطية (JSON)</button>
+        <button class="btn secondary" onclick="App.saveNow()" data-t="btnSaveLocal">حفظ محلي الآن</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="marketReportTitle">التحليل الاستراتيجي التلقائي للسوق (PESTEL + قوى بورتر + SWOT)</h2>
+      <p class="hint" data-t="marketReportHint">اختر خيارات السوق ليقوم النظام بتوليد تحليل PESTEL وقوى بورتر الخمس وSWOT تلقائيًا بناءً على تحليل بيانات المشروع وبيانات الصفحة الأولى (السوق المستهدف ونوع الصناعة).</p>
+      <div class="grid">
+        <div class="field">
+          <label data-t="marketMaturity">مرحلة نضج السوق</label>
+          <select id="inMktMaturity">
+            <option value="emerging" data-t="matEmerging">ناشئ</option>
+            <option value="growth" selected data-t="matGrowth">نمو</option>
+            <option value="mature" data-t="matMature">ناضج</option>
+            <option value="decline" data-t="matDecline">متراجع</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-t="competitionLevel">شدة المنافسة</label>
+          <select id="inMktCompetition">
+            <option value="low" data-t="compLow">منخفضة</option>
+            <option value="medium" selected data-t="compMedium">متوسطة</option>
+            <option value="high" data-t="compHigh">مرتفعة</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-t="marketScope">نطاق السوق</label>
+          <select id="inMktScope">
+            <option value="local" data-t="scopeLocal">محلي</option>
+            <option value="regional" selected data-t="scopeRegional">إقليمي</option>
+            <option value="international" data-t="scopeInternational">دولي</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn" onclick="App.generateMarketReport()" data-t="btnGenMarketReport">توليد التقرير</button>
+      </div>
+      <div id="marketReportResults" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="logTitle">سجل تسجيل المشاريع</h2>
+      <p class="hint" data-t="logHint">كل مشروع يتم إنشاؤه يُسجَّل هنا تلقائيًا مع بياناته الأساسية وتاريخ التسجيل.</p>
+      <div class="tbl-wrap">
+        <table id="registryTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* =========================================================
+   i18n
+   ========================================================= */
+const I18N = {
+ar:{
+ appName:"محرك الاستراتيجية الشامل", appSub:"تخطيط استراتيجي بلا اتصال بالإنترنت",
+ tabDash:"لوحة القيادة", tabBudget:"الميزانية", tabTasks:"المهام", tabRaci:"RACI",
+ tabAdvisory:"الاستشارات", tabRisk:"المخاطر", tabMarketing:"التسويق", tabReports:"التقارير", tabOrg:"الهيكل الوظيفي",
+ setupTitle:"لوحة القيادة التنفيذية — بيانات المشروع",
+ setupHint:"أدخل بيانات العميل، وسيحدد النظام الباقة الاستراتيجية والمدة تلقائيًا عبر معادلات محلية.",
+ companyName:"اسم الشركة", budget:"الميزانية ($)", employees:"عدد الموظفين", goal:"الهدف الأساسي",
+ goalStartup:"تأسيس (Startup)", goalScale:"توسع (Scale)", goalEnterprise:"مؤسسي (Enterprise)",
+ startDate:"تاريخ البدء", btnBuild:"إنشاء المشروع", btnLoad:"تحميل آخر نسخة محفوظة",
+ packageTitle:"الباقة الاستراتيجية المحددة", durationLbl:"المدة", startLbl:"تاريخ البدء", endLbl:"تاريخ الانتهاء المتوقع",
+ healthTitle:"مؤشر صحة الشركة (Pulse Meter)",
+ healthHint:"أدخل درجات الأداء الخام؛ يقوم النظام بحساب المؤشرات والمعادلة العامة محليًا.",
+ finScore:"الأداء المالي الخام (0-100)", defectRate:"معدل عيوب الجودة (%)", opsScore:"الأداء التشغيلي الخام (0-100)",
+ overallLbl:"الصحة العامة", finIdx:"المؤشر المالي", qualIdx:"مؤشر الجودة", opsIdx:"المؤشر التشغيلي",
+ budgetTitle:"التخطيط المالي وتوزيع الميزانية",
+ budgetHint:"توزيع تلقائي للميزانية على مراحل المشروع (Milestones) بناءً على الباقة.",
+ totalBudget:"إجمالي الميزانية", milestoneCount:"عدد المراحل",
+ tasksTitle:"قائمة المهام والخطة الزمنية",
+ tasksHint:"مواعيد كل مهمة تُحسب تلقائيًا من تاريخ البدء، مع تنبيه محلي (بدون إنترنت) قبل موعد الانتهاء بيومين.",
+ raciTitle:"الدليل الرقمي ومصفوفة المسؤوليات (RACI)",
+ raciHint:"تتوسع المصفوفة تلقائيًا لتشمل «مدير عام الفرع» عند تجاوز عدد الموظفين 50.",
+ roiTitle:"تحليل العائد على الاستثمار (ROI)",
+ roiInvestLbl:"تكلفة الاستثمار", roiBenefitLbl:"العائد التقديري", roiPctLbl:"نسبة العائد الصافي",
+ swotTitle:"تحليل SWOT", pestelTitle:"إطار PESTEL", govTitle:"ملفات الحوكمة",
+ riskTitle:"مؤشر التنبؤ بالمخاطر", riskHint:"يمكنك إضافة مخاطر مخصصة خاصة بالمشروع.",
+ customRiskLbl:"إضافة خطر مخصص", btnAdd:"إضافة",
+ mktTitle:"خطة التسويق المقترحة", mktStrategy:"الاستراتيجية", mktChannels:"القنوات", mktSteps:"خطوات التنفيذ",
+ exportTitle:"تصدير التقرير النهائي والنسخ الاحتياطي",
+ exportHint:"تصدير شامل بكل الصفحات، نسخة احتياطية محلية (JSON) قابلة للاستيراد لاحقًا، وطباعة/نسخ كاملة — كل ذلك بدون إنترنت.",
+ btnPrintFull:"طباعة التقرير الكامل", btnCopyFull:"نسخ التقرير الكامل",
+ btnBackup:"تنزيل نسخة احتياطية (JSON)", btnSaveLocal:"حفظ محلي الآن",
+ logTitle:"سجل تسجيل المشاريع",
+ btnPrintPage:"طباعة هذه الصفحة", btnCopyPage:"نسخ محتوى الصفحة",
+ milestone1E:"المرحلة 1: الانطلاق ومسح البيئة", milestone2E:"المرحلة 2: التوجه الاستراتيجي ومؤشرات الأداء",
+ milestone1P:"المرحلة 1: الاكتشاف والتشخيص الأساسي", milestone2P:"المرحلة 2: الاستراتيجية وخارطة 3 سنوات",
+ milestone3P:"المرحلة 3: الأنظمة، ISO 9001 والتطبيق", milestone4P:"المرحلة 4: الاستشارة بعد التنفيذ",
+ milestone1N:"المرحلة 1: بنية الكيانات المتعددة", milestone2N:"المرحلة 2: أطر مخصصة وخارطة الذكاء الاصطناعي",
+ milestone3N:"المرحلة 3: التطبيق المؤسسي والحوكمة", milestone4N:"المرحلة 4: تسهيل مجلس الإدارة والتسليم",
+ taskName1E:"الانطلاق ومواءمة أصحاب المصلحة", taskName2E:"مسح بيئي PESTLE و SWOT",
+ taskName3E:"إعداد الأهداف السنوية ومؤشرات الأداء الأساسية", taskName4E:"ورشة القيادة والتسليم",
+ taskName1P:"تدقيق شامل لخمسة مجالات", taskName2P:"تصميم خارطة استراتيجية لـ 3 سنوات",
+ taskName3P:"تحليل فجوة نظام إدارة الجودة ISO 9001", taskName4P:"نشر لوحة تحكم تنفيذية",
+ taskName1N:"رسم بنية الكيانات المتعددة", taskName2N:"خارطة التحول الرقمي والذكاء الاصطناعي",
+ taskName3N:"نشر حوكمة HPTG المؤسسية", taskName4N:"تسهيل على مستوى مجلس الإدارة والتسليم",
+ ownerCEO:"الرئيس التنفيذي / الراعي", ownerAnalyst:"محلل استراتيجي", ownerAdvisor:"مستشار رئيسي", ownerTeam:"الفريق بالكامل",
+ ownerOpsConsult:"مستشار عمليات", ownerQualityAud:"مدقق جودة", ownerDataEng:"مهندس بيانات",
+ ownerPrincipal:"مستشار رئيسي أول", ownerTech:"خبير تقني", ownerChange:"مدير تغيير",
+ startLabel:"البداية", endLabel:"النهاية", ownerLabel:"المسؤول", statusLabel:"الحالة",
+ statusPending:"قيد الانتظار", statusInProgress:"جارٍ التنفيذ", statusDone:"تم التنفيذ",
+ reminderPrefix:"تنبيه محلي بتاريخ",
+ essentials:"باقة الأساسيات", professional:"الباقة الاحترافية", enterprise:"باقة المؤسسات",
+ weeks:"أسبوعًا",
+ pulseExcellent:"ممتاز (أداء عالٍ)", pulseStable:"مستقر (يتطلب متابعة)", pulseCritical:"حرج (يتطلب إجراء فوري)",
+ raciActiveRoles:"الأدوار الفعالة",
+ raciP1:"التخطيط الاستراتيجي والإعداد", raciP2:"تنفيذ العمليات وهيكل العمل",
+ raciP3:"تدقيق الجودة ومراجعة ISO", raciP4:"لوحة الأداء والمراجعة",
+ roleSub:"مدير عام الفرع",
+ swotS:"نقاط القوة", swotW:"نقاط الضعف", swotO:"الفرص", swotT:"التهديدات",
+ swotS1:"خبرة هندسية أساسية", swotS2:"أطر عمل مثبتة", swotW1:"اختناقات موارد مبدئية",
+ swotO1:"توسع في السوق الإقليمي", swotO2:"أتمتة رقمية", swotT1:"تقلب السوق", swotT2:"تغيرات تنظيمية",
+ pest1:"سياسي", pest2:"اقتصادي", pest3:"اجتماعي", pest4:"تقني", pest5:"بيئي", pest6:"قانوني",
+ gov1:"وثيقة تفويض الصلاحيات (DoA)", gov2:"معيار نظام إدارة الجودة ISO 9001", gov3:"ميثاق اجتماعات الحوكمة (HPTG)",
+ riskOpsE:"عدم كفاءة تشغيلية", riskOpsM:"مصفوفة RACI وتطبيق ISO 9001",
+ riskMktE:"تقلب السوق", riskMktM:"مسح PESTLE واحتياطيات مرنة",
+ riskDelayE:"تأخيرات التنفيذ", riskDelayM:"متابعة مواعيد المراحل",
+ probHigh:"مرتفع", probMedium:"متوسط", probLow:"منخفض", probUser:"محدد من المستخدم",
+ mitigationLbl:"الإجراء الوقائي", userDefinedMit:"يُدار عبر المراجعة الداخلية",
+ mktStrategyTxt:"التوجه التسويقي الاستشاري بين الشركات (B2B)",
+ mktCh1:"الريادة الفكرية على LinkedIn", mktCh2:"عروض مباشرة موجهة", mktCh3:"عرض دراسات الحالة",
+ mktStep1:"نشر رؤى تنفيذية حول التحول المؤسسي.", mktStep2:"مشاركة مؤشرات العائد ودراسات حالة النجاح.",
+ mktStep3:"تواصل مباشر مع القيادات في السوق الإقليمي.",
+ toastSaved:"تم الحفظ محليًا", toastCopied:"تم نسخ المحتوى", toastCreated:"تم إنشاء المشروع بنجاح",
+ toastNoProject:"يرجى إنشاء المشروع أولًا", toastLoaded:"تم تحميل آخر نسخة محفوظة", toastNoSaved:"لا توجد نسخة محفوظة",
+ noTasksYet:"لا توجد مهام بعد — أنشئ المشروع أولًا.", noLogYet:"لا يوجد سجل بعد.",
+ logInit:"تم إنشاء المشروع:", logHealth:"تم حساب مؤشرات الصحة.", logStatus:"تم تحديث حالة المهمة رقم",
+ logRisk:"تمت إضافة خطر مخصص:", logSave:"تم حفظ نسخة احتياطية محلية.", logPrint:"تمت طباعة صفحة:",
+ logCopy:"تم نسخ محتوى صفحة:", logExport:"تم تصدير التقرير الكامل.",
+ logHint:"كل مشروع يتم إنشاؤه يُسجَّل هنا تلقائيًا مع بياناته الأساسية وتاريخ التسجيل.",
+ regCompany:"الشركة", regPackage:"الباقة", regBudget:"الميزانية", regEmployees:"الموظفون", regDate:"تاريخ التسجيل",
+ noRegistryYet:"لا توجد مشاريع مسجلة بعد.",
+ stratCalcTitle:"نوتة حسابية: PESTEL + قوى بورتر الخمس + SWOT",
+ stratCalcHint:"حدد السوق المستهدف ونوع الصناعة، وقيّم كل عامل من 1 إلى 5 ليحسب النظام المؤشرات محليًا.",
+ targetMarket:"السوق المستهدف", industryType:"نوع الصناعة",
+ indConstruction:"مقاولات وهندسة", indManufacturing:"صناعة وتصنيع", indRetail:"تجزئة وسلع استهلاكية",
+ indTech:"تقنية وبرمجيات", indHealthcare:"رعاية صحية", indFinance:"خدمات مالية", indEducation:"تعليم",
+ indHospitality:"ضيافة وسياحة", indLogistics:"لوجستيات ونقل", indOther:"أخرى",
+ pestelCalcTitle:"PESTEL — تقييم الأثر من 1 (ضعيف) إلى 5 (قوي)",
+ porterCalcTitle:"قوى بورتر الخمس — تقييم الشدة من 1 إلى 5",
+ swotCalcTitle:"SWOT — عنصر واحد في كل سطر",
+ btnCalcStrategy:"احسب المؤشرات",
+ swotQuantTitle:"نوتة حسابية: تحليل SWOT الرباعي الكمي",
+ swotQuantHint:"أدخل نقاط القوة والضعف والفرص والتهديدات، وامنح كل نقطة درجة تأثير من 1 إلى 5، ليحسب النظام الموقف الاستراتيجي والتوصية الآلية محليًا.",
+ itemLbl:"العنصر", scoreLbl:"التأثير", btnAddItem:"إضافة", noItemsYet:"لا توجد عناصر بعد.",
+ btnCalcSwotQuant:"حساب المؤشر الاستراتيجي للـ SWOT",
+ ifsLbl:"محصلة العوامل الداخلية (IFS)", efsLbl:"محصلة العوامل الخارجية (EFS)",
+ readinessLbl:"مؤشر الجاهزية الاستراتيجية", quadrantLbl:"الموقف الاستراتيجي",
+ recommendationLbl:"التوصية الآلية المقترحة",
+ quadSO:"استراتيجية الهجوم والتوسع (SO)", quadWO:"استراتيجية التطوير ومعالجة الضعف (WO)",
+ quadST:"استراتيجية التنويع الدفاعي (ST)", quadWT:"استراتيجية الدفاع والمعالجة (WT)",
+ recSO:"بناءً على تفوق نقاط القوة والفرص، يُنصح باعتماد استراتيجية الهجوم والتوسع عبر استغلال الفرصة الخارجية «{opp}» بالاستناد إلى نقطة القوة «{str}».",
+ recWO:"بناءً على النتائج، يُنصح باستغلال الفرصة الخارجية «{opp}» لمعالجة نقطة الضعف الداخلية «{weak}» عبر خطة تحسين مركزة، مع الاستفادة من قنوات التسويق المقترحة.",
+ recST:"بناءً على النتائج، يُنصح باستخدام نقطة القوة «{str}» لمواجهة التهديد الخارجي «{threat}» والحد من أثره على السوق المستهدف.",
+ recWT:"بناءً على النتائج، يُنصح باعتماد استراتيجية دفاعية عاجلة لمعالجة نقطة الضعف «{weak}» وتقليل التعرض لتهديد «{threat}» قبل التوسع في أي مبادرات جديدة.",
+ recNoData:"أضف عناصر القوة والضعف والفرص والتهديدات ثم اضغط زر الحساب للحصول على توصية آلية.",
+ domainAuditTitle:"نوتة حسابية: تدقيق شامل لخمسة مجالات استراتيجية",
+ domainAuditHint:"قيّم كل مجال من 0 إلى 100 ليحسب النظام مؤشر الصحة العامة والتشخيص فورًا ومحليًا.",
+ domStrategyGov:"المجال الاستراتيجي والحوكمة", domOpsProc:"المجال التشغيلي والعمليات", domFinance:"المجال المالي",
+ domHRorg:"الموارد البشرية والهيكل التنظيمي", domTechData:"التقنية والبيانات",
+ btnCalcDomainAudit:"احسب مؤشر الصحة العامة", overallHealthLbl:"مؤشر الصحة العامة",
+ topGapsLbl:"أكبر الفجوات المحددة", noGaps:"لا توجد فجوات جوهرية — أداء متوازن عبر كل المجالات.",
+ roadmapTitle:"نوتة حسابية: تصميم خارطة استراتيجية لـ 3 سنوات",
+ roadmapHint:"أدخل بيانات التوجه الاستراتيجي ليقوم النظام بتوليد بطاقة الأهداف المتوازنة وخارطة الطريق تلقائيًا ومحليًا.",
+ growthPctLbl:"نسبة النمو السنوي المستهدف (%)", focusLbl:"التركيز الاستراتيجي الأساسي",
+ focusMarketShare:"زيادة الحصة السوقية", focusProfitability:"تعزيز الربحية", focusNewMarkets:"دخول أسواق جديدة",
+ challengeLbl:"أهم تحدي يواجه الشركة", challengePricing:"المنافسة السعرية",
+ challengeOpsEfficiency:"الكفاءة التشغيلية", challengeTalentGap:"نقص الكفاءات",
+ prioritiesLbl:"عدد الأولويات الاستراتيجية العليا (1-5)", btnGenRoadmap:"توليد الخارطة الاستراتيجية الأولية",
+ bscTitle:"بطاقة الأهداف المتوازنة (Balanced Scorecard)",
+ bscFinancial:"المحور المالي", bscCustomer:"محور العملاء", bscInternal:"محور العمليات الداخلية", bscLearning:"محور التعلم والنمو",
+ goalLbl:"الهدف", initiativeLbl:"المبادرة",
+ roadmapYearsTitle:"خارطة الطريق الزمنية", year1Lbl:"السنة الأولى", year2Lbl:"السنة الثانية", year3Lbl:"السنة الثالثة",
+ bscFinGoal:"تحقيق نمو في الإيرادات بنسبة {g}%", bscFinInit:"تحسين نموذج التسعير",
+ bscCustGoal:"زيادة الحصة السوقية بمقدار {h}%", bscCustInit:"إطلاق حملة تسويقية رقمية في {focus}",
+ bscIntGoal:"معالجة تحدي {challenge} عبر الأتمتة", bscIntInit:"تطبيق نظام ERP",
+ bscLearnGoal:"تدريب {p}% من الموظفين على المهارات الرقمية", bscLearnInit:"إطلاق برنامج تطوير قيادي",
+ y1Text:"التركيز على التأسيس الداخلي ومعالجة {challenge}", y2Text:"التوسع في {focus} وزيادة النمو",
+ y3Text:"جني الأرباح والوصول للمستهدف {g}%",
+ isoGapTitle:"نوتة حسابية: تحليل فجوة نظام إدارة الجودة ISO 9001",
+ isoGapHint:"أجب على أسئلة الفحص الذاتي السريع للحصول على مؤشر الجاهزية وخطة المعالجة فورًا ومحليًا.",
+ isoQ1:"هل يوجد دليل جودة موثق ومعتمد؟", isoQ2:"هل تم تحديد سياق المنظمة والأطراف المهتمة؟",
+ isoQ3:"هل يتم قياس رضا العملاء بشكل دوري؟", isoQ4:"هل تم تحديد ومراجعة مخاطر وفرص العمليات؟",
+ isoQ5:"تقييم مدى جاهزية العمليات للتوثيق (1 إلى 5)",
+ yesLbl:"نعم", noLbl:"لا", btnCalcIso:"تحليل الفجوة وتوليد خطة المعالجة",
+ isoReadinessLbl:"مؤشر الجاهزية العام (ISO 9001)", isoTopGapsLbl:"أكبر الفجوات المحددة", isoActionsLbl:"المهام التصحيحية المقترحة",
+ isoGapManual:"دليل الجودة غير موثق أو غير معتمد", isoGapContext:"سياق المنظمة والأطراف المهتمة غير محدد",
+ isoGapCsat:"رضا العملاء غير مقاس بشكل دوري", isoGapRisk:"مخاطر وفرص العمليات غير مراجعة",
+ isoActManual:"قم بإعداد واعتماد دليل جودة موثق", isoActContext:"حدد سياق المنظمة والأطراف المهتمة رسميًا",
+ isoActCsat:"ابدأ قياس رضا العملاء بشكل دوري", isoActRisk:"قم بإنشاء سجل المخاطر والفرص",
+ isoNoGaps:"لا توجد فجوات جوهرية — النظام في مرحلة جيدة من الجاهزية.",
+ dashDesignTitle:"نوتة حسابية: نشر لوحة تحكم تنفيذية",
+ dashDesignHint:"حدد احتياجات البيانات ليقوم النظام بتوليد مسودة لوحة التحكم (Wireframe) فورًا ومحليًا.",
+ deptCountLbl:"عدد الأقسام الرئيسية", kpiLbl:"مؤشرات الأداء (KPIs) الرئيسية",
+ kpiProfit:"الأرباح", kpiSales:"المبيعات", kpiWaste:"نسبة الهدر", kpiHours:"ساعات العمل",
+ vizTypeLbl:"نوع العرض المفضل", vizBar:"رسوم بيانية عمودية", vizGauge:"عدادات", vizTable:"جداول",
+ refreshLbl:"تكرار تحديث البيانات", refreshDaily:"يومي", refreshWeekly:"أسبوعي", refreshMonthly:"شهري",
+ btnGenDash:"توليد مسودة لوحة التحكم", wireframeTitle:"الرسم التخطيطي المقترح (Wireframe)",
+ wireframeBoxLbl:"مربع القسم", kpiDataNeededTitle:"البيانات المطلوبة لكل مؤشر",
+ dataNeededSales:"بيانات Target و Actual للمبيعات", dataNeededProfit:"بيانات الإيرادات والتكاليف الشهرية",
+ dataNeededWaste:"بيانات الكمية المنتجة والكمية المهدرة", dataNeededHours:"بيانات ساعات العمل الفعلية مقابل المخططة",
+ mktCalcTitle:"نوتة حسابية: خطة التسويق التفصيلية",
+ mktCalcHint:"أدخل الميزانية والقناة الأساسية ليقوم النظام بتوزيع الميزانية وحساب العائد المتوقع محليًا.",
+ mktBudgetLbl:"الميزانية المخصصة للتسويق ($)", mktPrimaryChannelLbl:"القناة التسويقية المستهدفة الأساسية",
+ mktTargetingLbl:"التوجيه المستهدف", mktTargetingB2B:"بين الشركات (B2B)",
+ btnCalcMkt:"حساب خطة التسويق", mktAllocTitle:"توزيع الميزانية على القنوات",
+ mktRoiTitle:"العائد المتوقع (Estimated ROI)", mktLeadsLbl:"عدد العملاء المحتملين المتوقعين (Leads)",
+ mktConvLbl:"معدل التحويل المتوقع",
+ pestelPolitical:"سياسي", pestelEconomic:"اقتصادي", pestelSocial:"اجتماعي",
+ pestelTech:"تقني", pestelEnv:"بيئي", pestelLegal:"قانوني",
+ porterEntrants:"تهديد الداخلين الجدد", porterSuppliers:"قوة تفاوض الموردين", porterBuyers:"قوة تفاوض المشترين",
+ porterSubstitutes:"تهديد البدائل", porterRivalry:"شدة المنافسة بين الشركات",
+ pestelIndexLbl:"مؤشر الضغط الخارجي (PESTEL)", porterIndexLbl:"مؤشر شدة المنافسة (بورتر)", swotBalanceLbl:"ميزان SWOT",
+ marketAttractLow:"جاذبية منخفضة", marketAttractMed:"جاذبية متوسطة", marketAttractHigh:"جاذبية عالية",
+ swotPositive:"إيجابي", swotBalancedLbl:"متوازن", swotNegative:"سلبي",
+ marketSummary:"السوق المستهدف / نوع الصناعة",
+ orgCalcTitle:"نوتة حسابية: الهيكل الوظيفي والمسميات الوظيفية",
+ orgCalcHint:"يحسب النظام توزيع المستويات الإدارية تلقائيًا بناءً على عدد الموظفين ونمط الإدارة.",
+ orgEmployees:"إجمالي عدد الموظفين", orgDepartments:"عدد الأقسام", orgStyle:"نمط الإدارة",
+ orgFlat:"مسطح (نطاق إشراف واسع)", orgStandard:"قياسي", orgHierarchical:"هرمي (طبقات متعددة)",
+ btnCalcOrg:"احسب الهيكل الوظيفي",
+ levelExec:"القيادة التنفيذية", levelSenior:"الإدارة العليا", levelMiddle:"الإدارة الوسطى",
+ levelLead:"قادة الفرق / المشرفون", levelStaff:"الموظفون التنفيذيون",
+ levelLbl:"المستوى الإداري", countLbl:"العدد", spanLbl:"نطاق الإشراف التقديري",
+ jobTitlesTitle:"المسميات الوظيفية للموظفين",
+ jobTitlesHint:"أضف كل مسمى وظيفي مع القسم وعدد شاغليه والجهة التي يتبع لها.",
+ jtDept:"القسم", jtTitle:"المسمى الوظيفي", jtCount:"العدد", jtReports:"يتبع إلى",
+ btnAddTitle:"إضافة المسمى", noJobTitlesYet:"لم تُضَف أي مسميات وظيفية بعد.",
+ toastOrgCalc:"تم حساب الهيكل الوظيفي", toastTitleAdded:"تمت إضافة المسمى الوظيفي", toastStratCalc:"تم حساب المؤشرات",
+ autoGenHint:"يستنتج النظام أسماء الإدارات والأقسام والمسمى الوظيفي لكل موظف تلقائيًا بناءً على عدد الموظفين، نمط الإدارة ونوع الصناعة.",
+ btnAutoGenTitles:"توليد الهيكل الوظيفي تلقائيًا", toastAutoGenerated:"تم توليد الهيكل الوظيفي تلقائيًا",
+ reportsBoard:"مجلس الإدارة / الملاك",
+ marketReportTitle:"التحليل الاستراتيجي التلقائي للسوق (PESTEL + قوى بورتر + SWOT)",
+ marketReportHint:"اختر خيارات السوق ليقوم النظام بتوليد تحليل PESTEL وقوى بورتر الخمس وSWOT تلقائيًا بناءً على تحليل بيانات المشروع وبيانات الصفحة الأولى (السوق المستهدف ونوع الصناعة).",
+ marketMaturity:"مرحلة نضج السوق", matEmerging:"ناشئ", matGrowth:"نمو", matMature:"ناضج", matDecline:"متراجع",
+ competitionLevel:"شدة المنافسة", compLow:"منخفضة", compMedium:"متوسطة", compHigh:"مرتفعة",
+ marketScope:"نطاق السوق", scopeLocal:"محلي", scopeRegional:"إقليمي", scopeInternational:"دولي",
+ btnGenMarketReport:"توليد التقرير", toastMarketReport:"تم توليد تقرير السوق",
+ noMarketReportYet:"لم يتم توليد تقرير بعد — اختر خيارات السوق واضغط «توليد التقرير».",
+ pestelReportTitle:"تحليل PESTEL", porterReportTitle:"قوى بورتر الخمس",
+ impactStrong:"قوي", impactModerate:"متوسط", impactWeak:"ضعيف",
+ sBudgetStrong:"قاعدة تمويل قوية تدعم التنفيذ والتوسع.", sBudgetModerate:"ميزانية متوازنة تكفي لمرحلة النمو الحالية.",
+ sBudgetLean:"مرونة تشغيلية رغم الميزانية المركّزة.",
+ sScaleLarge:"قدرة تشغيلية وتنظيمية واسعة تدعم التوسع.", sAgility:"خفة الحركة وسرعة اتخاذ القرار كشركة صغيرة الحجم.",
+ sHealthExcellent:"أداء تشغيلي ومالي ممتاز موثّق عبر مؤشر الصحة العامة.",
+ sPackage_essentials:"منهجية استراتيجية أساسية موثقة تدعم مرحلة التأسيس.",
+ sPackage_professional:"منهجية استراتيجية احترافية موثقة تدعم مرحلة التوسع.",
+ sPackage_enterprise:"منهجية استراتيجية مؤسسية شاملة تدعم النمو المتعدد الكيانات.",
+ wBudgetLimited:"محدودية الميزانية تقيّد سرعة التوسع والاستثمار.",
+ wQualityGaps:"فجوات في مؤشرات الجودة التشغيلية تحتاج إلى معالجة.",
+ wHRLimited:"محدودية الطاقة البشرية الحالية لتغطية نمو سريع.",
+ wGeneric:"لا توجد نقاط ضعف جوهرية موثقة حاليًا — يُنصح بالمراجعة الدورية.",
+ oEarlyMover:"فرصة الاستحواذ المبكر على حصة سوقية في سوق ناشئ / في مرحلة نمو.",
+ oExpansion:"إمكانية التوسع عبر أسواق إقليمية أو دولية إضافية.",
+ oDigital:"فرص الأتمتة والتحول الرقمي لتحسين الكفاءة التشغيلية.",
+ tCompetition:"احتدام المنافسة يضغط على الهامش الربحي وحصة السوق.",
+ tDeclineDemand:"انكماش الطلب في سوق متراجع يهدد النمو المستقبلي.",
+ tRegulatory:"تغيرات تنظيمية أو اقتصادية محتملة قد تزيد أعباء الامتثال.",
+},
+en:{
+ appName:"Strategic Engine Suite", appSub:"Offline strategic planning — no internet required",
+ tabDash:"Dashboard", tabBudget:"Budget", tabTasks:"Tasks", tabRaci:"RACI",
+ tabAdvisory:"Advisory", tabRisk:"Risk", tabMarketing:"Marketing", tabReports:"Reports", tabOrg:"Org Structure",
+ setupTitle:"Executive Dashboard — Project Data",
+ setupHint:"Enter client data; the system determines the strategic package and duration automatically via local formulas.",
+ companyName:"Company Name", budget:"Budget ($)", employees:"Employee Count", goal:"Primary Goal",
+ goalStartup:"Startup", goalScale:"Scale", goalEnterprise:"Enterprise",
+ startDate:"Start Date", btnBuild:"Create Project", btnLoad:"Load Last Saved Version",
+ packageTitle:"Selected Strategic Package", durationLbl:"Duration", startLbl:"Start Date", endLbl:"Expected End Date",
+ healthTitle:"Company Health Pulse Meter",
+ healthHint:"Enter raw performance scores; the system computes indices and the overall formula locally.",
+ finScore:"Raw Financial Score (0-100)", defectRate:"Quality Defect Rate (%)", opsScore:"Raw Operational Score (0-100)",
+ overallLbl:"Overall Health", finIdx:"Financial Index", qualIdx:"Quality Index", opsIdx:"Operational Index",
+ budgetTitle:"Financial Planning & Budget Allocation",
+ budgetHint:"Automatic budget allocation across project milestones based on the package.",
+ totalBudget:"Total Budget", milestoneCount:"Milestone Count",
+ tasksTitle:"Task List & Timeline",
+ tasksHint:"Each task's dates are calculated automatically from the start date, with a local reminder (offline) two days before the deadline.",
+ raciTitle:"Digital Guide & Responsibility Matrix (RACI)",
+ raciHint:"The matrix automatically expands to include a Subsidiary General Manager once employee count exceeds 50.",
+ roiTitle:"Return on Investment (ROI) Analysis",
+ roiInvestLbl:"Investment Cost", roiBenefitLbl:"Estimated Benefit", roiPctLbl:"Net ROI Percentage",
+ swotTitle:"SWOT Analysis", pestelTitle:"PESTEL Framework", govTitle:"Governance Files",
+ riskTitle:"Risk Prediction Index", riskHint:"You can add custom risks specific to the project.",
+ customRiskLbl:"Add a Custom Risk", btnAdd:"Add",
+ mktTitle:"Proposed Marketing Plan", mktStrategy:"Strategy", mktChannels:"Channels", mktSteps:"Execution Steps",
+ exportTitle:"Final Report Export & Backup",
+ exportHint:"A full export of every page, a local JSON backup you can re-import later, and full print/copy — all offline.",
+ btnPrintFull:"Print Full Report", btnCopyFull:"Copy Full Report",
+ btnBackup:"Download Backup (JSON)", btnSaveLocal:"Save Locally Now",
+ logTitle:"Project Registration Log",
+ btnPrintPage:"Print This Page", btnCopyPage:"Copy Page Content",
+ milestone1E:"Milestone 1: Kickoff & Environmental Scan", milestone2E:"Milestone 2: Strategic Direction & KPIs",
+ milestone1P:"Milestone 1: Discovery & Core Diagnosis", milestone2P:"Milestone 2: Strategy & 3-Year Roadmap",
+ milestone3P:"Milestone 3: Systems, ISO 9001 & Rollout", milestone4P:"Milestone 4: Post-Implementation Advisory",
+ milestone1N:"Milestone 1: Multi-Entity Architecture", milestone2N:"Milestone 2: Custom Frameworks & AI Roadmap",
+ milestone3N:"Milestone 3: Enterprise Rollout & Governance", milestone4N:"Milestone 4: Board Facilitation & Handover",
+ taskName1E:"Kickoff & Stakeholder Alignment", taskName2E:"PESTLE & SWOT Environmental Scan",
+ taskName3E:"1-Year Goal & KPI Baseline Setup", taskName4E:"Leadership Workshop & Handover",
+ taskName1P:"Comprehensive 5-Domain Audit", taskName2P:"3-Year Strategic Roadmap Design",
+ taskName3P:"ISO 9001 QMS Gap Analysis", taskName4P:"Executive Dashboard Deployment",
+ taskName1N:"Multi-Entity Architecture Mapping", taskName2N:"Digital Transformation & AI Roadmap",
+ taskName3N:"HPTG Enterprise Governance Rollout", taskName4N:"Board-Level Facilitation & Handover",
+ ownerCEO:"CEO / Sponsor", ownerAnalyst:"Strategy Analyst", ownerAdvisor:"Lead Advisor", ownerTeam:"All Team",
+ ownerOpsConsult:"Operations Consultant", ownerQualityAud:"Quality Auditor", ownerDataEng:"Data Engineer",
+ ownerPrincipal:"Principal Advisor", ownerTech:"Tech Expert", ownerChange:"Change Manager",
+ startLabel:"Start", endLabel:"End", ownerLabel:"Owner", statusLabel:"Status",
+ statusPending:"Pending", statusInProgress:"In Progress", statusDone:"Completed",
+ reminderPrefix:"Local alert on",
+ essentials:"Essentials Package", professional:"Professional Package", enterprise:"Enterprise Package",
+ weeks:"weeks",
+ pulseExcellent:"Excellent (High Performance)", pulseStable:"Stable (Requires Monitoring)", pulseCritical:"Critical (Immediate Action Required)",
+ raciActiveRoles:"Active Roles",
+ raciP1:"Strategic Planning & Setup", raciP2:"Process Execution & WBS",
+ raciP3:"Quality Audit & ISO Review", raciP4:"Dashboard & Performance Review",
+ roleSub:"Subsidiary General Manager",
+ swotS:"Strengths", swotW:"Weaknesses", swotO:"Opportunities", swotT:"Threats",
+ swotS1:"Core Engineering Experience", swotS2:"Proven Frameworks", swotW1:"Initial Resource Bottlenecks",
+ swotO1:"Regional Market Expansion", swotO2:"Digital Automation", swotT1:"Market Volatility", swotT2:"Regulatory Shifts",
+ pest1:"Political", pest2:"Economic", pest3:"Social", pest4:"Technological", pest5:"Environmental", pest6:"Legal",
+ gov1:"Delegation of Authority (DoA)", gov2:"ISO 9001 QMS Standard", gov3:"HPTG Meeting Charter",
+ riskOpsE:"Operational Inefficiency", riskOpsM:"RACI & ISO 9001 Rollout",
+ riskMktE:"Market Volatility", riskMktM:"PESTLE Scan & Adaptive Reserves",
+ riskDelayE:"Execution Delays", riskDelayM:"Milestone Deadline Tracking",
+ probHigh:"High", probMedium:"Medium", probLow:"Low", probUser:"User-Defined",
+ mitigationLbl:"Mitigation", userDefinedMit:"Managed via Internal Review",
+ mktStrategyTxt:"B2B Professional Advisory Outreach",
+ mktCh1:"LinkedIn Thought Leadership", mktCh2:"Targeted Direct Proposals", mktCh3:"Case Study Showcasing",
+ mktStep1:"Publish executive transformation insights.", mktStep2:"Share ROI metrics and success case studies.",
+ mktStep3:"Direct outreach to regional corporate leaders.",
+ toastSaved:"Saved locally", toastCopied:"Content copied", toastCreated:"Project created successfully",
+ toastNoProject:"Please create the project first", toastLoaded:"Last saved version loaded", toastNoSaved:"No saved version found",
+ noTasksYet:"No tasks yet — create the project first.", noLogYet:"No log entries yet.",
+ logInit:"Project created:", logHealth:"Health metrics calculated.", logStatus:"Task status updated for ID",
+ logRisk:"Custom risk added:", logSave:"Local backup saved.", logPrint:"Page printed:",
+ logCopy:"Page content copied:", logExport:"Full report exported.",
+ logHint:"Every project you create is automatically registered here with its core data and registration date.",
+ regCompany:"Company", regPackage:"Package", regBudget:"Budget", regEmployees:"Employees", regDate:"Registered On",
+ noRegistryYet:"No projects registered yet.",
+ stratCalcTitle:"Worksheet: PESTEL + Porter's Five Forces + SWOT",
+ stratCalcHint:"Set the target market and industry type, then rate each factor 1–5 to compute the indices locally.",
+ targetMarket:"Target Market", industryType:"Industry Type",
+ indConstruction:"Construction & Engineering", indManufacturing:"Manufacturing", indRetail:"Retail & Consumer Goods",
+ indTech:"Technology & Software", indHealthcare:"Healthcare", indFinance:"Financial Services", indEducation:"Education",
+ indHospitality:"Hospitality & Tourism", indLogistics:"Logistics & Transportation", indOther:"Other",
+ pestelCalcTitle:"PESTEL — Rate impact from 1 (weak) to 5 (strong)",
+ porterCalcTitle:"Porter's Five Forces — Rate intensity 1 to 5",
+ swotCalcTitle:"SWOT — one item per line",
+ btnCalcStrategy:"Calculate Indices",
+ swotQuantTitle:"Worksheet: Quantified SWOT Analysis",
+ swotQuantHint:"Add strengths, weaknesses, opportunities and threats, rating each item's impact from 1 to 5, so the system computes the strategic quadrant and an automated recommendation locally.",
+ itemLbl:"Item", scoreLbl:"Impact", btnAddItem:"Add", noItemsYet:"No items added yet.",
+ btnCalcSwotQuant:"Calculate SWOT Strategic Index",
+ ifsLbl:"Internal Factor Score (IFS)", efsLbl:"External Factor Score (EFS)",
+ readinessLbl:"Strategic Readiness Index", quadrantLbl:"Strategic Quadrant",
+ recommendationLbl:"Automated Recommendation",
+ quadSO:"Aggressive Growth Strategy (SO)", quadWO:"Turnaround Strategy (WO)",
+ quadST:"Diversification Strategy (ST)", quadWT:"Defensive Strategy (WT)",
+ recSO:"Given the strength of your internal capabilities and external opportunities, an aggressive growth strategy is recommended — leverage the opportunity \"{opp}\" on the back of the strength \"{str}\".",
+ recWO:"Based on the results, it is recommended to leverage the external opportunity \"{opp}\" to address the internal weakness \"{weak}\" through a focused improvement plan, drawing on the proposed marketing channels.",
+ recST:"Based on the results, it is recommended to use the strength \"{str}\" to counter the external threat \"{threat}\" and limit its impact on the target market.",
+ recWT:"Based on the results, an urgent defensive strategy is recommended to address the weakness \"{weak}\" and reduce exposure to the threat \"{threat}\" before pursuing further expansion.",
+ recNoData:"Add strength, weakness, opportunity and threat items, then click Calculate to get an automated recommendation.",
+ domainAuditTitle:"Worksheet: Comprehensive 5-Domain Audit",
+ domainAuditHint:"Rate each domain from 0 to 100 so the system computes the overall health index and diagnosis instantly and locally.",
+ domStrategyGov:"Strategy & Governance", domOpsProc:"Operations & Process Efficiency", domFinance:"Financial Management",
+ domHRorg:"Human Capital & Organization Structure", domTechData:"Technology & Digital Enablement",
+ btnCalcDomainAudit:"Calculate Overall Health Index", overallHealthLbl:"Overall Health Index",
+ topGapsLbl:"Top Gaps Identified", noGaps:"No major gaps identified — balanced performance across all domains.",
+ roadmapTitle:"Worksheet: 3-Year Strategic Roadmap Design",
+ roadmapHint:"Enter your strategic direction data so the system automatically generates a Balanced Scorecard draft and roadmap locally.",
+ growthPctLbl:"Target Annual Growth (%)", focusLbl:"Strategic Focus",
+ focusMarketShare:"Increase Market Share", focusProfitability:"Enhance Profitability", focusNewMarkets:"Enter New Markets",
+ challengeLbl:"Primary Challenge", challengePricing:"Price Competition",
+ challengeOpsEfficiency:"Operational Efficiency", challengeTalentGap:"Talent / Skills Gap",
+ prioritiesLbl:"Number of Top Strategic Priorities (1-5)", btnGenRoadmap:"Generate Initial Strategic Roadmap",
+ bscTitle:"Balanced Scorecard Draft",
+ bscFinancial:"Financial", bscCustomer:"Customer", bscInternal:"Internal Processes", bscLearning:"Learning & Growth",
+ goalLbl:"Goal", initiativeLbl:"Initiative",
+ roadmapYearsTitle:"Timeline Roadmap", year1Lbl:"Year 1", year2Lbl:"Year 2", year3Lbl:"Year 3",
+ bscFinGoal:"Achieve revenue growth of {g}%", bscFinInit:"Improve the pricing model",
+ bscCustGoal:"Increase market share by {h}%", bscCustInit:"Launch a digital marketing campaign in {focus}",
+ bscIntGoal:"Address the {challenge} challenge through automation", bscIntInit:"Implement an ERP system",
+ bscLearnGoal:"Train {p}% of employees on digital skills", bscLearnInit:"Launch a leadership development program",
+ y1Text:"Focus on internal foundation-building and addressing {challenge}", y2Text:"Expand in {focus} and accelerate growth",
+ y3Text:"Harvest gains and reach the {g}% target",
+ isoGapTitle:"Worksheet: ISO 9001 QMS Gap Analysis",
+ isoGapHint:"Answer the quick self-assessment questions to get a readiness index and corrective action plan instantly and locally.",
+ isoQ1:"Is there a documented, approved quality manual?", isoQ2:"Has the organizational context and interested parties been defined?",
+ isoQ3:"Is customer satisfaction measured periodically?", isoQ4:"Have process risks and opportunities been identified and reviewed?",
+ isoQ5:"Rate process documentation readiness (1 to 5)",
+ yesLbl:"Yes", noLbl:"No", btnCalcIso:"Analyze Gap & Generate Action Plan",
+ isoReadinessLbl:"Overall Readiness Index (ISO 9001)", isoTopGapsLbl:"Top Gaps Identified", isoActionsLbl:"Suggested Corrective Actions",
+ isoGapManual:"Quality manual not documented or approved", isoGapContext:"Organizational context and interested parties not defined",
+ isoGapCsat:"Customer satisfaction not measured periodically", isoGapRisk:"Process risks and opportunities not reviewed",
+ isoActManual:"Prepare and approve a documented quality manual", isoActContext:"Formally define the organizational context and interested parties",
+ isoActCsat:"Begin measuring customer satisfaction periodically", isoActRisk:"Create a risk and opportunity register",
+ isoNoGaps:"No major gaps identified — the system is at a good stage of readiness.",
+ dashDesignTitle:"Worksheet: Executive Dashboard Deployment",
+ dashDesignHint:"Define your data needs so the system generates a dashboard wireframe draft instantly and locally.",
+ deptCountLbl:"Number of Main Departments", kpiLbl:"Key Performance Indicators (KPIs)",
+ kpiProfit:"Profit", kpiSales:"Sales", kpiWaste:"Waste Rate", kpiHours:"Working Hours",
+ vizTypeLbl:"Preferred Visualization", vizBar:"Bar Charts", vizGauge:"Gauges", vizTable:"Tables",
+ refreshLbl:"Data Refresh Frequency", refreshDaily:"Daily", refreshWeekly:"Weekly", refreshMonthly:"Monthly",
+ btnGenDash:"Generate Dashboard Draft", wireframeTitle:"Proposed Wireframe",
+ wireframeBoxLbl:"Department Box", kpiDataNeededTitle:"Data Needed per Indicator",
+ dataNeededSales:"Target and Actual sales data", dataNeededProfit:"Monthly revenue and cost data",
+ dataNeededWaste:"Quantity produced vs. quantity wasted data", dataNeededHours:"Actual vs. planned working hours data",
+ mktCalcTitle:"Worksheet: Detailed Marketing Plan",
+ mktCalcHint:"Enter the budget and primary channel so the system allocates the budget and computes the estimated ROI locally.",
+ mktBudgetLbl:"Marketing Budget ($)", mktPrimaryChannelLbl:"Primary Target Marketing Channel",
+ mktTargetingLbl:"Targeting", mktTargetingB2B:"Business-to-Business (B2B)",
+ btnCalcMkt:"Calculate Marketing Plan", mktAllocTitle:"Budget Allocation by Channel",
+ mktRoiTitle:"Estimated ROI Metrics", mktLeadsLbl:"Estimated Leads Reached",
+ mktConvLbl:"Estimated Conversion Rate",
+ pestelPolitical:"Political", pestelEconomic:"Economic", pestelSocial:"Social",
+ pestelTech:"Technological", pestelEnv:"Environmental", pestelLegal:"Legal",
+ porterEntrants:"Threat of New Entrants", porterSuppliers:"Bargaining Power of Suppliers", porterBuyers:"Bargaining Power of Buyers",
+ porterSubstitutes:"Threat of Substitutes", porterRivalry:"Competitive Rivalry",
+ pestelIndexLbl:"External Pressure Index (PESTEL)", porterIndexLbl:"Competitive Intensity Index (Porter)", swotBalanceLbl:"SWOT Balance",
+ marketAttractLow:"Low Attractiveness", marketAttractMed:"Medium Attractiveness", marketAttractHigh:"High Attractiveness",
+ swotPositive:"Positive", swotBalancedLbl:"Balanced", swotNegative:"Negative",
+ marketSummary:"Target Market / Industry",
+ orgCalcTitle:"Worksheet: Organizational Structure & Job Titles",
+ orgCalcHint:"The system automatically calculates the management-layer distribution based on employee count and management style.",
+ orgEmployees:"Total Employees", orgDepartments:"Number of Departments", orgStyle:"Management Style",
+ orgFlat:"Flat (wide span of control)", orgStandard:"Standard", orgHierarchical:"Hierarchical (multiple layers)",
+ btnCalcOrg:"Calculate Org Structure",
+ levelExec:"Executive Leadership", levelSenior:"Senior Management", levelMiddle:"Middle Management",
+ levelLead:"Team Leads / Supervisors", levelStaff:"Staff / Individual Contributors",
+ levelLbl:"Management Level", countLbl:"Count", spanLbl:"Estimated Span of Control",
+ jobTitlesTitle:"Employee Job Titles",
+ jobTitlesHint:"Add each job title with its department, headcount, and reporting line.",
+ jtDept:"Department", jtTitle:"Job Title", jtCount:"Count", jtReports:"Reports To",
+ btnAddTitle:"Add Title", noJobTitlesYet:"No job titles added yet.",
+ toastOrgCalc:"Org structure calculated", toastTitleAdded:"Job title added", toastStratCalc:"Indices calculated",
+ autoGenHint:"The system automatically infers department names, sections and the job title for every employee level based on headcount, management style and industry type.",
+ btnAutoGenTitles:"Auto-Generate Org Structure", toastAutoGenerated:"Org structure generated automatically",
+ reportsBoard:"Board of Directors / Owners",
+ marketReportTitle:"Automated Market Strategic Analysis (PESTEL + Porter's Five Forces + SWOT)",
+ marketReportHint:"Choose the market options so the system can automatically generate a PESTEL, Porter's Five Forces and SWOT analysis based on the project data and page 1 (target market and industry type).",
+ marketMaturity:"Market Maturity Stage", matEmerging:"Emerging", matGrowth:"Growth", matMature:"Mature", matDecline:"Declining",
+ competitionLevel:"Competition Level", compLow:"Low", compMedium:"Medium", compHigh:"High",
+ marketScope:"Market Scope", scopeLocal:"Local", scopeRegional:"Regional", scopeInternational:"International",
+ btnGenMarketReport:"Generate Report", toastMarketReport:"Market report generated",
+ noMarketReportYet:"No report generated yet — choose the market options and click \"Generate Report\".",
+ pestelReportTitle:"PESTEL Analysis", porterReportTitle:"Porter's Five Forces",
+ impactStrong:"Strong", impactModerate:"Moderate", impactWeak:"Weak",
+ sBudgetStrong:"A strong funding base supporting execution and expansion.", sBudgetModerate:"A balanced budget sufficient for the current growth stage.",
+ sBudgetLean:"Operational flexibility despite a lean, focused budget.",
+ sScaleLarge:"Broad operational and organizational capacity supporting expansion.", sAgility:"Agility and fast decision-making as a smaller organization.",
+ sHealthExcellent:"Excellent operational and financial performance, confirmed by the overall health index.",
+ sPackage_essentials:"A documented core strategic methodology supporting the startup stage.",
+ sPackage_professional:"A documented professional strategic methodology supporting the scale-up stage.",
+ sPackage_enterprise:"A comprehensive enterprise strategic methodology supporting multi-entity growth.",
+ wBudgetLimited:"Limited budget constrains the pace of expansion and investment.",
+ wQualityGaps:"Gaps in operational quality indicators need to be addressed.",
+ wHRLimited:"Limited current headcount to cover rapid growth.",
+ wGeneric:"No major weaknesses currently documented — periodic review is recommended.",
+ oEarlyMover:"Early-mover opportunity to capture market share in an emerging or growth-stage market.",
+ oExpansion:"Potential to expand into additional regional or international markets.",
+ oDigital:"Automation and digital transformation opportunities to improve operational efficiency.",
+ tCompetition:"Intensifying competition pressures profit margins and market share.",
+ tDeclineDemand:"Shrinking demand in a declining market threatens future growth.",
+ tRegulatory:"Potential regulatory or economic shifts may increase compliance burdens.",
+}
+};
+let LANG = 'ar';
+function t(key){ return I18N[LANG][key] || key; }
+
+function setLang(l){
+  LANG = l;
+  document.documentElement.lang = l;
+  document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+  document.body.className = l === 'en' ? 'lang-en' : '';
+  document.getElementById('btnAr').classList.toggle('on', l==='ar');
+  document.getElementById('btnEn').classList.toggle('on', l==='en');
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    el.textContent = t(el.getAttribute('data-t'));
+  });
+  buildTabs();
+  App.renderAll();
+}
+
+/* =========================================================
+   TABS
+   ========================================================= */
+const TAB_DEFS = [
+  {page:'dash', key:'tabDash'},
+  {page:'budget', key:'tabBudget'},
+  {page:'tasks', key:'tabTasks'},
+  {page:'raci', key:'tabRaci'},
+  {page:'org', key:'tabOrg'},
+  {page:'advisory', key:'tabAdvisory'},
+  {page:'risk', key:'tabRisk'},
+  {page:'marketing', key:'tabMarketing'},
+  {page:'reports', key:'tabReports'},
+];
+function buildTabs(){
+  const wrap = document.getElementById('tabs');
+  wrap.innerHTML = '';
+  TAB_DEFS.forEach(td=>{
+    const b = document.createElement('button');
+    b.className = 'tab-btn' + (td.page === currentPage ? ' active' : '');
+    b.textContent = t(td.key);
+    b.onclick = ()=>showPage(td.page);
+    wrap.appendChild(b);
+  });
+}
+let currentPage = 'dash';
+function showPage(p){
+  currentPage = p;
+  document.querySelectorAll('.page').forEach(el=>{
+    el.classList.toggle('active', el.dataset.page === p);
+  });
+  document.querySelectorAll('.tab-btn').forEach((el,i)=>{
+    el.classList.toggle('active', TAB_DEFS[i].page === p);
+  });
+}
+
+/* =========================================================
+   ORG CONTENT — industry-specific department & job-title pools
+   used to auto-infer departments / sections / job titles
+   ========================================================= */
+const ORG_CONTENT = {
+ar:{
+ construction:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"مهندس مشرف", lead:"رئيس فريق مشروع", staff:"مهندس / فني موقع",
+   depts:["الإدارة الهندسية","إدارة المشتريات","إدارة العقود","إدارة الجودة والسلامة","إدارة المشاريع","الإدارة المالية","الموارد البشرية","إدارة المعدات والمخازن"]},
+ manufacturing:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"مهندس إنتاج", lead:"رئيس خط إنتاج", staff:"فني إنتاج",
+   depts:["إدارة الإنتاج","إدارة الصيانة","إدارة الجودة","إدارة سلسلة الإمداد","إدارة المشتريات","الإدارة المالية","الموارد البشرية","إدارة المستودعات"]},
+ retail:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"مدير فرع", lead:"رئيس نوبة", staff:"موظف مبيعات",
+   depts:["إدارة المبيعات","إدارة المشتريات","إدارة المخزون","إدارة التسويق","إدارة الفروع","الإدارة المالية","الموارد البشرية","خدمة العملاء"]},
+ tech:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"قائد فريق تقني", lead:"مهندس برمجيات أول", staff:"مهندس برمجيات",
+   depts:["إدارة تطوير المنتجات","إدارة البنية التحتية التقنية","إدارة ضمان الجودة","إدارة المنتج","إدارة المبيعات والتسويق","الإدارة المالية","الموارد البشرية","دعم العملاء"]},
+ healthcare:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"رئيس قسم طبي", lead:"مشرف تمريض", staff:"أخصائي رعاية صحية",
+   depts:["الإدارة الطبية","إدارة التمريض","إدارة الجودة وسلامة المرضى","إدارة العمليات","إدارة المختبرات","الإدارة المالية","الموارد البشرية","خدمة المرضى"]},
+ finance:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"محلل مالي أول", lead:"رئيس فريق مصرفي", staff:"محلل مالي",
+   depts:["إدارة الائتمان والمخاطر","إدارة الاستثمار","إدارة الامتثال","إدارة العمليات المصرفية","إدارة خدمة العملاء","الإدارة المالية","الموارد البشرية","إدارة تقنية المعلومات"]},
+ education:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"منسق أكاديمي", lead:"رئيس قسم دراسي", staff:"معلم / أخصائي تعليمي",
+   depts:["الإدارة الأكاديمية","إدارة شؤون الطلاب","إدارة الجودة والاعتماد","إدارة القبول والتسجيل","إدارة الأنشطة الطلابية","الإدارة المالية","الموارد البشرية","إدارة تقنية المعلومات"]},
+ hospitality:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"مدير عمليات", lead:"مشرف خدمة", staff:"موظف ضيافة",
+   depts:["إدارة العمليات الفندقية","إدارة الغرف والنزلاء","إدارة الأغذية والمشروبات","إدارة المبيعات والتسويق","إدارة الصيانة","الإدارة المالية","الموارد البشرية","خدمة الضيوف"]},
+ logistics:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"مشرف عمليات لوجستية", lead:"رئيس مناوبة", staff:"منسق شحن",
+   depts:["إدارة النقل والتوزيع","إدارة المستودعات","إدارة سلسلة الإمداد","إدارة خدمة العملاء","إدارة الأسطول","الإدارة المالية","الموارد البشرية","إدارة تقنية المعلومات"]},
+ other:{ceo:"الرئيس التنفيذي", senior:"مدير إدارة", middle:"مشرف قسم", lead:"رئيس فريق", staff:"موظف تنفيذي",
+   depts:["إدارة العمليات","إدارة المبيعات والتسويق","الإدارة المالية","الموارد البشرية","إدارة الجودة","إدارة تقنية المعلومات","إدارة المشتريات","خدمة العملاء"]}
+},
+en:{
+ construction:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Supervising Engineer", lead:"Project Team Lead", staff:"Site Engineer / Technician",
+   depts:["Engineering Department","Procurement Department","Contracts Department","Quality & HSE Department","Project Management Department","Finance Department","Human Resources Department","Equipment & Warehousing Department"]},
+ manufacturing:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Production Engineer", lead:"Production Line Lead", staff:"Production Technician",
+   depts:["Production Department","Maintenance Department","Quality Department","Supply Chain Department","Procurement Department","Finance Department","Human Resources Department","Warehousing Department"]},
+ retail:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Branch Manager", lead:"Shift Supervisor", staff:"Sales Associate",
+   depts:["Sales Department","Purchasing Department","Inventory Department","Marketing Department","Store Operations Department","Finance Department","Human Resources Department","Customer Service Department"]},
+ tech:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Technical Team Lead", lead:"Senior Software Engineer", staff:"Software Engineer",
+   depts:["Product Development Department","IT Infrastructure Department","QA Department","Product Management Department","Sales & Marketing Department","Finance Department","Human Resources Department","Customer Support Department"]},
+ healthcare:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Medical Section Head", lead:"Nursing Supervisor", staff:"Healthcare Specialist",
+   depts:["Medical Department","Nursing Department","Quality & Patient Safety Department","Operations Department","Laboratory Department","Finance Department","Human Resources Department","Patient Services Department"]},
+ finance:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Senior Financial Analyst", lead:"Banking Team Lead", staff:"Financial Analyst",
+   depts:["Credit & Risk Department","Investment Department","Compliance Department","Banking Operations Department","Customer Relations Department","Finance Department","Human Resources Department","IT Department"]},
+ education:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Academic Coordinator", lead:"Subject Department Head", staff:"Teacher / Education Specialist",
+   depts:["Academic Affairs Department","Student Affairs Department","Quality & Accreditation Department","Admissions & Registration Department","Student Activities Department","Finance Department","Human Resources Department","IT Department"]},
+ hospitality:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Operations Manager", lead:"Service Supervisor", staff:"Hospitality Associate",
+   depts:["Hotel Operations Department","Rooms Division Department","Food & Beverage Department","Sales & Marketing Department","Maintenance Department","Finance Department","Human Resources Department","Guest Services Department"]},
+ logistics:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Logistics Operations Supervisor", lead:"Shift Lead", staff:"Shipping Coordinator",
+   depts:["Transportation & Distribution Department","Warehousing Department","Supply Chain Department","Customer Service Department","Fleet Management Department","Finance Department","Human Resources Department","IT Department"]},
+ other:{ceo:"Chief Executive Officer", senior:"Department Director", middle:"Section Supervisor", lead:"Team Leader", staff:"Staff Member",
+   depts:["Operations Department","Sales & Marketing Department","Finance Department","Human Resources Department","Quality Department","IT Department","Procurement Department","Customer Service Department"]}
+}
+};
+
+/* =========================================================
+   MARKET REPORT CONTENT — narrative templates for the
+   auto-generated PESTEL / Porter / SWOT market report
+   ========================================================= */
+const MARKET_TEMPLATES = {
+ar:{
+ pestel:{
+  political:"الأطر التنظيمية والسياسية في {market} تمثّل تأثيرًا {level} على قطاع {industry}.",
+  economic:"الأوضاع الاقتصادية العامة تؤثر بشكل {level} على تكاليف التشغيل ومستوى الطلب في قطاع {industry}.",
+  social:"العوامل الاجتماعية والديموغرافية في {market} لها تأثير {level} على سلوك العملاء المستهدفين.",
+  tech:"وتيرة التحول التقني في قطاع {industry} تمثّل عاملاً {level} يستدعي المتابعة المستمرة.",
+  env:"المتطلبات والاعتبارات البيئية تشكّل ضغطًا {level} على عمليات الشركة.",
+  legal:"البيئة التشريعية والتنظيمية في {market} تفرض التزامًا {level} على النشاط."
+ },
+ porter:{
+  entrants:"تهديد دخول منافسين جدد إلى قطاع {industry} في {market} يُقدَّر بمستوى {level}.",
+  suppliers:"القدرة التفاوضية للموردين في هذا القطاع تُقيَّم بمستوى {level}.",
+  buyers:"القدرة التفاوضية للعملاء / المشترين تُقيَّم بمستوى {level}.",
+  substitutes:"تهديد المنتجات أو الخدمات البديلة في {market} يُقيَّم بمستوى {level}.",
+  rivalry:"شدة المنافسة بين الشركات العاملة في قطاع {industry} تُقيَّم بمستوى {level}."
+ }
+},
+en:{
+ pestel:{
+  political:"Political and regulatory frameworks in {market} represent a {level} impact on the {industry} sector.",
+  economic:"General economic conditions have a {level} effect on operating costs and demand in the {industry} sector.",
+  social:"Social and demographic factors in {market} have a {level} influence on target customer behavior.",
+  tech:"The pace of technological change in the {industry} sector is a {level} factor requiring continuous monitoring.",
+  env:"Environmental requirements and considerations place {level} pressure on company operations.",
+  legal:"The legal and regulatory environment in {market} imposes a {level} level of compliance obligation."
+ },
+ porter:{
+  entrants:"The threat of new entrants into the {industry} sector in {market} is estimated as {level}.",
+  suppliers:"Supplier bargaining power in this sector is assessed as {level}.",
+  buyers:"Buyer / customer bargaining power is assessed as {level}.",
+  substitutes:"The threat of substitute products or services in {market} is assessed as {level}.",
+  rivalry:"Competitive rivalry among companies operating in the {industry} sector is assessed as {level}."
+ }
+}
+};
+const MATURITY_PESTEL = {
+ emerging:{political:3, economic:4, social:4, tech:4, env:3, legal:3},
+ growth:{political:3, economic:3, social:3, tech:3, env:3, legal:3},
+ mature:{political:2, economic:2, social:2, tech:2, env:2, legal:3},
+ decline:{political:3, economic:4, social:2, tech:2, env:3, legal:4}
+};
+const COMPETITION_PORTER_BASE = {
+ low:{entrants:2, suppliers:2, buyers:2, substitutes:2, rivalry:2},
+ medium:{entrants:3, suppliers:3, buyers:3, substitutes:3, rivalry:3},
+ high:{entrants:4, suppliers:4, buyers:4, substitutes:4, rivalry:5}
+};
+
+/* =========================================================
+   ENGINE (ported from the Python CompleteStrategicAppEngine)
+   ========================================================= */
+const Engine = {
+  data:null, // {companyName,budget,employeeCount,primaryGoal,startDate}
+  strategyPackage:null, // 'essentials'|'professional'|'enterprise'
+  durationWeeks:0,
+  tasks:[],
+  auditLog:[],
+  health:null,
+  customRisks:[],
+  strategyCalc:null,   // {targetMarket, industry, pestel:{}, porter:{}, swot:{S,W,O,T}, pestelIndex, porterIndex, swotBalance}
+  swotQuant:{S:[],W:[],O:[],T:[]}, // scored SWOT items [{text,score}]
+  swotQuantResult:null, // {ifs, efs, readiness, quadrantKey, recommendation}
+  domainAudit:null,    // {scores:{strategy,ops,finance,hr,tech}, overall, gapKeys:[]}
+  roadmap:null,        // {growthPct, focus, challenge, priorities, bsc:{...}, years:{y1,y2,y3}}
+  isoGap:null,         // {answers:{q1..q4:bool,q5:number}, readiness, gapKeys:[], actionKeys:[]}
+  dashDesign:null,     // {deptCount, kpis:[], vizType, refreshFreq}
+  mktCalc:null,        // {budget, primaryChannel, alloc:[{key,pct,amount}], leads, convRate}
+  orgStructure:null,   // {employees, departments, style, levels:[{key,count}]}
+  jobTitles:[],        // [{dept,title,count,reports}]
+  marketReport:null,   // auto-generated PESTEL + Porter + SWOT market report (Reports page)
+  registry:[],         // persistent list of registered projects (survives across projects)
+
+  log(action){
+    const ts = new Date().toISOString().slice(0,19).replace('T',' ');
+    this.auditLog.push(`[${ts}] ${action}`);
+  },
+
+  init(d){
+    this.data = d;
+    this.customRisks = [];
+    this.swotQuant = {S:[],W:[],O:[],T:[]};
+    this.swotQuantResult = null;
+    this.domainAudit = null;
+    this.roadmap = null;
+    this.isoGap = null;
+    this.dashDesign = null;
+    this.mktCalc = null;
+    if (d.budget < 10000 || d.primaryGoal === 'startup'){
+      this.strategyPackage = 'essentials'; this.durationWeeks = 4;
+    } else if ((d.budget >= 10000 && d.budget < 25000) || d.primaryGoal === 'scale'){
+      this.strategyPackage = 'professional'; this.durationWeeks = 12;
+    } else {
+      this.strategyPackage = 'enterprise'; this.durationWeeks = 36;
+    }
+    this.log(`${t('logInit')} ${this.strategyPackage} — ${d.companyName}`);
+    this.generateTasks();
+  },
+
+  budgetAllocation(){
+    const b = this.data.budget;
+    let alloc = [];
+    if (this.strategyPackage === 'essentials'){
+      alloc = [
+        [t('milestone1E'), b*0.3667],
+        [t('milestone2E'), b*0.6333],
+      ];
+    } else if (this.strategyPackage === 'professional'){
+      alloc = [
+        [t('milestone1P'), b*0.2333],
+        [t('milestone2P'), b*0.3000],
+        [t('milestone3P'), b*0.2667],
+        [t('milestone4P'), b*0.2000],
+      ];
+    } else {
+      alloc = [
+        [t('milestone1N'), b*0.2187],
+        [t('milestone2N'), b*0.2812],
+        [t('milestone3N'), b*0.2812],
+        [t('milestone4N'), b*0.2187],
+      ];
+    }
+    return alloc.map(([name,amt])=>[name, Math.round(amt*100)/100]);
+  },
+
+  computeHealth(fin, defect, ops){
+    const finIdx = Math.min(Math.max(fin*1.2,0),100);
+    const qualIdx = Math.max(100-(defect*5),0);
+    const opsIdx = Math.min(Math.max(ops,0),100);
+    const overall = (finIdx*0.4)+(qualIdx*0.3)+(opsIdx*0.3);
+    let status, statusKey, color;
+    if (overall>=85){statusKey='pulseExcellent';color='#2FA490';}
+    else if (overall>=65){statusKey='pulseStable';color='#E0A83E';}
+    else {statusKey='pulseCritical';color='#D9534F';}
+    this.health = {finIdx,qualIdx,opsIdx,overall,statusKey,color};
+    this.log(`${t('logHealth')} ${overall.toFixed(2)}%`);
+    return this.health;
+  },
+
+  generateTasks(){
+    let defs, ownerKeys;
+    if (this.strategyPackage === 'essentials'){
+      defs = [['taskName1E',7],['taskName2E',10],['taskName3E',7],['taskName4E',4]];
+      ownerKeys = ['ownerCEO','ownerAnalyst','ownerAdvisor','ownerTeam'];
+    } else if (this.strategyPackage === 'professional'){
+      defs = [['taskName1P',20],['taskName2P',30],['taskName3P',20],['taskName4P',14]];
+      ownerKeys = ['ownerOpsConsult','ownerAdvisor','ownerQualityAud','ownerDataEng'];
+    } else {
+      defs = [['taskName1N',45],['taskName2N',60],['taskName3N',60],['taskName4N',35]];
+      ownerKeys = ['ownerPrincipal','ownerTech','ownerChange','ownerPrincipal'];
+    }
+    let cur = new Date(this.data.startDate);
+    this.tasks = defs.map(([nameKey,days],idx)=>{
+      const start = new Date(cur);
+      const end = new Date(cur); end.setDate(end.getDate()+days);
+      const reminder = new Date(end); reminder.setDate(reminder.getDate()-2);
+      cur = new Date(end);
+      // preserve previously saved status if reloading same shape
+      const prev = (this.tasks && this.tasks[idx]) ? this.tasks[idx].status : 'pending';
+      return {
+        id: idx+1, nameKey, ownerKey: ownerKeys[idx], start: fmtDate(start), end: fmtDate(end),
+        reminder: fmtDate(reminder), status: prev || 'pending'
+      };
+    });
+  },
+
+  updateStatus(id, status){
+    const task = this.tasks.find(x=>x.id===id);
+    if (task){ task.status = status; this.log(`${t('logStatus')} ${id}: ${status}`); }
+  },
+
+  raci(){
+    const roles = [t('ownerCEO'),'Project Manager',t('ownerOpsConsult').replace('Consultant','Lead'),t('ownerQualityAud').replace('Auditor','Officer'),'Department Staff'];
+    const activeRoles = ['CEO / Sponsor / '+t('ownerCEO'), 'Project Manager', 'Operations Lead', 'Quality Officer', 'Department Staff'];
+    if (this.data.employeeCount > 50) activeRoles.push(t('roleSub'));
+    const rows = [
+      {phase:t('raciP1'), map:{'CEO / Sponsor':'A','Project Manager':'R','Operations Lead':'C','Department Staff':'I'}},
+      {phase:t('raciP2'), map:{'CEO / Sponsor':'I','Project Manager':'A','Operations Lead':'R','Department Staff':'R'}},
+      {phase:t('raciP3'), map:{'CEO / Sponsor':'I','Project Manager':'C','Operations Lead':'A','Quality Officer':'R'}},
+      {phase:t('raciP4'), map:{'CEO / Sponsor':'A','Project Manager':'R','Operations Lead':'I','Department Staff':'I'}},
+    ];
+    return {activeRoles, rows};
+  },
+
+  advisory(){
+    const inv = this.data.budget;
+    let roiPct, benefit;
+    if (this.strategyPackage==='essentials'){ roiPct=233.0; benefit=inv*3.33; }
+    else if (this.strategyPackage==='professional'){ roiPct=366.0; benefit=inv*4.66; }
+    else { roiPct=525.0; benefit=inv*6.25; }
+    return {
+      invest: inv, benefit: Math.round(benefit*100)/100, roiPct,
+      swot:{
+        S:[t('swotS1'),t('swotS2')], W:[t('swotW1')], O:[t('swotO1'),t('swotO2')], T:[t('swotT1'),t('swotT2')]
+      },
+      pestel:[t('pest1'),t('pest2'),t('pest3'),t('pest4'),t('pest5'),t('pest6')],
+      gov:[t('gov1'),t('gov2'),t('gov3')]
+    };
+  },
+
+  baseRisks(){
+    return [
+      {risk:t('riskOpsE'), prob:'High', probKey:'probHigh', mit:t('riskOpsM')},
+      {risk:t('riskMktE'), prob:'Medium', probKey:'probMedium', mit:t('riskMktM')},
+      {risk:t('riskDelayE'), prob:'Low', probKey:'probLow', mit:t('riskDelayM')},
+    ];
+  },
+  allRisks(){
+    return [...this.baseRisks(), ...this.customRisks.map(r=>({risk:r, prob:'User-Defined', probKey:'probUser', mit:t('userDefinedMit')}))];
+  },
+  addRisk(name){
+    this.customRisks.push(name);
+    this.log(`${t('logRisk')} ${name}`);
+  },
+
+  marketing(){
+    return {
+      strategy: t('mktStrategyTxt'),
+      channels: [t('mktCh1'),t('mktCh2'),t('mktCh3')],
+      steps: [t('mktStep1'),t('mktStep2'),t('mktStep3')]
+    };
+  },
+
+  /* ---- PESTEL + Porter's 5 Forces + SWOT worksheet ---- */
+  calcStrategy(input){
+    // input: {targetMarket, industry, pestel:{political,economic,social,tech,env,legal}, porter:{entrants,suppliers,buyers,substitutes,rivalry}, swot:{S,W,O,T} (arrays of lines)}
+    const pestelVals = Object.values(input.pestel);
+    const pestelIndex = pestelVals.reduce((a,b)=>a+b,0) / pestelVals.length;
+    const porterVals = Object.values(input.porter);
+    const porterIndex = porterVals.reduce((a,b)=>a+b,0) / porterVals.length;
+    const sCount = input.swot.S.length, wCount = input.swot.W.length, oCount = input.swot.O.length, tCount = input.swot.T.length;
+    const swotBalance = (sCount+oCount) - (wCount+tCount);
+    let attractKey;
+    // lower external pressure + lower competitive intensity + positive SWOT = more attractive
+    const combined = (pestelIndex*0.4)+(porterIndex*0.4)+((5-Math.max(Math.min(swotBalance+2.5,5),0))*0.2);
+    if (combined <= 2.4) attractKey = 'marketAttractHigh';
+    else if (combined <= 3.4) attractKey = 'marketAttractMed';
+    else attractKey = 'marketAttractLow';
+
+    this.strategyCalc = {
+      targetMarket: input.targetMarket, industry: input.industry,
+      pestel: input.pestel, porter: input.porter, swot: input.swot,
+      pestelIndex, porterIndex, swotBalance, attractKey
+    };
+    this.log(`${t('stratCalcTitle')}: ${input.targetMarket || '—'} / ${input.industry}`);
+    return this.strategyCalc;
+  },
+
+  /* ---- Quantified SWOT worksheet (scored items, IFS/EFS, quadrant) ---- */
+  addSwotQuantItem(cat, text, score){
+    if (!text) return;
+    this.swotQuant[cat].push({text, score: Math.max(1, Math.min(5, score||3))});
+    this.log(`${t('swotQuantTitle')}: +${cat} — ${text} (${score})`);
+  },
+  removeSwotQuantItem(cat, idx){
+    this.swotQuant[cat].splice(idx,1);
+  },
+  calcSwotQuant(){
+    const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b.score,0)/arr.length) : 0;
+    const top = arr => arr.length ? arr.reduce((a,b)=> b.score>a.score ? b : a).text : '—';
+    const S = this.swotQuant.S, W = this.swotQuant.W, O = this.swotQuant.O, T = this.swotQuant.T;
+    const avgS = avg(S), avgW = avg(W), avgO = avg(O), avgT = avg(T);
+    const ifs = Math.round((avgS - avgW) * 100) / 100;
+    const efs = Math.round((avgO - avgT) * 100) / 100;
+    const readiness = Math.round(Math.max(0, Math.min(100, ((ifs + efs + 8) / 16) * 100)));
+    let quadrantKey, recKey, recVars;
+    if (ifs >= 0 && efs >= 0){
+      quadrantKey = 'quadSO'; recKey = 'recSO'; recVars = {opp: top(O), str: top(S)};
+    } else if (ifs < 0 && efs >= 0){
+      quadrantKey = 'quadWO'; recKey = 'recWO'; recVars = {opp: top(O), weak: top(W)};
+    } else if (ifs >= 0 && efs < 0){
+      quadrantKey = 'quadST'; recKey = 'recST'; recVars = {str: top(S), threat: top(T)};
+    } else {
+      quadrantKey = 'quadWT'; recKey = 'recWT'; recVars = {weak: top(W), threat: top(T)};
+    }
+    let recommendation = (S.length||W.length||O.length||T.length) ? t(recKey) : t('recNoData');
+    Object.keys(recVars||{}).forEach(k=>{ recommendation = recommendation.replace(`{${k}}`, recVars[k]); });
+    this.swotQuantResult = {ifs, efs, readiness, quadrantKey, recommendation, avgS, avgW, avgO, avgT};
+    this.log(`${t('swotQuantTitle')}: IFS ${ifs} / EFS ${efs} / ${t(quadrantKey)}`);
+    return this.swotQuantResult;
+  },
+
+  /* ---- Task #1: Comprehensive 5-Domain Audit ---- */
+  calcDomainAudit(scores){
+    // scores: {strategy, ops, finance, hr, tech} each 0-100
+    const keys = ['strategy','ops','finance','hr','tech'];
+    const vals = keys.map(k=>scores[k]||0);
+    const overall = Math.round((vals.reduce((a,b)=>a+b,0)/keys.length)*10)/10;
+    const sorted = keys.map(k=>({key:k, score:scores[k]||0})).sort((a,b)=>a.score-b.score);
+    const gapKeys = sorted.filter(x=>x.score < 70).slice(0,2).map(x=>x.key);
+    let statusKey;
+    if (overall >= 75) statusKey = 'pulseExcellent';
+    else if (overall >= 50) statusKey = 'pulseStable';
+    else statusKey = 'pulseCritical';
+    this.domainAudit = {scores, overall, gapKeys, statusKey};
+    this.log(`${t('domainAuditTitle')}: ${overall}%`);
+    return this.domainAudit;
+  },
+
+  /* ---- Task #2: 3-Year Strategic Roadmap ---- */
+  calcRoadmap(input){
+    // input: {growthPct, focus, challenge, priorities}
+    const g = input.growthPct || 0;
+    const p = input.priorities || 1;
+    const learnPct = Math.min(95, 50 + p*10);
+    const bsc = {
+      finGoal: t('bscFinGoal').replace('{g}', g),
+      finInit: t('bscFinInit'),
+      custGoal: t('bscCustGoal').replace('{h}', Math.round(g/2*10)/10),
+      custInit: t('bscCustInit').replace('{focus}', t('focus'+cap(input.focus))),
+      intGoal: t('bscIntGoal').replace('{challenge}', t('challenge'+cap(input.challenge))),
+      intInit: t('bscIntInit'),
+      learnGoal: t('bscLearnGoal').replace('{p}', learnPct),
+      learnInit: t('bscLearnInit')
+    };
+    const years = {
+      y1: t('y1Text').replace('{challenge}', t('challenge'+cap(input.challenge))),
+      y2: t('y2Text').replace('{focus}', t('focus'+cap(input.focus))),
+      y3: t('y3Text').replace('{g}', g)
+    };
+    this.roadmap = {growthPct:g, focus:input.focus, challenge:input.challenge, priorities:p, bsc, years};
+    this.log(`${t('roadmapTitle')}: ${g}% / ${input.focus} / ${p}`);
+    return this.roadmap;
+  },
+
+  /* ---- Task #3: ISO 9001 QMS Gap Analysis ---- */
+  calcIsoGap(answers){
+    // answers: {q1,q2,q3,q4: boolean, q5: 1-5}
+    const yesCount = ['q1','q2','q3','q4'].filter(k=>answers[k]).length;
+    const readiness = Math.round((yesCount*20) + ((answers.q5||0)/5*20));
+    const gapMap = {q1:'isoGapManual', q2:'isoGapContext', q3:'isoGapCsat', q4:'isoGapRisk'};
+    const actMap = {q1:'isoActManual', q2:'isoActContext', q3:'isoActCsat', q4:'isoActRisk'};
+    const gapKeys = ['q1','q2','q3','q4'].filter(k=>!answers[k]).map(k=>gapMap[k]);
+    const actionKeys = ['q1','q2','q3','q4'].filter(k=>!answers[k]).map(k=>actMap[k]);
+    this.isoGap = {answers, readiness, gapKeys, actionKeys};
+    this.log(`${t('isoGapTitle')}: ${readiness}%`);
+    return this.isoGap;
+  },
+
+  /* ---- Task #4: Executive Dashboard Deployment ---- */
+  calcDashDesign(input){
+    // input: {deptCount, kpis:[keys], vizType, refreshFreq}
+    this.dashDesign = {deptCount: Math.max(1, input.deptCount||1), kpis: input.kpis||[], vizType: input.vizType, refreshFreq: input.refreshFreq};
+    this.log(`${t('dashDesignTitle')}: ${this.dashDesign.deptCount} / ${(input.kpis||[]).join(',')}`);
+    return this.dashDesign;
+  },
+
+  /* ---- Marketing budget & ROI calculator ---- */
+  calcMarketing(input){
+    // input: {budget, primaryChannel}  channels: mktCh1(LinkedIn), mktCh2(Direct), mktCh3(CaseStudies)
+    const budget = input.budget || 0;
+    const order = ['mktCh1','mktCh2','mktCh3'].filter(c=>c!==input.primaryChannel);
+    const alloc = [
+      {key: input.primaryChannel, pct:50},
+      {key: order[0], pct:30},
+      {key: order[1], pct:20}
+    ].map(a=>({...a, amount: Math.round(budget*a.pct/100)}));
+    const AVG_COST_PER_LEAD = 150;
+    const CONV_RATE = 12;
+    const leads = AVG_COST_PER_LEAD > 0 ? Math.round(budget / AVG_COST_PER_LEAD) : 0;
+    this.mktCalc = {budget, primaryChannel: input.primaryChannel, alloc, leads, convRate: CONV_RATE};
+    this.log(`${t('mktCalcTitle')}: $${budget} / ${input.primaryChannel}`);
+    return this.mktCalc;
+  },
+
+  /* ---- Organizational structure & job titles worksheet ---- */
+  calcOrgStructure(employees, departments, style){
+    const spanByStyle = {flat:10, standard:6, hierarchical:4};
+    const span = spanByStyle[style] || 6;
+    const exec = 1;
+    const senior = Math.max(1, Math.min(departments, employees - exec));
+    let remaining = Math.max(employees - exec - senior, 0);
+    const middle = remaining > 0 ? Math.min(remaining, Math.max(1, Math.ceil(senior * (span/2)))) : 0;
+    remaining = Math.max(remaining - middle, 0);
+    const leads = remaining > 0 ? Math.min(remaining, Math.max(1, Math.ceil(middle * (span/2)))) : 0;
+    remaining = Math.max(remaining - leads, 0);
+    const staff = remaining;
+
+    const levels = [
+      {key:'levelExec', count: exec},
+      {key:'levelSenior', count: senior},
+      {key:'levelMiddle', count: middle},
+      {key:'levelLead', count: leads},
+      {key:'levelStaff', count: staff},
+    ];
+    this.orgStructure = {employees, departments, style, span, levels};
+    this.log(`${t('orgCalcTitle')}: ${employees} / ${departments} / ${style}`);
+    return this.orgStructure;
+  },
+
+  addJobTitle(dept, title, count, reports){
+    this.jobTitles.push({dept, title, count, reports});
+    this.log(`${t('jobTitlesTitle')}: ${title} (${dept})`);
+  },
+
+  /* ---- auto-infer departments, sections and job titles for every employee level ---- */
+  autoGenerateJobTitles(industry){
+    if (!this.orgStructure) return [];
+    const os = this.orgStructure;
+    const D = Math.max(1, os.departments || 1);
+    const pack = ORG_CONTENT[LANG] || ORG_CONTENT.ar;
+    const content = pack[industry] || pack.other;
+    const pool = content.depts;
+    const deptNames = [];
+    for (let i=0;i<D;i++){
+      const cycle = Math.floor(i/pool.length) + 1;
+      deptNames.push(pool[i % pool.length] + (cycle>1 ? ' ' + cycle : ''));
+    }
+    const distribute = (count)=>{
+      const base = Math.floor(count/D), rem = count % D;
+      return deptNames.map((_,i)=> base + (i<rem ? 1 : 0));
+    };
+    const levelsByKey = {};
+    os.levels.forEach(l=>{ levelsByKey[l.key] = l.count; });
+
+    const rows = [];
+    if (levelsByKey.levelExec){
+      rows.push({dept:t('levelExec'), title:content.ceo, count:levelsByKey.levelExec, reports:t('reportsBoard')});
+    }
+    const seniorCounts = distribute(levelsByKey.levelSenior || 0);
+    const middleCounts = distribute(levelsByKey.levelMiddle || 0);
+    const leadCounts = distribute(levelsByKey.levelLead || 0);
+    const staffCounts = distribute(levelsByKey.levelStaff || 0);
+    deptNames.forEach((dept,i)=>{
+      if (seniorCounts[i] > 0) rows.push({dept, title:content.senior, count:seniorCounts[i], reports:content.ceo});
+      if (middleCounts[i] > 0) rows.push({dept, title:content.middle, count:middleCounts[i], reports:content.senior});
+      if (leadCounts[i] > 0) rows.push({dept, title:content.lead, count:leadCounts[i], reports:content.middle});
+      if (staffCounts[i] > 0) rows.push({dept, title:content.staff, count:staffCounts[i], reports:content.lead});
+    });
+    this.jobTitles = rows;
+    this.log(`${t('btnAutoGenTitles')}: ${industry} / ${D} ${t('orgDepartments')}`);
+    return this.jobTitles;
+  },
+
+  /* ---- auto-generated market report: PESTEL + Porter's 5 Forces + SWOT from app data ---- */
+  generateMarketReport(options){
+    const industry = options.industry || 'other';
+    const targetMarket = options.targetMarket || '—';
+    const pack = MARKET_TEMPLATES[LANG] || MARKET_TEMPLATES.ar;
+    const industryLabelKey = 'ind' + industry.charAt(0).toUpperCase() + industry.slice(1);
+    const industryLabel = t(industryLabelKey) || industry;
+    const levelWord = (score)=> score>=4 ? t('impactStrong') : (score<=2 ? t('impactWeak') : t('impactModerate'));
+    const fill = (str, level)=> str.replace('{market}', targetMarket).replace('{industry}', industryLabel).replace('{level}', level);
+
+    const pestelScores = { ...MATURITY_PESTEL[options.maturity] };
+    const porterScores = { ...COMPETITION_PORTER_BASE[options.competition] };
+    if (options.scope === 'international'){
+      porterScores.entrants = Math.min(5, porterScores.entrants + 1);
+      porterScores.substitutes = Math.min(5, porterScores.substitutes + 1);
+    } else if (options.scope === 'local'){
+      porterScores.entrants = Math.max(1, porterScores.entrants - 1);
+    }
+
+    const pestelNarrative = Object.keys(pestelScores).map(k=>({
+      key:k, score:pestelScores[k], text: fill(pack.pestel[k], levelWord(pestelScores[k]))
+    }));
+    const porterNarrative = Object.keys(porterScores).map(k=>({
+      key:k, score:porterScores[k], text: fill(pack.porter[k], levelWord(porterScores[k]))
+    }));
+    const pestelIndex = Object.values(pestelScores).reduce((a,b)=>a+b,0) / Object.values(pestelScores).length;
+    const porterIndex = Object.values(porterScores).reduce((a,b)=>a+b,0) / Object.values(porterScores).length;
+
+    /* SWOT auto-derived from company data + market options */
+    const d = this.data || {budget:0, employeeCount:0};
+    const S = [], W = [], O = [], T = [];
+    if (d.budget >= 25000) S.push(t('sBudgetStrong'));
+    else if (d.budget >= 10000) S.push(t('sBudgetModerate'));
+    else S.push(t('sBudgetLean'));
+    if (d.employeeCount >= 50) S.push(t('sScaleLarge')); else S.push(t('sAgility'));
+    if (this.health && this.health.overall >= 85) S.push(t('sHealthExcellent'));
+    if (this.strategyPackage) S.push(t('sPackage_' + this.strategyPackage));
+
+    if (d.budget < 10000) W.push(t('wBudgetLimited'));
+    if (this.health && this.health.qualIdx < 80) W.push(t('wQualityGaps'));
+    if (d.employeeCount < 10) W.push(t('wHRLimited'));
+    if (!W.length) W.push(t('wGeneric'));
+
+    if (options.maturity === 'emerging' || options.maturity === 'growth') O.push(t('oEarlyMover'));
+    if (options.scope === 'international' || options.scope === 'regional') O.push(t('oExpansion'));
+    O.push(t('oDigital'));
+
+    if (options.competition === 'high') T.push(t('tCompetition'));
+    if (options.maturity === 'decline') T.push(t('tDeclineDemand'));
+    T.push(t('tRegulatory'));
+
+    const swotBalance = (S.length + O.length) - (W.length + T.length);
+    const combined = (pestelIndex*0.4) + (porterIndex*0.4) + ((5 - Math.max(Math.min(swotBalance+2.5,5),0)) * 0.2);
+    let attractKey;
+    if (combined <= 2.4) attractKey = 'marketAttractHigh';
+    else if (combined <= 3.4) attractKey = 'marketAttractMed';
+    else attractKey = 'marketAttractLow';
+
+    this.marketReport = {
+      maturity: options.maturity, competition: options.competition, scope: options.scope,
+      industry, targetMarket, pestelScores, porterScores, pestelNarrative, porterNarrative,
+      pestelIndex, porterIndex, swot:{S,W,O,T}, swotBalance, attractKey
+    };
+    this.log(`${t('marketReportTitle')}: ${targetMarket} / ${industryLabel}`);
+    return this.marketReport;
+  },
+
+  /* ---- persistent project registry ---- */
+  registerProject(){
+    this.registry.push({
+      company: this.data.companyName, package: this.packageLabel(), budget: this.data.budget,
+      employees: this.data.employeeCount, goal: this.data.primaryGoal, startDate: this.data.startDate,
+      registeredAt: new Date().toISOString().slice(0,19).replace('T',' ')
+    });
+  },
+
+  packageLabel(){
+    return {essentials:t('essentials'), professional:t('professional'), enterprise:t('enterprise')}[this.strategyPackage];
+  },
+
+  exportJSON(){
+    const alloc = {}; this.budgetAllocation().forEach(([k,v])=>alloc[k]=v);
+    const raci = this.raci();
+    const raciMap = {}; raci.rows.forEach(r=>raciMap[r.phase]=r.map);
+    return JSON.stringify({
+      meta:{company:this.data.companyName, exported: new Date().toISOString(), status:'Offline Local Generation'},
+      page1_strategy_budget:{package:this.packageLabel(), duration_weeks:this.durationWeeks, allocation:alloc},
+      page2_tasks:this.tasks.map(tk=>({id:tk.id, name:t(tk.nameKey), owner:t(tk.ownerKey), start:tk.start, end:tk.end, reminder:tk.reminder, status:tk.status})),
+      page3_raci:{active_roles:raci.activeRoles, matrix:raciMap},
+      page4_advisory:this.advisory(),
+      page4b_strategy_worksheet:this.strategyCalc,
+      page4c_swot_quantified:{items:this.swotQuant, result:this.swotQuantResult},
+      page4d_domain_audit:this.domainAudit,
+      page4e_strategic_roadmap:this.roadmap,
+      page4f_iso9001_gap:this.isoGap,
+      page4g_executive_dashboard:this.dashDesign,
+      page5_risks:this.allRisks(),
+      page6_marketing:this.marketing(),
+      page6b_marketing_calculator:this.mktCalc,
+      org_structure:this.orgStructure,
+      job_titles:this.jobTitles,
+      page7_market_report:this.marketReport,
+      registered_projects:this.registry,
+      audit_log:this.auditLog
+    }, null, 2);
+  }
+};
+
+function fmtDate(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
+/* =========================================================
+   APP (state, persistence, rendering)
+   ========================================================= */
+const STORAGE_KEY = 'strategicEngine_project_v1';
+const REGISTRY_KEY = 'strategicEngine_registry_v1';
+
+const App = {
+  initProject(silent){
+    const companyName = document.getElementById('inCompany').value.trim() || '—';
+    const budget = parseFloat(document.getElementById('inBudget').value) || 0;
+    const employeeCount = parseInt(document.getElementById('inEmployees').value) || 0;
+    const primaryGoal = document.getElementById('inGoal').value;
+    const startDate = document.getElementById('inStartDate').value || fmtDate(new Date());
+    const targetMarket = document.getElementById('inDashTargetMarket').value.trim();
+    const industry = document.getElementById('inDashIndustry').value;
+
+    if (budget <= 0){ if(!silent) toast(t('toastNoProject')); return; }
+
+    Engine.init({companyName,budget,employeeCount,primaryGoal,startDate,targetMarket,industry});
+    Engine.registerProject();
+    this.saveRegistry();
+    this.syncMarketFields();
+    this.renderAll();
+    this.saveNow(true);
+    if (!silent) toast(t('toastCreated'));
+  },
+
+  /* keep the target-market/industry fields on other pages (advisory, reports) in sync with page 1 */
+  syncMarketFields(){
+    if (!Engine.data) return;
+    const tmEl = document.getElementById('inTargetMarket');
+    const indEl = document.getElementById('inIndustry');
+    if (tmEl && !tmEl.value) tmEl.value = Engine.data.targetMarket || '';
+    if (indEl && Engine.data.industry) indEl.value = Engine.data.industry;
+  },
+
+  updateHealth(){
+    if (!Engine.data) return;
+    const fin = parseFloat(document.getElementById('inFin').value)||0;
+    const defect = parseFloat(document.getElementById('inDefect').value)||0;
+    const ops = parseFloat(document.getElementById('inOps').value)||0;
+    const h = Engine.computeHealth(fin, defect, ops);
+    renderHealth(h);
+  },
+
+  addRisk(){
+    const inp = document.getElementById('inCustomRisk');
+    const val = inp.value.trim();
+    if (!val || !Engine.data) return;
+    Engine.addRisk(val);
+    inp.value = '';
+    renderRisk();
+  },
+
+  calcStrategy(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const pestel = {
+      political: numVal('pestelPolitical'), economic: numVal('pestelEconomic'), social: numVal('pestelSocial'),
+      tech: numVal('pestelTech'), env: numVal('pestelEnv'), legal: numVal('pestelLegal')
+    };
+    const porter = {
+      entrants: numVal('porterEntrants'), suppliers: numVal('porterSuppliers'), buyers: numVal('porterBuyers'),
+      substitutes: numVal('porterSubstitutes'), rivalry: numVal('porterRivalry')
+    };
+    const linesOf = id => (document.getElementById(id).value || '').split('\n').map(s=>s.trim()).filter(Boolean);
+    const swot = { S: linesOf('inSwotS'), W: linesOf('inSwotW'), O: linesOf('inSwotO'), T: linesOf('inSwotT') };
+    const targetMarket = document.getElementById('inTargetMarket').value.trim();
+    const industry = document.getElementById('inIndustry').value;
+    Engine.calcStrategy({targetMarket, industry, pestel, porter, swot});
+    renderStrategyResults();
+    this.saveNow(true);
+    toast(t('toastStratCalc'));
+  },
+
+  addSwotItem(cat){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const txtEl = document.getElementById('inSwotQ_'+cat+'_text');
+    const scoreEl = document.getElementById('inSwotQ_'+cat+'_score');
+    const text = txtEl.value.trim();
+    const score = parseInt(scoreEl.value) || 3;
+    if (!text) return;
+    Engine.addSwotQuantItem(cat, text, score);
+    txtEl.value = '';
+    buildSwotQuantInputs();
+    this.saveNow(true);
+  },
+
+  removeSwotItem(cat, idx){
+    Engine.removeSwotQuantItem(cat, idx);
+    buildSwotQuantInputs();
+    if (Engine.swotQuantResult) App.calcSwotQuant();
+    this.saveNow(true);
+  },
+
+  calcSwotQuant(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    Engine.calcSwotQuant();
+    renderSwotQuantResults();
+    this.saveNow(true);
+    toast(t('toastStratCalc'));
+  },
+
+  calcDomainAudit(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const scores = {};
+    DOMAIN_KEYS.forEach(k=>{ scores[k] = numVal('inDomain_'+k); });
+    Engine.calcDomainAudit(scores);
+    renderDomainAuditResults();
+    this.saveNow(true);
+    toast(t('toastStratCalc'));
+  },
+
+  calcRoadmap(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const growthPct = parseFloat(document.getElementById('inRoadmapGrowth').value) || 0;
+    const priorities = parseInt(document.getElementById('inRoadmapPriorities').value) || 1;
+    const focus = document.getElementById('inRoadmapFocus').value;
+    const challenge = document.getElementById('inRoadmapChallenge').value;
+    Engine.calcRoadmap({growthPct, focus, challenge, priorities});
+    renderRoadmapResults();
+    this.saveNow(true);
+    toast(t('toastStratCalc'));
+  },
+
+  calcIsoGap(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const answers = {
+      q1: document.getElementById('inIso_q1').value === 'yes',
+      q2: document.getElementById('inIso_q2').value === 'yes',
+      q3: document.getElementById('inIso_q3').value === 'yes',
+      q4: document.getElementById('inIso_q4').value === 'yes',
+      q5: parseInt(document.getElementById('inIso_q5').value) || 3
+    };
+    Engine.calcIsoGap(answers);
+    renderIsoGapResults();
+    this.saveNow(true);
+    toast(t('toastStratCalc'));
+  },
+
+  setYN(id, val, btnEl){
+    document.getElementById(id).value = val;
+    const toggle = btnEl.parentElement;
+    toggle.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+    btnEl.classList.add('on');
+  },
+
+  calcDashDesign(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const deptCount = parseInt(document.getElementById('inDashDeptCount').value) || 1;
+    const vizType = document.getElementById('inDashVizType').value;
+    const refreshFreq = document.getElementById('inDashRefresh').value;
+    const kpis = Array.from(document.querySelectorAll('.chip-toggle input[type=checkbox]:checked')).map(el=>el.value);
+    Engine.calcDashDesign({deptCount, kpis, vizType, refreshFreq});
+    renderDashDesignResults();
+    this.saveNow(true);
+    toast(t('toastStratCalc'));
+  },
+
+  calcMarketing(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const budget = parseFloat(document.getElementById('inMktBudget').value) || 0;
+    const primaryChannel = document.getElementById('inMktPrimaryChannel').value;
+    Engine.calcMarketing({budget, primaryChannel});
+    renderMktCalcResults();
+    this.saveNow(true);
+    toast(t('toastStratCalc'));
+  },
+
+  calcOrgStructure(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const employees = parseInt(document.getElementById('inOrgEmployees').value) || Engine.data.employeeCount || 0;
+    const departments = parseInt(document.getElementById('inOrgDepartments').value) || 1;
+    const style = document.getElementById('inOrgStyle').value;
+    Engine.calcOrgStructure(employees, departments, style);
+    renderOrgResult();
+    this.saveNow(true);
+    toast(t('toastOrgCalc'));
+  },
+
+  addJobTitle(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const dept = document.getElementById('inJtDept').value.trim();
+    const title = document.getElementById('inJtTitle').value.trim();
+    const count = parseInt(document.getElementById('inJtCount').value) || 1;
+    const reports = document.getElementById('inJtReports').value.trim();
+    if (!title) return;
+    Engine.addJobTitle(dept, title, count, reports);
+    document.getElementById('inJtDept').value='';
+    document.getElementById('inJtTitle').value='';
+    document.getElementById('inJtCount').value=1;
+    document.getElementById('inJtReports').value='';
+    renderJobTitles();
+    this.saveNow(true);
+    toast(t('toastTitleAdded'));
+  },
+
+  autoGenerateJobTitles(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    if (!Engine.orgStructure){
+      const employees = parseInt(document.getElementById('inOrgEmployees').value) || Engine.data.employeeCount || 0;
+      const departments = parseInt(document.getElementById('inOrgDepartments').value) || 5;
+      const style = document.getElementById('inOrgStyle').value;
+      Engine.calcOrgStructure(employees, departments, style);
+      renderOrgResult();
+    }
+    const industry = Engine.data.industry || document.getElementById('inIndustry').value || 'other';
+    Engine.autoGenerateJobTitles(industry);
+    renderJobTitles();
+    this.saveNow(true);
+    toast(t('toastAutoGenerated'));
+  },
+
+  generateMarketReport(silent){
+    if (!Engine.data){ if(!silent) toast(t('toastNoProject')); return; }
+    const maturity = document.getElementById('inMktMaturity').value;
+    const competition = document.getElementById('inMktCompetition').value;
+    const scope = document.getElementById('inMktScope').value;
+    const industry = Engine.data.industry || document.getElementById('inIndustry').value || 'other';
+    const targetMarket = Engine.data.targetMarket || document.getElementById('inTargetMarket').value.trim() || '—';
+    Engine.generateMarketReport({maturity, competition, scope, industry, targetMarket});
+    renderMarketReport();
+    this.saveNow(true);
+    if (!silent) toast(t('toastMarketReport'));
+  },
+
+  saveRegistry(){
+    try{ localStorage.setItem(REGISTRY_KEY, JSON.stringify(Engine.registry)); }catch(e){ console.warn('registry save failed', e); }
+  },
+  loadRegistry(){
+    try{
+      const raw = localStorage.getItem(REGISTRY_KEY);
+      if (raw) Engine.registry = JSON.parse(raw);
+    }catch(e){}
+  },
+
+  saveNow(silent){
+    if (!Engine.data) { if(!silent) toast(t('toastNoProject')); return; }
+    if (!silent) Engine.log(t('logSave'));
+    const snapshot = {
+      data:Engine.data, strategyPackage:Engine.strategyPackage, durationWeeks:Engine.durationWeeks,
+      tasks:Engine.tasks, auditLog:Engine.auditLog, health:Engine.health, customRisks:Engine.customRisks,
+      strategyCalc:Engine.strategyCalc, swotQuant:Engine.swotQuant, swotQuantResult:Engine.swotQuantResult,
+      domainAudit:Engine.domainAudit, roadmap:Engine.roadmap, isoGap:Engine.isoGap, dashDesign:Engine.dashDesign, mktCalc:Engine.mktCalc,
+      orgStructure:Engine.orgStructure, jobTitles:Engine.jobTitles,
+      marketReport:Engine.marketReport, lang:LANG
+    };
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+      if (!silent) { toast(t('toastSaved')); }
+    }catch(e){ console.warn('save failed', e); }
+  },
+
+  loadSaved(){
+    let raw;
+    try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
+    if (!raw){ toast(t('toastNoSaved')); return; }
+    const snap = JSON.parse(raw);
+    Engine.data = snap.data; Engine.strategyPackage = snap.strategyPackage; Engine.durationWeeks = snap.durationWeeks;
+    Engine.tasks = snap.tasks; Engine.auditLog = snap.auditLog; Engine.health = snap.health; Engine.customRisks = snap.customRisks||[];
+    Engine.strategyCalc = snap.strategyCalc||null; Engine.swotQuant = snap.swotQuant||{S:[],W:[],O:[],T:[]}; Engine.swotQuantResult = snap.swotQuantResult||null;
+    Engine.domainAudit = snap.domainAudit||null; Engine.roadmap = snap.roadmap||null; Engine.isoGap = snap.isoGap||null;
+    Engine.dashDesign = snap.dashDesign||null; Engine.mktCalc = snap.mktCalc||null;
+    Engine.orgStructure = snap.orgStructure||null; Engine.jobTitles = snap.jobTitles||[];
+    Engine.marketReport = snap.marketReport||null;
+    document.getElementById('inCompany').value = Engine.data.companyName;
+    document.getElementById('inBudget').value = Engine.data.budget;
+    document.getElementById('inEmployees').value = Engine.data.employeeCount;
+    document.getElementById('inGoal').value = Engine.data.primaryGoal;
+    document.getElementById('inStartDate').value = Engine.data.startDate;
+    document.getElementById('inDashTargetMarket').value = Engine.data.targetMarket || '';
+    if (Engine.data.industry) document.getElementById('inDashIndustry').value = Engine.data.industry;
+    this.syncMarketFields();
+    this.renderAll();
+    toast(t('toastLoaded'));
+  },
+
+  renderAll(){
+    buildCalcInputs();
+    renderRegistry();
+    if (!Engine.data){ return; }
+    renderPackage();
+    if (Engine.health) renderHealth(Engine.health);
+    renderBudget();
+    renderTasks();
+    renderRaci();
+    renderAdvisory();
+    if (Engine.strategyCalc) renderStrategyResults();
+    buildSwotQuantInputs();
+    if (Engine.swotQuantResult) renderSwotQuantResults();
+    buildDomainAuditInputs();
+    if (Engine.domainAudit) renderDomainAuditResults();
+    if (Engine.roadmap) renderRoadmapResults();
+    buildIsoGapInputs();
+    if (Engine.isoGap) renderIsoGapResults();
+    buildDashKpiChoices();
+    if (Engine.dashDesign) renderDashDesignResults();
+    if (Engine.mktCalc) renderMktCalcResults();
+    if (Engine.orgStructure) renderOrgResult();
+    renderJobTitles();
+    if (Engine.marketReport) renderMarketReport();
+    renderRisk();
+    renderMarketing();
+    document.getElementById('packageResultCard').style.display = 'block';
+    document.getElementById('healthCard').style.display = 'block';
+  }
+};
+
+/* ---------- render functions ---------- */
+function renderPackage(){
+  const badgeClass = Engine.strategyPackage;
+  document.getElementById('packageBadge').innerHTML =
+    `<span class="badge ${badgeClass}">${Engine.packageLabel()}</span>`;
+  document.getElementById('pkgDuration').textContent = `${Engine.durationWeeks} ${t('weeks')}`;
+  document.getElementById('pkgStart').textContent = Engine.data.startDate;
+  const lastTask = Engine.tasks[Engine.tasks.length-1];
+  document.getElementById('pkgEnd').textContent = lastTask ? lastTask.end : '—';
+}
+
+function renderHealth(h){
+  document.getElementById('finIdxVal').textContent = h.finIdx.toFixed(1);
+  document.getElementById('qualIdxVal').textContent = h.qualIdx.toFixed(1);
+  document.getElementById('opsIdxVal').textContent = h.opsIdx.toFixed(1);
+  document.getElementById('pulseNum').textContent = h.overall.toFixed(0)+'%';
+  const circumference = 2*Math.PI*62;
+  const offset = circumference - (h.overall/100)*circumference;
+  const arc = document.getElementById('pulseArc');
+  arc.setAttribute('stroke-dasharray', circumference.toFixed(1));
+  arc.setAttribute('stroke-dashoffset', offset.toFixed(1));
+  arc.setAttribute('stroke', h.color);
+  const pill = document.getElementById('pulseStatusPill');
+  pill.textContent = t(h.statusKey);
+  pill.style.background = h.color+'33';
+  pill.style.color = h.color;
+}
+
+function renderBudget(){
+  if (!Engine.data){ document.getElementById('budgetAllocList').innerHTML = `<div class="empty-state">${t('toastNoProject')}</div>`; return; }
+  const alloc = Engine.budgetAllocation();
+  const total = Engine.data.budget;
+  const wrap = document.getElementById('budgetAllocList');
+  wrap.innerHTML = alloc.map(([name,amt])=>{
+    const pct = total>0 ? (amt/total*100) : 0;
+    return `<div class="alloc-row">
+      <div class="top"><span>${name}</span><span>$${amt.toLocaleString()} (${pct.toFixed(1)}%)</span></div>
+      <div class="bar"><span style="width:${pct}%"></span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('totalBudgetVal').textContent = '$'+total.toLocaleString();
+  document.getElementById('milestoneCountVal').textContent = alloc.length;
+}
+
+function renderTasks(){
+  const wrap = document.getElementById('taskList');
+  if (!Engine.tasks.length){ wrap.innerHTML = `<div class="empty-state">${t('noTasksYet')}</div>`; return; }
+  wrap.innerHTML = Engine.tasks.map(task=>`
+    <div class="task-card">
+      <div class="task-top">
+        <div>
+          <div class="task-name">#${task.id} — ${t(task.nameKey)}</div>
+          <div class="task-meta">${t('startLabel')}: ${task.start} &nbsp;·&nbsp; ${t('endLabel')}: ${task.end}</div>
+          <div class="task-meta">${t('ownerLabel')}: ${t(task.ownerKey)}</div>
+          <div class="reminder">⏰ ${t('reminderPrefix')} ${task.reminder}</div>
+        </div>
+        <select class="status-select" onchange="onStatusChange(${task.id}, this.value)">
+          <option value="pending" ${task.status==='pending'?'selected':''}>${t('statusPending')}</option>
+          <option value="in_progress" ${task.status==='in_progress'?'selected':''}>${t('statusInProgress')}</option>
+          <option value="done" ${task.status==='done'?'selected':''}>${t('statusDone')}</option>
+        </select>
+      </div>
+    </div>
+  `).join('');
+}
+function onStatusChange(id, val){
+  Engine.updateStatus(id, val);
+  App.saveNow(true);
+}
+
+function renderRaci(){
+  if (!Engine.data){ document.getElementById('raciRoles').innerHTML = `<div class="empty-state">${t('toastNoProject')}</div>`; return; }
+  const {activeRoles, rows} = Engine.raci();
+  document.getElementById('raciRoles').innerHTML =
+    `<strong>${t('raciActiveRoles')}:</strong> ` + activeRoles.map(r=>`<span class="chip">${r}</span>`).join('');
+  const cols = ['CEO / Sponsor','Project Manager','Operations Lead','Quality Officer','Department Staff'];
+  let html = '<thead><tr><th></th>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+  rows.forEach(r=>{
+    html += `<tr><td><strong>${r.phase}</strong></td>` + cols.map(c=>`<td>${r.map[c]||'—'}</td>`).join('') + '</tr>';
+  });
+  html += '</tbody>';
+  document.getElementById('raciTable').innerHTML = html;
+}
+
+function renderAdvisory(){
+  if (!Engine.data){ document.getElementById('govChips').innerHTML = `<div class="empty-state">${t('toastNoProject')}</div>`; return; }
+  const a = Engine.advisory();
+  document.getElementById('roiInvest').textContent = '$'+a.invest.toLocaleString();
+  document.getElementById('roiBenefit').textContent = '$'+a.benefit.toLocaleString();
+  document.getElementById('roiPct').textContent = a.roiPct+'%';
+  document.getElementById('govChips').innerHTML = a.gov.map(x=>`<span class="chip">${x}</span>`).join('');
+}
+
+/* ---- strategy worksheet: build editable PESTEL / Porter sliders ---- */
+const PESTEL_KEYS = ['pestelPolitical','pestelEconomic','pestelSocial','pestelTech','pestelEnv','pestelLegal'];
+const PORTER_KEYS = ['porterEntrants','porterSuppliers','porterBuyers','porterSubstitutes','porterRivalry'];
+function numVal(id){ const el = document.getElementById(id); return el ? parseFloat(el.value) || 0 : 0; }
+function buildCalcInputs(){
+  const pWrap = document.getElementById('pestelInputs');
+  if (pWrap){
+    const existing = {}; PESTEL_KEYS.forEach(k=>{ const el=document.getElementById(k); if (el) existing[k]=el.value; });
+    pWrap.innerHTML = PESTEL_KEYS.map(k=>`
+      <div class="slider-row">
+        <div class="top"><span>${t(k)}</span><span id="${k}_val">${existing[k]||3}</span></div>
+        <input type="range" min="1" max="5" step="1" id="${k}" value="${existing[k]||3}"
+          oninput="document.getElementById('${k}_val').textContent=this.value">
+      </div>`).join('');
+  }
+  const porWrap = document.getElementById('porterInputs');
+  if (porWrap){
+    const existing = {}; PORTER_KEYS.forEach(k=>{ const el=document.getElementById(k); if (el) existing[k]=el.value; });
+    porWrap.innerHTML = PORTER_KEYS.map(k=>`
+      <div class="slider-row">
+        <div class="top"><span>${t(k)}</span><span id="${k}_val">${existing[k]||3}</span></div>
+        <input type="range" min="1" max="5" step="1" id="${k}" value="${existing[k]||3}"
+          oninput="document.getElementById('${k}_val').textContent=this.value">
+      </div>`).join('');
+  }
+}
+
+const DOMAIN_KEYS = ['strategy','ops','finance','hr','tech'];
+const DOMAIN_LABEL_KEY = {strategy:'domStrategyGov', ops:'domOpsProc', finance:'domFinance', hr:'domHRorg', tech:'domTechData'};
+function buildDomainAuditInputs(){
+  const wrap = document.getElementById('domainAuditInputs');
+  if (!wrap) return;
+  const existing = {}; DOMAIN_KEYS.forEach(k=>{ const el=document.getElementById('inDomain_'+k); if (el) existing[k]=el.value; });
+  wrap.innerHTML = DOMAIN_KEYS.map(k=>`
+    <div class="slider-row">
+      <div class="top"><span>${t(DOMAIN_LABEL_KEY[k])}</span><span id="inDomain_${k}_val">${existing[k]||50}</span></div>
+      <input type="range" min="0" max="100" step="1" id="inDomain_${k}" value="${existing[k]||50}"
+        oninput="document.getElementById('inDomain_${k}_val').textContent=this.value">
+    </div>`).join('');
+}
+
+const DASH_KPI_KEYS = ['kpiProfit','kpiSales','kpiWaste','kpiHours'];
+function buildDashKpiChoices(){
+  const wrap = document.getElementById('dashKpiChoices');
+  if (!wrap) return;
+  const checked = {}; DASH_KPI_KEYS.forEach(k=>{ const el=document.querySelector(`.chip-toggle input[value="${k}"]`); if (el) checked[k]=el.checked; });
+  wrap.innerHTML = DASH_KPI_KEYS.map(k=>`
+    <label class="chip-toggle${checked[k]!==false?' on':''}">
+      <input type="checkbox" value="${k}" ${checked[k]!==false?'checked':''}
+        onchange="this.parentElement.classList.toggle('on', this.checked)">
+      <span>${t(k)}</span>
+    </label>`).join('');
+}
+
+function buildIsoGapInputs(){
+  const wrap = document.getElementById('isoGapInputs');
+  if (!wrap) return;
+  const prevVals = {};
+  ['q1','q2','q3','q4'].forEach(q=>{ const el=document.getElementById('inIso_'+q); if (el) prevVals[q]=el.value; });
+  const q5prev = document.getElementById('inIso_q5') ? document.getElementById('inIso_q5').value : 3;
+  const ynRow = (q,label)=>{
+    const v = prevVals[q] || 'no';
+    return `
+    <div class="yn-row">
+      <div class="q">${label}</div>
+      <input type="hidden" id="inIso_${q}" value="${v}">
+      <div class="yn-toggle">
+        <button type="button" class="${v==='yes'?'on':''}" onclick="App.setYN('inIso_${q}','yes',this)">${t('yesLbl')}</button>
+        <button type="button" class="${v==='no'?'on':''}" onclick="App.setYN('inIso_${q}','no',this)">${t('noLbl')}</button>
+      </div>
+    </div>`;
+  };
+  wrap.innerHTML =
+    ynRow('q1', t('isoQ1')) + ynRow('q2', t('isoQ2')) + ynRow('q3', t('isoQ3')) + ynRow('q4', t('isoQ4')) +
+    `<div class="slider-row">
+      <div class="top"><span>${t('isoQ5')}</span><span id="inIso_q5_val">${q5prev}</span></div>
+      <input type="range" min="1" max="5" step="1" id="inIso_q5" value="${q5prev}"
+        oninput="document.getElementById('inIso_q5_val').textContent=this.value">
+    </div>`;
+}
+
+const SWOT_Q_CATS = [
+  {cat:'S', key:'swotS'}, {cat:'W', key:'swotW'}, {cat:'O', key:'swotO'}, {cat:'T', key:'swotT'}
+];
+function buildSwotQuantInputs(){
+  const wrap = document.getElementById('swotQuantGrid');
+  if (!wrap) return;
+  wrap.innerHTML = SWOT_Q_CATS.map(c=>{
+    const items = (Engine.swotQuant && Engine.swotQuant[c.cat]) || [];
+    const itemsHtml = items.length
+      ? `<ul class="swotq-items">${items.map((it,i)=>`
+          <li>
+            <span class="txt">${it.text}</span>
+            <span class="score-badge">${it.score}/5</span>
+            <button class="rm-btn" onclick="App.removeSwotItem('${c.cat}',${i})" title="${t('btnAddItem')}">×</button>
+          </li>`).join('')}</ul>`
+      : `<div class="swotq-empty">${t('noItemsYet')}</div>`;
+    return `
+      <div class="swotq-box">
+        <h4>${t(c.key)}</h4>
+        <div class="swotq-add-row">
+          <input type="text" id="inSwotQ_${c.cat}_text" placeholder="${t('itemLbl')}"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();App.addSwotItem('${c.cat}');}">
+          <select id="inSwotQ_${c.cat}_score">
+            <option value="1">1</option><option value="2">2</option><option value="3" selected>3</option>
+            <option value="4">4</option><option value="5">5</option>
+          </select>
+          <button class="btn small" onclick="App.addSwotItem('${c.cat}')">${t('btnAddItem')}</button>
+        </div>
+        ${itemsHtml}
+      </div>`;
+  }).join('');
+}
+
+function renderSwotQuantResults(){
+  const wrap = document.getElementById('swotQuantResults');
+  if (!wrap) return;
+  const r = Engine.swotQuantResult;
+  if (!r){ wrap.innerHTML=''; return; }
+  const quadColor = {quadSO:'#2FA490', quadWO:'#E0A83E', quadST:'#E0A83E', quadWT:'#D9534F'}[r.quadrantKey];
+  wrap.innerHTML = `
+    <div class="index-row">
+      <div class="index-stat"><div class="val">${r.ifs>0?'+':''}${r.ifs}</div><div class="lbl">${t('ifsLbl')}</div></div>
+      <div class="index-stat"><div class="val">${r.efs>0?'+':''}${r.efs}</div><div class="lbl">${t('efsLbl')}</div></div>
+      <div class="index-stat"><div class="val">${r.readiness}%</div><div class="lbl">${t('readinessLbl')}</div></div>
+    </div>
+    <div class="quadrant-pill" style="background:${quadColor}33;color:${quadColor};border:1px solid ${quadColor};">
+      ${t('quadrantLbl')}: ${t(r.quadrantKey)}
+    </div>
+    <div class="recommendation-box"><strong>${t('recommendationLbl')}:</strong> ${r.recommendation}</div>
+  `;
+}
+
+function renderDomainAuditResults(){
+  const wrap = document.getElementById('domainAuditResults');
+  if (!wrap) return;
+  const da = Engine.domainAudit;
+  if (!da){ wrap.innerHTML=''; return; }
+  const statusColor = {pulseExcellent:'#2FA490', pulseStable:'#E0A83E', pulseCritical:'#D9534F'}[da.statusKey];
+  const gapsHtml = da.gapKeys.length
+    ? `<ul class="gap-list">${da.gapKeys.map(k=>`<li>${t(DOMAIN_LABEL_KEY[k])} (${da.scores[k]})</li>`).join('')}</ul>`
+    : `<div class="swotq-empty">${t('noGaps')}</div>`;
+  wrap.innerHTML = `
+    <div class="index-row">
+      <div class="index-stat"><div class="val">${da.overall}%</div><div class="lbl">${t('overallHealthLbl')}</div></div>
+    </div>
+    <div class="status-pill" style="background:${statusColor}33;color:${statusColor};">${t(da.statusKey)}</div>
+    <div style="margin-top:12px;"><strong>${t('topGapsLbl')}:</strong>${gapsHtml}</div>
+  `;
+}
+
+function renderRoadmapResults(){
+  const wrap = document.getElementById('roadmapResults');
+  if (!wrap) return;
+  const r = Engine.roadmap;
+  if (!r){ wrap.innerHTML=''; return; }
+  wrap.innerHTML = `
+    <h3 class="calc-subhead">${t('bscTitle')}</h3>
+    <div class="swot-grid">
+      <div class="swot-box"><h4>${t('bscFinancial')}</h4>
+        <div class="metric-row"><span>${t('goalLbl')}</span><span>${r.bsc.finGoal}</span></div>
+        <div class="metric-row"><span>${t('initiativeLbl')}</span><span>${r.bsc.finInit}</span></div>
+      </div>
+      <div class="swot-box"><h4>${t('bscCustomer')}</h4>
+        <div class="metric-row"><span>${t('goalLbl')}</span><span>${r.bsc.custGoal}</span></div>
+        <div class="metric-row"><span>${t('initiativeLbl')}</span><span>${r.bsc.custInit}</span></div>
+      </div>
+      <div class="swot-box"><h4>${t('bscInternal')}</h4>
+        <div class="metric-row"><span>${t('goalLbl')}</span><span>${r.bsc.intGoal}</span></div>
+        <div class="metric-row"><span>${t('initiativeLbl')}</span><span>${r.bsc.intInit}</span></div>
+      </div>
+      <div class="swot-box"><h4>${t('bscLearning')}</h4>
+        <div class="metric-row"><span>${t('goalLbl')}</span><span>${r.bsc.learnGoal}</span></div>
+        <div class="metric-row"><span>${t('initiativeLbl')}</span><span>${r.bsc.learnInit}</span></div>
+      </div>
+    </div>
+    <h3 class="calc-subhead">${t('roadmapYearsTitle')}</h3>
+    <div class="stack">
+      <div class="metric-row"><span>${t('year1Lbl')}</span><span>${r.years.y1}</span></div>
+      <div class="metric-row"><span>${t('year2Lbl')}</span><span>${r.years.y2}</span></div>
+      <div class="metric-row"><span>${t('year3Lbl')}</span><span>${r.years.y3}</span></div>
+    </div>
+  `;
+}
+
+function renderIsoGapResults(){
+  const wrap = document.getElementById('isoGapResults');
+  if (!wrap) return;
+  const ig = Engine.isoGap;
+  if (!ig){ wrap.innerHTML=''; return; }
+  const color = ig.readiness>=80?'#2FA490':(ig.readiness>=50?'#E0A83E':'#D9534F');
+  const gapsHtml = ig.gapKeys.length
+    ? `<ul class="gap-list">${ig.gapKeys.map(k=>`<li>${t(k)}</li>`).join('')}</ul>`
+    : `<div class="swotq-empty">${t('isoNoGaps')}</div>`;
+  const actionsHtml = ig.actionKeys.length
+    ? `<ul class="gap-list">${ig.actionKeys.map(k=>`<li>${t(k)}</li>`).join('')}</ul>`
+    : '';
+  wrap.innerHTML = `
+    <div class="index-row">
+      <div class="index-stat"><div class="val" style="color:${color};">${ig.readiness}%</div><div class="lbl">${t('isoReadinessLbl')}</div></div>
+    </div>
+    <div style="margin-top:12px;"><strong>${t('isoTopGapsLbl')}:</strong>${gapsHtml}</div>
+    ${actionsHtml ? `<div style="margin-top:10px;"><strong>${t('isoActionsLbl')}:</strong>${actionsHtml}</div>` : ''}
+  `;
+}
+
+function renderDashDesignResults(){
+  const wrap = document.getElementById('dashDesignResults');
+  if (!wrap) return;
+  const dd = Engine.dashDesign;
+  if (!dd){ wrap.innerHTML=''; return; }
+  const boxes = Array.from({length: dd.deptCount}).map((_,i)=>`<div class="wireframe-box">${t('wireframeBoxLbl')} ${i+1}<br>(${t(VIZ_LABEL[dd.vizType]||'vizBar')})</div>`).join('');
+  const dataNeeded = {
+    kpiSales:'dataNeededSales', kpiProfit:'dataNeededProfit', kpiWaste:'dataNeededWaste', kpiHours:'dataNeededHours'
+  };
+  const kpiListHtml = dd.kpis.length
+    ? `<ul class="gap-list">${dd.kpis.map(k=>`<li>${t(k)} — ${t(dataNeeded[k])}</li>`).join('')}</ul>`
+    : `<div class="swotq-empty">${t('noItemsYet')}</div>`;
+  wrap.innerHTML = `
+    <h3 class="calc-subhead">${t('wireframeTitle')}</h3>
+    <div class="wireframe-grid">${boxes}</div>
+    <div class="metric-row" style="margin-top:10px;"><span>${t('refreshLbl')}</span><span>${t('refresh'+cap(dd.refreshFreq))}</span></div>
+    <h3 class="calc-subhead">${t('kpiDataNeededTitle')}</h3>
+    ${kpiListHtml}
+  `;
+}
+const VIZ_LABEL = {bar:'vizBar', gauge:'vizGauge', table:'vizTable'};
+
+function renderMktCalcResults(){
+  const wrap = document.getElementById('mktCalcResults');
+  if (!wrap) return;
+  const mc = Engine.mktCalc;
+  if (!mc){ wrap.innerHTML=''; return; }
+  const allocHtml = mc.alloc.map(a=>`<div class="metric-row"><span>${t(a.key)}</span><span>${a.pct}% · $${a.amount.toLocaleString()}</span></div>`).join('');
+  wrap.innerHTML = `
+    <h3 class="calc-subhead">${t('mktAllocTitle')}</h3>
+    <div class="stack">${allocHtml}</div>
+    <h3 class="calc-subhead">${t('mktRoiTitle')}</h3>
+    <div class="index-row">
+      <div class="index-stat"><div class="val">${mc.leads.toLocaleString()}</div><div class="lbl">${t('mktLeadsLbl')}</div></div>
+      <div class="index-stat"><div class="val">${mc.convRate}%</div><div class="lbl">${t('mktConvLbl')}</div></div>
+    </div>
+  `;
+}
+
+function renderStrategyResults(){
+  const sc = Engine.strategyCalc;
+  const wrap = document.getElementById('stratCalcResults');
+  if (!wrap) return;
+  if (!sc){ wrap.innerHTML=''; return; }
+  const attractColor = {marketAttractHigh:'#2FA490', marketAttractMed:'#E0A83E', marketAttractLow:'#D9534F'}[sc.attractKey];
+  const balanceKey = sc.swotBalance > 0 ? 'swotPositive' : (sc.swotBalance === 0 ? 'swotBalancedLbl' : 'swotNegative');
+  const industryLabelKey = 'ind' + sc.industry.charAt(0).toUpperCase() + sc.industry.slice(1);
+  wrap.innerHTML = `
+    <div class="index-row">
+      <div class="index-stat"><div class="val">${sc.pestelIndex.toFixed(1)}/5</div><div class="lbl">${t('pestelIndexLbl')}</div></div>
+      <div class="index-stat"><div class="val">${sc.porterIndex.toFixed(1)}/5</div><div class="lbl">${t('porterIndexLbl')}</div></div>
+      <div class="index-stat"><div class="val">${sc.swotBalance>0?'+':''}${sc.swotBalance}</div><div class="lbl">${t('swotBalanceLbl')} (${t(balanceKey)})</div></div>
+    </div>
+    <div class="status-pill" style="background:${attractColor}33;color:${attractColor};">${t(sc.attractKey)}</div>
+    <div class="metric-row" style="margin-top:12px;"><span>${t('marketSummary')}</span><span>${sc.targetMarket||'—'} / ${t(industryLabelKey) || sc.industry}</span></div>
+  `;
+}
+
+function renderOrgResult(){
+  const os = Engine.orgStructure;
+  const wrap = document.getElementById('orgLevelsResult');
+  if (!wrap) return;
+  if (!os){ wrap.innerHTML=''; return; }
+  const total = os.levels.reduce((a,l)=>a+l.count,0);
+  wrap.innerHTML = `
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>${t('levelLbl')}</th><th>${t('countLbl')}</th></tr></thead>
+        <tbody>
+          ${os.levels.map(l=>`<tr><td>${t(l.key)}</td><td>${l.count}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="metric-row" style="margin-top:8px;"><span>${t('spanLbl')}</span><span>1:${os.span}</span></div>
+    <div class="metric-row"><span>${t('countLbl')}</span><span>${total}</span></div>
+  `;
+}
+
+function renderJobTitles(){
+  const wrap = document.getElementById('jobTitlesTable');
+  if (!wrap) return;
+  if (!Engine.jobTitles.length){ wrap.innerHTML = `<tr><td class="empty-state">${t('noJobTitlesYet')}</td></tr>`; return; }
+  wrap.innerHTML = `
+    <thead><tr><th>${t('jtDept')}</th><th>${t('jtTitle')}</th><th>${t('jtCount')}</th><th>${t('jtReports')}</th></tr></thead>
+    <tbody>
+      ${Engine.jobTitles.map(j=>`<tr><td>${j.dept||'—'}</td><td>${j.title}</td><td>${j.count}</td><td>${j.reports||'—'}</td></tr>`).join('')}
+    </tbody>
+  `;
+}
+
+function renderMarketReport(){
+  const wrap = document.getElementById('marketReportResults');
+  if (!wrap) return;
+  const mr = Engine.marketReport;
+  if (!mr){ wrap.innerHTML = `<div class="empty-state">${t('noMarketReportYet')}</div>`; return; }
+  const attractColor = {marketAttractHigh:'#2FA490', marketAttractMed:'#E0A83E', marketAttractLow:'#D9534F'}[mr.attractKey];
+  const balanceKey = mr.swotBalance > 0 ? 'swotPositive' : (mr.swotBalance === 0 ? 'swotBalancedLbl' : 'swotNegative');
+  wrap.innerHTML = `
+    <div class="metric-row"><span>${t('marketSummary')}</span><span>${mr.targetMarket} / ${t('ind'+mr.industry.charAt(0).toUpperCase()+mr.industry.slice(1)) || mr.industry}</span></div>
+    <div class="index-row" style="margin-top:10px;">
+      <div class="index-stat"><div class="val">${mr.pestelIndex.toFixed(1)}/5</div><div class="lbl">${t('pestelIndexLbl')}</div></div>
+      <div class="index-stat"><div class="val">${mr.porterIndex.toFixed(1)}/5</div><div class="lbl">${t('porterIndexLbl')}</div></div>
+      <div class="index-stat"><div class="val">${mr.swotBalance>0?'+':''}${mr.swotBalance}</div><div class="lbl">${t('swotBalanceLbl')} (${t(balanceKey)})</div></div>
+    </div>
+    <div class="status-pill" style="background:${attractColor}33;color:${attractColor};">${t(mr.attractKey)}</div>
+
+    <h3 class="calc-subhead">${t('pestelReportTitle')}</h3>
+    <div class="stack">
+      ${mr.pestelNarrative.map(p=>`<div class="metric-row"><span>${t('pestel'+p.key.charAt(0).toUpperCase()+p.key.slice(1))} (${p.score}/5)</span><span style="max-width:60%;text-align:end;">${p.text}</span></div>`).join('')}
+    </div>
+
+    <h3 class="calc-subhead">${t('porterReportTitle')}</h3>
+    <div class="stack">
+      ${mr.porterNarrative.map(p=>`<div class="metric-row"><span>${t('porter'+p.key.charAt(0).toUpperCase()+p.key.slice(1))} (${p.score}/5)</span><span style="max-width:60%;text-align:end;">${p.text}</span></div>`).join('')}
+    </div>
+
+    <h3 class="calc-subhead">${t('swotTitle')}</h3>
+    <div class="swot-grid">
+      <div class="swot-box"><h4>${t('swotS')}</h4><ul>${mr.swot.S.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      <div class="swot-box"><h4>${t('swotW')}</h4><ul>${mr.swot.W.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      <div class="swot-box"><h4>${t('swotO')}</h4><ul>${mr.swot.O.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      <div class="swot-box"><h4>${t('swotT')}</h4><ul>${mr.swot.T.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    </div>
+  `;
+}
+
+function renderRegistry(){
+  const wrap = document.getElementById('registryTable');
+  if (!wrap) return;
+  if (!Engine.registry || !Engine.registry.length){ wrap.innerHTML = `<tr><td class="empty-state">${t('noRegistryYet')}</td></tr>`; return; }
+  const rows = Engine.registry.slice().reverse();
+  wrap.innerHTML = `
+    <thead><tr><th>${t('regCompany')}</th><th>${t('regPackage')}</th><th>${t('regBudget')}</th><th>${t('regEmployees')}</th><th>${t('regDate')}</th></tr></thead>
+    <tbody>
+      ${rows.map(r=>`<tr><td>${r.company}</td><td>${r.package}</td><td>$${Number(r.budget).toLocaleString()}</td><td>${r.employees}</td><td>${r.registeredAt}</td></tr>`).join('')}
+    </tbody>
+  `;
+}
+
+function renderRisk(){
+  if (!Engine.data){ document.getElementById('riskList').innerHTML = `<div class="empty-state">${t('toastNoProject')}</div>`; return; }
+  const risks = Engine.allRisks();
+  document.getElementById('riskList').innerHTML = risks.map(r=>`
+    <div class="risk-row">
+      <span>${r.risk}</span>
+      <span class="prob-tag prob-${probClass(r.probKey)}">${probLabel(r)}</span>
+      <span>${t('mitigationLbl')}: ${r.mit}</span>
+      <span></span>
+    </div>`).join('');
+}
+function probClass(key){
+  return {probHigh:'High',probMedium:'Medium',probLow:'Low',probUser:'User-Defined'}[key];
+}
+function probLabel(r){ return t(r.probKey); }
+
+function renderMarketing(){
+  if (!Engine.data){ document.getElementById('mktStrategy').innerHTML = `<div class="empty-state">${t('toastNoProject')}</div>`; return; }
+  const m = Engine.marketing();
+  document.getElementById('mktStrategy').textContent = m.strategy;
+  document.getElementById('mktChannels').innerHTML = m.channels.map(c=>`<span class="chip">${c}</span>`).join('');
+  document.getElementById('mktSteps').innerHTML = m.steps.map(s=>`<li>${s}</li>`).join('');
+}
+
+/* =========================================================
+   REPORTS: print / copy / export / backup
+   ========================================================= */
+const Report = {
+  printPage(pageId){
+    document.querySelectorAll('.page').forEach(el=>el.classList.remove('print-active'));
+    document.getElementById(pageId).classList.add('print-active');
+    Engine.log && Engine.data && Engine.log(`${t('logPrint')} ${pageId}`);
+    window.print();
+  },
+  printFull(){
+    document.querySelectorAll('.page').forEach(el=>el.classList.add('print-active'));
+    if (Engine.data) Engine.log(t('logExport'));
+    window.print();
+  },
+  pageText(name){
+    const el = document.getElementById('page-'+name);
+    if (!el) return '';
+    return el.innerText.trim();
+  },
+  copyPage(name){
+    const text = this.pageText(name);
+    copyToClipboard(text);
+    if (Engine.data) Engine.log(`${t('logCopy')} ${name}`);
+    toast(t('toastCopied'));
+  },
+  copyFull(){
+    const parts = TAB_DEFS.map(td=>this.pageText(td.page));
+    copyToClipboard(parts.join('\n\n' + '—'.repeat(20) + '\n\n'));
+    if (Engine.data) Engine.log(t('logExport'));
+    toast(t('toastCopied'));
+  },
+  downloadBackup(){
+    if (!Engine.data){ toast(t('toastNoProject')); return; }
+    const json = Engine.exportJSON();
+    const blob = new Blob([json], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${Engine.data.companyName.replace(/\\s+/g,'_')}_backup.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    Engine.log(t('logExport'));
+    App.saveNow(true);
+  }
+};
+
+function copyToClipboard(text){
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).catch(()=>fallbackCopy(text));
+  } else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(function boot(){
+  const dateInput = document.getElementById('inStartDate');
+  if (!dateInput.value) dateInput.value = fmtDate(new Date());
+  buildTabs();
+  setLang('ar');
+  App.loadRegistry();
+
+  let loaded = false;
+  // try silent auto-load of a previous session
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw){
+      const snap = JSON.parse(raw);
+      Engine.data = snap.data; Engine.strategyPackage = snap.strategyPackage; Engine.durationWeeks = snap.durationWeeks;
+      Engine.tasks = snap.tasks; Engine.auditLog = snap.auditLog||[]; Engine.health = snap.health; Engine.customRisks = snap.customRisks||[];
+      Engine.strategyCalc = snap.strategyCalc||null; Engine.swotQuant = snap.swotQuant||{S:[],W:[],O:[],T:[]}; Engine.swotQuantResult = snap.swotQuantResult||null;
+      Engine.domainAudit = snap.domainAudit||null; Engine.roadmap = snap.roadmap||null; Engine.isoGap = snap.isoGap||null;
+      Engine.dashDesign = snap.dashDesign||null; Engine.mktCalc = snap.mktCalc||null;
+      Engine.orgStructure = snap.orgStructure||null; Engine.jobTitles = snap.jobTitles||[];
+      Engine.marketReport = snap.marketReport||null;
+      document.getElementById('inCompany').value = Engine.data.companyName;
+      document.getElementById('inBudget').value = Engine.data.budget;
+      document.getElementById('inEmployees').value = Engine.data.employeeCount;
+      document.getElementById('inGoal').value = Engine.data.primaryGoal;
+      document.getElementById('inStartDate').value = Engine.data.startDate;
+      document.getElementById('inDashTargetMarket').value = Engine.data.targetMarket || '';
+      if (Engine.data.industry) document.getElementById('inDashIndustry').value = Engine.data.industry;
+      App.syncMarketFields();
+      App.renderAll();
+      loaded = true;
+    }
+  }catch(e){}
+
+  // if nothing saved yet, seed a demo project so every tab shows real content immediately
+  if (!loaded){
+    document.getElementById('inCompany').value = 'Bena Contracting & Engineering';
+    document.getElementById('inBudget').value = 15000;
+    document.getElementById('inEmployees').value = 40;
+    document.getElementById('inGoal').value = 'scale';
+    document.getElementById('inDashTargetMarket').value = 'Egypt & GCC';
+    document.getElementById('inDashIndustry').value = 'construction';
+    App.initProject(true);
+    App.updateHealth();
+    document.getElementById('inOrgEmployees').value = 40;
+    App.calcOrgStructure();
+    App.calcStrategy();
+    Engine.addSwotQuantItem('S', t('swotS1'), 5);
+    Engine.addSwotQuantItem('S', t('swotS2'), 4);
+    Engine.addSwotQuantItem('W', t('swotW1'), 3);
+    Engine.addSwotQuantItem('O', t('swotO1'), 5);
+    Engine.addSwotQuantItem('O', t('swotO2'), 4);
+    Engine.addSwotQuantItem('T', t('swotT1'), 3);
+    Engine.addSwotQuantItem('T', t('swotT2'), 3);
+    Engine.calcSwotQuant();
+    Engine.calcDomainAudit({strategy:68, ops:55, finance:72, hr:48, tech:60});
+    Engine.calcRoadmap({growthPct:20, focus:'marketShare', challenge:'opsEfficiency', priorities:3});
+    Engine.calcIsoGap({q1:true, q2:false, q3:true, q4:false, q5:3});
+    Engine.calcDashDesign({deptCount:4, kpis:['kpiProfit','kpiSales','kpiWaste','kpiHours'], vizType:'bar', refreshFreq:'weekly'});
+    Engine.calcMarketing({budget:10000, primaryChannel:'mktCh1'});
+    App.autoGenerateJobTitles();
+    App.generateMarketReport(true);
+  } else {
+    if (Engine.orgStructure) renderOrgResult();
+    if (Engine.strategyCalc) renderStrategyResults();
+    if (Engine.swotQuantResult) renderSwotQuantResults();
+    if (Engine.domainAudit) renderDomainAuditResults();
+    if (Engine.roadmap) renderRoadmapResults();
+    if (Engine.isoGap) renderIsoGapResults();
+    if (Engine.dashDesign) renderDashDesignResults();
+    if (Engine.mktCalc) renderMktCalcResults();
+  }
+})();
+</script>
+</body>
+</html>
