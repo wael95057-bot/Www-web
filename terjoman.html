@@ -197,7 +197,7 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
     <div class="modal-desc" data-i18n="reg_desc">خطوة واحدة بسيطة قبل دخول الاجتماع — بياناتك محفوظة عندنا بس عشان نرسلك تفاصيل الغرفة ونتابع معاك تجربتك المجانية.</div>
     <div class="field">
       <label data-i18n="reg_lbl_name">الاسم بالكامل</label>
-      <input type="text" id="reg-name" placeholder="مثلاً: وائل علي عويس">
+      <input type="text" id="reg-name" placeholder="مثلاً: عبير">
       <div class="field-error" id="reg-err-name"></div>
     </div>
     <div class="field">
@@ -223,7 +223,7 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
           <option value="+970">🇵🇸 +970</option>
           <option value="+212">🇲🇦 +212</option>
           <option value="+216">🇹🇳 +216</option>
-          <option value="+213">🇩🇿 +213</option>
+          <option value="+213">🇩ℤ +213</option>
           <option value="+218">🇱🇾 +218</option>
           <option value="+249">🇸🇩 +249</option>
           <option value="+1">🇺🇸 +1</option>
@@ -278,7 +278,7 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
       <div class="row">
         <div class="field">
           <label data-i18n="lbl_name">اسمك</label>
-          <input type="text" id="in-name" placeholder="مثلاً: وائل">
+          <input type="text" id="in-name" placeholder="مثلاً: عبير">
         </div>
         <div class="field">
           <label data-i18n="lbl_room">كود الغرفة (اتفقوا عليه مع بعض)</label>
@@ -312,7 +312,7 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
           <div class="hint" data-i18n="hint_worker">
             بدون هذا الرابط، التطبيق يشتغل بس بين <b>تابات المتصفح على نفس الجهاز</b> (وضع تجربة). 
             لو عايز الاجتماع يشتغل بين أجهزة/موبايلات مختلفة فعلاً بشكل لحظي حقيقي، 
-            انشر ملف <b>worker.js</b> المرفق على Cloudflare (خطوات النشر مرفقة)، وحط رابط الـ Worker هنا 
+            انشر ملف <b>worker.js</b> المرفق على Cloudflare، وحط رابط الـ Worker هنا 
             بصيغة <code>wss://...</code> — ونفس الرابط يتحط عند كل المشاركين.
           </div>
         </div>
@@ -390,7 +390,7 @@ const I18N = {
     lbl_worker: "رابط Cloudflare Worker (WebSocket)",
     hint_worker: `بدون هذا الرابط، التطبيق يشتغل بس بين <b>تابات المتصفح على نفس الجهاز</b> (وضع تجربة).
       لو عايز الاجتماع يشتغل بين أجهزة/موبايلات مختلفة فعلاً بشكل لحظي حقيقي،
-      انشر ملف <b>worker.js</b> المرفق على Cloudflare (خطوات النشر مرفقة)، وحط رابط الـ Worker هنا
+      انشر ملف <b>worker.js</b> المرفق على Cloudflare، وحط رابط الـ Worker هنا
       بصيغة <code>wss://...</code> — ونفس الرابط يتحط عند كل المشاركين.`,
     notes_h2: "ملاحظات مهمة قبل ما تبدأ",
     notes_body: `• اكتب رسائلك بلغة الكتابة التي اخترتها، وسيستلمها كل مشارك مترجمة تلقائياً للغة الاستقبال الخاصة به.<br>
@@ -460,7 +460,7 @@ const I18N = {
     lbl_worker: "Cloudflare Worker URL (WebSocket)",
     hint_worker: `Without this link, the app only works between <b>browser tabs on the same device</b> (demo mode).
       If you want the meeting to actually work across different devices/phones in real time,
-      deploy the included <b>worker.js</b> to Cloudflare (deployment steps included), and put the Worker URL here
+      deploy the included <b>worker.js</b> to Cloudflare, and put the Worker URL here
       in the form <code>wss://...</code> — the same link goes to every participant.`,
     notes_h2: "Important notes before you start",
     notes_body: `• Type your messages in your chosen input language, and every participant will receive them translated to their listening language.<br>
@@ -591,12 +591,25 @@ const state = {
   name:"", room:"", speak: LANGS[0], listen: LANGS[1],
   relayUrl:"", useRelay:false, socket:null, socketReady:false, msgQueue:[],
   channel:null, participants:{},
-  audioMuted:false,
+  audioMuted:false, audioUnlocked:false,
   cameraOn:false, localStream:null, peerConnections:{},
   roomPin:"",
   screenSharing:false, handRaised:false, transcriptLog:[],
   meetingStartTs:null, meetingTimerInterval:null, trialWarningShown:false,
 };
+
+/* ===================== تهيئة وتفعيل محرك الصوت (Audio Autoplay Unlock) ===================== */
+function unlockAudioEngine(){
+  if(state.audioUnlocked || !('speechSynthesis' in window)) return;
+  try {
+    const emptyUtterance = new SpeechSynthesisUtterance("");
+    emptyUtterance.volume = 0;
+    speechSynthesis.speak(emptyUtterance);
+    state.audioUnlocked = true;
+  } catch(e){}
+}
+window.addEventListener("click", unlockAudioEngine, { once: false });
+window.addEventListener("touchstart", unlockAudioEngine, { once: false });
 
 /* ===================== حد الجلسة المجانية: 30 دقيقة ===================== */
 const FREE_MEETING_LIMIT_SECONDS = 30 * 60;
@@ -673,6 +686,7 @@ function buildInviteLink(){
 
 /* ===================== الانضمام للاجتماع ===================== */
 function actuallyJoinMeeting(){
+  unlockAudioEngine();
   const name = document.getElementById("in-name").value.trim();
   const room = document.getElementById("in-room").value.trim();
   if(!name || !room){ alert(t("alert_fill")); return; }
@@ -803,7 +817,11 @@ document.getElementById("btn-leave").onclick = ()=>{ stopMeetingTimeLimit(); loc
 document.getElementById("btn-mute-audio").onclick = ()=>{
   state.audioMuted = !state.audioMuted;
   document.getElementById("btn-mute-audio").textContent = state.audioMuted ? t("audio_off") : t("audio_on");
-  if(state.audioMuted) speechSynthesis.cancel();
+  if(state.audioMuted){
+    speechSynthesis.cancel();
+  } else {
+    unlockAudioEngine();
+  }
 };
 
 /* ===================== طبقة المزامنة ===================== */
@@ -1114,6 +1132,7 @@ function removeVideoTile(id){
 
 /* ===================== الكتابة والإرسال ===================== */
 function sendTypedText(){
+  unlockAudioEngine();
   const input = document.getElementById("text-input");
   const text = input.value.trim();
   if(!text) return;
@@ -1261,15 +1280,26 @@ function addMessageToTranscript(sender, orig, translated){
   list.prepend(div);
 }
 
-/* ===================== النطق الصوتي للرسائل القادمة (TTS) ===================== */
-function speak(text, lang){
+/* ===================== النطق الصوتي للرسائل القادمة مع معالجة حظر المتصفح ===================== */
+function speak(text, langCode){
   if(state.audioMuted) return;
   if(!('speechSynthesis' in window)) return;
+
+  unlockAudioEngine();
+  speechSynthesis.cancel(); // إلغاء أي صوت معلق سابقاً
+
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = lang;
+  utter.lang = langCode;
+
   const voices = speechSynthesis.getVoices();
-  const match = voices.find(v=>v.lang===lang) || voices.find(v=>v.lang.startsWith(lang.split('-')[0]));
+  const primaryLang = langCode.split('-')[0].toLowerCase();
+  
+  // البحث عن صوت مطابق بالكامل أو باللغة الرئيسية كبديل
+  const match = voices.find(v => v.lang.toLowerCase() === langCode.toLowerCase()) || 
+                voices.find(v => v.lang.toLowerCase().startsWith(primaryLang));
+  
   if(match) utter.voice = match;
+
   speechSynthesis.speak(utter);
 }
 
