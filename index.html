@@ -23,7 +23,7 @@
 
         body { background-color: var(--light-bg); color: var(--text-color); line-height: 1.6; }
 
-        /* ============ HEADER (مصغّر 50%) ============ */
+        /* ============ HEADER ============ */
         header {
             background: var(--primary-color);
             color: #fff;
@@ -39,7 +39,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.28rem 1.5rem;
+            padding: 0.35rem 1.5rem;
             flex-wrap: wrap;
             gap: 0.6rem;
         }
@@ -47,7 +47,7 @@
         .brand-title { display: flex; align-items: center; gap: 0.5rem; text-align: right; }
 
         .brand-logo {
-            height: 28px;
+            height: 32px;
             border-radius: 6px;
             border: 1px solid var(--accent-color);
             background: #fff;
@@ -57,14 +57,13 @@
             flex-shrink: 0;
             padding: 2px 6px;
         }
-        .brand-logo img { height: 100%; width: auto; object-fit: contain; display: block; }
 
-        .brand-text h1 { font-size: 0.86rem; color: #fff; font-weight: 700; line-height: 1.15; }
-        .brand-text p { font-size: 0.6rem; color: #94a3b8; }
+        .brand-text h1 { font-size: 0.9rem; color: #fff; font-weight: 700; line-height: 1.15; }
+        .brand-text p { font-size: 0.65rem; color: #94a3b8; }
 
         nav { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
         nav ul { display: flex; list-style: none; gap: 0.85rem; flex-wrap: wrap; }
-        nav ul li a { color: #cbd5e1; text-decoration: none; font-weight: 600; transition: color 0.3s; font-size: 0.75rem; }
+        nav ul li a { color: #cbd5e1; text-decoration: none; font-weight: 600; transition: color 0.3s; font-size: 0.8rem; }
         nav ul li a:hover { color: #fff; }
 
         .nav-tools { display: flex; align-items: center; gap: 0.4rem; }
@@ -73,39 +72,21 @@
             background: var(--accent-color);
             color: white;
             border: none;
-            padding: 0.26rem 0.55rem;
+            padding: 0.3rem 0.6rem;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
         }
 
-        .admin-toggle-btn {
-            background: transparent;
-            border: 1px solid #475569;
-            color: #94a3b8;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            transition: all 0.2s;
-        }
-        .admin-toggle-btn:hover { border-color: var(--accent-color); color: #fff; }
-        .admin-toggle-btn.is-active { background: var(--accent-color); border-color: var(--accent-color); color: #fff; }
-
-        /* ============ AD BANNER (تم تكبير المساحة الإعلانية) ============ */
+        /* ============ AD BANNER ============ */
         .top-banner-ad {
-            display: none;
+            display: block;
             background: var(--primary-color);
             position: relative;
-            padding: 0.5rem 0;
+            padding: 0.75rem 0;
             border-bottom: 2px solid var(--accent-color);
         }
-        .top-banner-ad.has-ads { display: block; }
 
         .banner-slide-wrap {
             max-width: 1200px;
@@ -113,71 +94,56 @@
             position: relative;
             overflow: hidden;
             border-radius: 8px;
+            padding: 0 1rem;
         }
-        .banner-slide {
-            display: none;
-            position: relative;
-        }
-        .banner-slide.active { display: block; }
-        .banner-slide a, .banner-slide .banner-slide-static { display: block; }
         .banner-slide img {
             width: 100%;
-            max-height: 260px; /* تم مضاعفة الارتفاع لزيادة حجم المساحة الإعلانية */
-            min-height: 120px;
+            max-height: 260px;
+            min-height: 140px;
             object-fit: cover;
             display: block;
-            border-radius: 6px;
+            border-radius: 8px;
         }
         .banner-tag {
             position: absolute;
-            top: 0.75rem;
-            inset-inline-start: 1rem;
+            top: 0.85rem;
+            inset-inline-start: 1.5rem;
             background: #f59e0b;
             color: #1e293b;
             font-size: 0.75rem;
             font-weight: 800;
-            padding: 0.2rem 0.75rem;
+            padding: 0.25rem 0.85rem;
             border-radius: 999px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 5;
         }
         .banner-close {
             position: absolute;
-            top: 0.6rem;
-            inset-inline-end: 0.8rem;
-            background: rgba(15,23,42,0.75);
+            top: 0.85rem;
+            inset-inline-end: 1.5rem;
+            background: rgba(15,23,42,0.85);
             border: none;
             color: #fff;
             cursor: pointer;
-            font-size: 0.85rem;
-            width: 26px; height: 26px;
+            font-size: 0.9rem;
+            width: 28px; height: 28px;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             z-index: 10;
         }
-        .banner-close:hover { background: rgba(15,23,42,0.95); }
-        .banner-dots {
-            position: absolute;
-            bottom: 0.6rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 0.4rem;
-        }
-        .banner-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
-        .banner-dot.active { background: #fff; width: 10px; height: 10px; }
 
-        /* ============ HERO ============ */
+        /* ============ HERO SECTION ============ */
         #hero {
             max-width: 1200px;
             margin: 1.5rem auto 0;
-            padding: 0 2rem;
+            padding: 0 1.5rem;
         }
         .hero-grid {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
-            gap: 2.5rem;
+            gap: 2rem;
             align-items: center;
-            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            background: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 2.5rem;
@@ -186,27 +152,27 @@
             display: inline-block;
             color: var(--accent-color);
             background: var(--accent-soft);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 700;
             padding: 0.25rem 0.75rem;
             border-radius: 999px;
             margin-bottom: 0.9rem;
         }
         .hero-content h1 {
-            font-size: 2.1rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: var(--primary-color);
-            line-height: 1.35;
+            line-height: 1.3;
             margin-bottom: 1rem;
         }
         .hero-content h1 span { color: var(--accent-color); }
-        .hero-content p { color: #475569; font-size: 1rem; margin-bottom: 1.5rem; max-width: 46ch; }
+        .hero-content p { color: #475569; font-size: 1rem; margin-bottom: 1.5rem; }
         .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
         .hero-btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.7rem 1.3rem;
+            padding: 0.75rem 1.4rem;
             border-radius: 8px;
             font-weight: 700;
             font-size: 0.9rem;
@@ -215,291 +181,44 @@
             border: none;
         }
         .hero-btn.primary { background: var(--accent-color); color: #fff; }
-        .hero-btn.primary:hover { background: #1d4ed8; }
         .hero-btn.ghost { background: #fff; color: var(--primary-color); border: 1px solid var(--border-color); }
-        .hero-btn.ghost:hover { border-color: var(--accent-color); color: var(--accent-color); }
 
         .hero-media {
             position: relative;
-            aspect-ratio: 4/3.4;
+            aspect-ratio: 4/3;
             border-radius: 14px;
             background: var(--primary-color);
             overflow: hidden;
             border: 1px solid #1e293b;
-            cursor: default;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        body.admin-mode .hero-media { cursor: pointer; }
-        .hero-media img.hero-custom-img {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .hero-edit-hint {
-            display: none;
-            position: absolute;
-            bottom: 0.75rem; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15,23,42,0.75);
-            color: #fff;
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 0.35rem 0.9rem;
-            border-radius: 999px;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-        body.admin-mode .hero-edit-hint { display: block; }
-        .blueprint-grid {
-            position: absolute; inset: 0;
-            background-image:
-                linear-gradient(rgba(37,99,235,0.18) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(37,99,235,0.18) 1px, transparent 1px);
-            background-size: 28px 28px;
-        }
-        .hero-media .orbit {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 62%; height: 62%;
-            transform: translate(-50%, -50%);
-            border: 1.5px dashed rgba(148,163,184,0.5);
-            border-radius: 50%;
-            animation: spin 18s linear infinite;
-        }
-        .hero-media .orbit::before {
-            content: '';
-            position: absolute;
-            width: 12px; height: 12px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            top: -6px; left: calc(50% - 6px);
-            box-shadow: 0 0 12px 3px rgba(37,99,235,0.7);
-        }
-        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-        .hero-media .compass-icon {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: #e2e8f0;
-            font-size: 2.6rem;
-            opacity: 0.9;
-        }
-        .hero-media .node {
-            position: absolute;
-            width: 8px; height: 8px;
-            background: #f59e0b;
-            border-radius: 50%;
-            animation: pulse 2.4s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%,100%{ transform: scale(1); opacity:1;} 50%{ transform: scale(1.7); opacity:0.4;} }
-        .hero-media .node:nth-child(1) { top: 20%; left: 25%; animation-delay: 0s; }
-        .hero-media .node:nth-child(2) { top: 30%; right: 18%; animation-delay: 0.6s; }
-        .hero-media .node:nth-child(3) { bottom: 22%; left: 40%; animation-delay: 1.2s; }
-        .hero-media .node:nth-child(4) { bottom: 32%; right: 30%; animation-delay: 1.8s; }
+        .hero-media .compass-icon { color: #e2e8f0; font-size: 3rem; opacity: 0.85; }
 
-        @media (prefers-reduced-motion: reduce) {
-            .hero-media .orbit, .hero-media .node { animation: none; }
-        }
-
-        @media (max-width: 860px) {
-            .hero-grid { grid-template-columns: 1fr; padding: 1.75rem; }
-            .hero-media { order: -1; aspect-ratio: 16/9; }
-        }
-
-        /* ============ STATS BAR ============ */
-        .stats-bar {
-            max-width: 1200px;
-            margin: 1.5rem auto 0;
-            padding: 0 2rem;
-        }
-        .stats-inner {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            background: var(--primary-color);
-            border-radius: 14px;
-            padding: 1.5rem 1rem;
-        }
-        .stat-item { text-align: center; color: #fff; padding: 0.5rem; }
-        .stat-num { font-size: 1.9rem; font-weight: 800; color: #fff; }
-        .stat-num small { font-size: 1.1rem; color: var(--accent-color); }
-        .stat-label { font-size: 0.78rem; color: #94a3b8; margin-top: 0.25rem; }
-        .stats-inner .stat-item:not(:last-child) { border-left: 1px solid rgba(148,163,184,0.2); }
-        [dir="ltr"] .stats-inner .stat-item:not(:last-child) { border-left: none; border-right: 1px solid rgba(148,163,184,0.2); }
-
-        @media (max-width: 700px) {
-            .stats-inner { grid-template-columns: repeat(2, 1fr); }
-            .stats-inner .stat-item:nth-child(2) { border-left: none; }
-        }
-
-        /* ============ SECTIONS ============ */
         section {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 2rem auto;
             background: #fff;
             padding: 2.5rem;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
 
         h2 {
             color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
             border-right: 4px solid var(--accent-color);
             padding-right: 10px;
         }
 
-        [dir="ltr"] h2 { border-right: none; border-left: 4px solid var(--accent-color); padding-right: 0; padding-left: 10px; }
-
-        .section-desc { color: #64748b; margin-bottom: 1.5rem; font-size: 0.95rem; }
-
-        /* نماذج الرفع — للأدمن فقط */
-        .upload-box {
-            background: #f1f5f9;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border: 2px dashed #cbd5e1;
-        }
-        .admin-only { display: none; }
-        body.admin-mode .admin-only { display: block; }
-
-        .admin-only-tag {
-            display: none;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            background: var(--accent-soft);
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            margin-bottom: 0.75rem;
-            width: fit-content;
-        }
-        body.admin-mode .admin-only-tag { display: flex; }
-
-        .upload-box input, .upload-box textarea { margin-bottom: 0.5rem; width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; }
-        .upload-hint { font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.75rem; }
-        .upload-status { font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600; }
-        .upload-status.error { color: #dc2626; }
-        .upload-status.success { color: var(--success-color); }
-        .upload-status.loading { color: var(--accent-color); }
-
-        .item-card { border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; background: #fff; }
-        .item-card h3 { color: var(--accent-color); margin-bottom: 0.5rem; }
-        .item-card .item-desc { margin-bottom: 0.75rem; color: #475569; }
-
-        .media-container { margin: 1rem 0; background: #000; border-radius: 6px; overflow: hidden; }
-        .media-container video, .media-container iframe { width: 100%; max-height: 350px; display: block; border: none; aspect-ratio: 16/9; }
-        .media-container img { width: 100%; max-height: 400px; object-fit: contain; display: block; background:#111; }
-
-        .feedback-section { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-color); }
-
-        .comment-input, .name-input, .file-input, .text-input {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .submit-btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1.25rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-        .submit-btn:hover { background-color: #1d4ed8; }
-
-        .empty-hint { color: #94a3b8; font-size: 0.9rem; text-align: center; padding: 1rem; }
-
-        .social-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .social-links { display: flex; justify-content: center; gap: 1.2rem; margin-top: 1rem; flex-wrap: wrap; }
         .social-btn {
             display: flex; align-items: center; gap: 0.5rem;
             padding: 0.75rem 1.5rem; background: var(--primary-color); color: white;
             text-decoration: none; border-radius: 8px; font-weight: 600;
-            transition: transform 0.2s, background 0.2s;
         }
-        .social-btn:hover { transform: translateY(-2px); background: var(--accent-color); }
-
-        /* ============ ADMIN LOGIN MODAL ============ */
-        .admin-modal-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(15,23,42,0.6);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .admin-modal-overlay.open { display: flex; }
-        .admin-modal {
-            background: #fff;
-            border-radius: 12px;
-            padding: 1.75rem;
-            max-width: 340px;
-            width: 100%;
-            text-align: center;
-        }
-        .admin-modal h3 { color: var(--primary-color); margin-bottom: 0.4rem; font-size: 1.1rem; }
-        .admin-modal p { color: #64748b; font-size: 0.82rem; margin-bottom: 1rem; }
-        .admin-modal input {
-            width: 100%; padding: 0.65rem; margin-bottom: 0.6rem;
-            border: 1px solid var(--border-color); border-radius: 6px; text-align: center;
-            font-family: 'Cairo', sans-serif;
-        }
-        .admin-modal-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-        .admin-modal-actions button { flex: 1; }
-        .admin-modal-cancel {
-            background: #f1f5f9; color: var(--text-color); border: none;
-            padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;
-        }
-        .admin-modal-error { color: #dc2626; font-size: 0.78rem; margin-top: 0.5rem; min-height: 1em; }
-
-        @media (max-width: 768px) {
-            .nav-container { flex-direction: column; gap: 0.6rem; align-items: flex-start; }
-            nav { width: 100%; justify-content: space-between; }
-            nav ul { gap: 0.7rem; font-size: 0.8rem; justify-content: center; }
-        }
-
-        /* القائمة الجانبية للتطبيقات الذكية */
-        .apps-fab{
-            position:fixed; bottom:22px; inset-inline-end:22px; z-index:1400;
-            width:54px; height:54px; border-radius:50%; border:none;
-            background:linear-gradient(135deg,#1e3a8a,#2563eb); color:#fff;
-            font-size:1.3rem; box-shadow:0 8px 22px rgba(30,58,138,.45); cursor:pointer;
-            display:flex; align-items:center; justify-content:center;
-        }
-        .apps-sidebar-overlay{
-            display:none; position:fixed; inset:0; background:rgba(9,12,20,.55);
-            z-index:1500;
-        }
-        .apps-sidebar-overlay.show{ display:block; }
-        .apps-sidebar{
-            position:fixed; top:0; inset-inline-end:0; height:100%; width:300px; max-width:85vw;
-            background:#0f172a; color:#e2e8f0; z-index:1600; padding:20px 16px;
-            transform:translateX(105%); transition:transform .3s ease; overflow-y:auto;
-        }
-        html[dir="rtl"] .apps-sidebar{ transform:translateX(-105%); }
-        html[dir="rtl"] .apps-sidebar.show{ transform:translateX(0); }
-        .apps-sidebar.show{ transform:translateX(0); }
-        .apps-sidebar-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-        .apps-sidebar-head h3{ margin:0; font-size:1rem; }
-        .apps-sidebar-close{ background:none; border:none; color:#94a3b8; font-size:1.6rem; cursor:pointer; line-height:1; }
-        .apps-sidebar-note{ font-size:.72rem; color:#94a3b8; margin:4px 0 14px; line-height:1.6; }
-        .apps-sidebar-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
-        .apps-sidebar-list a{
-            display:flex; align-items:center; gap:10px; color:#e2e8f0; text-decoration:none;
-            padding:10px 12px; border-radius:10px; font-size:.85rem; font-weight:600; transition:background .2s;
-        }
-        .apps-sidebar-list a:hover{ background:rgba(255,255,255,.08); }
-        .apps-sidebar-list a i{ width:18px; text-align:center; color:#60a5fa; }
     </style>
 </head>
 <body>
@@ -511,125 +230,60 @@
                     <i class="fas fa-building" style="color:var(--accent-color);"></i>
                 </div>
                 <div class="brand-text">
-                    <h1 id="brand-name">شركة بناء للتطوير الاستراتيجي</h1>
-                    <p id="brand-owner">المهندس/ وائل عويس</p>
+                    <h1>شركة بناء للتطوير الاستراتيجي</h1>
+                    <p>المهندس/ وائل عويس</p>
                 </div>
             </div>
             <nav>
                 <ul>
-                    <li><a href="#about" data-i18n="nav-about">نبذة عني</a></li>
-                    <li><a href="#projects" data-i18n="nav-projects">المشاريع</a></li>
-                    <li><a href="#initiatives" data-i18n="nav-initiatives">المبادرات</a></li>
-                    <li><a href="#apps" data-i18n="nav-apps">التطبيقات</a></li>
-                    <li><a href="#books" data-i18n="nav-books">المؤلفات</a></li>
-                    <li><a href="#contact" data-i18n="nav-contact">التواصل</a></li>
+                    <li><a href="#about">نبذة عني</a></li>
+                    <li><a href="#projects">المشاريع</a></li>
+                    <li><a href="#initiatives">المبادرات</a></li>
+                    <li><a href="#contact">التواصل</a></li>
                 </ul>
                 <div class="nav-tools">
-                    <button class="admin-toggle-btn" id="apps-sidebar-toggle" onclick="openAppsSidebar()" title="التطبيقات الذكية">
-                        <i class="fas fa-cubes"></i>
-                    </button>
-                    <button class="admin-toggle-btn" id="admin-toggle" onclick="onAdminToggleClick()" title="لوحة التحكم">
-                        <i class="fas fa-lock" id="admin-toggle-icon"></i>
-                    </button>
                     <button class="lang-btn" onclick="toggleLanguage()">EN / AR</button>
                 </div>
             </nav>
         </div>
     </header>
 
-    <!-- زر عائم للتطبيقات -->
-    <button class="apps-fab" id="apps-fab" onclick="openAppsSidebar()" title="التطبيقات الذكية">
-        <i class="fas fa-cubes"></i>
-    </button>
-
-    <!-- القائمة الجانبية للتطبيقات الذكية -->
-    <div class="apps-sidebar-overlay" id="apps-sidebar-overlay" onclick="closeAppsSidebar()"></div>
-    <aside class="apps-sidebar" id="apps-sidebar">
-        <div class="apps-sidebar-head">
-            <h3 data-i18n="sidebar-title">التطبيقات الذكية</h3>
-            <button class="apps-sidebar-close" onclick="closeAppsSidebar()">&times;</button>
-        </div>
-        <p class="apps-sidebar-note" data-i18n="sidebar-note">أول ساعة استخدام مجانية بعد التسجيل.</p>
-        <ul class="apps-sidebar-list" id="apps-sidebar-list">
-            <li><a href="#" class="app-link" data-app="ترجمان وائل"><i class="fas fa-language"></i><span>ترجمان وائل</span></a></li>
-            <li><a href="#" class="app-link" data-app="FIDIC Shield"><i class="fas fa-shield-halved"></i><span>FIDIC Shield</span></a></li>
-            <li><a href="#" class="app-link" data-app="BDCI Platform"><i class="fas fa-building-columns"></i><span>BDCI Platform</span></a></li>
-            <li><a href="#" class="app-link" data-app="EcoGrid Pro"><i class="fas fa-solar-panel"></i><span>EcoGrid Pro</span></a></li>
-            <li><a href="#" class="app-link" data-app="P6 Suite"><i class="fas fa-diagram-project"></i><span>P6 Suite</span></a></li>
-        </ul>
-    </aside>
-
-    <!-- مساحة الإعلانات (المكبّرة) -->
-    <div class="top-banner-ad has-ads" id="top-banner">
-        <div class="banner-slide-wrap" id="banner-slide-wrap">
-            <div class="banner-slide active">
+    <div class="top-banner-ad" id="top-banner">
+        <div class="banner-slide-wrap">
+            <div class="banner-slide">
                 <span class="banner-tag">إعلان مميز</span>
                 <button class="banner-close" onclick="closeBanner()">&times;</button>
                 <a href="#contact">
-                    <img src="https://via.placeholder.com/1200x260/0f172a/2563eb?text=%D9%85%D8%B3%D8%A7%D8%AD%D8%A9+%D8%A5%D8%B9%D9%84%D8%A7%D9%86%D9%8A%D8%A9+%D9%85%D9%83%D8%A8%D9%91%D8%B1%D8%A9+-+%D8%B4%D8%B1%D9%83%D8%A9+%D8%A8%D9%86%D8%A7%D8%A1+%D9%84%D9%84%D8%AA%D8%B7%D9%88%D9%8A%D8%B1+%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%D9%8A%D8%AC%D9%8A" alt="إعلان">
+                    <img src="https://via.placeholder.com/1200x260/0f172a/2563eb?text=%D9%85%D8%B3%D8%A7%D8%AD%D8%A3+%D8%A5%D8%B9%D9%84%D8%A7%D9%86%D9%8A%D8%A9+%D9%85%D9%83%D8%A8%D9%91%D8%B1%D8%A9+-+%D8%B4%D8%B1%D9%83%D8%A9+%D8%A8%D9%86%D8%A7%D8%A1+%D9%84%D9%84%D8%AA%D8%B7%D9%88%D9%8A%D8%B1+%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%D9%8A%D8%AC%D9%8A" alt="إعلان">
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- الواجهة الافتتاحية -->
     <section id="hero">
         <div class="hero-grid">
             <div class="hero-content">
-                <span class="hero-eyebrow" data-i18n="hero-eyebrow">الرؤية الهندسية والقيادة الاستراتيجية</span>
-                <h1 data-i18n="hero-title">نحو <span>تحول رقمي</span> استراتيجي يقوده الفكر الهندسي</h1>
-                <p data-i18n="hero-desc">شركة بناء للتطوير الاستراتيجي تجمع بين الخبرة الهندسية والرؤية القيادية لتقديم مشاريع ومبادرات وحلول ذكية تخدم المجتمع والمؤسسات.</p>
+                <span class="hero-eyebrow">الرؤية الهندسية والقيادة الاستراتيجية</span>
+                <h1>نحو <span>تحول رقمي</span> استراتيجي يقوده الفكر الهندسي</h1>
+                <p>شركة بناء للتطوير الاستراتيجي تجمع بين الخبرة الهندسية والرؤية القيادية لتقديم مشاريع ومبادرات وحلول ذكية تخدم المجتمع والمؤسسات.</p>
                 <div class="hero-actions">
-                    <a href="#projects" class="hero-btn primary" data-i18n="hero-cta-projects"><i class="fas fa-diagram-project"></i> استعرض المشاريع</a>
-                    <a href="#contact" class="hero-btn ghost" data-i18n="hero-cta-contact"><i class="fas fa-comments"></i> تواصل معنا</a>
+                    <a href="#projects" class="hero-btn primary"><i class="fas fa-diagram-project"></i> استعرض المشاريع</a>
+                    <a href="#contact" class="hero-btn ghost"><i class="fas fa-comments"></i> تواصل معنا</a>
                 </div>
             </div>
-            <div class="hero-media" id="hero-media">
-                <div class="blueprint-grid"></div>
-                <div class="orbit"></div>
+            <div class="hero-media">
                 <i class="fas fa-compass-drafting compass-icon"></i>
-                <span class="node"></span><span class="node"></span><span class="node"></span><span class="node"></span>
             </div>
         </div>
     </section>
 
-    <!-- شريط الإحصائيات -->
-    <div class="stats-bar">
-        <div class="stats-inner">
-            <div class="stat-item">
-                <div class="stat-num">16+</div>
-                <div class="stat-label">سنوات الخبرة الهندسية</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-num">12</div>
-                <div class="stat-label">مشاريع استراتيجية</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-num">8</div>
-                <div class="stat-label">مبادرات توعوية</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-num">14</div>
-                <div class="stat-label">مؤلفات وتطبيقات ذكية</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نبذة عني -->
     <section id="about">
-        <h2 data-i18n="sec-about-title">نبذة عني</h2>
+        <h2>نبذة عني</h2>
         <p>المهندس/ وائل عويس، خبير إدارة المشاريع والتطوير الاستراتيجي والتحول الرقمي والهندسة المدنية.</p>
     </section>
 
-    <!-- المشاريع -->
-    <section id="projects">
-        <h2 data-i18n="sec-projects-title">المشاريع الاستراتيجية</h2>
-        <p class="section-desc">مجموعة من المشاريع الاستراتيجية والبنية التحتية المتطورة.</p>
-    </section>
-
-    <!-- التواصل -->
     <section id="contact">
-        <h2 data-i18n="sec-contact-title">تواصل معنا</h2>
+        <h2>تواصل معنا</h2>
         <div class="social-links">
             <a href="https://www.linkedin.com/in/wael-ewis-5b1ab83b1" target="_blank" class="social-btn"><i class="fab fa-linkedin"></i> LinkedIn</a>
             <a href="mailto:wael95057@gmail.com" class="social-btn"><i class="fas fa-envelope"></i> Email</a>
@@ -638,14 +292,6 @@
     </section>
 
     <script>
-        function openAppsSidebar() {
-            document.getElementById('apps-sidebar').classList.add('show');
-            document.getElementById('apps-sidebar-overlay').classList.add('show');
-        }
-        function closeAppsSidebar() {
-            document.getElementById('apps-sidebar').classList.remove('show');
-            document.getElementById('apps-sidebar-overlay').classList.remove('show');
-        }
         function closeBanner() {
             document.getElementById('top-banner').style.display = 'none';
         }
