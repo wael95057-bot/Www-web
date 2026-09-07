@@ -9,6 +9,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* إصلاح مشكلة العرض وتكبير الإعلان */
+.top-banner-ad img {
+    max-height: 260px !important; /* تكبير ارتفاع الإعلان لمضاعفة المساحة */
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+.brand-logo img, .qr-code img {
+    display: none !important; /* إخفاء الصور المكسورة التي تسبب الخطأ */
+}
         :root {
             --primary-color: #0f172a;
             --accent-color: #2563eb;
