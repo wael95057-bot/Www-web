@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#071217">
+<meta name="description" content="EcoGrid Pro - منصة احترافية لإدارة الطاقة والاستدامة والصيانة">
+<title>EcoGrid Pro | Wael Ali Ewis Mahmoud</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+:root{
+  --bg:#071217;--panel:#0d202a;--card:#112a34;--card2:#091920;
+  --border:#1e414e;--green:#10b981;--green2:#34d399;--blue:#0284c7;
+  --gold:#e8a942;--red:#ef4444;--text:#f1f5f9;--muted:#94a3b8;
+  --shadow:0 10px 30px rgba(0,0,0,.25);--radius:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:radial-gradient(circle at top,#102b35 0,#071217 42%);
+  color:var(--text);font-family:Cairo,Arial,sans-serif;
+  min-height:100vh;padding-bottom:92px;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app-header{
+  position:sticky;top:0;z-index:1000;
+  background:rgba(7,18,23,.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:12px 14px calc(12px + env(safe-area-inset-top));
+}
+.header-inner{max-width:900px;margin:auto;display:flex;align-items:center;gap:12px}
+.logo{
+  width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--green),#047857);font-size:23px;
+  box-shadow:0 7px 20px rgba(16,185,129,.2);flex:none
+}
+.brand{min-width:0;flex:1}
+.brand h1{margin:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand p{margin:2px 0 0;color:var(--gold);font-size:10px;font-weight:600}
+.status{
+  border:1px solid #17553f;background:#09251e;color:#6ee7b7;
+  border-radius:20px;padding:5px 8px;font-size:9px;font-weight:700;white-space:nowrap
+}
+.container{width:min(900px,100%);margin:auto;padding:12px}
+.topbar{display:flex;gap:8px;margin-bottom:10px}
+select,input{
+  width:100%;background:#07151b;color:#fff;border:1px solid var(--border);
+  border-radius:11px;padding:11px 12px;outline:none;min-height:44px
+}
+input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.1)}
+.nav-tabs{
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:2px 1px 9px;
+  position:sticky;top:72px;z-index:90;background:rgba(7,18,23,.86);backdrop-filter:blur(10px)
+}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tabs button{
+  flex:0 0 auto;border:1px solid var(--border);background:var(--card);
+  color:var(--muted);border-radius:11px;padding:9px 13px;font-size:11px;font-weight:800
+}
+.nav-tabs button.active{background:linear-gradient(135deg,var(--blue),#0369a1);color:#fff;border-color:var(--blue)}
+.card{
+  background:linear-gradient(145deg,rgba(17,42,52,.98),rgba(10,29,36,.98));
+  border:1px solid var(--border);border-radius:var(--radius);padding:16px;
+  margin-bottom:13px;box-shadow:var(--shadow)
+}
+.card-title{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+.card h2{margin:0;font-size:15px;font-weight:800}
+.sub{color:var(--muted);font-size:10px;margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.field{margin-bottom:7px}
+label{display:block;color:var(--muted);font-size:11px;font-weight:700;margin:8px 2px 5px}
+.btn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.btn{
+  min-height:44px;border:0;border-radius:11px;padding:10px 12px;
+  color:#fff;background:linear-gradient(135deg,var(--green),#059669);
+  font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 6px 14px rgba(16,185,129,.12)
+}
+.btn:active{transform:scale(.98)}
+.btn.blue{background:linear-gradient(135deg,var(--blue),#0369a1)}
+.btn.red{background:linear-gradient(135deg,var(--red),#b91c1c)}
+.btn.dark{background:#172a33;border:1px solid var(--border)}
+.print-toolbar{display:flex;gap:8px;margin-bottom:12px}
+.print-toolbar .btn{min-height:36px;padding:7px 10px;font-size:11px;flex:1}
+@media print{
+  body.printing-one *{visibility:hidden !important}
+  body.printing-one .print-active, body.printing-one .print-active *{visibility:visible !important}
+  body.printing-one .print-active{position:absolute;top:0;left:0;width:100%;padding:16px}
+  body.printing-one .print-active .print-toolbar{display:none !important}
+}
+/* ألوان النصوص في الثيم الداكن (تركواز/أخضر فاتح) بتبقى شبه مختفية على خلفية بيضاء وقت التصدير،
+   فلازم نفرض ألوان غامقة مقروءة وقت الطباعة الفعلية (@media print) ووقت التقاط html2canvas (.pdf-capture) */
+.pdf-capture, .pdf-capture *,
+body.printing-one .print-active, body.printing-one .print-active *{
+  color:#0f172a !important; border-color:#cbd5e1 !important;
+}
+.pdf-capture, body.printing-one .print-active{ background:#ffffff !important; }
+.pdf-capture .card, .pdf-capture .metric, .pdf-capture .report-block, .pdf-capture .hero,
+body.printing-one .print-active .card, body.printing-one .print-active .metric,
+body.printing-one .print-active .report-block, body.printing-one .print-active .hero{
+  background:#f8fafc !important;
+}
+.pdf-capture input, .pdf-capture select,
+body.printing-one .print-active input, body.printing-one .print-active select{
+  background:#ffffff !important; color:#0f172a !important; border:1px solid #cbd5e1 !important;
+}
+.pdf-capture .print-toolbar{ display:none !important; }
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.metric{
+  background:linear-gradient(145deg,#07161c,#0a2028);border:1px solid var(--border);
+  border-radius:12px;padding:11px;min-height:72px
+}
+.metric .title{font-size:9px;color:var(--muted);font-weight:700}
+.metric .val{font-size:17px;color:var(--gold);font-weight:800;margin-top:4px;word-break:break-word}
+.chart-wrap{height:245px;position:relative;margin-top:8px}
+.formula{
+  background:#050d11;border:1px solid var(--border);border-radius:11px;padding:12px;
+  color:#67e8f9;font:11px/2 "JetBrains Mono",monospace;direction:ltr;text-align:left;overflow:auto
+}
+.report{
+  background:#03090c;border:1px solid var(--border);border-radius:11px;padding:12px;
+  color:#a7f3d0;font:11px/1.8 "JetBrains Mono",monospace;white-space:pre-wrap;
+  max-height:300px;overflow:auto;direction:auto
+}
+.report-rich{background:transparent}
+.report-rich .report-header{
+  border-bottom:2px solid var(--green);padding-bottom:10px;margin-bottom:14px;
+}
+.report-rich .report-header h1{margin:0 0 6px;font-size:18px;color:#fff}
+.report-rich .report-header-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted)}
+.report-rich .report-block{
+  background:#03090c;border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:12px;
+}
+.report-rich .report-block-title{
+  color:var(--green);font-size:13px;margin:0 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px;
+}
+.report-rich input, .report-rich select{background:#0a1a20;cursor:default}
+.hero{
+  background:linear-gradient(135deg,rgba(2,132,199,.18),rgba(16,185,129,.12));
+  border:1px solid var(--border);border-radius:15px;padding:14px;margin-bottom:12px
+}
+.hero strong{font-size:13px}.hero p{margin:5px 0 0;color:var(--muted);font-size:10px;line-height:1.7}
+.hidden{display:none!important}
+.footer-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:1000;
+  background:rgba(7,18,23,.96);backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(8,1fr);
+  padding:6px 3px calc(6px + env(safe-area-inset-bottom))
+}
+.footer-nav button{
+  background:none;border:0;color:var(--muted);font-size:8.5px;font-weight:700;
+  padding:5px 1px;display:flex;flex-direction:column;align-items:center;gap:2px
+}
+.footer-nav button.active{color:var(--green2)}
+.toast{
+  position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);
+  background:#0b2520;border:1px solid #17624b;color:#a7f3d0;border-radius:12px;
+  padding:10px 15px;font-size:11px;font-weight:700;opacity:0;pointer-events:none;
+  transition:.25s;z-index:2000;max-width:90%;text-align:center
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.print-header{display:none}
+.soc-wrap{background:#07161c;border:1px solid var(--border);border-radius:11px;padding:3px;margin-top:6px}
+.soc-bar{height:20px;border-radius:8px;transition:width .4s,background .4s;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#04140f}
+.badge{display:inline-block;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:800;margin-top:8px}
+.badge.ok{background:#09251e;color:#6ee7b7;border:1px solid #17553f}
+.badge.warn{background:#2a2109;color:#fbbf24;border:1px solid #6b4f0e}
+.badge.bad{background:#2a0d0d;color:#fca5a5;border:1px solid #6b1717}
+@media(min-width:700px){
+  .container{padding:18px}
+  .grid2{grid-template-columns:1fr 1fr}
+  .metrics{grid-template-columns:repeat(4,1fr)}
+  .footer-nav{display:none}
+  body{padding-bottom:25px}
+}
+@media(max-width:380px){
+  .brand h1{font-size:15px}.grid2{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}
+  .btn-grid{grid-template-columns:1fr 1fr}.nav-tabs button{padding:8px 10px}
+}
+</style>
+</head>
+
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="logo">🌱</div>
+    <div class="brand">
+      <h1 id="appTitle">EcoGrid Pro Platform</h1>
+      <p>المهندس / وائل علي عويس محمود</p>
+    </div>
+    <div class="status">● ONLINE</div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="topbar">
+    <select id="langSelect" onchange="changeLang(this.value)" aria-label="Language">
+      <option value="ar">العربية</option><option value="en">English</option>
+    </select>
+  </div>
+
+  <div class="hero">
+    <strong data-ar="⚡ منصة إدارة الطاقة والاستدامة والصيانة" data-en="⚡ Energy, Sustainability & Maintenance Management Platform">⚡ منصة إدارة الطاقة والاستدامة والصيانة</strong>
+    <p data-ar="أداة محمولة لحساب الجدوى الاقتصادية، مؤشرات الصيانة، الأثر البيئي، وإصدار التقارير." data-en="A mobile-ready tool for feasibility, maintenance KPIs, environmental impact and reporting.">أداة محمولة لحساب الجدوى الاقتصادية، مؤشرات الصيانة، الأثر البيئي، وإصدار التقارير.</p>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="active" onclick="switchTab('defs',this)">📂 <span data-ar="التعريفات" data-en="Definitions">التعريفات</span></button>
+    <button onclick="switchTab('feasibility',this)">💰 <span data-ar="الجدوى" data-en="Feasibility">الجدوى</span></button>
+    <button onclick="switchTab('maint',this)">🛠️ <span data-ar="الصيانة" data-en="Maintenance">الصيانة</span></button>
+    <button onclick="switchTab('iot',this)">📡 <span data-ar="المراقبة الحية" data-en="Live Monitoring">المراقبة الحية</span></button>
+    <button onclick="switchTab('sust',this)">🌱 <span data-ar="الاستدامة" data-en="Sustainability">الاستدامة</span></button>
+    <button onclick="switchTab('civil',this)">🏗️ <span data-ar="الإنشائي" data-en="Structural">الإنشائي</span></button>
+    <button onclick="switchTab('ledger',this)">📒 <span data-ar="السجل الدفتري" data-en="Ledger">السجل الدفتري</span></button>
+    <button onclick="switchTab('reports',this)">📊 <span data-ar="التقارير" data-en="Reports">التقارير</span></button>
+  </div>
+
+  <section id="tab-defs" class="tab-content">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-defs')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-defs','EcoGrid_Definitions.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card">
+      <div class="card-title"><span>📂</span><div><h2 data-ar="تعريفات المشروع" data-en="Project Definitions">تعريفات المشروع</h2><div class="sub">Project Profile</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="اسم المشروع" data-en="Project Name">اسم المشروع</label><input id="projName" value="مشروع حلول الطاقة المتجددة"></div>
+        <div class="field"><label data-ar="المالك / العميل" data-en="Client / Owner">المالك / العميل</label><input id="projOwner" value="شركة مراكز البيانات الذكية"></div>
+        <div class="field"><label data-ar="الشركة المنفذة / الاستشارية" data-en="Contractor / Consultant">الشركة المنفذة / الاستشارية</label><input id="projCompany" value="BENA & QAI Engineering"></div>
+        <div class="field"><label data-ar="المهندس المعد" data-en="Lead Engineer">المهندس المعد</label><input id="projEng" value="وائل علي عويس محمود"></div>
+        <div class="field"><label data-ar="العملة" data-en="Currency">العملة</label><select id="currency"><option value="USD">USD ($)</option><option value="AED">AED (د.إ)</option><option value="EGP">EGP (ج.م)</option></select></div>
+      </div>
+      <button class="btn" onclick="saveDefs()" data-ar="💾 حفظ التعريفات" data-en="💾 Save Definitions">💾 حفظ التعريفات</button>
+    </div>
+  </section>
+
+  <section id="tab-feasibility" class="tab-content hidden">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-feasibility')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-feasibility','EcoGrid_Feasibility.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card">
+      <div class="card-title"><span>💰</span><div><h2 data-ar="حسابات الجدوى والتدفق النقدي" data-en="Feasibility & Cash Flow">حسابات الجدوى والتدفق النقدي</h2><div class="sub">Financial Analysis</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="المساحة (م²)" data-en="Area (m²)">المساحة (م²)</label><input id="f_area" inputmode="decimal" value="350"></div>
+        <div class="field"><label data-ar="قدرة النظام (MWp)" data-en="Solar Power (MWp)">قدرة النظام (MWp)</label><input id="f_power" inputmode="decimal" value="1,5"></div>
+        <div class="field"><label data-ar="تعريفة الشبكة ($/kWh)" data-en="Grid Tariff ($/kWh)">تعريفة الشبكة ($/kWh)</label><input id="f_tariff" inputmode="decimal" value="0,12"></div>
+        <div class="field"><label data-ar="عمر المشروع (سنة)" data-en="Project Life (years)">عمر المشروع (سنة)</label><input id="f_life" inputmode="numeric" value="20"></div>
+      </div>
+      <button class="btn blue" onclick="runFeasibility()" data-ar="📊 حساب الجدوى" data-en="📊 Calculate Feasibility">📊 حساب الجدوى</button>
+      <div class="metrics">
+        <div class="metric"><div class="title">CAPEX</div><div id="m_capex" class="val">—</div></div>
+        <div class="metric"><div class="title">OPEX / Year</div><div id="m_opex" class="val">—</div></div>
+        <div class="metric"><div class="title">Payback</div><div id="m_payback" class="val">—</div></div>
+        <div class="metric"><div class="title">NPV</div><div id="m_npv" class="val">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📈</span><div><h2 data-ar="التدفق النقدي" data-en="Cash Flow">التدفق النقدي</h2></div></div>
+      <div class="chart-wrap"><canvas id="cashChart"></canvas></div>
+    </div>
+  </section>
+
+  <section id="tab-maint" class="tab-content hidden">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-maint')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-maint','EcoGrid_Maintenance.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card">
+      <div class="card-title"><span>🛠️</span><div><h2 data-ar="صيانة الأصول ومؤشرات KPI" data-en="Asset Maintenance KPIs">صيانة الأصول ومؤشرات KPI</h2><div class="sub">Reliability Dashboard</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="تاريخ الفحص" data-en="Inspection Date">تاريخ الفحص</label><input id="m_date" type="date"></div>
+        <div class="field"><label data-ar="ساعات التشغيل" data-en="Operating Hours">ساعات التشغيل</label><input id="m_op" inputmode="decimal" value="720"></div>
+        <div class="field"><label data-ar="ساعات التوقف" data-en="Downtime Hours">ساعات التوقف</label><input id="m_down" inputmode="decimal" value="12,5"></div>
+        <div class="field"><label data-ar="عدد الأعطال" data-en="Failures Count">عدد الأعطال</label><input id="m_fail" inputmode="numeric" value="2"></div>
+      </div>
+      <button class="btn blue" onclick="runMaintenance()" data-ar="⚡ حساب KPI" data-en="⚡ Calculate KPI">⚡ حساب KPI</button>
+      <div class="metrics">
+        <div class="metric"><div class="title">Availability</div><div id="kpi_avail" class="val">—</div></div>
+        <div class="metric"><div class="title">MTBF</div><div id="kpi_mtbf" class="val">—</div></div>
+        <div class="metric"><div class="title">MTTR</div><div id="kpi_mttr" class="val">—</div></div>
+        <div class="metric"><div class="title">Failures</div><div id="kpi_fail" class="val">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-iot" class="tab-content hidden">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-iot')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-iot','EcoGrid_IoT.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card">
+      <div class="card-title"><span>📡</span><div><h2 data-ar="نوتة التشغيل والمراقبة الحية" data-en="Live Operation & IoT Dashboard">نوتة التشغيل والمراقبة الحية</h2><div class="sub">IoT Dashboard &amp; Control</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="القدرة الشمسية الآن (kW)" data-en="Solar Power Now (kW)">القدرة الشمسية الآن (kW)</label><input id="io_solar" inputmode="decimal" value="820"></div>
+        <div class="field"><label data-ar="الحمل الحالي (kW)" data-en="Current Load (kW)">الحمل الحالي (kW)</label><input id="io_load" inputmode="decimal" value="950"></div>
+        <div class="field"><label data-ar="الطاقة المستوردة من الشبكة (kW)" data-en="Grid Import (kW)">الطاقة المستوردة من الشبكة (kW)</label><input id="io_gridin" inputmode="decimal" value="180"></div>
+        <div class="field"><label data-ar="الطاقة المصدَّرة للشبكة (kW)" data-en="Grid Export (kW)">الطاقة المصدَّرة للشبكة (kW)</label><input id="io_gridout" inputmode="decimal" value="0"></div>
+      </div>
+      <label data-ar="🔋 نظام تخزين الطاقة (BESS)" data-en="🔋 Battery Energy Storage System (BESS)" style="margin-top:10px;font-size:12px;color:var(--gold)">🔋 نظام تخزين الطاقة (BESS)</label>
+      <div class="grid2">
+        <div class="field"><label data-ar="حالة الشحن SOC (%)" data-en="State of Charge SOC (%)">حالة الشحن SOC (%)</label><input id="io_soc" inputmode="decimal" value="62"></div>
+        <div class="field"><label data-ar="السعة الإجمالية للبطارية (kWh)" data-en="Total BESS Capacity (kWh)">السعة الإجمالية للبطارية (kWh)</label><input id="io_cap" inputmode="decimal" value="2000"></div>
+        <div class="field"><label data-ar="معدل الطاقة الحالي للبطارية (kW)" data-en="Current BESS Power Rate (kW)">معدل الطاقة الحالي للبطارية (kW)</label><input id="io_rate" inputmode="decimal" value="130"></div>
+        <div class="field"><label data-ar="حالة البطارية" data-en="BESS Mode">حالة البطارية</label>
+          <select id="io_mode">
+            <option value="discharge" data-ar="تفريغ (تغذي الحمل)" data-en="Discharging (feeding load)">تفريغ (تغذي الحمل)</option>
+            <option value="charge" data-ar="شحن" data-en="Charging">شحن</option>
+            <option value="idle" data-ar="خامل" data-en="Idle">خامل</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn blue" onclick="runIoT()" data-ar="📡 حساب القراءة الحية" data-en="📡 Calculate Live Reading">📡 حساب القراءة الحية</button>
+
+      <div class="metrics">
+        <div class="metric"><div class="title" data-ar="نسبة توفير الشبكة (Grid Offset)" data-en="Grid Offset %">نسبة توفير الشبكة</div><div id="io_offset" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="الاعتماد على الشبكة" data-en="Grid Dependency">الاعتماد على الشبكة</div><div id="io_dependency" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="طاقة البطارية المتبقية" data-en="BESS Remaining Energy">طاقة البطارية المتبقية</div><div id="io_remaining" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="مدة استقلالية البطارية" data-en="BESS Autonomy">مدة استقلالية البطارية</div><div id="io_autonomy" class="val">—</div></div>
+      </div>
+
+      <label style="margin-top:12px" data-ar="🔋 حالة شحن البطارية" data-en="🔋 Battery State of Charge">🔋 حالة شحن البطارية</label>
+      <div class="soc-wrap"><div id="io_socBar" class="soc-bar" style="width:0%">0%</div></div>
+
+      <div id="io_status" class="badge ok" style="display:none"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🗒️</span><div><h2 data-ar="سجل القراءات اللحظية" data-en="Live Readings Log">سجل القراءات اللحظية</h2></div></div>
+      <div id="iotList" class="report" style="max-height:260px"></div>
+      <div class="btn-grid">
+        <button class="btn blue" onclick="generateIoTReport()" data-ar="📑 توليد تقرير المراقبة" data-en="📑 Generate Monitoring Report">📑 توليد تقرير المراقبة</button>
+        <button class="btn red" onclick="clearIoTLog()" data-ar="🗑️ مسح السجل" data-en="🗑️ Clear Log">🗑️ مسح السجل</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-sust" class="tab-content hidden">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-sust')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-sust','EcoGrid_Sustainability.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card">
+      <div class="card-title"><span>🌱</span><div><h2 data-ar="الأثر البيئي والمجتمعي" data-en="Environmental Impact">الأثر البيئي والمجتمعي</h2><div class="sub">ESG / Sustainability</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="الطاقة النظيفة (MWh)" data-en="Clean Energy (MWh)">الطاقة النظيفة (MWh)</label><input id="s_energy" inputmode="decimal" value="450"></div>
+        <div class="field"><label data-ar="عدد المشاركين" data-en="Participants">عدد المشاركين</label><input id="s_part" inputmode="numeric" value="120"></div>
+        <div class="field"><label data-ar="الأشجار المزروعة" data-en="Trees">الأشجار المزروعة</label><input id="s_trees" inputmode="numeric" value="85"></div>
+        <div class="field"><label data-ar="النفايات المعاد تدويرها (kg)" data-en="Recycled Waste (kg)">النفايات المعاد تدويرها (kg)</label><input id="s_waste" inputmode="decimal" value="650"></div>
+      </div>
+      <button class="btn" onclick="runSustainability()" data-ar="🌍 حساب الأثر البيئي" data-en="🌍 Calculate Impact">🌍 حساب الأثر البيئي</button>
+      <div class="metrics">
+        <div class="metric"><div class="title">Energy CO₂</div><div id="e_co2" class="val">—</div></div>
+        <div class="metric"><div class="title">Tree CO₂</div><div id="t_co2" class="val">—</div></div>
+        <div class="metric"><div class="title">Total Offset</div><div id="tot_co2" class="val">—</div></div>
+        <div class="metric"><div class="title">Eco Points</div><div id="eco_pts" class="val">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-civil" class="tab-content hidden">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-civil')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-civil','EcoGrid_Civil.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card">
+      <div class="card-title"><span>🏗️</span><div><h2 data-ar="الأحمال الميتة وأحمال الرياح" data-en="Dead & Wind Loads">الأحمال الميتة وأحمال الرياح</h2><div class="sub">Civil &amp; Structural — Racking / Roof Loads</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="المساحة الإنشائية (م²)" data-en="Structural Area (m²)">المساحة الإنشائية (م²)</label><input id="c_area" inputmode="decimal" value="350"></div>
+        <div class="field"><label data-ar="وزن الألواح (kg/m²)" data-en="Panels Weight (kg/m²)">وزن الألواح (kg/m²)</label><input id="c_panel" inputmode="decimal" value="12"></div>
+        <div class="field"><label data-ar="وزن هياكل التثبيت (kg/m²)" data-en="Racking Weight (kg/m²)">وزن هياكل التثبيت (kg/m²)</label><input id="c_rack" inputmode="decimal" value="8"></div>
+        <div class="field"><label data-ar="وزن حوامل الكابلات (kg/m²)" data-en="Cable Trays Weight (kg/m²)">وزن حوامل الكابلات (kg/m²)</label><input id="c_cable" inputmode="decimal" value="2"></div>
+        <div class="field"><label data-ar="وزن وحدات التبريد (kg/m²)" data-en="Cooling Units Weight (kg/m²)">وزن وحدات التبريد (kg/m²)</label><input id="c_cool" inputmode="decimal" value="15"></div>
+        <div class="field"><label data-ar="هامش الأمان الإنشائي (%)" data-en="Structural Safety Margin (%)">هامش الأمان الإنشائي (%)</label><input id="c_margin" inputmode="decimal" value="15"></div>
+        <div class="field"><label data-ar="سرعة الرياح القصوى (m/s)" data-en="Max Wind Speed (m/s)">سرعة الرياح القصوى (m/s)</label><input id="c_wind" inputmode="decimal" value="35"></div>
+        <div class="field"><label data-ar="ارتفاع المبنى (م)" data-en="Building Height (m)">ارتفاع المبنى (م)</label><input id="c_height" inputmode="decimal" value="15"></div>
+        <div class="field"><label data-ar="زاوية ميل الألواح (°)" data-en="Panel Tilt Angle (°)">زاوية ميل الألواح (°)</label><input id="c_tilt" inputmode="decimal" value="10"></div>
+      </div>
+      <button class="btn blue" onclick="runDeadWindLoads()" data-ar="🏗️ حساب الأحمال" data-en="🏗️ Calculate Loads">🏗️ حساب الأحمال</button>
+      <div class="metrics">
+        <div class="metric"><div class="title" data-ar="الحمل الميت (مع الهامش)" data-en="Dead Load (incl. margin)">الحمل الميت (مع الهامش)</div><div id="c_deadTotal" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="الحمل الميت لكل م²" data-en="Dead Load per m²">الحمل الميت لكل م²</div><div id="c_deadPerM2" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="ضغط الرياح الديناميكي" data-en="Wind Velocity Pressure">ضغط الرياح الديناميكي</div><div id="c_windPressure" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="قوة الرفع الكلية" data-en="Total Uplift Force">قوة الرفع الكلية</div><div id="c_upliftForce" class="val">—</div></div>
+      </div>
+      <div id="c_windBadge" class="badge ok" style="display:none"></div>
+      <div class="sub" style="margin-top:8px" data-ar="⚠️ تقدير أولي مبسّط لأغراض التصميم التمهيدي فقط، وفق منهجية مقاربة لكود ASCE 7. يجب اعتماد الحساب النهائي من مهندس إنشائي مرخّص باستخدام الكود المحلي المعتمد قبل التنفيذ." data-en="⚠️ Simplified preliminary estimate for early-stage design only, based on an ASCE-7-style approach. Final calculations must be certified by a licensed structural engineer using the applicable local code before construction.">⚠️ تقدير أولي مبسّط لأغراض التصميم التمهيدي فقط، وفق منهجية مقاربة لكود ASCE 7. يجب اعتماد الحساب النهائي من مهندس إنشائي مرخّص باستخدام الكود المحلي المعتمد قبل التنفيذ.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🔋</span><div><h2 data-ar="توزيع أحمال البطاريات على البلاطة" data-en="BESS Floor Loading">توزيع أحمال البطاريات على البلاطة</h2><div class="sub">Allowable Slab Capacity Check</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="الوزن الكلي لحاويات BESS (kg)" data-en="Total BESS Weight (kg)">الوزن الكلي لحاويات BESS (kg)</label><input id="c_bessW" inputmode="decimal" value="8000"></div>
+        <div class="field"><label data-ar="مساحة تركيز الوزن (م²)" data-en="Footprint Area (m²)">مساحة تركيز الوزن (م²)</label><input id="c_bessArea" inputmode="decimal" value="12"></div>
+        <div class="field"><label data-ar="طاقة تحمل البلاطة المسموحة (kg/m²)" data-en="Allowable Slab Capacity (kg/m²)">طاقة تحمل البلاطة المسموحة (kg/m²)</label><input id="c_slabCap" inputmode="decimal" value="750"></div>
+        <div class="field"><label data-ar="شاسيهات فولاذية ناشرة للوزن؟" data-en="Steel Spreader Beams?">شاسيهات فولاذية ناشرة للوزن؟</label>
+          <select id="c_spreader">
+            <option value="no" data-ar="لا" data-en="No">لا</option>
+            <option value="yes" data-ar="نعم (+40% مساحة فعالة)" data-en="Yes (+40% effective area)">نعم (+40% مساحة فعالة)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn blue" onclick="runBessFloor()" data-ar="🔋 فحص طاقة تحمل البلاطة" data-en="🔋 Check Slab Capacity">🔋 فحص طاقة تحمل البلاطة</button>
+      <div class="metrics">
+        <div class="metric"><div class="title" data-ar="المساحة الفعالة" data-en="Effective Area">المساحة الفعالة</div><div id="c_effArea" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="الحمل الفعلي لكل م²" data-en="Actual Load per m²">الحمل الفعلي لكل م²</div><div id="c_bessLoadPerM2" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="نسبة الاستغلال" data-en="Utilization Ratio">نسبة الاستغلال</div><div id="c_bessRatio" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="الحالة" data-en="Status">الحالة</div><div id="c_bessStatusVal" class="val">—</div></div>
+      </div>
+      <div id="c_bessBadge" class="badge ok" style="display:none"></div>
+      <div class="sub" style="margin-top:8px" data-ar="💡 يوصى بوضع كبائن BESS بالقرب من الأعمدة والكمرات الرئيسية وتجنّب منتصف البحر، مع عزلها بممتصات اهتزاز وتثبيتها بمرابط زلزالية معتمدة." data-en="💡 Position BESS cabinets near columns/beams, avoid mid-span, isolate with vibration isolators, and anchor with certified seismic restraints.">💡 يوصى بوضع كبائن BESS بالقرب من الأعمدة والكمرات الرئيسية وتجنّب منتصف البحر، مع عزلها بممتصات اهتزاز وتثبيتها بمرابط زلزالية معتمدة.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>📳</span><div><h2 data-ar="السلامة من الاهتزاز والزلازل" data-en="Vibration & Seismic Safety">السلامة من الاهتزاز والزلازل</h2></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="مستوى الخطورة الزلزالية للموقع" data-en="Site Seismic Hazard Level">مستوى الخطورة الزلزالية للموقع</label>
+          <select id="c_seismicZone">
+            <option value="low" data-ar="منخفضة" data-en="Low">منخفضة</option>
+            <option value="mid" data-ar="متوسطة" data-en="Medium">متوسطة</option>
+            <option value="high" data-ar="مرتفعة" data-en="High">مرتفعة</option>
+          </select>
+        </div>
+        <div class="field"><label data-ar="ممتصات اهتزاز مركّبة؟" data-en="Vibration Isolators Installed?">ممتصات اهتزاز مركّبة؟</label>
+          <select id="c_vibIso">
+            <option value="yes" data-ar="نعم" data-en="Yes">نعم</option>
+            <option value="no" data-ar="لا" data-en="No">لا</option>
+          </select>
+        </div>
+        <div class="field"><label data-ar="مرابط زلزالية مركّبة؟" data-en="Seismic Restraints Installed?">مرابط زلزالية مركّبة؟</label>
+          <select id="c_seisRestraint">
+            <option value="yes" data-ar="نعم" data-en="Yes">نعم</option>
+            <option value="no" data-ar="لا" data-en="No">لا</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn blue" onclick="runSeismic()" data-ar="📳 تقييم السلامة" data-en="📳 Evaluate Safety">📳 تقييم السلامة</button>
+      <div id="c_seismicBadge" class="badge ok" style="display:none;margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>📑</span><div><h2 data-ar="نوتة الحسابات الإنشائية" data-en="Structural Calculation Note">نوتة الحسابات الإنشائية</h2></div></div>
+      <div id="civilList" class="report" style="max-height:300px" data-ar="اضغط زر توليد النوتة الإنشائية بعد حساب الأقسام أعلاه" data-en="Press Generate Structural Note after calculating the sections above">اضغط زر توليد النوتة الإنشائية بعد حساب الأقسام أعلاه</div>
+      <div class="btn-grid">
+        <button class="btn blue" onclick="generateCivilReport()" data-ar="📑 توليد النوتة الإنشائية الكاملة" data-en="📑 Generate Full Structural Note">📑 توليد النوتة الإنشائية الكاملة</button>
+        <button class="btn dark" onclick="switchTab('reports')" data-ar="📊 عرض في التقارير" data-en="📊 View in Reports">📊 عرض في التقارير</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-ledger" class="tab-content hidden">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-ledger')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-ledger','EcoGrid_Ledger.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card">
+      <div class="card-title"><span>📒</span><div><h2 data-ar="السجل الدفتري" data-en="Ledger">السجل الدفتري</h2><div class="sub">Journal / Cash Book</div></div></div>
+      <div class="grid2">
+        <div class="field"><label data-ar="التاريخ" data-en="Date">التاريخ</label><input id="l_date" type="date"></div>
+        <div class="field"><label data-ar="النوع" data-en="Type">النوع</label>
+          <select id="l_type">
+            <option value="in" data-ar="قيد قبض (دخل)" data-en="Receipt (Income)">قيد قبض (دخل)</option>
+            <option value="out" data-ar="قيد صرف (مصروف)" data-en="Payment (Expense)">قيد صرف (مصروف)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label data-ar="البيان / الوصف" data-en="Description">البيان / الوصف</label><input id="l_desc" placeholder="مثال: دفعة أولى من المالك"></div>
+      <div class="field"><label data-ar="المبلغ" data-en="Amount">المبلغ</label><input id="l_amount" inputmode="decimal" placeholder="0.00"></div>
+      <button class="btn" onclick="addLedgerEntry()" data-ar="➕ إضافة قيد" data-en="➕ Add Entry">➕ إضافة قيد</button>
+      <div class="metrics">
+        <div class="metric"><div class="title" data-ar="إجمالي القبض" data-en="Total Income">إجمالي القبض</div><div id="l_totalIn" class="val">—</div></div>
+        <div class="metric"><div class="title" data-ar="إجمالي الصرف" data-en="Total Expense">إجمالي الصرف</div><div id="l_totalOut" class="val">—</div></div>
+        <div class="metric" style="grid-column:span 2"><div class="title" data-ar="الرصيد الحالي" data-en="Current Balance">الرصيد الحالي</div><div id="l_balance" class="val">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📋</span><div><h2 data-ar="حركة القيود" data-en="Entries">حركة القيود</h2></div></div>
+      <div id="ledgerList" class="report" style="max-height:340px"></div>
+      <div class="btn-grid">
+        <button class="btn blue" onclick="generateLedgerReport()" data-ar="📑 توليد تقرير السجل" data-en="📑 Generate Ledger Report">📑 توليد تقرير السجل</button>
+        <button class="btn red" onclick="clearLedger()" data-ar="🗑️ مسح كل القيود" data-en="🗑️ Clear All Entries">🗑️ مسح كل القيود</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-reports" class="tab-content hidden">
+    <div class="print-toolbar"><button class="btn dark" onclick="printSection('tab-reports')">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button><button class="btn blue" onclick="downloadSectionPdf('tab-reports','EcoGrid_Full_Report.pdf')">📄 <span data-ar="حفظ PDF" data-en="Save PDF">حفظ PDF</span></button></div>
+    <div class="card" id="exportableArea">
+      <div class="print-header"><h2>EcoGrid Pro Platform</h2><p>Prepared by Eng. Wael Ali Ewis Mahmoud</p></div>
+      <div class="card-title"><span>📊</span><div><h2 data-ar="ملخص المؤشرات والتقارير" data-en="KPI Summary & Reports">ملخص المؤشرات والتقارير</h2></div></div>
+      <div id="reportBox" class="report-rich">اضغط على أي زر حساب في الأقسام السابقة، أو افتح هذا التبويب مباشرة لتوليد التقرير الكامل تلقائياً...</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📤</span><div><h2 data-ar="تصدير البيانات" data-en="Export Data">تصدير البيانات</h2></div></div>
+      <div class="btn-grid">
+        <button class="btn blue" onclick="exportPDF()">📄 PDF</button>
+        <button class="btn blue" onclick="exportExcel()">📊 Excel</button>
+        <button class="btn dark" onclick="exportTXT()">📝 TXT</button>
+        <button class="btn red" onclick="clearLogs()">🗑️ <span data-ar="مسح" data-en="Clear">مسح</span></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📚</span><div><h2 data-ar="المعادلات المستخدمة" data-en="Applied Formulas">المعادلات المستخدمة</h2></div></div>
+      <div class="formula">
+CAPEX = Area × 2500
+Annual Generation = Solar MWp × 1000 × 1800
+OPEX = CAPEX × 0.02
+Payback = CAPEX ÷ (Annual Savings − OPEX)
+NPV = Σ [Cashflow / (1+r)^t] − CAPEX
+Availability = ((Operating − Downtime) / Operating) × 100
+MTBF = (Operating − Downtime) / Failures
+MTTR = Downtime / Failures
+CO₂ Offset = Energy × 0.708 + Trees × 0.022
+Grid Offset % = min(Solar + BESS Discharge, Load) ÷ Load × 100
+Grid Dependency % = Grid Import ÷ Load × 100
+BESS Remaining Energy = Capacity × SOC%
+BESS Autonomy (h) = Remaining Energy ÷ Discharge Rate
+Dead Load (kg) = Area × Σ(Component Weight/m²) × (1 + Safety Margin%), Margin ≥ 15%
+Wind Velocity Pressure q (Pa) = 0.613 × V² × Height Factor  [simplified, ASCE 7-style]
+Uplift Force (kgf) = q × Cp(tilt) × Area ÷ 9.81
+BESS Load/m² = BESS Weight ÷ Effective Footprint Area (Spreader Beams: ×1.4)
+Slab Utilization % = (BESS Load/m² ÷ Allowable Slab Capacity) × 100
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="footer-nav">
+  <button class="active" onclick="switchTab('defs',this)">📂<span data-ar="التعريفات" data-en="Defs">التعريفات</span></button>
+  <button onclick="switchTab('feasibility',this)">💰<span data-ar="الجدوى" data-en="Feasibility">الجدوى</span></button>
+  <button onclick="switchTab('maint',this)">🛠️<span data-ar="الصيانة" data-en="Maint">الصيانة</span></button>
+  <button onclick="switchTab('iot',this)">📡<span data-ar="المراقبة" data-en="Live">المراقبة</span></button>
+  <button onclick="switchTab('sust',this)">🌱<span data-ar="الاستدامة" data-en="Impact">الاستدامة</span></button>
+  <button onclick="switchTab('civil',this)">🏗️<span data-ar="الإنشائي" data-en="Civil">الإنشائي</span></button>
+  <button onclick="switchTab('ledger',this)">📒<span data-ar="السجل" data-en="Ledger">السجل</span></button>
+  <button onclick="switchTab('reports',this)">📊<span data-ar="التقارير" data-en="Reports">التقارير</span></button>
+</nav>
+<div id="toast" class="toast"></div>
+
+<script>
+let currentLang='ar', cashChartInstance=null, lastReportText='', civilState={};
+const $=id=>document.getElementById(id);
+
+function parseNum(v){
+  if(v===null||v===undefined||v==='') return 0;
+  let s=String(v).trim().replace(/\s/g,'').replace(/٫/g,'.');
+  if(s.includes(',')&&s.includes('.')){
+    if(s.lastIndexOf(',')>s.lastIndexOf('.')) s=s.replace(/\./g,'').replace(',','.');
+    else s=s.replace(/,/g,'');
+  }else s=s.replace(',','.');
+  return parseFloat(s)||0;
+}
+function money(v){
+  const cur=$('currency').value;
+  const symbols={USD:'$',AED:'د.إ',EGP:'ج.م'};
+  return `${symbols[cur]||cur} ${Number(v).toLocaleString(undefined,{maximumFractionDigits:2})}`;
+}
+const LBL={
+  capex:{ar:'التكلفة الرأسمالية (CAPEX)',en:'CAPEX'},
+  opexYear:{ar:'التكلفة التشغيلية / سنة',en:'OPEX / Year'},
+  annualGen:{ar:'الطاقة المولدة سنويًا',en:'Annual Generation'},
+  annualSav:{ar:'التوفير السنوي',en:'Annual Savings'},
+  netCash:{ar:'صافي التدفق النقدي السنوي',en:'Net Annual Cashflow'},
+  payback:{ar:'فترة الاسترداد',en:'Payback'},
+  npv:{ar:'صافي القيمة الحالية (8%)',en:'NPV @ 8%'},
+  inspDate:{ar:'تاريخ الفحص',en:'Inspection Date'},
+  avail:{ar:'نسبة التوافر',en:'Availability'},
+  mtbf:{ar:'متوسط الزمن بين الأعطال',en:'MTBF'},
+  mttr:{ar:'متوسط زمن الإصلاح',en:'MTTR'},
+  failures:{ar:'عدد الأعطال',en:'Failures'},
+  cleanEnergy:{ar:'الطاقة النظيفة',en:'Clean Energy'},
+  participants:{ar:'المشاركون',en:'Participants'},
+  trees:{ar:'الأشجار',en:'Trees'},
+  waste:{ar:'النفايات المعاد تدويرها',en:'Recycled Waste'},
+  eco2:{ar:'وفر CO2 من الطاقة',en:'Energy CO2 Offset'},
+  tco2:{ar:'وفر CO2 من الأشجار',en:'Tree CO2 Offset'},
+  totco2:{ar:'إجمالي وفر CO2',en:'Total CO2 Offset'},
+  ecoPts:{ar:'نقاط الاستدامة',en:'Eco Points'},
+  ledgerTitle:{ar:'تقرير السجل الدفتري',en:'Ledger Report'},
+  totalIn:{ar:'إجمالي القبض',en:'Total Income'},
+  totalOut:{ar:'إجمالي الصرف',en:'Total Expense'},
+  balance:{ar:'الرصيد الحالي',en:'Current Balance'},
+  noEntries:{ar:'لا توجد قيود بعد',en:'No entries yet'},
+  iotTitle:{ar:'تقرير المراقبة الحية (IoT)',en:'Live Monitoring (IoT) Report'},
+  solarNow:{ar:'القدرة الشمسية الآن',en:'Solar Power Now'},
+  loadNow:{ar:'الحمل الحالي',en:'Current Load'},
+  gridIn:{ar:'الطاقة المستوردة من الشبكة',en:'Grid Import'},
+  gridOut:{ar:'الطاقة المصدَّرة للشبكة',en:'Grid Export'},
+  gridOffset:{ar:'نسبة توفير الشبكة',en:'Grid Offset'},
+  gridDep:{ar:'الاعتماد على الشبكة',en:'Grid Dependency'},
+  socNow:{ar:'حالة شحن البطارية',en:'BESS State of Charge'},
+  bessRemain:{ar:'طاقة البطارية المتبقية',en:'BESS Remaining Energy'},
+  bessAutonomy:{ar:'مدة استقلالية البطارية',en:'BESS Autonomy'},
+  bessMode:{ar:'حالة البطارية',en:'BESS Mode'},
+  noReadings:{ar:'لا توجد قراءات بعد',en:'No readings yet'},
+  civilTitle:{ar:'نوتة الحسابات الإنشائية',en:'Structural Calculation Note'},
+  deadTotal:{ar:'الحمل الميت (مع الهامش)',en:'Dead Load (incl. margin)'},
+  deadPerM2:{ar:'الحمل الميت لكل م²',en:'Dead Load per m²'},
+  windPressure:{ar:'ضغط الرياح الديناميكي',en:'Wind Velocity Pressure'},
+  upliftForce:{ar:'قوة الرفع الكلية',en:'Total Uplift Force'},
+  bessLoadPerM2:{ar:'الحمل الفعلي لكل م² (BESS)',en:'Actual BESS Load per m²'},
+  bessRatio:{ar:'نسبة استغلال طاقة تحمل البلاطة',en:'Slab Capacity Utilization'}
+};
+function L(key){return LBL[key][currentLang]||LBL[key].en}
+function toast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(window._toast);window._toast=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function changeLang(l){
+  currentLang=l;document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';
+  document.querySelectorAll('[data-ar]').forEach(el=>el.textContent=el.getAttribute('data-'+l));
+  if(cashChartInstance){ try{ renderChart(window._cashSeries||[]); }catch(e){} }
+  if(typeof renderLedgerTable==='function') renderLedgerTable();
+  if(typeof renderIoTLog==='function') renderIoTLog();
+}
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden'));
+  $('tab-'+id).classList.remove('hidden');
+  document.querySelectorAll('.nav-tabs button,.footer-nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs button').forEach(x=>{
+    if(x.getAttribute('onclick')&&x.getAttribute('onclick').includes("'"+id+"'")) x.classList.add('active');
+  });
+  if(btn)btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='reports') refreshFullReport();
+}
+function saveDefs(){
+  const data={name:$('projName').value,owner:$('projOwner').value,company:$('projCompany').value,eng:$('projEng').value,currency:$('currency').value};
+  localStorage.setItem('ecogrid_defs',JSON.stringify(data));toast(currentLang==='ar'?'✅ تم حفظ التعريفات بنجاح':'✅ Definitions saved successfully');
+}
+function loadDefs(){
+  try{
+    const d=JSON.parse(localStorage.getItem('ecogrid_defs')||'null');
+    if(!d)return;
+    $('projName').value=d.name||'';$('projOwner').value=d.owner||'';$('projCompany').value=d.company||'';$('projEng').value=d.eng||'';
+    $('currency').value=d.currency||'USD';
+  }catch(e){}
+}
+function runFeasibility(){
+  const area=parseNum($('f_area').value),power=parseNum($('f_power').value),tariff=parseNum($('f_tariff').value);
+  const life=Math.max(1,Math.round(parseNum($('f_life').value)||20));
+  const capex=area*2500,opex=capex*.02,gen=power*1000*1800,savings=gen*tariff,net=savings-opex;
+  const payback=net>0?capex/net:0;
+  const rate=.08;
+  let npv=-capex,series=[-capex],cum=-capex;
+  for(let y=1;y<=life;y++){cum+=net;series.push(cum);npv+=net/Math.pow(1+rate,y)}
+  $('m_capex').textContent=money(capex);$('m_opex').textContent=money(opex);
+  $('m_payback').textContent=payback>0?payback.toFixed(1)+' '+(currentLang==='ar'?'سنة':'yrs'):'N/A';
+  $('m_npv').textContent=money(npv);
+  window._cashSeries=series;
+  try{ renderChart(series); }catch(e){ toast(currentLang==='ar'?'⚠️ تعذر رسم الرسم البياني (تحقق من الاتصال بالإنترنت)':'⚠️ Chart failed to load (check internet connection)'); }
+  lastReportText=`[EcoGrid Pro - ${currentLang==='ar'?'تقرير الجدوى الاقتصادية':'Economic Feasibility Report'}]
+${currentLang==='ar'?'المشروع':'Project'}: ${$('projName').value}
+${L('capex')}: ${money(capex)}
+${L('opexYear')}: ${money(opex)}
+${L('annualGen')}: ${gen.toLocaleString()} kWh
+${L('annualSav')}: ${money(savings)}
+${L('netCash')}: ${money(net)}
+${L('payback')}: ${payback.toFixed(1)} ${currentLang==='ar'?'سنة':'years'}
+${L('npv')}: ${money(npv)}`;
+  $('reportBox').textContent=lastReportText;toast(currentLang==='ar'?'📊 تم تحديث حسابات الجدوى والتقرير':'📊 Feasibility report updated');
+}
+function renderChart(series){
+  const canvas=$('cashChart');if(!canvas)return;
+  if(cashChartInstance)cashChartInstance.destroy();
+  const labels=series.length?series.map((_,i)=>currentLang==='ar'?'سنة '+i:'Year '+i):['Year 0'];
+  cashChartInstance=new Chart(canvas.getContext('2d'),{
+    type:'line',data:{labels,datasets:[{
+      label:currentLang==='ar'?'التدفق التراكمي':'Cumulative Cash Flow',
+      data:series.length?series:[0],borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.10)',
+      fill:true,tension:.3,pointRadius:2
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#fff',font:{family:'Cairo',size:10}}}},
+      scales:{x:{ticks:{color:'#94a3b8',font:{size:9}},grid:{color:'#183640'}},
+      y:{ticks:{color:'#94a3b8',font:{size:9}},grid:{color:'#183640'}}}}
+  });
+}
+function runMaintenance(){
+  const op=parseNum($('m_op').value),down=parseNum($('m_down').value),fail=parseNum($('m_fail').value);
+  const avail=op>0?((op-down)/op)*100:0,mtbf=fail>0?(op-down)/fail:0,mttr=fail>0?down/fail:0;
+  $('kpi_avail').textContent=avail.toFixed(2)+'%';$('kpi_mtbf').textContent=mtbf.toFixed(1)+' h';
+  $('kpi_mttr').textContent=mttr.toFixed(1)+' h';$('kpi_fail').textContent=fail;
+  lastReportText=`[EcoGrid Pro - ${currentLang==='ar'?'تقرير مؤشرات الصيانة':'Maintenance KPI Report'}]
+${L('inspDate')}: ${$('m_date').value}
+${L('avail')}: ${avail.toFixed(2)}%
+${L('mtbf')}: ${mtbf.toFixed(1)} h
+${L('mttr')}: ${mttr.toFixed(1)} h
+${L('failures')}: ${fail}`;
+  $('reportBox').textContent=lastReportText;toast(currentLang==='ar'?'🛠️ تم تحديث مؤشرات الصيانة':'🛠️ Maintenance KPIs updated');
+}
+function runSustainability(){
+  const energy=parseNum($('s_energy').value),trees=parseNum($('s_trees').value),waste=parseNum($('s_waste').value),part=parseNum($('s_part').value);
+  const eco2=energy*.708,tco2=trees*.022,tot=eco2+tco2,pts=(tot*10)+(waste*.5)+(part*.25);
+  $('e_co2').textContent=eco2.toFixed(1)+' t';$('t_co2').textContent=tco2.toFixed(1)+' t';
+  $('tot_co2').textContent=tot.toFixed(1)+' t';$('eco_pts').textContent=pts.toFixed(0);
+  lastReportText=`[EcoGrid Pro - ${currentLang==='ar'?'تقرير الأثر البيئي':'Environmental Impact Report'}]
+${L('cleanEnergy')}: ${energy.toLocaleString()} MWh
+${L('participants')}: ${part}
+${L('trees')}: ${trees}
+${L('waste')}: ${waste} kg
+${L('eco2')}: ${eco2.toFixed(1)} t
+${L('tco2')}: ${tco2.toFixed(1)} t
+${L('totco2')}: ${tot.toFixed(1)} t
+${L('ecoPts')}: ${pts.toFixed(0)}`;
+  $('reportBox').textContent=lastReportText;toast(currentLang==='ar'?'🌱 تم تحديث الأثر البيئي':'🌱 Environmental impact updated');
+}
+function printSection(id){
+  const el=$(id);
+  document.body.classList.add('printing-one');
+  el.classList.add('print-active');
+  window.print();
+  setTimeout(()=>{ el.classList.remove('print-active'); document.body.classList.remove('printing-one'); }, 600);
+}
+function downloadSectionPdf(id, filename){
+  if(typeof html2pdf==='undefined'){ toast(currentLang==='ar'?'⚠️ مكتبة PDF غير متاحة (تحقق من الاتصال بالإنترنت)':'⚠️ PDF library unavailable (check internet connection)'); return; }
+  const el=$(id);
+  el.classList.add('pdf-capture');
+  const cleanup = ()=> el.classList.remove('pdf-capture');
+  try{
+    html2pdf().set({margin:.35,filename,image:{type:'jpeg',quality:.98},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}})
+      .from(el).save().then(cleanup).catch(cleanup);
+    toast(currentLang==='ar'?'📄 جارٍ تصدير PDF':'📄 PDF export started');
+  }catch(e){ cleanup(); toast(currentLang==='ar'?'⚠️ فشل تصدير PDF':'⚠️ PDF export failed'); }
+}
+
+/* ---------- التقرير العام: يجمع كل صفحات التطبيق فعلياً في صفحة واحدة ---------- */
+function buildFullReportHTML(){
+  const proj=$('projName').value||'-', owner=$('projOwner').value||'-', eng=$('projEng').value||'-', company=$('projCompany').value||'-';
+
+  const blocks = [
+    {id:'tab-feasibility', ar:'٢. الجدوى الاقتصادية والتدفق النقدي', en:'2. Economic Feasibility & Cash Flow'},
+    {id:'tab-maint', ar:'٣. صيانة الأصول ومؤشرات الأداء', en:'3. Asset Maintenance KPIs'},
+    {id:'tab-iot', ar:'٤. المراقبة الحية (IoT)', en:'4. Live Monitoring (IoT)'},
+    {id:'tab-sust', ar:'٥. الاستدامة والأثر البيئي', en:'5. Sustainability & Environmental Impact'},
+    {id:'tab-civil', ar:'٦. الحسابات الإنشائية', en:'6. Structural Calculations'},
+    {id:'tab-ledger', ar:'٧. السجل المالي', en:'7. Financial Ledger'},
+  ];
+
+  let html = `
+    <div class="report-header">
+      <h1>${proj}</h1>
+      <div class="report-header-meta">
+        <span><b>${currentLang==='ar'?'المالك':'Owner'}:</b> ${owner}</span>
+        <span><b>${currentLang==='ar'?'الشركة':'Company'}:</b> ${company}</span>
+        <span><b>${currentLang==='ar'?'المهندس':'Engineer'}:</b> ${eng}</span>
+        <span><b>${currentLang==='ar'?'تاريخ التقرير':'Report Date'}:</b> ${new Date().toLocaleString()}</span>
+      </div>
+    </div>
+    <div class="report-block">
+      <h3 class="report-block-title">${currentLang==='ar'?'١. تعريفات المشروع':'1. Project Definitions'}</h3>
+      <p>${currentLang==='ar'?'العملة المعتمدة':'Currency'}: ${$('currency').value}</p>
+    </div>`;
+
+  blocks.forEach(b=>{
+    const src = document.getElementById(b.id);
+    if(!src) return;
+    const clone = src.cloneNode(true);
+
+    // إزالة أزرار الطباعة/الحساب من النسخة (مش محتاجينها جوه التقرير)
+    clone.querySelectorAll('.print-toolbar, button').forEach(el=>el.remove());
+
+    // تجميد القيم الحالية الفعلية للحقول (cloneNode مبيحافظش على القيمة اللي كتبها المستخدم)
+    clone.querySelectorAll('input').forEach(inp=>{
+      const live = src.querySelector('#'+inp.id);
+      if(live){ inp.setAttribute('value', live.value); }
+      inp.setAttribute('readonly','readonly');
+    });
+    clone.querySelectorAll('select').forEach(sel=>{
+      const live = src.querySelector('#'+sel.id);
+      if(live){
+        Array.from(sel.options).forEach(opt=>opt.removeAttribute('selected'));
+        if(sel.options[live.selectedIndex]) sel.options[live.selectedIndex].setAttribute('selected','selected');
+      }
+      sel.setAttribute('disabled','disabled');
+    });
+
+    // تحويل أي رسم بياني (Canvas) لصورة ثابتة لأن النسخ لا ينقل محتوى الرسم
+    clone.querySelectorAll('canvas').forEach(cv=>{
+      const liveCv = src.querySelector('#'+cv.id);
+      if(liveCv && liveCv.toDataURL){
+        try{
+          const img = document.createElement('img');
+          img.src = liveCv.toDataURL('image/png');
+          img.style.maxWidth = '100%';
+          cv.replaceWith(img);
+        }catch(e){ cv.remove(); }
+      }
+    });
+
+    html += `<div class="report-block"><h3 class="report-block-title">${currentLang==='ar'?b.ar:b.en}</h3>${clone.innerHTML}</div>`;
+  });
+
+  // تنظيف: إزالة أي id متكرر داخل النص المُنشأ لتفادي تعارضه مع عناصر الصفحات الأصلية
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = html;
+  wrapper.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+  html = wrapper.innerHTML;
+  return html;
+}
+function refreshFullReport(){
+  $('reportBox').innerHTML = buildFullReportHTML();
+  lastReportText = $('reportBox').innerText;
+}
+
+function exportTXT(){
+  const blob=new Blob([lastReportText||'EcoGrid Pro Report'],{type:'text/plain;charset=utf-8'});
+  downloadBlob(blob,'EcoGrid_Report.txt');toast('TXT exported');
+}
+function exportExcel(){
+  if(typeof XLSX==='undefined'){toast(currentLang==='ar'?'⚠️ مكتبة Excel غير متاحة (تحقق من الاتصال بالإنترنت)':'⚠️ Excel library unavailable (check internet connection)');return}
+  try{
+    const data=[['EcoGrid Pro - Executive Summary'],['Date',new Date().toLocaleString()],['Project',$('projName').value],['Owner',$('projOwner').value],['Engineer',$('projEng').value],['Report',lastReportText||'No report']];
+    const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Report');
+    XLSX.writeFile(wb,'EcoGrid_Report.xlsx');toast(currentLang==='ar'?'✅ تم تصدير Excel':'✅ Excel exported');
+  }catch(e){toast(currentLang==='ar'?'⚠️ فشل تصدير Excel':'⚠️ Excel export failed');}
+}
+function exportPDF(){
+  if(typeof html2pdf==='undefined'){toast(currentLang==='ar'?'⚠️ مكتبة PDF غير متاحة (تحقق من الاتصال بالإنترنت)':'⚠️ PDF library unavailable (check internet connection)');return}
+  const el=$('exportableArea');
+  el.classList.add('pdf-capture');
+  const cleanup=()=>el.classList.remove('pdf-capture');
+  try{
+    html2pdf().set({margin:.35,filename:'EcoGrid_Report.pdf',image:{type:'jpeg',quality:.98},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'in',format:'a4',orientation:'portrait'}})
+      .from(el).save().then(cleanup).catch(cleanup);
+    toast(currentLang==='ar'?'📄 جارٍ تصدير PDF':'📄 PDF export started');
+  }catch(e){cleanup();toast(currentLang==='ar'?'⚠️ فشل تصدير PDF':'⚠️ PDF export failed');}
+}
+function downloadBlob(blob,name){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+function clearLogs(){$('reportBox').textContent=currentLang==='ar'?'تم مسح التقرير.':'Report cleared.';lastReportText='';toast(currentLang==='ar'?'🗑️ تم مسح التقرير':'🗑️ Report cleared')}
+
+let ledgerEntries=[];
+function loadLedger(){
+  try{ ledgerEntries=JSON.parse(localStorage.getItem('ecogrid_ledger')||'[]'); }catch(e){ ledgerEntries=[]; }
+}
+function saveLedgerStorage(){ localStorage.setItem('ecogrid_ledger',JSON.stringify(ledgerEntries)); }
+function addLedgerEntry(){
+  const date=$('l_date').value||new Date().toISOString().slice(0,10);
+  const type=$('l_type').value;
+  const desc=$('l_desc').value.trim();
+  const amount=parseNum($('l_amount').value);
+  if(!desc||amount<=0){ toast(currentLang==='ar'?'⚠️ اكتب البيان والمبلغ أولًا':'⚠️ Enter description and amount first'); return; }
+  ledgerEntries.push({id:Date.now(),date,type,desc,amount});
+  saveLedgerStorage();
+  $('l_desc').value='';$('l_amount').value='';
+  renderLedgerTable();
+  toast(currentLang==='ar'?'✅ تم إضافة القيد':'✅ Entry added');
+}
+function deleteLedgerEntry(id){
+  ledgerEntries=ledgerEntries.filter(e=>e.id!==id);
+  saveLedgerStorage();renderLedgerTable();
+  toast(currentLang==='ar'?'🗑️ تم حذف القيد':'🗑️ Entry deleted');
+}
+function clearLedger(){
+  if(!ledgerEntries.length)return;
+  ledgerEntries=[];saveLedgerStorage();renderLedgerTable();
+  toast(currentLang==='ar'?'🗑️ تم مسح كل القيود':'🗑️ All entries cleared');
+}
+function renderLedgerTable(){
+  const box=$('ledgerList');if(!box)return;
+  let totalIn=0,totalOut=0;
+  const sorted=[...ledgerEntries].sort((a,b)=>a.date.localeCompare(b.date));
+  const lines=sorted.map(e=>{
+    if(e.type==='in')totalIn+=e.amount;else totalOut+=e.amount;
+    const sign=e.type==='in'?'+':'-';
+    const typeLabel=e.type==='in'?(currentLang==='ar'?'قبض':'In'):(currentLang==='ar'?'صرف':'Out');
+    return `${e.date}  [${typeLabel}]  ${e.desc}  ${sign}${money(e.amount)}`;
+  });
+  box.textContent=lines.length?lines.join('\n'):L('noEntries');
+  $('l_totalIn').textContent=money(totalIn);
+  $('l_totalOut').textContent=money(totalOut);
+  $('l_balance').textContent=money(totalIn-totalOut);
+  window._ledgerDeleteMap=sorted;
+}
+function generateLedgerReport(){
+  let totalIn=0,totalOut=0;
+  const sorted=[...ledgerEntries].sort((a,b)=>a.date.localeCompare(b.date));
+  const lines=sorted.map(e=>{
+    if(e.type==='in')totalIn+=e.amount;else totalOut+=e.amount;
+    const sign=e.type==='in'?'+':'-';
+    const typeLabel=e.type==='in'?(currentLang==='ar'?'قبض':'In'):(currentLang==='ar'?'صرف':'Out');
+    return `${e.date} | ${typeLabel} | ${e.desc} | ${sign}${money(e.amount)}`;
+  });
+  lastReportText=`[EcoGrid Pro - ${L('ledgerTitle')}]
+${currentLang==='ar'?'المشروع':'Project'}: ${$('projName').value}
+--------------------------------
+${lines.length?lines.join('\n'):L('noEntries')}
+--------------------------------
+${L('totalIn')}: ${money(totalIn)}
+${L('totalOut')}: ${money(totalOut)}
+${L('balance')}: ${money(totalIn-totalOut)}`;
+  $('reportBox').textContent=lastReportText;
+  switchTab('reports',document.querySelector(".nav-tabs button[onclick*=\"'reports'\"]"));
+  toast(currentLang==='ar'?'📑 تم توليد تقرير السجل الدفتري':'📑 Ledger report generated');
+}
+
+window.addEventListener('load',()=>{
+  $('m_date').valueAsDate=new Date();
+  if($('l_date'))$('l_date').valueAsDate=new Date();
+  loadDefs();loadLedger();renderLedgerTable();loadIoTLog();renderIoTLog();
+  $('currency').addEventListener('change',()=>{if(window._cashSeries)runFeasibility();renderLedgerTable();});
+});
+
+let iotLog=[];
+function loadIoTLog(){
+  try{ iotLog=JSON.parse(localStorage.getItem('ecogrid_iot')||'[]'); }catch(e){ iotLog=[]; }
+}
+function saveIoTLog(){ localStorage.setItem('ecogrid_iot',JSON.stringify(iotLog)); }
+function runIoT(){
+  const solar=parseNum($('io_solar').value);
+  const load=parseNum($('io_load').value);
+  const gridIn=parseNum($('io_gridin').value);
+  const gridOut=parseNum($('io_gridout').value);
+  const soc=Math.min(100,Math.max(0,parseNum($('io_soc').value)));
+  const cap=parseNum($('io_cap').value);
+  const rate=Math.abs(parseNum($('io_rate').value));
+  const mode=$('io_mode').value;
+
+  const bessToLoad = mode==='discharge' ? rate : 0;
+  const renewableToLoad = load>0 ? Math.min(solar+bessToLoad, load) : 0;
+  const gridOffsetPct = load>0 ? (renewableToLoad/load)*100 : 0;
+  const gridDepPct = load>0 ? Math.min(100,(gridIn/load)*100) : 0;
+  const remainingEnergy = cap*(soc/100);
+  const autonomyH = (mode==='discharge' && rate>0) ? remainingEnergy/rate : (load>0? remainingEnergy/load : 0);
+
+  $('io_offset').textContent = gridOffsetPct.toFixed(1)+'%';
+  $('io_dependency').textContent = gridDepPct.toFixed(1)+'%';
+  $('io_remaining').textContent = remainingEnergy.toLocaleString(undefined,{maximumFractionDigits:0})+' kWh';
+  $('io_autonomy').textContent = autonomyH.toFixed(1)+' '+(currentLang==='ar'?'ساعة':'h');
+
+  const bar=$('io_socBar');
+  bar.style.width=soc+'%';
+  bar.textContent=soc.toFixed(0)+'%';
+  bar.style.background = soc<20 ? 'var(--red)' : soc<50 ? 'var(--gold)' : 'var(--green)';
+
+  const badge=$('io_status');badge.style.display='inline-block';
+  if(soc<15){
+    badge.className='badge bad';
+    badge.textContent=currentLang==='ar'?'⚠️ البطارية منخفضة جدًا — يوصى بالشحن فورًا':'⚠️ BESS critically low — charging recommended';
+  }else if(gridOffsetPct>=90){
+    badge.className='badge ok';
+    badge.textContent=currentLang==='ar'?'🟢 اعتماد شبه كامل على الطاقة النظيفة':'🟢 Near-full clean energy coverage';
+  }else if(gridOffsetPct>=50){
+    badge.className='badge warn';
+    badge.textContent=currentLang==='ar'?'🟡 اعتماد جزئي على الطاقة النظيفة':'🟡 Partial clean energy coverage';
+  }else{
+    badge.className='badge bad';
+    badge.textContent=currentLang==='ar'?'🔴 اعتماد كبير على الشبكة':'🔴 High grid dependency';
+  }
+
+  iotLog.unshift({t:new Date().toLocaleString(),solar,load,gridIn,gridOut,soc,mode,offset:gridOffsetPct,dep:gridDepPct,autonomy:autonomyH});
+  iotLog=iotLog.slice(0,20);
+  saveIoTLog();renderIoTLog();
+  toast(currentLang==='ar'?'📡 تم تحديث القراءة الحية':'📡 Live reading updated');
+}
+function renderIoTLog(){
+  const box=$('iotList');if(!box)return;
+  if(!iotLog.length){ box.textContent=L('noReadings'); return; }
+  const modeLbl=m=>m==='discharge'?(currentLang==='ar'?'تفريغ':'Discharge'):m==='charge'?(currentLang==='ar'?'شحن':'Charge'):(currentLang==='ar'?'خامل':'Idle');
+  box.textContent=iotLog.map(r=>`${r.t}  |  ${currentLang==='ar'?'شمسي':'Solar'} ${r.solar}kW  |  ${currentLang==='ar'?'حمل':'Load'} ${r.load}kW  |  SOC ${r.soc}%  |  ${modeLbl(r.mode)}  |  ${currentLang==='ar'?'توفير':'Offset'} ${r.offset.toFixed(1)}%`).join('\n');
+}
+function clearIoTLog(){
+  if(!iotLog.length)return;
+  iotLog=[];saveIoTLog();renderIoTLog();
+  toast(currentLang==='ar'?'🗑️ تم مسح سجل القراءات':'🗑️ Readings log cleared');
+}
+function generateIoTReport(){
+  if(!iotLog.length){ toast(currentLang==='ar'?'⚠️ احسب قراءة حية أولًا':'⚠️ Calculate a live reading first'); return; }
+  const last=iotLog[0];
+  const modeLbl=m=>m==='discharge'?(currentLang==='ar'?'تفريغ (تغذي الحمل)':'Discharging (feeding load)'):m==='charge'?(currentLang==='ar'?'شحن':'Charging'):(currentLang==='ar'?'خامل':'Idle');
+  lastReportText=`[EcoGrid Pro - ${L('iotTitle')}]
+${currentLang==='ar'?'المشروع':'Project'}: ${$('projName').value}
+${currentLang==='ar'?'وقت القراءة':'Reading Time'}: ${last.t}
+${L('solarNow')}: ${last.solar} kW
+${L('loadNow')}: ${last.load} kW
+${L('gridIn')}: ${last.gridIn} kW
+${L('gridOut')}: ${last.gridOut} kW
+${L('socNow')}: ${last.soc}%
+${L('bessMode')}: ${modeLbl(last.mode)}
+${L('gridOffset')}: ${last.offset.toFixed(1)}%
+${L('gridDep')}: ${last.dep.toFixed(1)}%
+${L('bessAutonomy')}: ${last.autonomy.toFixed(1)} ${currentLang==='ar'?'ساعة':'h'}
+--------------------------------
+${currentLang==='ar'?'آخر':'Last'} ${iotLog.length} ${currentLang==='ar'?'قراءات':'readings'}:
+${iotLog.map(r=>`${r.t} | Solar ${r.solar}kW | Load ${r.load}kW | SOC ${r.soc}% | Offset ${r.offset.toFixed(1)}%`).join('\n')}`;
+  $('reportBox').textContent=lastReportText;
+  switchTab('reports',document.querySelector(".nav-tabs button[onclick*=\"'reports'\"]"));
+  toast(currentLang==='ar'?'📑 تم توليد تقرير المراقبة':'📑 Monitoring report generated');
+}
+
+/* ===== Civil & Structural Integration Module ===== */
+function runDeadWindLoads(){
+  const area=parseNum($('c_area').value);
+  const panel=parseNum($('c_panel').value);
+  const rack=parseNum($('c_rack').value);
+  const cable=parseNum($('c_cable').value);
+  const cool=parseNum($('c_cool').value);
+  let margin=parseNum($('c_margin').value);
+  if(margin<15) margin=15; // enforce minimum 15% structural safety margin
+  const wind=parseNum($('c_wind').value);
+  const height=Math.max(1,parseNum($('c_height').value));
+  const tilt=Math.max(0,parseNum($('c_tilt').value));
+
+  const deadBase=area*(panel+rack+cable+cool);
+  const deadTotal=deadBase*(1+margin/100);
+  const deadPerM2=area>0?deadTotal/area:0;
+
+  const q=0.613*Math.pow(wind,2); // Pa — dynamic wind pressure (ρ=1.225 kg/m³)
+  const kh=Math.min(1.6,Math.max(1,Math.pow(height/10,0.15))); // simplified height/exposure factor
+  const qz=q*kh;
+  const cp=Math.min(1.6,Math.max(0.4,0.4+tilt/40)); // simplified net uplift coefficient vs tilt
+  const upliftPressure=qz*cp; // N/m²
+  const upliftForceKgf=area>0?(upliftPressure*area)/9.81:0;
+  const deadPressureN=deadPerM2*9.81; // N/m²
+
+  $('c_deadTotal').textContent=deadTotal.toLocaleString(undefined,{maximumFractionDigits:0})+' kg';
+  $('c_deadPerM2').textContent=deadPerM2.toFixed(1)+' kg/m²';
+  $('c_windPressure').textContent=qz.toFixed(1)+' Pa';
+  $('c_upliftForce').textContent=upliftForceKgf.toLocaleString(undefined,{maximumFractionDigits:0})+' kgf';
+
+  const badge=$('c_windBadge');badge.style.display='inline-block';
+  if(upliftPressure>=deadPressureN*0.9){
+    badge.className='badge bad';
+    badge.textContent=currentLang==='ar'
+      ?'🔴 قوة الرفع مقاربة/تتجاوز الحمل الميت — يلزم صبات ثقالة إضافية (Ballast) أو تخفيض زاوية الميل'
+      :'🔴 Uplift approaches/exceeds dead weight — additional ballast or reduced tilt angle required';
+  }else if(upliftPressure>=deadPressureN*0.6){
+    badge.className='badge warn';
+    badge.textContent=currentLang==='ar'
+      ?'🟡 قوة رفع معتبرة — يوصى بمراجعة تثبيت الهياكل والصبات الخرسانية ومفارش العزل المطاطية'
+      :'🟡 Notable uplift — review structure anchoring, concrete ballasts, and rubber isolation pads';
+  }else{
+    badge.className='badge ok';
+    badge.textContent=currentLang==='ar'
+      ?'🟢 الحمل الميت كافٍ لمقاومة قوة الرفع وفق التقدير المبسّط'
+      :'🟢 Dead load sufficient to resist uplift per this simplified estimate';
+  }
+
+  civilState.dead={area,margin,deadTotal,deadPerM2,wind,tilt,qz,upliftForceKgf};
+  toast(currentLang==='ar'?'🏗️ تم حساب الأحمال الإنشائية':'🏗️ Structural loads calculated');
+}
+
+function runBessFloor(){
+  const w=parseNum($('c_bessW').value);
+  const area=Math.max(0.01,parseNum($('c_bessArea').value));
+  const cap=parseNum($('c_slabCap').value);
+  const spreader=$('c_spreader').value==='yes';
+  const effArea=spreader?area*1.4:area;
+  const loadPerM2=w/effArea;
+  const ratio=cap>0?(loadPerM2/cap)*100:0;
+
+  $('c_effArea').textContent=effArea.toFixed(1)+' m²';
+  $('c_bessLoadPerM2').textContent=loadPerM2.toFixed(0)+' kg/m²';
+  $('c_bessRatio').textContent=ratio.toFixed(0)+'%';
+
+  const badge=$('c_bessBadge');badge.style.display='inline-block';
+  let statusText;
+  if(ratio>100){
+    badge.className='badge bad';
+    statusText=currentLang==='ar'?'🔴 يتجاوز طاقة التحمل':'🔴 Exceeds capacity';
+    badge.textContent=currentLang==='ar'
+      ?'🔴 الحمل يتجاوز طاقة تحمل البلاطة — استخدم شاسيهات ناشرة، وسّع مساحة الارتكاز، أو انقل الحمل قرب الأعمدة/الكمرات'
+      :'🔴 Load exceeds slab capacity — use spreader beams, widen the footprint, or relocate near columns/beams';
+  }else if(ratio>80){
+    badge.className='badge warn';
+    statusText=currentLang==='ar'?'🟡 قريب من الحد المسموح':'🟡 Near allowable limit';
+    badge.textContent=currentLang==='ar'
+      ?'🟡 الحمل قريب من الحد المسموح — يفضّل التموضع قرب الأعمدة الخرسانية وتجنّب منتصف البحر'
+      :'🟡 Load near allowable limit — prefer positioning near concrete columns, avoid mid-span';
+  }else{
+    badge.className='badge ok';
+    statusText=currentLang==='ar'?'🟢 ضمن الحد المسموح':'🟢 Within allowable limit';
+    badge.textContent=currentLang==='ar'
+      ?'🟢 الحمل ضمن طاقة تحمل البلاطة المسموحة'
+      :'🟢 Load is within the allowable slab capacity';
+  }
+  $('c_bessStatusVal').textContent=statusText;
+
+  civilState.bess={w,cap,spreader,effArea,loadPerM2,ratio,statusText};
+  toast(currentLang==='ar'?'🔋 تم فحص طاقة تحمل البلاطة':'🔋 Slab capacity checked');
+}
+
+function runSeismic(){
+  const zone=$('c_seismicZone').value;
+  const vibIso=$('c_vibIso').value==='yes';
+  const seisRestraint=$('c_seisRestraint').value==='yes';
+  const zoneLbl={low:{ar:'منخفضة',en:'Low'},mid:{ar:'متوسطة',en:'Medium'},high:{ar:'مرتفعة',en:'High'}}[zone];
+
+  const badge=$('c_seismicBadge');badge.style.display='inline-block';
+  let msgAr='',msgEn='',cls='ok';
+  if(zone==='high'&&(!vibIso||!seisRestraint)){
+    cls='bad';
+    msgAr='🔴 موقع بخطورة زلزالية مرتفعة دون اكتمال إجراءات الحماية — يلزم تركيب ممتصات اهتزاز ومرابط زلزالية معتمدة قبل التشغيل';
+    msgEn='🔴 High seismic hazard site without full protection — certified vibration isolators and seismic restraints required before operation';
+  }else if(zone==='mid'&&(!vibIso||!seisRestraint)){
+    cls='warn';
+    msgAr='🟡 يوصى بإكمال تركيب ممتصات الاهتزاز والمرابط الزلزالية لموقع بخطورة متوسطة';
+    msgEn='🟡 Completing vibration isolators and seismic restraints is recommended for this medium-hazard site';
+  }else if(vibIso&&seisRestraint){
+    cls='ok';
+    msgAr='🟢 تدابير الحماية من الاهتزاز والزلازل مكتملة';
+    msgEn='🟢 Vibration and seismic protection measures are complete';
+  }else{
+    cls='ok';
+    msgAr='🟢 خطورة زلزالية منخفضة — التدابير الأساسية كافية';
+    msgEn='🟢 Low seismic hazard — basic measures are sufficient';
+  }
+  badge.className='badge '+cls;
+  badge.textContent=currentLang==='ar'?msgAr:msgEn;
+
+  civilState.seismic={zoneLbl,vibIso,seisRestraint,msgAr,msgEn};
+  toast(currentLang==='ar'?'📳 تم تقييم السلامة الزلزالية':'📳 Seismic safety evaluated');
+}
+
+function generateCivilReport(){
+  if(!civilState.dead&&!civilState.bess&&!civilState.seismic){
+    toast(currentLang==='ar'?'⚠️ احسب قسمًا واحدًا على الأقل أولًا':'⚠️ Calculate at least one section first');
+    return;
+  }
+  let lines=[`[EcoGrid Pro - ${L('civilTitle')}]`,`${currentLang==='ar'?'المشروع':'Project'}: ${$('projName').value}`,'--------------------------------'];
+
+  if(civilState.dead){
+    const d=civilState.dead;
+    lines.push(currentLang==='ar'?'▸ الأحمال الميتة وأحمال الرياح':'▸ Dead & Wind Loads');
+    lines.push(`${L('deadTotal')}: ${d.deadTotal.toLocaleString(undefined,{maximumFractionDigits:0})} kg (${currentLang==='ar'?'هامش':'margin'} ${d.margin}%)`);
+    lines.push(`${L('deadPerM2')}: ${d.deadPerM2.toFixed(1)} kg/m²`);
+    lines.push(`${L('windPressure')}: ${d.qz.toFixed(1)} Pa @ ${d.wind} m/s`);
+    lines.push(`${L('upliftForce')}: ${d.upliftForceKgf.toLocaleString(undefined,{maximumFractionDigits:0})} kgf (${currentLang==='ar'?'زاوية ميل':'tilt'} ${d.tilt}°)`);
+    lines.push('');
+  }
+  if(civilState.bess){
+    const b=civilState.bess;
+    lines.push(currentLang==='ar'?'▸ توزيع أحمال البطاريات (BESS Floor Loading)':'▸ BESS Floor Loading');
+    lines.push(`${L('bessLoadPerM2')}: ${b.loadPerM2.toFixed(0)} kg/m² (${currentLang==='ar'?'الحد المسموح':'allowable'} ${b.cap} kg/m²)`);
+    lines.push(`${L('bessRatio')}: ${b.ratio.toFixed(0)}% — ${b.statusText}`);
+    lines.push(`${currentLang==='ar'?'شاسيهات ناشرة':'Spreader beams'}: ${b.spreader?(currentLang==='ar'?'مستخدمة':'used'):(currentLang==='ar'?'غير مستخدمة':'not used')}`);
+    lines.push('');
+  }
+  if(civilState.seismic){
+    const s=civilState.seismic;
+    lines.push(currentLang==='ar'?'▸ السلامة من الاهتزاز والزلازل':'▸ Vibration & Seismic Safety');
+    lines.push(`${currentLang==='ar'?'مستوى الخطورة':'Hazard level'}: ${s.zoneLbl[currentLang]}`);
+    lines.push(`${currentLang==='ar'?'ممتصات اهتزاز':'Vibration isolators'}: ${s.vibIso?(currentLang==='ar'?'مركّبة':'installed'):(currentLang==='ar'?'غير مركّبة':'not installed')}`);
+    lines.push(`${currentLang==='ar'?'مرابط زلزالية':'Seismic restraints'}: ${s.seisRestraint?(currentLang==='ar'?'مركّبة':'installed'):(currentLang==='ar'?'غير مركّبة':'not installed')}`);
+    lines.push(currentLang==='ar'?s.msgAr:s.msgEn);
+    lines.push('');
+  }
+  lines.push('--------------------------------');
+  lines.push(currentLang==='ar'
+    ?'⚠️ نوتة تقديرية أولية لأغراض التصميم التمهيدي فقط. يجب اعتماد الحسابات النهائية من مهندس إنشائي مرخّص وفق الكود المحلي المعتمد قبل التنفيذ.'
+    :'⚠️ Preliminary estimate for early-stage design only. Final calculations must be certified by a licensed structural engineer per the applicable local code before construction.');
+
+  lastReportText=lines.join('\n');
+  $('civilList').textContent=lastReportText;
+  $('reportBox').textContent=lastReportText;
+  switchTab('reports');
+  toast(currentLang==='ar'?'📑 تم توليد النوتة الإنشائية الكاملة':'📑 Full structural note generated');
+}
+</script>
+</body>
+</html>
