@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FIDIC Shield Enterprise Pro - Multilingual Edition</title>
+<style>
+:root {
+  --primary: #0f172a;
+  --primary-light: #1e293b;
+  --accent: #0284c7;
+  --accent-hover: #0369a1;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --success: #16a34a;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #334155;
+  --border: #e2e8f0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+body { background: var(--bg); color: var(--text); padding: 12px; line-height: 1.5; -webkit-tap-highlight-color: transparent; }
+.container { max-width: 100%; margin: auto; }
+
+/* Language Bar Header */
+.lang-bar { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 8px; }
+.lang-btn {
+  background: #e2e8f0; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 6px;
+  font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #334155;
+}
+.lang-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff; padding: 18px 12px; border-radius: 12px; text-align: center;
+  margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-bottom: 4px solid var(--accent);
+}
+header h1 { font-size: 1.25rem; color: #38bdf8; margin-bottom: 4px; font-weight: 800; }
+header p { font-size: 0.8rem; color: #cbd5e1; font-weight: 600; }
+
+.card {
+  background: var(--card); border-radius: 12px; padding: 16px; margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border);
+}
+.card h3 { color: var(--primary); font-size: 0.95rem; margin-bottom: 10px; border-bottom: 2px solid #f1f5f9; padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+
+.grid-1 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+@media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.form-group { margin-bottom: 10px; }
+label { display: block; font-weight: 700; margin-bottom: 4px; font-size: 0.82rem; color: #1e293b; }
+select, input[type=date], input[type=text], input[type=number], textarea {
+  width: 100%; padding: 9px; border-radius: 8px; font-size: 0.88rem; border: 1px solid #cbd5e1;
+  background: #fff; color: var(--text); appearance: none;
+}
+select:focus, input:focus, textarea:focus { border-color: var(--accent); outline: none; }
+
+.version-toggle { display: flex; gap: 6px; }
+.version-btn {
+  flex: 1; padding: 9px; text-align: center; background: #f1f5f9; border-radius: 8px;
+  cursor: pointer; font-weight: bold; border: 1px solid var(--border); color: #475569; font-size: 0.82rem;
+}
+.version-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.btn {
+  background: var(--accent); color: #fff; border: 0; font-weight: 700; cursor: pointer;
+  padding: 11px; border-radius: 8px; width: 100%; margin-top: 5px; display: flex;
+  align-items: center; justify-content: center; gap: 6px; font-size: 0.88rem;
+}
+.btn-calendar-google { background: #ea4335; }
+.btn-copy { background: #059669; }
+.btn-save { background: #0284c7; }
+.btn-download { background: #334155; }
+
+.result-box { display: none; border-top: 2px dashed var(--border); padding-top: 12px; margin-top: 10px; }
+.badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 0.82rem; margin-bottom: 8px; }
+.badge-danger { background: #fee2e2; color: var(--danger); }
+.badge-warning { background: #fef3c7; color: var(--warning); }
+.badge-success { background: #dcfce7; color: var(--success); }
+
+.timer-display { font-size: 0.95rem; font-weight: 800; margin-bottom: 10px; }
+.info-pane { background: #f0f9ff; border-right: 4px solid var(--accent); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.82rem; color: #0c4a6e; line-height: 1.6; }
+html[dir="ltr"] .info-pane { border-right: none; border-left: 4px solid var(--accent); }
+
+.template-preview {
+  background: #f8fafc; padding: 12px; border-radius: 8px; font-family: monospace;
+  font-size: 0.8rem; white-space: pre-wrap; border: 1px solid #cbd5e1; margin: 10px 0;
+  line-height: 1.6; color: #0f172a; word-break: break-word;
+}
+html[dir="rtl"] .template-preview { direction: rtl; text-align: right; }
+html[dir="ltr"] .template-preview { direction: ltr; text-align: left; }
+
+.table-history { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.78rem; }
+.table-history th, .table-history td { border: 1px solid var(--border); padding: 7px; }
+html[dir="rtl"] .table-history th, html[dir="rtl"] .table-history td { text-align: right; }
+html[dir="ltr"] .table-history th, html[dir="ltr"] .table-history td { text-align: left; }
+.table-history th { background: #f1f5f9; color: var(--primary); }
+
+.logo-preview-box { text-align: center; margin-top: 6px; }
+.logo-preview-box img { max-height: 50px; max-width: 140px; object-fit: contain; }
+
+.tab-container { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 12px; }
+.tab-btn { flex: 1; padding: 8px; text-align: center; font-weight: bold; font-size: 0.8rem; cursor: pointer; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.guide-box { display: none; background: #fff; border-radius: 8px; padding: 12px; font-size: 0.82rem; color: #334155; line-height: 1.6; }
+.guide-box h4 { color: var(--primary); margin-top: 8px; margin-bottom: 4px; font-size: 0.88rem; }
+html[dir="rtl"] .guide-box ul { padding-right: 18px; }
+html[dir="ltr"] .guide-box ul { padding-left: 18px; }
+
+/* ================= منطقة الطباعة / حفظ PDF ================= */
+.btn-print { background: linear-gradient(135deg,#0f766e,#14b8a6); color:#fff; }
+#printArea { display:none; }
+@media print {
+  body * { visibility: hidden; }
+  #printArea, #printArea * { visibility: visible; }
+  #printArea { display:block !important; position:absolute; top:0; left:0; width:100%; padding:20px; }
+  #printArea .print-header { display:flex; align-items:center; gap:14px; border-bottom:2px solid #1e3a8a; padding-bottom:10px; margin-bottom:16px; }
+  #printArea .print-header img { height:60px; }
+  #printArea .print-header .co-name { font-weight:900; font-size:1.1rem; color:#1e3a8a; }
+  #printArea .print-meta { font-size:.85rem; margin-bottom:14px; line-height:1.8; }
+  #printArea .print-body { white-space:pre-wrap; font-size:.9rem; line-height:1.9; }
+}
+</style>
+</head>
+<body>
+
+<div id="printArea">
+  <div class="print-header">
+    <img src="" id="printLogoImg" alt="BENA">
+    <div>
+      <div class="co-name">شركة بناء للتطوير الاستراتيجي</div>
+      <div style="font-size:.8rem;color:#475569;">Bena Strategic Development Co.</div>
+    </div>
+  </div>
+  <div class="print-meta" id="printMeta"></div>
+  <div class="print-body" id="printBody"></div>
+</div>
+
+<div class="container">
+  <!-- شريط لغة التطبيق -->
+  <div class="lang-bar">
+    <button id="btnAr" class="lang-btn active" onclick="setLanguage('ar')">العربية</button>
+    <button id="btnEn" class="lang-btn" onclick="setLanguage('en')">English</button>
+  </div>
+
+  <header>
+    <h1 id="txt_app_title">منصة الحماية المسبقة لإدارة مهل إخطارات الفيديك</h1>
+    <p id="txt_app_subtitle">إعداد وتطوير: م. وائل عويس | FIDIC Shield Enterprise Edition</p>
+  </header>
+
+  <!-- التبويبات الرئيسية -->
+  <div class="tab-container">
+    <div id="tab1" class="tab-btn active" onclick="switchTab(1)">🏢 <span id="txt_tab1">إنشاء الإشعار</span></div>
+    <div id="tab2" class="tab-btn" onclick="switchTab(2)">📂 <span id="txt_tab2">السجل المحفوظ</span></div>
+    <div id="tab3" class="tab-btn" onclick="switchTab(3)">📚 <span id="txt_tab3">الدليل والمفاهيم</span></div>
+  </div>
+
+  <!-- التبويب الأول: المنظومة الرئيسية -->
+  <div id="section1">
+    <div class="card">
+      <h3 id="txt_h_parties">🏢 بيانات الأطراف وشعار الشركة</h3>
+      <div class="grid-2">
+        <div class="form-group">
+          <label id="lbl_comp">اسم الشركة / المقاول:</label>
+          <input type="text" id="companyNameInput" oninput="calculateRisk()">
+        </div>
+        <div class="form-group">
+          <label id="lbl_proj">اسم المشروع:</label>
+          <input type="text" id="projectNameInput" oninput="calculateRisk()">
+        </div>
+        <div class="form-group">
+          <label id="lbl_emp">اسم المالك (Employer):</label>
+          <input type="text" id="employerNameInput" oninput="calculateRisk()">
+        </div>
+        <div class="form-group">
+          <label id="lbl_eng">اسم الاستشاري (Engineer):</label>
+          <input type="text" id="engineerNameInput" oninput="calculateRisk()">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label id="lbl_logo">شعار الشركة (اختيار صورة من الهاتف):</label>
+        <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)">
+        <div class="logo-preview-box">
+          <img id="logoPreview" src="" alt="معاينة الشعار" style="display:none;">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 id="txt_h_contract">📋 مرجعية العقد ونوع الخطاب المطلوب</h3>
+      <div class="form-group">
+        <label id="lbl_book">اختر كتاب الفيديك المطبق:</label>
+        <select id="bookSelect" onchange="calculateRisk()">
+          <!-- Populated by JS -->
+        </select>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label id="lbl_version">إصدار العقد:</label>
+          <div class="version-toggle">
+            <div id="ver1999" class="version-btn active" onclick="setVersion('1999')">FIDIC 1999</div>
+            <div id="ver2017" class="version-btn" onclick="setVersion('2017')">FIDIC 2017</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label id="lbl_docType">نوع الخطاب المراد توليده:</label>
+          <select id="docTypeSelect" onchange="calculateRisk()">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl_clause">اختر البند التعاقدي (الـ 20 بنداً الشاملة):</label>
+        <select id="eventSelect" onchange="calculateRisk()">
+          <!-- Populated by JS -->
+        </select>
+      </div>
+
+      <div id="clauseInfoPane" class="info-pane" style="display:none;"></div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label id="lbl_eventDate">تاريخ وقوع الحدث بالموقع (سواء ماضي أو مستقبلي):</label>
+          <input type="date" id="eventDate" onchange="calculateRisk()">
+        </div>
+        <div class="form-group">
+          <label id="lbl_eot">التمديد الزمني المتوقع (EOT - أيام):</label>
+          <input type="number" id="eotDaysInput" oninput="calculateRisk()">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl_records">السجلات المعاصرة والوثائق المؤيدة:</label>
+        <textarea id="recordsInput" rows="2" oninput="calculateRisk()"></textarea>
+      </div>
+
+      <button id="btn_calc" class="btn" onclick="calculateRisk()">⚙️ تحليل المهل وإنشاء الخطاب</button>
+    </div>
+
+    <div class="card">
+      <div id="resultBox" class="result-box">
+        <div id="badgeStatus" class="badge"></div>
+        <div id="timerDisplay" class="timer-display"></div>
+        
+        <label><strong id="lbl_output">نص الخطاب المولد والمطابق للمتطلبات التعاقدية:</strong></label>
+        <div id="templateContent" class="template-preview"></div>
+
+        <div class="grid-1">
+          <button id="btn_print" class="btn btn-print" onclick="printLetter()">🖨️ طباعة / حفظ PDF</button>
+          <button id="btn_cal" class="btn btn-calendar-google" onclick="openGoogleCalendarApp()">🔔 ضبط تذكير التقويم</button>
+          <button id="btn_copy" class="btn btn-copy" onclick="copyTemplate()">📋 نسخ النص للحافظة</button>
+          <button id="btn_save" class="btn btn-save" onclick="saveToLocalHistory()">💾 حفظ بالسجل المحلي</button>
+          <button id="btn_down" class="btn btn-download" onclick="downloadAsTextFile()">📥 تحميل الخطاب كملف نصي (.txt)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- التبويب الثاني: السجل المحلي -->
+  <div id="section2" style="display:none;">
+    <div class="card">
+      <h3 id="txt_h_history">📂 سجل الإخطارات والمطالبات المحفوظة بالهاتف</h3>
+      <div style="overflow-x: auto;">
+        <table class="table-history">
+          <thead>
+            <tr>
+              <th id="th_proj">المشروع</th>
+              <th id="th_clause">البند</th>
+              <th id="th_deadline">المهلة النهائية</th>
+              <th id="th_action">إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="4" style="text-align:center; color:#94a3b8;">لا توجد سجلات محفوظة.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- التبويب الثالث: الدليل والمفاهيم -->
+  <div id="section3" style="display:none;">
+    <div class="card">
+      <h3 id="txt_h_guide">📚 دليل الحماية التعاقدية وإرشادات أندرويد</h3>
+      <div id="guideBoxContent" class="guide-box" style="display:block;">
+        <!-- Filled by JS based on language -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentLang = 'ar';
+let currentVersion = '1999';
+let base64Logo = '';
+const DEFAULT_COMPANY_LOGO = 'data:image/png;base64,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';
+
+const translations = {
+  ar: {
+    app_title: "منصة الحماية المسبقة لإدارة مهل إخطارات الفيديك",
+    app_subtitle: "إعداد وتطوير: م. وائل عويس | FIDIC Shield Enterprise Edition",
+    tab1: "إنشاء الإشعار",
+    tab2: "السجل المحفوظ",
+    tab3: "الدليل والمفاهيم",
+    h_parties: "🏢 بيانات الأطراف وشعار الشركة",
+    lbl_comp: "اسم الشركة / المقاول:",
+    ph_comp: "اسم الشركة",
+    lbl_proj: "اسم المشروع:",
+    ph_proj: "اسم المشروع",
+    lbl_emp: "اسم المالك (Employer):",
+    ph_emp: "اسم المالك",
+    lbl_eng: "اسم الاستشاري (Engineer):",
+    ph_eng: "اسم الاستشاري",
+    lbl_logo: "شعار الشركة (اختيار صورة من الهاتف):",
+    h_contract: "📋 مرجعية العقد ونوع الخطاب المطلوب",
+    lbl_book: "اختر كتاب الفيديك المطبق:",
+    lbl_version: "إصدار العقد:",
+    lbl_docType: "نوع الخطاب المراد توليده:",
+    lbl_clause: "اختر البند التعاقدي (الـ 20 بنداً الشاملة):",
+    lbl_eventDate: "تاريخ وقوع الحدث بالموقع (سواء ماضي أو مستقبلي):",
+    lbl_eot: "التمديد الزمني المتوقع (EOT - أيام):",
+    ph_eot: "عدد الأيام",
+    lbl_records: "السجلات المعاصرة والوثائق المؤيدة:",
+    ph_records: "أرقام المحاضر والخطابات والصور الميدانية...",
+    btn_calc: "⚙️ تحليل المهل وإنشاء الخطاب",
+    lbl_output: "نص الخطاب المولد والمطابق للمتطلبات التعاقدية:",
+    btn_cal: "🔔 ضبط تذكير التقويم",
+    btn_copy: "📋 نسخ النص للحافظة",
+    btn_save: "💾 حفظ بالسجل المحلي",
+    btn_down: "📥 تحميل الخطاب كملف نصي (.txt)",
+    h_history: "📂 سجل الإخطارات والمطالبات المحفوظة بالهاتف",
+    th_proj: "المشروع",
+    th_clause: "البند",
+    th_deadline: "المهلة النهائية",
+    th_action: "إجراء",
+    no_history: "لا توجد سجلات محفوظة.",
+    h_guide: "📚 دليل الحماية التعاقدية وإرشادات أندرويد",
+    guide_html: `
+      <h4>1. قاعدة الإسقاط الزمني (Time-Bar Rule):</h4>
+      <p>تنص أحكام الفيديك (تحديداً البند 20.1 في إصدار 1999 والبند 20.2 في إصدار 2017) على أنه إذا لم يقم المقاول بتقديم الإشعار خلال مدة 28 يوماً من تاريخ درايته بالحدث، يتم إسقاط حقه التعاقدي والقانوني في المكاتبات أو التعويض المالي، ويُعفى المالك من أي مسؤولية.</p>
+      <h4>2. حساب التواريخ المستقبلية (Future Calculations):</h4>
+      <p>تتيح هذه النسخة إدخال تواريخ وقوع أحداث مستقبلية متوقعة لحساب المهل النهائية مسبقاً وتخطيط الإخطارات قبل حلول موعدها.</p>
+      <h4>3. أهمية السجلات المعاصرة (Contemporary Records):</h4>
+      <p>السجلات المعاصرة هي كافة الوثائق الصادرة وقت وقوع الحدث (مثل تقارير الطقس، السجلات اليومية، صور الموقع). إرفاق هذه السجلات مع الإشعار يعزز الموقف القانوني للمقاول.</p>
+      <h4>4. التوافق مع تطبيقات أندرويد WebView:</h4>
+      <ul>
+        <li>تم إغلاق روابط التصدير المعقدة لتجنب توقف التطبيق (WebView Crash).</li>
+        <li>يتم حفظ الشعار في ذاكرة التطبيق المباشرة (Base64).</li>
+      </ul>`,
+    books: [
+      "الكتاب الأحمر (Red Book) - عقود الإنشاءات",
+      "الكتاب الأصفر (Yellow Book) - التصميم والتنفيذ",
+      "الكتاب الفضي (Silver Book) - EPC",
+      "الكتاب الأخضر (Green Book) - العقد الموجز",
+      "الكتاب الأبيض (White Book) - خدمات الاستشارات"
+    ],
+    docTypes: [
+      { v: "notice", t: "إشعار أولي مبدئي (Initial Notice)" },
+      { v: "urgent", t: "إشعار حرج وتذكير مهلة (Urgent Warning)" },
+      { v: "full", t: "مطالبة تفصيلية وحصر أضرار (Full Claim Statement)" }
+    ]
+  },
+  en: {
+    app_title: "FIDIC Shield Early Warning & Claim Management System",
+    app_subtitle: "Developed by: Eng. Wael Ewis | Enterprise Pro Edition",
+    tab1: "Create Notice",
+    tab2: "Saved Log",
+    tab3: "Guide & FAQ",
+    h_parties: "🏢 Project Parties & Company Logo",
+    lbl_comp: "Company / Contractor Name:",
+    ph_comp: "Contractor Name",
+    lbl_proj: "Project Name:",
+    ph_proj: "Project Title",
+    lbl_emp: "Employer Name:",
+    ph_emp: "Employer Name",
+    lbl_eng: "Engineer Name:",
+    ph_eng: "Engineer Name",
+    lbl_logo: "Company Logo (Upload Image):",
+    h_contract: "📋 Contract Reference & Document Type",
+    lbl_book: "Select FIDIC Book Standard:",
+    lbl_version: "Contract Version:",
+    lbl_docType: "Notice Document Type:",
+    lbl_clause: "Select Contractual Clause (20 Clauses):",
+    lbl_eventDate: "Event / Delay Date (Past or Future):",
+    lbl_eot: "Expected Extension of Time (EOT - Days):",
+    ph_eot: "Number of Days",
+    lbl_records: "Contemporary Records & Supporting Docs:",
+    ph_records: "Site logs, letters, photos, meeting minutes...",
+    btn_calc: "⚙️ Analyze Timelines & Generate Notice",
+    lbl_output: "Generated Contractual Notice Text:",
+    btn_cal: "🔔 Set Calendar Reminder",
+    btn_copy: "📋 Copy to Clipboard",
+    btn_save: "💾 Save to Local Log",
+    btn_down: "📥 Download as Text File (.txt)",
+    h_history: "📂 Saved Notices & Claims Log",
+    th_proj: "Project",
+    th_clause: "Clause",
+    th_deadline: "Final Deadline",
+    th_action: "Action",
+    no_history: "No saved records found.",
+    h_guide: "📚 Contractual Protection Guide & Android Notes",
+    guide_html: `
+      <h4>1. The Time-Bar Rule:</h4>
+      <p>Under FIDIC conditions (Clause 20.1 in 1999 & Clause 20.2 in 2017), failure to submit the initial notice within 28 days of event awareness forfeit the Contractor's legal right to time extension or additional payment.</p>
+      <h4>2. Future Date Forecasting:</h4>
+      <p>This version supports choosing future planned event dates to forecast critical notification deadlines ahead of time.</p>
+      <h4>3. Contemporary Records:</h4>
+      <p>Maintaining daily site logs, weather data, and photos concurrently is essential for substantiating any contractual entitlement.</p>
+      <h4>4. Android WebView Optimization:</h4>
+      <ul>
+        <li>Optimized memory storage for logos (Base64) without requiring local storage permissions.</li>
+        <li>Full compatibility with native mobile webview renders.</li>
+      </ul>`,
+    books: [
+      "FIDIC Red Book - Construction Contract",
+      "FIDIC Yellow Book - Plant & Design-Build",
+      "FIDIC Silver Book - EPC / Turnkey",
+      "FIDIC Green Book - Short Form of Contract",
+      "FIDIC White Book - Client/Consultant Services"
+    ],
+    docTypes: [
+      { v: "notice", t: "Initial Notice of Event" },
+      { v: "urgent", t: "Urgent Warning / Time-Bar Reminder" },
+      { v: "full", t: "Full Detailed Claim Statement" }
+    ]
+  }
+};
+
+const eventData = {
+  "1.9": { 
+    limit: 28, clause99: "Clause 1.9", clause17: "Clause 1.9",
+    desc_ar: "تأخر المخططات والتعليمات", desc_en: "Delayed Drawings or Instructions",
+    det_ar: "يُستخدم عندما يتأخر الاستشاري في إظهار مخططات تفصيلية أو إصدار تعليمات موقعية أدت لتوقف العمل.",
+    det_en: "Used when the Engineer fails to issue drawings or instructions within a reasonable time."
+  },
+  "2.1": { 
+    limit: 28, clause99: "Clause 2.1", clause17: "Clause 2.1",
+    desc_ar: "تأخر تسليم الموقع وتمكين الوصول", desc_en: "Right of Access to the Site",
+    det_ar: "حق المقاول الأصيل في دخول الموقع والاستحواذ عليه في المواعيد المحددة بالعقد.",
+    det_en: "Failure by the Employer to give right of access to or possession of the site."
+  },
+  "4.7": { 
+    limit: 28, clause99: "Clause 4.7", clause17: "Clause 4.7",
+    desc_ar: "أخطاء في أبعاد أو مستويات النقاط المرجعية", desc_en: "Setting Out Errors",
+    det_ar: "يتعلق بالأخطاء الواردة في النقاط المرجعية الأساسية المسلمة كتابياً من الاستشاري.",
+    det_en: "Errors in specified reference items for setting out the works."
+  },
+  "4.12": { 
+    limit: 28, clause99: "Clause 4.12", clause17: "Clause 4.12",
+    desc_ar: "ظروف مادية غير متوقعة بالموقع", desc_en: "Unforeseeable Physical Conditions",
+    det_ar: "يشمل العوائق الفيزيائية أو والمحتويات المائية والتربة الصخرية التي لم تكن متوقعة.",
+    det_en: "Encountering physical conditions which were Unforeseeable by an experienced contractor."
+  },
+  "4.24": { 
+    limit: 28, clause99: "Clause 4.24", clause17: "Clause 4.24",
+    desc_ar: "العثور على أحافير أو آثار بالموقع", desc_en: "Fossils & Antiquities",
+    det_ar: "يتطلب إيقاف العمل لحماية الاكتشافات وحفظ حق المقاول الكامل في التعويض والتمديد.",
+    det_en: "Discovery of fossils, coins, articles of value or antiquity on site."
+  },
+  "7.4": { 
+    limit: 28, clause99: "Clause 7.4", clause17: "Clause 7.4",
+    desc_ar: "تأخير الاختبارات أثناء تنفيذ الأعمال", desc_en: "Testing Delays",
+    det_ar: "يتعلق بتعطل إجراء الاختبارات الميدانية بمرجع سبب يعود إلى المالك أو الاستشاري.",
+    det_en: "Delays caused by Employer/Engineer in carrying out specified tests."
+  },
+  "8.4": { 
+    limit: 28, clause99: "Clause 8.4", clause17: "Clause 8.5",
+    desc_ar: "طلب التمديد الزمني للإكمال EOT", desc_en: "Extension of Time for Completion",
+    det_ar: "الطلب المباشر لتمديد مدة الإكمال بسبب الأعمال الإضافية أو الظروف الاستثنائية.",
+    det_en: "Contractor entitlement to Extension of Time (EOT) for completion."
+  },
+  "8.9": { 
+    limit: 28, clause99: "Clause 8.9", clause17: "Clause 8.10",
+    desc_ar: "تعليق العمل بطلب من المهندس الاستشاري", desc_en: "Suspension of Work by Engineer",
+    det_ar: "صدور أمر تعليق رسمي يوجب حماية المنشآت وحفظ تكاليف التوقف.",
+    det_en: "Engineer instructs suspension of progress of part or all of the Works."
+  },
+  "8.11": { 
+    limit: 28, clause99: "Clause 8.11", clause17: "Clause 8.12",
+    desc_ar: "استمرار تعليق العمل لأكثر من 84 يوماً", desc_en: "Prolonged Suspension (84+ Days)",
+    det_ar: "يعطي المقاول الحق في طلب إنهاء التعليق أو إلغاء العقد للجزء المتأثر.",
+    det_en: "Suspension has continued for more than 84 days without resumption instruction."
+  },
+  "9.2": { 
+    limit: 14, clause99: "Clause 9.2", clause17: "Clause 9.2",
+    desc_ar: "تأخر إجراء اختبارات الإنجاز", desc_en: "Delayed Tests on Completion",
+    det_ar: "عند تأخر الاستشاري في الاستجابة لإجراء اختبارات التسليم المبدئي.",
+    det_en: "Employer/Engineer delays conducting Tests on Completion."
+  },
+  "10.1": { 
+    limit: 28, clause99: "Clause 10.1", clause17: "Clause 10.1",
+    desc_ar: "طلب الحصول على شهادة تسلم الأعمال TOC", desc_en: "Taking Over Certificate Request",
+    det_ar: "تقديم طلب التسليم المبدئي الرسمي عند استكمال الأعمال الجوهرية.",
+    det_en: "Application for Taking-Over Certificate when Works are substantially complete."
+  },
+  "11.8": { 
+    limit: 28, clause99: "Clause 11.8", clause17: "Clause 11.8",
+    desc_ar: "تكليف المقاول بالبحث عن أسباب العيوب", desc_en: "Contractor to Search for Defects",
+    det_ar: "المطالبة بالتكاليف المالية للبحث إذا تبين أن العيب ليس ناتجاً عن المقاول.",
+    det_en: "Searching for cause of defects where Contractor is not liable for defect cost."
+  },
+  "12.3": { 
+    limit: 28, clause99: "Clause 12.3", clause17: "Clause 12.3",
+    desc_ar: "تغييرات في التقييم أو إعادات القياس", desc_en: "Evaluation & Rate Adjustments",
+    det_ar: "تعديل الفئات والأسعار إذا تجاوزت الكميات المنفذة الحدود المحددة.",
+    det_en: "Remeasured quantity changes justifying unit rate adjustments."
+  },
+  "13.1": { 
+    limit: 14, clause99: "Clause 13.1", clause17: "Clause 13.3",
+    desc_ar: "أوامر التغييرات والأعمال الإضافية", desc_en: "Variations & Extra Works",
+    det_ar: "إخطارات الاعتراض على أوامر التغيير أو المطالبة بفئات جديدة.",
+    det_en: "Right to claim cost and time adjustments resulting from Variations."
+  },
+  "13.7": { 
+    limit: 28, clause99: "Clause 13.7", clause17: "Clause 13.6",
+    desc_ar: "التعديلات الناتجة عن تغيير القوانين", desc_en: "Adjustments for Changes in Legislation",
+    det_ar: "مطالبات زيادة التكاليف المباشرة الناتجة عن تعديل الضرائب أو الأنظمة المحلية.",
+    det_en: "Changes in laws/regulations impacting Cost and Time after Base Date."
+  },
+  "16.1": { 
+    limit: 21, clause99: "Clause 16.1", clause17: "Clause 16.1",
+    desc_ar: "حق المقاول في تعليق العمل لتأخر الدفعات", desc_en: "Suspension for Non-Payment",
+    det_ar: "إشعار تعليق العمل أو تخفيض وتيرة التنفيذ بسبب التأخر في تسديد الدفعات.",
+    det_en: "Contractor entitlement to suspend work or reduce rate of work for non-payment."
+  },
+  "17.4": { 
+    limit: 28, clause99: "Clause 17.4", clause17: "Clause 17.4",
+    desc_ar: "الأضرار والتعويضات الناتجة عن مخاطر المالك", desc_en: "Consequences of Employer's Risks",
+    det_ar: "التعويض المالي عن الأضرار الناتجة عن المخاطر التشغيلية للمالك.",
+    det_en: "Loss or damage arising from specified Employer's Risks."
+  },
+  "18.1": { 
+    limit: 14, clause99: "Clause 18.1", clause17: "Clause 18.1",
+    desc_ar: "إشعار وقوع القوة القاهرة / الأحداث الاستثنائية", desc_en: "Exceptional Events / Force Majeure",
+    det_ar: "إشعار الظروف والشرائط الاستثنائية الناتجة عن الكوارث والتغيرات القاهرة.",
+    det_en: "Notice of Exceptional Event preventing performance of contractual duties."
+  },
+  "19.2": { 
+    limit: 14, clause99: "Clause 19.2", clause17: "Clause 18.2",
+    desc_ar: "الإشعار بظروف تمنع الوفاء بالالتزامات", desc_en: "Notice of Impending Inability to Perform",
+    det_ar: "إحاطة الأطراف باستحالة الاستمرار للوصول للإعفاء التعاقدي.",
+    det_en: "Notice that party will be prevented from performing obligations."
+  },
+  "20.1": { 
+    limit: 42, clause99: "Clause 20.1", clause17: "Clause 20.2.4",
+    desc_ar: "تقديم المطالبة التفصيلية الكاملة والمالية", desc_en: "Fully Detailed Claim Submission",
+    det_ar: "تقديم الملف الشامل المكتمل والمطالبة المالية والتحليل الزمني التفصيلي.",
+    det_en: "Submission of fully detailed claim statement within 42 days."
+  },
+  "20.1a": {
+    limit: 28, clause99: "Clause 20.1", clause17: "Clause 20.2.1",
+    desc_ar: "الإشعار الأولي بالمطالبة (أهم بند إسقاط حق في العقد)", desc_en: "Initial Notice of Claim (Critical Time-Bar)",
+    det_ar: "أهم إشعار في العقد كله: يجب إخطار المهندس/المالك بأي مطالبة خلال 28 يوماً من علم المقاول بالحدث، وإلا سقط الحق في المطالبة نهائياً.",
+    det_en: "The single most critical notice in the contract: failure to notify within 28 days of becoming aware of the event/circumstance can bar the claim entirely."
+  },
+  "2.5": {
+    limit: 28, clause99: "Clause 2.5", clause17: "Clause 20.2 (Employer's Claims)",
+    desc_ar: "إخطار المالك بمطالبته تجاه المقاول", desc_en: "Employer's Notice of Claim",
+    det_ar: "الجانب المقابل: حق المالك في إخطار المقاول بأي مطالبة مالية أو تمديد لفترة الضمان، بنفس ضوابط الإشعار والمهلة الزمنية.",
+    det_en: "Employer's right to claim payment or extension of Defects Notification Period, subject to equivalent notice requirements."
+  },
+  "8.5": {
+    limit: 28, clause99: "Clause 8.5", clause17: "Clause 8.6",
+    desc_ar: "التأخير الناتج عن السلطات الحكومية المختصة", desc_en: "Delays Caused by Authorities",
+    det_ar: "تأخر الحصول على تصاريح أو موافقات من جهات حكومية رغم بذل المقاول للعناية والجهد المعقول.",
+    det_en: "Delay caused by public authorities in carrying out their duties despite the Contractor's diligent efforts."
+  },
+  "10.2": {
+    limit: 28, clause99: "Clause 10.2", clause17: "Clause 10.2",
+    desc_ar: "التسليم الجزئي لأجزاء من الأعمال", desc_en: "Taking Over of Parts of the Works",
+    det_ar: "طلب اعتماد التسليم المبدئي لجزء محدد من الأعمال يُستخدم أو يُشغَّل فعلياً بمعرفة المالك قبل الإكمال الكلي.",
+    det_en: "Application for Taking-Over of a section or part of the Works used/occupied by the Employer ahead of full completion."
+  },
+  "10.3": {
+    limit: 14, clause99: "Clause 10.3", clause17: "Clause 10.3",
+    desc_ar: "تدخل المالك في اختبارات الإنجاز", desc_en: "Interference with Tests on Completion",
+    det_ar: "تعطل أو منع إجراء اختبارات التسليم بسبب تدخل المالك، بما يستوجب تمديداً واعتبار الاختبار كأنه تم بنجاح.",
+    det_en: "Employer's interference preventing Tests on Completion, entitling the Contractor to have the tests treated as passed."
+  },
+  "11.3": {
+    limit: 28, clause99: "Clause 11.3", clause17: "Clause 11.3",
+    desc_ar: "الاعتراض على تمديد فترة الإخطار بالعيوب", desc_en: "Extension of Defects Notification Period",
+    det_ar: "اعتراض المقاول على أي تمديد لفترة الضمان يتجاوز الحدود التعاقدية المتفق عليها أصلاً.",
+    det_en: "Contractor's right to object where the Defects Notification Period is extended beyond contractual limits."
+  },
+  "12.4": {
+    limit: 28, clause99: "Clause 12.4", clause17: "Clause 12.4",
+    desc_ar: "التعويض عن حذف بنود من الأعمال", desc_en: "Omissions from the Works",
+    det_ar: "مطالبة بتعويض التكاليف الثابتة والأرباح المتوقعة الناتجة عن حذف بند كان سينفذه المقاول أصلاً.",
+    det_en: "Claim for costs/loss of profit where an omitted item was intended to be carried out by the Contractor."
+  },
+  "13.3": {
+    limit: 28, clause99: "Clause 13.3", clause17: "Clause 13.3.1",
+    desc_ar: "الاعتراض على أمر تغيير أو تقديم مقترح بديل", desc_en: "Variation Procedure / Right to Object",
+    det_ar: "إخطار الاستشاري بعدم إمكانية توريد المواد المطلوبة للتغيير، أو بتأثيره السلبي على الأعمال قبل التنفيذ.",
+    det_en: "Notice that the Contractor cannot obtain required Goods, or that the Variation adversely affects the Works."
+  },
+  "13.8": {
+    limit: 28, clause99: "Clause 13.8", clause17: "Clause 13.8",
+    desc_ar: "تعديل الأسعار بسبب تغير تكاليف المدخلات", desc_en: "Adjustments for Changes in Cost",
+    det_ar: "مطالبة بتعديل قيمة العقد نتيجة تغير أسعار العمالة والمواد والمعدات عن مؤشرات الأساس المتفق عليها.",
+    det_en: "Claim for cost adjustment due to fluctuations in labour, materials, or plant costs against agreed base indices."
+  },
+  "14.7": {
+    limit: 21, clause99: "Clause 14.7", clause17: "Clause 14.7",
+    desc_ar: "تأخر المالك في سداد الدفعات المستحقة", desc_en: "Timing of Payments / Late Payment",
+    det_ar: "تجاوز المالك للمهلة التعاقدية لسداد المستخلصات المعتمدة، وهو أساس لاحتساب فوائد التأخير والمطالبة بالتعليق.",
+    det_en: "Employer's failure to pay certified amounts within the contractual period, triggering financing charges and suspension rights."
+  },
+  "14.8": {
+    limit: 28, clause99: "Clause 14.8", clause17: "Clause 14.8",
+    desc_ar: "المطالبة بفوائد التمويل عن الدفعات المتأخرة", desc_en: "Financing Charges for Late Payment",
+    det_ar: "استحقاق المقاول لفوائد تمويلية تلقائية عن أي مبلغ متأخر السداد، محسوبة من تاريخ الاستحقاق التعاقدي.",
+    det_en: "Contractor's automatic entitlement to financing charges compounded monthly on any overdue certified payment."
+  },
+  "16.2": {
+    limit: 14, clause99: "Clause 16.2", clause17: "Clause 16.2",
+    desc_ar: "إخطار إنهاء العقد من جانب المقاول", desc_en: "Termination by Contractor",
+    det_ar: "إشعار بإنهاء العقد بعد استمرار تعليق العمل أو عدم السداد لمدد تتجاوز الحدود التعاقدية القصوى.",
+    det_en: "Notice of termination following prolonged non-payment or suspension exceeding contractual limits."
+  },
+  "17.3": {
+    limit: 28, clause99: "Clause 17.3", clause17: "Clause 17.2",
+    desc_ar: "إخطار وقوع أحد مخاطر المالك المحددة تعاقدياً", desc_en: "Occurrence of an Employer's Risk",
+    det_ar: "إخطار فوري بوقوع أحد الأحداث المصنفة تعاقدياً كمخاطر يتحملها المالك، تمهيداً لمطالبة تعويض لاحقة.",
+    det_en: "Prompt notice of an event classified as an Employer's Risk, as a precursor to a subsequent compensation claim."
+  },
+  "19.4": {
+    limit: 28, clause99: "Clause 19.4", clause17: "Clause 18.4",
+    desc_ar: "المطالبة بالآثار المترتبة على القوة القاهرة", desc_en: "Consequences of Force Majeure / Exceptional Event",
+    det_ar: "مطالبة بتمديد المدة أو التعويض المالي الناتج عن استمرار حدث القوة القاهرة بعد الإخطار الأولي.",
+    det_en: "Claim for EOT and/or cost resulting from a continuing Force Majeure / Exceptional Event after the initial notice."
+  },
+  "20.4": {
+    limit: 84, clause99: "Clause 20.4", clause17: "Clause 21.4",
+    desc_ar: "إحالة النزاع لهيئة فض المنازعات (DAB)", desc_en: "Referral of Dispute to the DAB",
+    det_ar: "إحالة أي نزاع لم يُحل ودياً إلى هيئة فض المنازعات للحصول على قرار خلال المدة التعاقدية المحددة.",
+    det_en: "Referral of an unresolved dispute to the Dispute Adjudication/Avoidance Board for a decision within the contractual period."
+  }
+};
+
+const dateInput = document.getElementById('eventDate');
+dateInput.value = new Date().toISOString().split('T')[0];
+
+function setLanguage(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+  document.getElementById('btnAr').className = 'lang-btn ' + (lang === 'ar' ? 'active' : '');
+  document.getElementById('btnEn').className = 'lang-btn ' + (lang === 'en' ? 'active' : '');
+
+  const t = translations[lang];
+
+  document.getElementById('txt_app_title').innerText = t.app_title;
+  document.getElementById('txt_app_subtitle').innerText = t.app_subtitle;
+  document.getElementById('txt_tab1').innerText = t.tab1;
+  document.getElementById('txt_tab2').innerText = t.tab2;
+  document.getElementById('txt_tab3').innerText = t.tab3;
+
+  document.getElementById('txt_h_parties').innerText = t.h_parties;
+  document.getElementById('lbl_comp').innerText = t.lbl_comp;
+  document.getElementById('companyNameInput').placeholder = t.ph_comp;
+  document.getElementById('lbl_proj').innerText = t.lbl_proj;
+  document.getElementById('projectNameInput').placeholder = t.ph_proj;
+  document.getElementById('lbl_emp').innerText = t.lbl_emp;
+  document.getElementById('employerNameInput').placeholder = t.ph_emp;
+  document.getElementById('lbl_eng').innerText = t.lbl_eng;
+  document.getElementById('engineerNameInput').placeholder = t.ph_eng;
+  document.getElementById('lbl_logo').innerText = t.lbl_logo;
+
+  document.getElementById('txt_h_contract').innerText = t.h_contract;
+  document.getElementById('lbl_book').innerText = t.lbl_book;
+  document.getElementById('lbl_version').innerText = t.lbl_version;
+  document.getElementById('lbl_docType').innerText = t.lbl_docType;
+  document.getElementById('lbl_clause').innerText = t.lbl_clause;
+  document.getElementById('lbl_eventDate').innerText = t.lbl_eventDate;
+  document.getElementById('lbl_eot').innerText = t.lbl_eot;
+  document.getElementById('eotDaysInput').placeholder = t.ph_eot;
+  document.getElementById('lbl_records').innerText = t.lbl_records;
+  document.getElementById('recordsInput').placeholder = t.ph_records;
+
+  document.getElementById('btn_calc').innerText = t.btn_calc;
+  document.getElementById('lbl_output').innerText = t.lbl_output;
+  document.getElementById('btn_cal').innerText = t.btn_cal;
+  document.getElementById('btn_copy').innerText = t.btn_copy;
+  document.getElementById('btn_save').innerText = t.btn_save;
+  document.getElementById('btn_down').innerText = t.btn_down;
+
+  document.getElementById('txt_h_history').innerText = t.h_history;
+  document.getElementById('th_proj').innerText = t.th_proj;
+  document.getElementById('th_clause').innerText = t.th_clause;
+  document.getElementById('th_deadline').innerText = t.th_deadline;
+  document.getElementById('th_action').innerText = t.th_action;
+
+  document.getElementById('txt_h_guide').innerText = t.h_guide;
+  document.getElementById('guideBoxContent').innerHTML = t.guide_html;
+
+  populateDropdowns();
+  calculateRisk();
+  renderHistory();
+}
+
+function populateDropdowns() {
+  const t = translations[currentLang];
+
+  const bookSel = document.getElementById('bookSelect');
+  const oldBookVal = bookSel.value;
+  bookSel.innerHTML = '';
+  t.books.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b; opt.innerText = b;
+    bookSel.appendChild(opt);
+  });
+  if (oldBookVal) bookSel.value = oldBookVal;
+
+  const docSel = document.getElementById('docTypeSelect');
+  const oldDocVal = docSel.value;
+  docSel.innerHTML = '';
+  t.docTypes.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.v; opt.innerText = d.t;
+    docSel.appendChild(opt);
+  });
+  if (oldDocVal) docSel.value = oldDocVal;
+
+  const eventSel = document.getElementById('eventSelect');
+  const oldEvtVal = eventSel.value;
+  eventSel.innerHTML = `<option value="">${currentLang === 'ar' ? '-- اختر البند التعاقدي --' : '-- Select Contractual Clause --'}</option>`;
+  for (let k in eventData) {
+    const item = eventData[k];
+    const desc = currentLang === 'ar' ? item.desc_ar : item.desc_en;
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.innerText = `${k} - ${desc} (${item.limit} ${currentLang === 'ar' ? 'يوماً' : 'Days'})`;
+    eventSel.appendChild(opt);
+  }
+  if (oldEvtVal) eventSel.value = oldEvtVal;
+}
+
+function switchTab(tabIndex) {
+  document.getElementById('tab1').className = 'tab-btn ' + (tabIndex === 1 ? 'active' : '');
+  document.getElementById('tab2').className = 'tab-btn ' + (tabIndex === 2 ? 'active' : '');
+  document.getElementById('tab3').className = 'tab-btn ' + (tabIndex === 3 ? 'active' : '');
+
+  document.getElementById('section1').style.display = tabIndex === 1 ? 'block' : 'none';
+  document.getElementById('section2').style.display = tabIndex === 2 ? 'block' : 'none';
+  document.getElementById('section3').style.display = tabIndex === 3 ? 'block' : 'none';
+}
+
+function setVersion(ver) {
+  currentVersion = ver;
+  document.getElementById('ver1999').className = 'version-btn ' + (ver === '1999' ? 'active' : '');
+  document.getElementById('ver2017').className = 'version-btn ' + (ver === '2017' ? 'active' : '');
+  calculateRisk();
+}
+
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      base64Logo = evt.target.result;
+      const img = document.getElementById('logoPreview');
+      img.src = base64Logo;
+      img.style.display = 'inline-block';
+      localStorage.setItem('fidic_saved_logo', base64Logo);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function calculateRisk() {
+  const key = document.getElementById('eventSelect').value;
+  const v = dateInput.value;
+  const box = document.getElementById('resultBox');
+  const infoPane = document.getElementById('clauseInfoPane');
+  const docType = document.getElementById('docTypeSelect').value;
+
+  const comp = document.getElementById('companyNameInput').value || (currentLang === 'ar' ? '[اسم المقاول]' : '[Contractor Name]');
+  const proj = document.getElementById('projectNameInput').value || (currentLang === 'ar' ? '[اسم المشروع]' : '[Project Name]');
+  const emp = document.getElementById('employerNameInput').value || (currentLang === 'ar' ? '[اسم المالك]' : '[Employer Name]');
+  const eng = document.getElementById('engineerNameInput').value || (currentLang === 'ar' ? '[اسم الاستشاري]' : '[Engineer Name]');
+  const eotDays = document.getElementById('eotDaysInput').value;
+
+  if (!key || !v) {
+    box.style.display = 'none';
+    infoPane.style.display = 'none';
+    return;
+  }
+
+  const item = eventData[key];
+  const detailsText = currentLang === 'ar' ? item.det_ar : item.det_en;
+  const descText = currentLang === 'ar' ? item.desc_ar : item.desc_en;
+  
+  infoPane.innerHTML = `<strong>💡 ${currentLang === 'ar' ? 'المنظور التعاقدي للبند' : 'Clause Context'} (${key}):</strong> ${detailsText}`;
+  infoPane.style.display = 'block';
+
+  // حساب التاريخ القانوني بدون قيود زمنية لتعميد التواريخ المستقبلية
+  const selectedDate = new Date(v);
+  const deadlineDate = new Date(selectedDate);
+  deadlineDate.setDate(deadlineDate.getDate() + item.limit);
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const remainingDays = Math.ceil((deadlineDate - today) / 86400000);
+  const badge = document.getElementById('badgeStatus');
+  const clauseRef = currentVersion === '1999' ? item.clause99 : item.clause17;
+  const recs = document.getElementById('recordsInput').value || (currentLang === 'ar' ? 'لا توجد سجلات مدونة.' : 'No records logged.');
+
+  let template = '';
+
+  if (currentLang === 'ar') {
+    let eotText = eotDays ? `\nمدة التمديد الزمني المقدرة مبدئياً: (${eotDays}) يوماً تقويمياً.` : '';
+    if (docType === 'notice') {
+      template = 
+`المقاول: ${comp}
+المشروع: ${proj}
+المالك: ${emp}
+الاستشاري: ${eng}
+
+الموضوع: إشعار رسمـي مبدئي بموجب أحكام (${clauseRef}) - ${descText}
+المرجع العقد المطبق: ${document.getElementById('bookSelect').value} (${currentVersion})
+تاريخ وقوع الحدث بالموقع: ${v}
+
+السيد المهندس / الاستشاري المحترم (${eng})،
+تحية طيبة وبعد،،،
+
+إشارة إلى العقد المشار إليه أعلاه، واستناداً إلى أحكام وشروط العقد المبرم وتحديداً أحكام (${clauseRef})؛ نود إحاطتكم علماً بالواقعة التالية والتي أثرت / ستؤثر مباشرة على سير الأعمال الميدانية:
+
+تفاصيل السجلات المعاصرة والوثائق المؤيدة للموقع:
+${recs}${eotText}
+
+بناءً عليه، يتم تقديم هذا الإشعار ضمن المهل والمدد التعاقدية المحددة بالشرط. ونحتفظ بحقنا الكامل في تقديم المطالبة التفصيلية المكتملة بالتكاليف المالية والتمديد الزمني المناسب فور اكتمال الحصر.
+
+وتفضلوا بقبول فائق الاحترام والتقدير،،،
+
+عن شركة / المقاول: ${comp}
+التاريخ: ${new Date().toISOString().split('T')[0]}`;
+    } else if (docType === 'urgent') {
+      template = 
+`المقاول: ${comp}
+المشروع: ${proj}
+المالك: ${emp}
+الاستشاري: ${eng}
+
+الموضوع: إشعار عاجل وتذكير بانتهاء المهلة التعاقدية المحددة بالشرط (${clauseRef})
+مرجع الحدث: ${descText} | تاريخ الوقوع: ${v}
+
+السيد المهندس / الاستشاري المحترم (${eng})،
+تحية طيبة وبعد،،،
+
+نود إحاطتكم علماً بأنه وعلى الرغم من إخطاراتنا السابقة، إلا أن أسباب التكلفة والتأخير لا تزال قائمة بالموقع.
+نؤكد أن الموعد النهائي المحدد بالشرط (${clauseRef}) هو (${deadlineDate.toISOString().split('T')[0]}).
+
+عليه، نكرر طلبنا بسرعة اتخاذ الإجراءات اللازمة وإصدار التعليمات المطلوبة، مع حفظ كافة حقوق المقاول التعاقدية والمالية.
+
+عن شركة / المقاول: ${comp}
+التاريخ: ${new Date().toISOString().split('T')[0]}`;
+    } else {
+      template = 
+`المقاول: ${comp}
+المشروع: ${proj}
+المالك: ${emp}
+الاستشاري: ${eng}
+
+الموضوع: بيان المطالبة التفصيلية المكتملة (Full Claim Statement) بموجب (${clauseRef})
+مرجع العقد: ${document.getElementById('bookSelect').value} (${currentVersion})
+
+السيد المهندس / الاستشاري المحترم (${eng})،
+تحية طيبة وبعد،،،
+
+لاحقاً لإشعارنا الأولي المسجل بتاريخ (${v}) والمتعلق بـ (${descText})؛ نرفق لكم بموجب هذا المطالبة التفصيلية الشاملة المكتملة ماليًا وزمنيًا.
+
+أولاً: السجلات المعاصرة والتحليل الفني:
+${recs}
+
+ثانياً: المطالبة الزمنية والمالية:
+- التمديد الزمني المطلوب: (${eotDays || '---'}) يوماً تقويمياً.
+- التكاليف المباشرة وغير المباشرة حُصرت بالملفات المرفقة.
+
+نلتمس منكم مراجعة المطالبة والمصادقة عليها طبقاً لأحكام العقد.
+
+عن شركة / المقاول: ${comp}
+التاريخ: ${new Date().toISOString().split('T')[0]}`;
+    }
+  } else {
+    // English Templates
+    let eotTextEn = eotDays ? `\nEstimated Extension of Time (EOT): (${eotDays}) calendar days.` : '';
+    if (docType === 'notice') {
+      template = 
+`Contractor: ${comp}
+Project: ${proj}
+Employer: ${emp}
+Engineer: ${eng}
+
+Subject: Formal Notice under ${clauseRef} - ${descText}
+Contract Reference: ${document.getElementById('bookSelect').value} (${currentVersion})
+Event Date: ${v}
+
+Dear Engineer (${eng}),
+
+In accordance with the General Conditions of Contract, specifically ${clauseRef}, we hereby give formal notice regarding the following event affecting the progress of the Works:
+
+Contemporary Records & Event Particulars:
+${recs}${eotTextEn}
+
+This notice is submitted within the contractual time-limit. We reserve all rights to submit a fully detailed claim for time extension and cost reimbursement.
+
+Yours faithfully,
+
+For Contractor: ${comp}
+Date: ${new Date().toISOString().split('T')[0]}`;
+    } else if (docType === 'urgent') {
+      template = 
+`Contractor: ${comp}
+Project: ${proj}
+Employer: ${emp}
+Engineer: ${eng}
+
+Subject: URGENT WARNING - Contractual Time-Bar Reminder under ${clauseRef}
+Event Reference: ${descText} | Event Date: ${v}
+
+Dear Engineer (${eng}),
+
+Further to our previous communications, please note that the impact of the subject event remains ongoing.
+We emphasize that the contractual deadline under ${clauseRef} expires on (${deadlineDate.toISOString().split('T')[0]}).
+
+We urge your prompt instruction to mitigate further delay and cost, while reserving all our rights.
+
+For Contractor: ${comp}
+Date: ${new Date().toISOString().split('T')[0]}`;
+    } else {
+      template = 
+`Contractor: ${comp}
+Project: ${proj}
+Employer: ${emp}
+Engineer: ${eng}
+
+Subject: Fully Detailed Claim Statement under ${clauseRef}
+Contract Standard: ${document.getElementById('bookSelect').value} (${currentVersion})
+
+Dear Engineer (${eng}),
+
+Further to our initial notice dated (${v}) regarding (${descText}), we herewith submit our fully detailed claim statement.
+
+1. Contemporary Records & Technical Substantiation:
+${recs}
+
+2. Time & Cost Evaluation:
+- Extension of Time Requested: (${eotDays || '---'}) Calendar Days.
+- Cost evaluation detailed in attached schedules.
+
+Please review and certify in accordance with Contract terms.
+
+For Contractor: ${comp}
+Date: ${new Date().toISOString().split('T')[0]}`;
+    }
+  }
+
+  document.getElementById('templateContent').innerText = template;
+
+  if (remainingDays < 0) {
+    badge.className = 'badge badge-danger';
+    badge.innerText = currentLang === 'ar' ? 'انتهت المهلة التعاقدية (Time-Bar Passed)' : 'Deadline Passed (Time-Barred)';
+    document.getElementById('timerDisplay').innerHTML = `<span style="color:var(--danger)">${currentLang === 'ar' ? 'انتهت المهلة منذ' : 'Expired'} ${Math.abs(remainingDays)} ${currentLang === 'ar' ? 'يوم' : 'days ago'}. (${deadlineDate.toISOString().split('T')[0]})</span>`;
+  } else if (remainingDays <= 5) {
+    badge.className = 'badge badge-warning';
+    badge.innerText = currentLang === 'ar' ? 'تحذير: الموعد النهائي وشيك جداً' : 'Urgent: Deadline Approaching';
+    document.getElementById('timerDisplay').innerHTML = `<span style="color:var(--warning)">${currentLang === 'ar' ? 'متبقي' : 'Remaining:'} ${remainingDays} ${currentLang === 'ar' ? 'يوم' : 'days'}. (${deadlineDate.toISOString().split('T')[0]})</span>`;
+  } else {
+    badge.className = 'badge badge-success';
+    badge.innerText = currentLang === 'ar' ? 'ضمن الفترة الآمنة' : 'Safe Window';
+    document.getElementById('timerDisplay').innerHTML = `<span style="color:var(--success)">${currentLang === 'ar' ? 'متبقي' : 'Remaining:'} ${remainingDays} ${currentLang === 'ar' ? 'يوم' : 'days'}. (${deadlineDate.toISOString().split('T')[0]})</span>`;
+  }
+  box.style.display = 'block';
+}
+
+function openGoogleCalendarApp() {
+  const key = document.getElementById('eventSelect').value;
+  const v = document.getElementById('eventDate').value;
+  if (!key || !v) { 
+    alert(currentLang === 'ar' ? 'اختر البند والتاريخ أولاً.' : 'Select clause and date first.'); 
+    return; 
+  }
+
+  const item = eventData[key];
+  const deadline = new Date(v);
+  deadline.setDate(deadline.getDate() + item.limit);
+  const dStr = deadline.toISOString().split('T')[0].replaceAll('-', '');
+
+  const descText = currentLang === 'ar' ? item.desc_ar : item.desc_en;
+  const title = encodeURIComponent(`🚨 FIDIC Notice Deadline (${key})`);
+  const details = encodeURIComponent(`Deadline for notice: ${descText}`);
+  
+  const gUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dStr}/${dStr}&details=${details}`;
+  window.location.href = gUrl;
+}
+
+function copyTemplate() {
+  const text = document.getElementById('templateContent').innerText;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => alert(currentLang === 'ar' ? 'تم النسخ للحافظة بنجاح.' : 'Copied to clipboard.'));
+  } else {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    alert(currentLang === 'ar' ? 'تم النسخ للحافظة بنجاح.' : 'Copied to clipboard.');
+  }
+}
+
+function downloadAsTextFile() {
+  const text = document.getElementById('templateContent').innerText;
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `FIDIC_Notice_${document.getElementById('eventDate').value}.txt`;
+  link.click();
+}
+
+function printLetter() {
+  const text = document.getElementById('templateContent').innerText;
+  if (!text || !text.trim()) {
+    alert(currentLang === 'ar' ? 'من فضلك أنشئ الخطاب الأول قبل الطباعة.' : 'Please generate the letter first.');
+    return;
+  }
+  const proj = document.getElementById('projectNameInput').value || (currentLang === 'ar' ? '[اسم المشروع]' : '[Project Name]');
+  const emp = document.getElementById('employerNameInput').value || (currentLang === 'ar' ? '[اسم المالك]' : '[Employer]');
+  const today = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-GB');
+
+  document.getElementById('printLogoImg').src = base64Logo || DEFAULT_COMPANY_LOGO;
+  document.getElementById('printMeta').innerHTML = currentLang === 'ar'
+    ? `<strong>المشروع:</strong> ${proj} &nbsp; | &nbsp; <strong>المالك:</strong> ${emp} &nbsp; | &nbsp; <strong>تاريخ الطباعة:</strong> ${today}`
+    : `<strong>Project:</strong> ${proj} &nbsp; | &nbsp; <strong>Employer:</strong> ${emp} &nbsp; | &nbsp; <strong>Date:</strong> ${today}`;
+  document.getElementById('printBody').textContent = text;
+
+  window.print();
+}
+
+function saveToLocalHistory() {
+  const proj = document.getElementById('projectNameInput').value || 'Project';
+  const key = document.getElementById('eventSelect').value;
+  const v = document.getElementById('eventDate').value;
+  
+  if (!key || !v) { 
+    alert(currentLang === 'ar' ? 'يرجى اختيار البند والتاريخ أولاً.' : 'Select clause and date first.'); 
+    return; 
+  }
+
+  const item = eventData[key];
+  const deadlineDate = new Date(v);
+  deadlineDate.setDate(deadlineDate.getDate() + item.limit);
+
+  const record = { proj, key, deadlineStr: deadlineDate.toISOString().split('T')[0] };
+  let history = JSON.parse(localStorage.getItem('fidic_app_history') || '[]');
+  history.push(record);
+  localStorage.setItem('fidic_app_history', JSON.stringify(history));
+
+  renderHistory();
+  alert(currentLang === 'ar' ? 'تم الحفظ في ذاكرة الهاتف بنجاح.' : 'Saved locally.');
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('fidic_app_history') || '[]');
+  const tbody = document.getElementById('historyTableBody');
+
+  if (history.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">${translations[currentLang].no_history}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = '';
+  history.forEach((rec, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${rec.proj}</td>
+      <td>${rec.key}</td>
+      <td>${rec.deadlineStr}</td>
+      <td><button style="color:red; border:none; background:none; cursor:pointer;" onclick="deleteHistory(${index})">${currentLang === 'ar' ? 'حذف' : 'Delete'}</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function deleteHistory(index) {
+  let history = JSON.parse(localStorage.getItem('fidic_app_history') || '[]');
+  history.splice(index, 1);
+  localStorage.setItem('fidic_app_history', JSON.stringify(history));
+  renderHistory();
+}
+
+window.onload = function() {
+  setLanguage('ar');
+  const savedLogo = localStorage.getItem('fidic_saved_logo');
+  if (savedLogo) {
+    base64Logo = savedLogo;
+    const img = document.getElementById('logoPreview');
+    img.src = savedLogo;
+    img.style.display = 'inline-block';
+  }
+};
+</script>
+</body>
+</html>
