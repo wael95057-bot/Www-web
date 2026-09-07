@@ -23,6 +23,8 @@ tailwind.config = {
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<!-- مكتبة html2pdf لتنزيل التقرير بصيغة PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap');
 * { font-family: 'Cairo', sans-serif; }
@@ -444,52 +446,120 @@ body { background: #0A1628; }
     </div>
   </section>
 
-  <!-- ================= REPORTS ================= -->
+  <!-- ================= REPORTS & COMPREHENSIVE NOTES ================= -->
   <section id="content-reports" class="tab-content hidden space-y-6">
     <div class="bg-white text-gray-900 rounded-xl p-8 shadow-2xl max-w-4xl mx-auto border border-gray-300 print:shadow-none" id="printableReport">
+      
+      <!-- ترويسة التقرير الشامل -->
       <div class="border-b-2 border-gray-800 pb-4 flex justify-between items-start">
         <div>
-          <h2 class="text-2xl font-bold text-gray-900" data-ar="تقرير مذكرة حسابات مركز البيانات (BDCI)" data-en="BDCI Data Center Calculation Note Report">تقرير مذكرة حسابات مركز البيانات (BDCI)</h2>
-          <p class="text-sm text-gray-600">BDCI — Building Data Center Intelligence Report</p>
+          <h2 class="text-2xl font-bold text-gray-900" data-ar="التقرير الهندي الشامل للمشروع والمذكرات (BDCI)" data-en="BDCI Comprehensive Engineering & Notes Report">التقرير الهندسي الشامل للمشروع والمذكرات (BDCI)</h2>
+          <p class="text-sm text-gray-600">Building Data Center Intelligence — Full System Consolidated Summary</p>
         </div>
         <div class="text-start">
-          <p class="text-xs font-semibold text-gray-500">Prepared By:</p>
+          <p class="text-xs font-semibold text-gray-500">المعد بواسطة / Prepared By:</p>
           <p class="text-sm font-bold text-gray-800">Eng. Wael Ali Ewis Mahmoud</p>
           <p class="text-xs text-gray-500 mt-1" id="repDateText"></p>
         </div>
       </div>
+
       <div class="mt-6 space-y-6">
+        <!-- ١. المواصفات الأساسية -->
         <div>
-          <h3 class="text-md font-bold text-blue-900 border-b border-gray-200 pb-1" data-ar="١. المواصفات الأساسية للمشروع" data-en="1. Core Project Specifications">١. المواصفات الأساسية للمشروع</h3>
+          <h3 class="text-md font-bold text-blue-900 border-b border-gray-300 pb-1" data-ar="١. المواصفات الأساسية وحاسبة CapEx / OpEx" data-en="1. Core Specifications & CapEx / OpEx">١. المواصفات الأساسية وحاسبة CapEx / OpEx</h3>
           <div class="grid grid-cols-2 gap-4 mt-3 text-sm">
-            <p><strong>Project Name:</strong> <span id="repValName">Edge Data Center — BDCI Phase 1</span></p>
-            <p><strong>Area:</strong> <span id="repValArea">300</span> sqm</p>
-            <p><strong>IT Capacity:</strong> <span id="repValCap">1.0</span> MW</p>
-            <p><strong>Target PUE:</strong> <span id="repValPue">1.4</span></p>
+            <p><strong>اسم المشروع:</strong> <span id="repValName">Edge Data Center — BDCI Phase 1</span></p>
+            <p><strong>المساحة:</strong> <span id="repValArea">300</span> م²</p>
+            <p><strong>السعة التقنية (IT):</strong> <span id="repValCap">1.0</span> MW</p>
+            <p><strong>مؤشر PUE المستهدف:</strong> <span id="repValPue">1.4</span></p>
+            <p><strong>إجمالي CapEx:</strong> <span id="repValCapex" class="font-bold text-blue-800">$2,500,000</span></p>
+            <p><strong>OpEx السنوي:</strong> <span id="repValOpex" class="font-bold text-blue-800">$1,500,000</span></p>
+          </div>
+          <div class="mt-3 p-3 bg-gray-50 border rounded text-xs leading-relaxed" id="repCalcNotes"></div>
+        </div>
+
+        <!-- ٢. قراءات الطاقة والتبريد والمحاكاة -->
+        <div>
+          <h3 class="text-md font-bold text-blue-900 border-b border-gray-300 pb-1" data-ar="٢. حالة الطاقة اللحظية وتحسين التبريد الذكي" data-en="2. Energy & AI Cooling Status">٢. حالة الطاقة اللحظية وتحسين التبريد الذكي</h3>
+          <div class="grid grid-cols-3 gap-2 mt-2 text-xs text-center">
+            <div class="p-2 border rounded bg-gray-50"><p class="text-gray-500">مؤشر PUE اللحظي</p><p id="repLivePue" class="font-bold text-sm">1.43</p></div>
+            <div class="p-2 border rounded bg-gray-50"><p class="text-gray-500">حمل IT الحالي</p><p id="repLiveIt" class="font-bold text-sm">720 kW</p></div>
+            <div class="p-2 border rounded bg-gray-50"><p class="text-gray-500">إجمالي سحب المنشأة</p><p id="repLiveTotal" class="font-bold text-sm">1030 kW</p></div>
+          </div>
+          <div class="mt-3 text-xs">
+            <p class="font-semibold text-gray-700">توصيات نظام التبريد الذكي:</p>
+            <div id="repCoolNotes" class="space-y-1 mt-1"></div>
           </div>
         </div>
+
+        <!-- ٣. التنبؤ بالأعطال والتخطيط الاستراتيجي -->
         <div>
-          <h3 class="text-md font-bold text-blue-900 border-b border-gray-200 pb-1" data-ar="٢. تحليل التكاليف والموازنة الاستثمارية (CapEx)" data-en="2. Cost Analysis & CapEx">٢. تحليل التكاليف والموازنة الاستثمارية (CapEx)</h3>
-          <table class="w-full mt-3 text-xs border-collapse border border-gray-300">
-            <thead><tr class="bg-gray-100 text-gray-700">
-              <th class="border border-gray-300 p-2 text-start">System</th><th class="border border-gray-300 p-2 text-start">Share</th><th class="border border-gray-300 p-2 text-start">Cost (USD)</th>
-            </tr></thead>
-            <tbody>
-              <tr><td class="border border-gray-300 p-2">Electrical Infrastructure</td><td class="border border-gray-300 p-2">40%</td><td class="border border-gray-300 p-2">$1,000,000</td></tr>
-              <tr class="bg-gray-50"><td class="border border-gray-300 p-2">Mechanical & Cooling</td><td class="border border-gray-300 p-2">20%</td><td class="border border-gray-300 p-2">$500,000</td></tr>
-              <tr><td class="border border-gray-300 p-2">Civil & Architectural</td><td class="border border-gray-300 p-2">20%</td><td class="border border-gray-300 p-2">$500,000</td></tr>
-              <tr class="bg-gray-50"><td class="border border-gray-300 p-2">Security & Fire Suppression</td><td class="border border-gray-300 p-2">10%</td><td class="border border-gray-300 p-2">$250,000</td></tr>
-              <tr><td class="border border-gray-300 p-2">IT & Management</td><td class="border border-gray-300 p-2">10%</td><td class="border border-gray-300 p-2">$250,000</td></tr>
-            </tbody>
+          <h3 class="text-md font-bold text-blue-900 border-b border-gray-300 pb-1" data-ar="٣. التنبؤ بالأعطال والتخطيط الاستراتيجي" data-en="3. Predictive Maintenance & Strategic Planning">٣. التنبؤ بالأعطال والتخطيط الاستراتيجي</h3>
+          <div class="grid grid-cols-2 gap-4 mt-2 text-xs">
+            <div class="border p-2 rounded">
+              <p class="font-semibold text-gray-800 mb-1">نتائج التنبؤ بالأعطال:</p>
+              <div id="repPredictiveNotes">—</div>
+            </div>
+            <div class="border p-2 rounded">
+              <p class="font-semibold text-gray-800 mb-1">توصية التخطيط الاستراتيجي:</p>
+              <div id="repStrategicNotes">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ٤. متتبع المراحل وتوزيع التكاليف -->
+        <div>
+          <h3 class="text-md font-bold text-blue-900 border-b border-gray-300 pb-1" data-ar="٤. متتبع تقدم مراحل المشروع (MS-01 → MS-07)" data-en="4. Project Milestones Status">٤. متتبع تقدم مراحل المشروع (MS-01 → MS-07)</h3>
+          <table class="w-full mt-2 text-xs border-collapse border border-gray-300">
+            <thead><tr class="bg-gray-100 text-gray-700"><th class="border border-gray-300 p-1.5 text-start">المرحلة</th><th class="border border-gray-300 p-1.5 text-start">الوصف</th><th class="border border-gray-300 p-1.5 text-start">الحالة</th></tr></thead>
+            <tbody id="repMilestonesTable"></tbody>
           </table>
         </div>
+
+        <!-- ٥. إدارة الأصول والتناغم الإداري -->
         <div>
-          <h3 class="text-md font-bold text-blue-900 border-b border-gray-200 pb-1" data-ar="٣. النتائج المالية ومؤشرات الربحية" data-en="3. Financial Results & Profitability">٣. النتائج المالية ومؤشرات الربحية</h3>
-          <p class="text-sm text-gray-700 mt-2" data-ar="يُظهر المشروع فترة استرداد رأس مال تتراوح بين ٤.٢ إلى ٤.٥ سنوات، مع معدل عائد داخلي (IRR) بواقع ١٦.٥٪ على مدار دورة حياة ٥ سنوات." data-en="The project shows a payback period of 4.2 to 4.5 years, with an Internal Rate of Return (IRR) of 16.5% over a 5-year lifecycle.">يُظهر المشروع فترة استرداد رأس مال تتراوح بين ٤.٢ إلى ٤.٥ سنوات، مع معدل عائد داخلي (IRR) بواقع ١٦.٥٪ على مدار دورة حياة ٥ سنوات.</p>
+          <h3 class="text-md font-bold text-blue-900 border-b border-gray-300 pb-1" data-ar="٥. سجل الأصول وتتبع المخاطر والتدقيق الرقمي" data-en="5. Assets, Risks & Digital Audit Summary">٥. سجل الأصول وتتبع المخاطر والتدقيق الرقمي</h3>
+          <div class="grid grid-cols-3 gap-3 mt-2 text-xs">
+            <div class="border p-2 rounded">
+              <p class="font-bold text-gray-800 border-b pb-1 mb-1">الأصول الصيانة (SLA):</p>
+              <ul id="repAssetsList" class="space-y-1 list-disc list-inside text-[11px]"></ul>
+            </div>
+            <div class="border p-2 rounded">
+              <p class="font-bold text-gray-800 border-b pb-1 mb-1">مصفوفة المخاطر:</p>
+              <ul id="repRisksList" class="space-y-1 list-disc list-inside text-[11px]"></ul>
+            </div>
+            <div class="border p-2 rounded">
+              <p class="font-bold text-gray-800 border-b pb-1 mb-1">التدقيق الرقمي:</p>
+              <ul id="repAuditList" class="space-y-1 list-disc list-inside text-[11px]"></ul>
+            </div>
+          </div>
         </div>
+
+        <!-- ٦. الموردين والاعتمادات المالية -->
+        <div>
+          <h3 class="text-md font-bold text-blue-900 border-b border-gray-300 pb-1" data-ar="٦. منصة الموردين والاعتماد الرقمي" data-en="6. Suppliers & Digital Sign-off">٦. منصة الموردين والاعتماد الرقمي</h3>
+          <div class="grid grid-cols-2 gap-4 mt-2 text-xs">
+            <div>
+              <p class="font-semibold text-gray-700">حالة التوريدات والشهادات:</p>
+              <ul id="repSuppliersList" class="space-y-1 list-disc list-inside mt-1 text-[11px]"></ul>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-700">اعتمادات الفواتير والتسليمات:</p>
+              <ul id="repSignoffList" class="space-y-1 list-disc list-inside mt-1 text-[11px]"></ul>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="mt-8 pt-4 border-t border-gray-300 flex justify-end print:hidden">
-        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded text-sm font-semibold flex items-center gap-1"><i class="fa-solid fa-print"></i><span data-ar="طباعة التقرير" data-en="Print Report">طباعة التقرير</span></button>
+
+      <!-- أزرار الطباعة والتنزيل -->
+      <div class="mt-8 pt-4 border-t border-gray-300 flex justify-end gap-3 print:hidden">
+        <button onclick="downloadPDF()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2 rounded text-sm font-semibold flex items-center gap-2 shadow transition">
+          <i class="fa-solid fa-file-pdf"></i><span data-ar="تنزيل PDF" data-en="Download PDF">تنزيل PDF</span>
+        </button>
+        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded text-sm font-semibold flex items-center gap-2 shadow transition">
+          <i class="fa-solid fa-print"></i><span data-ar="طباعة التقرير" data-en="Print Report">طباعة التقرير</span>
+        </button>
       </div>
     </div>
   </section>
@@ -542,6 +612,7 @@ function switchTab(tabId, btn){
   document.getElementById('pageTitle').textContent = pageTitles[tabId][currentLang==='ar'?0:1];
   document.querySelector('main').scrollTop = 0;
   closeSidebar();
+  if(tabId === 'reports') generateFullConsolidatedReport();
 }
 function openSidebar(){
   document.getElementById('sidebar').classList.remove('hidden');
@@ -575,6 +646,7 @@ function toggleLanguage(){
 
   renderRegistry(); renderAssets(); renderRisks(); renderAudit(); renderSuppliers(); renderSignoffs(); renderMilestones();
   document.getElementById('repDateText').textContent = (currentLang==='ar'?'التاريخ: ':'Date: ') + todayStr;
+  generateFullConsolidatedReport();
 }
 
 document.getElementById('currentDateDisplay').textContent = todayStr;
@@ -626,6 +698,8 @@ function runCalculations(){
   document.getElementById('repValArea').textContent = area;
   document.getElementById('repValCap').textContent = itCapMW;
   document.getElementById('repValPue').textContent = pue;
+  document.getElementById('repValCapex').textContent = '$'+Math.round(estimatedCapEx).toLocaleString();
+  document.getElementById('repValOpex').textContent = '$'+Math.round(estimatedOpEx).toLocaleString();
 
   document.getElementById('calculationNotesContent').innerHTML = `
     <p>• ${currentLang==='ar'?'إجمالي الحمل الكلي مع معامل PUE':'Total facility draw with PUE'} ${pue}: ${totalDrawMW.toFixed(2)} MW.</p>
@@ -761,11 +835,10 @@ function runCoolingOptimizer(){
   else if(hum > 60){ items.push({type:'amber', text: currentLang==='ar' ? `الرطوبة مرتفعة (${hum}%) — خطر تكاثف. يُنصح بتفعيل إزالة الرطوبة.` : `Humidity is high (${hum}%) — condensation risk. Recommend activating dehumidification.`}); }
   else { items.push({type:'green', text: currentLang==='ar' ? `الرطوبة (${hum}%) ضمن النطاق الآمن (٤٠-٦٠٪).` : `Humidity (${hum}%) is within the safe range (40-60%).`}); }
 
-  const requiredAirflow = 160; // approx m3/h per kW rule of thumb reference note
   if(airflow < 8000){ items.push({type:'amber', text: currentLang==='ar' ? `تدفق الهواء (${airflow} m³/h) قد يكون غير كافٍ — تحقق من بلاط الأرضية المرفوعة ومراوح CRAC.` : `Airflow (${airflow} m³/h) may be insufficient — check raised-floor tiles and CRAC fan speeds.`}); }
   else { items.push({type:'green', text: currentLang==='ar' ? `تدفق الهواء (${airflow} m³/h) كافٍ لمستوى الحمل الحالي.` : `Airflow (${airflow} m³/h) is adequate for the current load level.`}); }
 
-  if(outside > 32){ items.push({type:'amber', text: currentLang==='ar' ? `درجة الحرارة الخارجية مرتفعة (${outside}°C) — يُنصح بتحويل جزئي من التبريد الاقتصادي (Free Cooling) إلى التبريد الميكانيكي الكامل لتفادي الحمل الزائد.` : `Ambient temp is high (${outside}°C) — recommend partial shift from free-cooling to full mechanical cooling to avoid overload.`}); }
+  if(outside > 32){ items.push({type:'amber', text: currentLang==='ar' ? `درجة الحرارة الخارجية مرتفعة (${outside}°C) — يُنصح بتحويل جزئي من التبريد الاقتصادي إلى التبريد الميكانيكي الكامل.` : `Ambient temp is high (${outside}°C) — recommend partial shift from free-cooling to full mechanical cooling.`}); }
 
   box.innerHTML = items.map(i=>`<div class="rounded-lg p-3 badge-${i.type} flex items-start gap-2"><i class="fa-solid ${i.type==='green'?'fa-circle-check':i.type==='red'?'fa-triangle-exclamation':'fa-circle-info'} mt-0.5"></i><span>${i.text}</span></div>`).join('');
 }
@@ -801,8 +874,8 @@ function runPredictiveMaintenance(){
       <p class="text-lg font-bold text-gold2 mt-1">${predictedStr}</p>
     </div>
     <p class="text-xs text-gray-400 leading-relaxed">${currentLang==='ar'
-      ? 'التوصية: جدولة فحص وقائي قبل التاريخ المتوقع بأسبوعين على الأقل، مع مراجعة سجل الأعطال السابقة لهذه المعدة.'
-      : "Recommendation: schedule a preventive inspection at least two weeks before the predicted date, and review this equipment's past failure log."}</p>`;
+      ? 'التوصية: جدولة فحص وقائي قبل التاريخ المتوقع بأسبوعين على الأقل.'
+      : "Recommendation: schedule a preventive inspection at least two weeks before the predicted date."}</p>`;
 
   pmLog.unshift({name, riskLevel, riskClass, date: predictedStr});
   if(pmLog.length>8) pmLog.pop();
@@ -978,7 +1051,7 @@ function renderAudit(){
 /* ---------- SUPPLIER PORTAL ---------- */
 let suppliers = [
   {name:'Al-Fanar Electromechanical', item:'Diesel Generators', schedule:'2026-09-15', cert:'pending'},
-  {name:'CoolTech Systems', item:'CRAC Units', schedule:'2026-08-25', cert:'uploaded'},
+  {name:'CoolTech Cooling Systems', item:'Chiller Units', schedule:'2026-08-30', cert:'uploaded'},
 ];
 function addSupplier(){
   const name = document.getElementById('supName').value.trim();
@@ -991,41 +1064,79 @@ function addSupplier(){
   renderSuppliers();
 }
 function renderSuppliers(){
-  document.getElementById('suppliersTableBody').innerHTML = suppliers.map(s=>{
-    const certOk = s.cert==='uploaded';
-    return `<tr><td class="p-2 text-white">${s.name}</td><td class="p-2 text-gray-300">${s.item}</td><td class="p-2 text-gray-400">${s.schedule}</td><td class="p-2"><span class="badge-${certOk?'green':'amber'} px-2 py-0.5 rounded text-[11px]">${certOk ? (currentLang==='ar'?'مرفوعة':'Uploaded') : (currentLang==='ar'?'بانتظار الشهادة':'Pending')}</span></td></tr>`;
-  }).join('') || `<tr><td colspan="4" class="p-4 text-center text-gray-500">—</td></tr>`;
+  document.getElementById('suppliersTableBody').innerHTML = suppliers.map(s=>`<tr><td class="p-2 text-white">${s.name}</td><td class="p-2 text-gray-300">${s.item}</td><td class="p-2 text-gray-400">${s.schedule}</td><td class="p-2"><span class="${s.cert==='uploaded'?'badge-green':'badge-amber'} px-2 py-0.5 rounded text-[11px]">${s.cert==='uploaded'?(currentLang==='ar'?'مرفوعة':'Uploaded'):(currentLang==='ar'?'بانتظار الشهادة':'Pending')}</span></td></tr>`).join('');
 }
 
 /* ---------- DIGITAL SIGN-OFF ---------- */
 let signoffs = [
-  {name:'Invoice #INV-1042 — Cooling Package', amount:185000, status:'pending'},
-  {name:'MS-02 Design Deliverable Sign-off', amount:0, status:'approved'},
+  {name:'Invoice #104 — Mechanical Piping', amount:45000, status:'approved'},
+  {name:'Submittal — High Voltage Switchgear', amount:120000, status:'pending'},
 ];
 function addSignoff(){
   const name = document.getElementById('soName').value.trim();
   const amount = parseFloat(document.getElementById('soAmount').value)||0;
-  if(!name){ alert(currentLang==='ar'?'الرجاء إدخال اسم التسليم':'Please enter a deliverable name'); return; }
+  if(!name){ alert(currentLang==='ar'?'الرجاء إدخال اسم التسليم':'Please enter deliverable name'); return; }
   signoffs.push({name, amount, status:'pending'});
   document.getElementById('soName').value=''; document.getElementById('soAmount').value='';
   renderSignoffs();
 }
-function setSignoffStatus(i, status){ signoffs[i].status = status; renderSignoffs(); }
+function approveSignoff(i){ signoffs[i].status = 'approved'; renderSignoffs(); }
 function renderSignoffs(){
-  const meta = { pending:['amber', currentLang==='ar'?'قيد المراجعة':'Pending'], approved:['green', currentLang==='ar'?'معتمد':'Approved'], rejected:['red', currentLang==='ar'?'مرفوض':'Rejected'] };
-  document.getElementById('signoffTableBody').innerHTML = signoffs.map((s,i)=>{
-    const m = meta[s.status];
-    const actions = s.status==='pending' ? `<button onclick="setSignoffStatus(${i},'approved')" class="text-emerald-400 hover:text-emerald-300 me-3"><i class="fa-solid fa-check"></i></button><button onclick="setSignoffStatus(${i},'rejected')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-xmark"></i></button>` : '—';
-    return `<tr><td class="p-2 text-white">${s.name}</td><td class="p-2 text-gray-300">${s.amount ? '$'+s.amount.toLocaleString() : '—'}</td><td class="p-2"><span class="badge-${m[0]} px-2 py-0.5 rounded text-[11px]">${m[1]}</span></td><td class="p-2">${actions}</td></tr>`;
-  }).join('');
+  document.getElementById('signoffTableBody').innerHTML = signoffs.map((s,i)=>`<tr><td class="p-2 text-white">${s.name}</td><td class="p-2 text-gold2">$${s.amount.toLocaleString()}</td><td class="p-2"><span class="${s.status==='approved'?'badge-green':'badge-amber'} px-2 py-0.5 rounded text-[11px]">${s.status==='approved'?(currentLang==='ar'?'معتمد':'Approved'):(currentLang==='ar'?'قيد المراجعه':'Pending')}</span></td><td class="p-2">${s.status==='pending'?`<button onclick="approveSignoff(${i})" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded"><i class="fa-solid fa-check"></i></button>`:'—'}</td></tr>`).join('');
 }
 
-/* ---------- INIT ---------- */
-initPueChart();
-renderRegistry(); renderAssets(); renderMilestones(); renderRisks(); renderAudit(); renderSuppliers(); renderSignoffs();
-runCalculations();
-updateEnergyDashboard();
-runStrategicPlanning();
+/* ---------- CONSOLIDATE ALL DATA INTO REPORTS & NOTES ---------- */
+function generateFullConsolidatedReport(){
+  // 1. CapEx Notes
+  const calcNote = document.getElementById('calculationNotesContent').innerHTML;
+  document.getElementById('repCalcNotes').innerHTML = calcNote || '<p>لا توجد ملاحظات حسابية مسجلة.</p>';
+
+  // 2. Energy & Cooling
+  document.getElementById('repLivePue').textContent = document.getElementById('pueLiveValue').textContent;
+  document.getElementById('repLiveIt').textContent = document.getElementById('engItLoadDisp').textContent;
+  document.getElementById('repLiveTotal').textContent = document.getElementById('engTotalLoadDisp').textContent;
+  
+  const coolRes = document.getElementById('coolResults').innerHTML;
+  document.getElementById('repCoolNotes').innerHTML = coolRes || '<p class="text-gray-500 font-italic">لم يتم تشغيل المحلل الذكي للتبريد بعد.</p>';
+
+  // 3. Predictive & Strategic
+  const pmRes = document.getElementById('pmResults').innerHTML;
+  document.getElementById('repPredictiveNotes').innerHTML = pmRes || '<p class="text-gray-500">لا يوجد تنبؤ بالأعطال مسجل.</p>';
+
+  const spRec = document.getElementById('spRecommendation').innerHTML;
+  document.getElementById('repStrategicNotes').innerHTML = spRec || '<p class="text-gray-500">لا توجد توصية استراتيجية مسجلة.</p>';
+
+  // 4. Milestones
+  const statusMeta = { done:'مكتملة', progress:'قيد التنفيذ', pending:'لم تبدأ' };
+  document.getElementById('repMilestonesTable').innerHTML = milestones.map(m=>`<tr><td class="border border-gray-300 p-1.5 font-bold">${m.id}</td><td class="border border-gray-300 p-1.5">${currentLang==='ar'?m.ar:m.en}</td><td class="border border-gray-300 p-1.5">${statusMeta[m.status]}</td></tr>`).join('');
+
+  // 5. Assets, Risks, Audit
+  document.getElementById('repAssetsList').innerHTML = assets.map(a=>`<li><b>${a.name}</b> (${typeLabels[a.type][0]}) - صيانة: ${a.last}</li>`).join('') || '<li>لا توجد أصول.</li>';
+  document.getElementById('repRisksList').innerHTML = risks.map(r=>`<li><b>${currentLang==='ar'?r.name_ar:r.name_en}</b> - [${r.status}]</li>`).join('') || '<li>لا توجد مخاطر.</li>';
+  document.getElementById('repAuditList').innerHTML = auditItems.map(a=>`<li><b>${a.item}</b> (${a.ref}) - استحقاق: ${a.due}</li>`).join('') || '<li>لا يوجد تدقيق.</li>';
+
+  // 6. Suppliers & Signoffs
+  document.getElementById('repSuppliersList').innerHTML = suppliers.map(s=>`<li><b>${s.name}</b>: ${s.item} (${s.schedule})</li>`).join('') || '<li>لا يوجد موردين.</li>';
+  document.getElementById('repSignoffList').innerHTML = signoffs.map(s=>`<li><b>${s.name}</b>: $${s.amount.toLocaleString()} - [${s.status==='approved'?'معتمد':'قيد المراجعه'}]</li>`).join('') || '<li>لا توجد اعتمادات.</li>';
+}
+
+/* ---------- FUNCTION TO DOWNLOAD PDF ---------- */
+function downloadPDF(){
+  const element = document.getElementById('printableReport');
+  const opt = {
+    margin:       0.3,
+    filename:     `BDCI_Report_${todayStr}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+/* Initialize All UI Features */
+runCalculations(); runLoadSimulator(); runCoolingOptimizer(); runPredictiveMaintenance(); runStrategicPlanning();
+renderAssets(); renderMilestones(); renderRisks(); renderAudit(); renderSuppliers(); renderSignoffs(); renderRegistry();
+window.onload = ()=>{ initPueChart(); updateEnergyDashboard(); generateFullConsolidatedReport(); };
 </script>
 </body>
 </html>
