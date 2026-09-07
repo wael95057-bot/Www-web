@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>منظومة الهندسة الذكية | Eng. Wael Ali Ewis Mahmoud</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root{
+    --bg:#0b1220; --panel:#121b2e; --panel2:#0f1830; --line:#223151;
+    --paper:#e8edf7; --muted:#8ea0c2; --brand:#2f7dfb; --brand2:#22c39a;
+    --amber:#f5b544; --red:#ef5563; --green:#22c39a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--paper); font-family:'Cairo',sans-serif; padding-bottom:60px;}
+  header{background:linear-gradient(135deg,#0d1730,#132349); padding:16px 18px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:100;}
+  header h1{margin:0; font-size:1.05rem; font-weight:900; display:flex; align-items:center; gap:8px;}
+  header .sub{font-size:.72rem; color:var(--muted); margin-top:2px;}
+  .lang-toggle{position:absolute; left:16px; top:16px; background:var(--panel); border:1px solid var(--line); color:var(--paper); border-radius:8px; padding:6px 12px; font-size:.75rem; cursor:pointer; font-family:'Cairo',sans-serif;}
+
+  .tabs{display:flex; overflow-x:auto; gap:6px; padding:10px 12px; background:var(--panel2); border-bottom:1px solid var(--line); position:sticky; top:64px; z-index:99;}
+  .tab-btn{flex:none; background:var(--panel); border:1px solid var(--line); color:var(--muted); padding:8px 14px; border-radius:999px; font-size:.78rem; font-weight:700; cursor:pointer; white-space:nowrap; font-family:'Cairo',sans-serif;}
+  .tab-btn.active{background:var(--brand); color:#fff; border-color:var(--brand);}
+
+  main{padding:16px 14px; max-width:900px; margin:0 auto;}
+  .section{display:none;}
+  .section.active{display:block;}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px;}
+  .card h2{margin:0 0 4px; font-size:1rem; display:flex; align-items:center; gap:8px;}
+  .card .card-sub{font-size:.72rem; color:var(--muted); margin-bottom:12px;}
+  label{display:block; font-size:.75rem; font-weight:700; margin-bottom:4px; color:var(--muted);}
+  input[type=text], input[type=number], input[type=date], select, textarea{
+    width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--line); background:var(--panel2);
+    color:var(--paper); font-family:'Cairo',sans-serif; font-size:.85rem; margin-bottom:10px;
+  }
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  @media(max-width:520px){ .grid3{grid-template-columns:1fr 1fr;} }
+  .btn{background:var(--brand); color:#fff; border:none; padding:10px 16px; border-radius:9px; font-weight:700; font-size:.85rem; cursor:pointer; font-family:'Cairo',sans-serif;}
+  .btn.secondary{background:var(--panel2); border:1px solid var(--line); color:var(--paper);}
+  .btn.danger{background:var(--red);}
+  .btn.green{background:var(--green); color:#06231c;}
+  table{width:100%; border-collapse:collapse; font-size:.78rem; margin-top:8px;}
+  th, td{border:1px solid var(--line); padding:6px 8px; text-align:center;}
+  th{background:var(--panel2); color:var(--muted); font-size:.7rem;}
+  .totals-row{background:rgba(47,125,251,.12); font-weight:800;}
+  .result-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:10px;}
+  @media(min-width:600px){ .result-grid{grid-template-columns:repeat(4,1fr);} }
+  .result-box{background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px; text-align:center;}
+  .result-box .val{font-size:1.05rem; font-weight:900; color:var(--brand2);}
+  .result-box .lbl{font-size:.68rem; color:var(--muted); margin-top:2px;}
+  .row-actions{display:flex; gap:6px; justify-content:center;}
+  .icon-btn{background:none; border:none; color:var(--muted); cursor:pointer; font-size:.9rem;}
+  .icon-btn.del{color:var(--red);}
+  .note{font-size:.72rem; color:var(--amber); background:rgba(245,181,68,.1); border:1px solid rgba(245,181,68,.3); border-radius:8px; padding:8px 10px; margin-top:10px; line-height:1.7;}
+  .project-chip{display:inline-flex; align-items:center; gap:6px; background:var(--panel2); border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:.75rem; margin:3px; cursor:pointer;}
+  .project-chip.active{border-color:var(--brand); color:var(--brand);}
+  .ref-preview{width:100%; height:360px; border:1px solid var(--line); border-radius:10px; margin-top:10px; background:#fff;}
+  .badge{padding:2px 8px; border-radius:999px; font-size:.68rem; font-weight:800;}
+  .badge.low{background:rgba(34,195,154,.15); color:var(--green);}
+  .badge.med{background:rgba(245,181,68,.18); color:var(--amber);}
+  .badge.high{background:rgba(239,85,99,.18); color:var(--red);}
+  .badge.open{background:rgba(239,85,99,.18); color:var(--red);}
+  .badge.resolved{background:rgba(34,195,154,.15); color:var(--green);}
+  .final-report h3{color:var(--brand); border-bottom:1px solid var(--line); padding-bottom:4px; margin-top:20px;}
+  @media print{
+    header, .tabs, .btn, .icon-btn, .lang-toggle, #printBtn, input, select, .row-actions{ display:none !important; }
+    body{background:#fff; color:#000;}
+    .card{border:1px solid #999; background:#fff; color:#000; break-inside:avoid;}
+    .final-report{display:block !important;}
+    .section:not(.final-report){display:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="lang-toggle" onclick="toggleLang()">EN / AR</button>
+  <h1><i class="fas fa-drafting-compass"></i> <span data-i18n="app-title">منظومة الهندسة الذكية</span></h1>
+  <div class="sub" data-i18n="app-sub">Eng. Wael Ali Ewis Mahmoud — حصر كميات · حديد تسليح · أسمنت · تشطيبات · تعارضات MEP · تقرير نهائي</div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab-btn active" data-tab="projects" onclick="showTab('projects')"><i class="fas fa-folder-open"></i> <span data-i18n="tab-projects">سجل المشاريع</span></button>
+  <button class="tab-btn" data-tab="quantities" onclick="showTab('quantities')"><i class="fas fa-cube"></i> <span data-i18n="tab-quantities">حصر الكميات</span></button>
+  <button class="tab-btn" data-tab="rebar" onclick="showTab('rebar')"><i class="fas fa-grip-lines"></i> <span data-i18n="tab-rebar">حديد التسليح</span></button>
+  <button class="tab-btn" data-tab="cement" onclick="showTab('cement')"><i class="fas fa-fill-drip"></i> <span data-i18n="tab-cement">الأسمنت</span></button>
+  <button class="tab-btn" data-tab="finishes" onclick="showTab('finishes')"><i class="fas fa-paint-roller"></i> <span data-i18n="tab-finishes">التشطيبات</span></button>
+  <button class="tab-btn" data-tab="reference" onclick="showTab('reference')"><i class="fas fa-file-lines"></i> <span data-i18n="tab-reference">مرجع الرسم</span></button>
+  <button class="tab-btn" data-tab="mep" onclick="showTab('mep')"><i class="fas fa-diagram-project"></i> <span data-i18n="tab-mep">تعارضات MEP</span></button>
+  <button class="tab-btn" data-tab="report" onclick="showTab('report')"><i class="fas fa-file-invoice"></i> <span data-i18n="tab-report">التقرير النهائي</span></button>
+</div>
+
+<main>
+
+  <!-- ============ سجل المشاريع ============ -->
+  <section class="section active" id="sec-projects">
+    <div class="card">
+      <h2><i class="fas fa-folder-plus"></i> <span data-i18n="proj-new-title">مشروع جديد</span></h2>
+      <div class="card-sub" data-i18n="proj-new-sub">كل مشروع بياناته محفوظة لوحدها على نفس الجهاز</div>
+      <div class="grid2">
+        <div><label data-i18n="proj-name">اسم المشروع</label><input type="text" id="p-name"></div>
+        <div><label data-i18n="proj-client">المالك / العميل</label><input type="text" id="p-client"></div>
+      </div>
+      <div class="grid2">
+        <div><label data-i18n="proj-consultant">الاستشاري / الشركة المنفذة</label><input type="text" id="p-consultant"></div>
+        <div><label data-i18n="proj-engineer">المهندس المعد</label><input type="text" id="p-engineer" value="م. وائل علي عويس محمود"></div>
+      </div>
+      <label data-i18n="proj-date">التاريخ</label>
+      <input type="date" id="p-date">
+      <button class="btn" onclick="createProject()"><i class="fas fa-plus"></i> <span data-i18n="proj-create-btn">إنشاء المشروع</span></button>
+    </div>
+    <div class="card">
+      <h2><i class="fas fa-list"></i> <span data-i18n="proj-list-title">المشاريع المحفوظة</span></h2>
+      <div id="projects-list"></div>
+      <div class="note" id="no-project-note" data-i18n="proj-none-note">اختر أو أنشئ مشروع عشان تقدر تدخل بيانات الحصر والحديد وباقي الأقسام.</div>
+    </div>
+  </section>
+
+  <!-- ============ حصر الكميات ============ -->
+  <section class="section" id="sec-quantities">
+    <div class="card">
+      <h2><i class="fas fa-cube"></i> <span data-i18n="q-title">حصر كميات الخرسانة</span></h2>
+      <div class="card-sub" data-i18n="q-sub">أضف عناصر إنشائية (قواعد، أعمدة، كمرات، بلاطات، حوائط، سلالم) وهيتحسب حجم الخرسانة تلقائياً</div>
+      <div class="grid3">
+        <div><label data-i18n="q-elem-name">اسم العنصر</label><input type="text" id="q-name" placeholder="مثلاً: قاعدة C1"></div>
+        <select id="q-type">
+          <option value="footing" data-i18n="q-type-footing">قاعدة</option>
+          <option value="column" data-i18n="q-type-column">عمود</option>
+          <option value="beam" data-i18n="q-type-beam">كمرة</option>
+          <option value="slab" data-i18n="q-type-slab">بلاطة</option>
+          <option value="wall" data-i18n="q-type-wall">حائط خرساني</option>
+          <option value="stair" data-i18n="q-type-stair">سلم</option>
+        </select>
+        <div><label data-i18n="q-count">العدد</label><input type="number" id="q-count" value="1" min="1"></div>
+      </div>
+      <div class="grid3">
+        <div><label data-i18n="q-l">الطول (م)</label><input type="number" id="q-l" step="0.01"></div>
+        <div><label data-i18n="q-w">العرض (م)</label><input type="number" id="q-w" step="0.01"></div>
+        <div><label data-i18n="q-h">الارتفاع/السمك (م)</label><input type="number" id="q-h" step="0.01"></div>
+      </div>
+      <button class="btn" onclick="addQuantityRow()"><i class="fas fa-plus"></i> <span data-i18n="q-add-btn">إضافة للحصر</span></button>
+      <table id="q-table">
+        <thead><tr>
+          <th data-i18n="q-th-name">العنصر</th><th data-i18n="q-th-type">النوع</th><th data-i18n="q-th-count">العدد</th>
+          <th data-i18n="q-th-dims">الأبعاد (م)</th><th data-i18n="q-th-vol">الحجم الكلي (م³)</th><th></th>
+        </tr></thead>
+        <tbody id="q-tbody"></tbody>
+      </table>
+      <div class="result-grid">
+        <div class="result-box"><div class="val" id="q-total-vol">0.00</div><div class="lbl" data-i18n="q-total-vol-lbl">إجمالي الخرسانة (م³)</div></div>
+        <div class="result-box"><div class="val" id="q-total-elements">0</div><div class="lbl" data-i18n="q-total-elem-lbl">عدد العناصر</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ حديد التسليح BBS ============ -->
+  <section class="section" id="sec-rebar">
+    <div class="card">
+      <h2><i class="fas fa-grip-lines"></i> <span data-i18n="r-title">جدول تفصيل حديد التسليح (BBS)</span></h2>
+      <div class="card-sub" data-i18n="r-sub">أدخل بيانات كل مجموعة أسياخ، والوزن بيتحسب تلقائياً حسب وزن المتر الطولي القياسي لكل قطر</div>
+      <div class="grid3">
+        <div><label data-i18n="r-mark">اسم/رمز الشكة</label><input type="text" id="r-mark" placeholder="مثلاً: B1"></div>
+        <div><label data-i18n="r-dia">القطر (مم)</label>
+          <select id="r-dia">
+            <option value="8">8</option><option value="10">10</option><option value="12">12</option>
+            <option value="14">14</option><option value="16">16</option><option value="18">18</option>
+            <option value="20">20</option><option value="22">22</option><option value="25">25</option>
+            <option value="28">28</option><option value="32">32</option>
+          </select>
+        </div>
+        <div><label data-i18n="r-count">عدد الأسياخ</label><input type="number" id="r-count" min="1" value="1"></div>
+      </div>
+      <label data-i18n="r-length">طول السيخ الواحد (م)</label>
+      <input type="number" id="r-length" step="0.01">
+      <button class="btn" onclick="addRebarRow()"><i class="fas fa-plus"></i> <span data-i18n="r-add-btn">إضافة للجدول</span></button>
+      <table id="r-table">
+        <thead><tr>
+          <th data-i18n="r-th-mark">الرمز</th><th data-i18n="r-th-dia">القطر</th><th data-i18n="r-th-count">العدد</th>
+          <th data-i18n="r-th-length">طول السيخ (م)</th><th data-i18n="r-th-totallength">إجمالي الطول (م)</th>
+          <th data-i18n="r-th-unitweight">وزن م.ط (كجم)</th><th data-i18n="r-th-totalweight">الوزن الكلي (كجم)</th><th></th>
+        </tr></thead>
+        <tbody id="r-tbody"></tbody>
+      </table>
+      <div class="result-grid">
+        <div class="result-box"><div class="val" id="r-total-weight">0.00</div><div class="lbl" data-i18n="r-total-weight-lbl">إجمالي وزن الحديد (كجم)</div></div>
+        <div class="result-box"><div class="val" id="r-total-weight-ton">0.000</div><div class="lbl" data-i18n="r-total-weight-ton-lbl">إجمالي الوزن (طن)</div></div>
+        <div class="result-box"><div class="val" id="r-density">—</div><div class="lbl" data-i18n="r-density-lbl">كثافة التسليح (كجم/م³ خرسانة)</div></div>
+      </div>
+      <div class="note" data-i18n="r-note">أوزان المتر الطولي مبنية على الجدول القياسي (كثافة الصلب 7850 كجم/م³)، والكثافة النهائية بتتحسب بالمقارنة بإجمالي حجم الخرسانة من تبويب "حصر الكميات".</div>
+    </div>
+  </section>
+
+  <!-- ============ الأسمنت ============ -->
+  <section class="section" id="sec-cement">
+    <div class="card">
+      <h2><i class="fas fa-fill-drip"></i> <span data-i18n="c-title">حساب كمية الأسمنت</span></h2>
+      <div class="card-sub" data-i18n="c-sub">محسوبة تلقائياً من إجمالي حجم الخرسانة في تبويب "حصر الكميات"</div>
+      <div class="result-grid" style="margin-bottom:10px;">
+        <div class="result-box"><div class="val" id="c-vol-ref">0.00</div><div class="lbl" data-i18n="c-vol-ref-lbl">حجم الخرسانة (م³)</div></div>
+      </div>
+      <label data-i18n="c-content">محتوى الأسمنت لكل م³ خرسانة (كجم/م³)</label>
+      <input type="number" id="c-content" value="350" oninput="calcCement()">
+      <label data-i18n="c-bagweight">وزن الشيكارة (كجم)</label>
+      <input type="number" id="c-bagweight" value="50" oninput="calcCement()">
+      <div class="result-grid">
+        <div class="result-box"><div class="val" id="c-total-kg">0</div><div class="lbl" data-i18n="c-total-kg-lbl">إجمالي الأسمنت (كجم)</div></div>
+        <div class="result-box"><div class="val" id="c-total-bags">0</div><div class="lbl" data-i18n="c-total-bags-lbl">عدد الشكاير</div></div>
+        <div class="result-box"><div class="val" id="c-total-tons">0.00</div><div class="lbl" data-i18n="c-total-tons-lbl">إجمالي الأسمنت (طن)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ التشطيبات ============ -->
+  <section class="section" id="sec-finishes">
+    <div class="card">
+      <h2><i class="fas fa-paint-roller"></i> <span data-i18n="f-title">حصر التشطيبات</span></h2>
+      <div class="grid3">
+        <div><label data-i18n="f-item">البند</label><input type="text" id="f-item" placeholder="مثلاً: بياض حوائط"></div>
+        <select id="f-unit">
+          <option value="m2">م²</option>
+          <option value="m">م.ط</option>
+          <option value="unit" data-i18n="f-unit-piece">قطعة</option>
+        </select>
+        <div><label data-i18n="f-qty">الكمية</label><input type="number" id="f-qty" step="0.01"></div>
+      </div>
+      <button class="btn" onclick="addFinishRow()"><i class="fas fa-plus"></i> <span data-i18n="f-add-btn">إضافة</span></button>
+      <table id="f-table">
+        <thead><tr><th data-i18n="f-th-item">البند</th><th data-i18n="f-th-unit">الوحدة</th><th data-i18n="f-th-qty">الكمية</th><th></th></tr></thead>
+        <tbody id="f-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ مرجع الرسم ============ -->
+  <section class="section" id="sec-reference">
+    <div class="card">
+      <h2><i class="fas fa-file-lines"></i> <span data-i18n="ref-title">إرفاق ملف مرجعي (AutoCAD / PDF)</span></h2>
+      <div class="card-sub" data-i18n="ref-sub">الملف بيتفتح جنب حساباتك كمرجع بصري بس — الأداة مش بتقرأ أو تحسب من الرسم تلقائياً</div>
+      <input type="file" id="ref-file" accept=".pdf,.dwg,.dxf" onchange="handleRefFile(event)">
+      <div id="ref-filename" style="font-size:.8rem; color:var(--muted); margin-top:6px;"></div>
+      <iframe class="ref-preview" id="ref-preview" style="display:none;"></iframe>
+      <div class="note" data-i18n="ref-note">معاينة داخل المتصفح متاحة لملفات PDF فقط. ملفات الأوتوكاد (DWG/DXF) بتُحفظ كاسم مرجعي فقط في هذا الجهاز ولازم تتفتح ببرنامج أوتوكاد مختص — المتصفح مش بيقدر يعرضها.</div>
+    </div>
+  </section>
+
+  <!-- ============ تعارضات MEP ============ -->
+  <section class="section" id="sec-mep">
+    <div class="card">
+      <h2><i class="fas fa-diagram-project"></i> <span data-i18n="m-title">سجل تعارضات MEP</span></h2>
+      <div class="grid2">
+        <div><label data-i18n="m-loc">الموقع / الطابق</label><input type="text" id="m-loc"></div>
+        <div><label data-i18n="m-desc">وصف التعارض</label><input type="text" id="m-desc"></div>
+      </div>
+      <div class="grid3">
+        <select id="m-d1">
+          <option value="Architectural">Architectural</option>
+          <option value="Structural">Structural</option>
+          <option value="Mechanical">Mechanical</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Plumbing">Plumbing</option>
+          <option value="HVAC">HVAC</option>
+          <option value="Fire Fighting">Fire Fighting</option>
+        </select>
+        <select id="m-d2">
+          <option value="Structural">Structural</option>
+          <option value="Architectural">Architectural</option>
+          <option value="Mechanical">Mechanical</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Plumbing">Plumbing</option>
+          <option value="HVAC">HVAC</option>
+          <option value="Fire Fighting">Fire Fighting</option>
+        </select>
+        <select id="m-severity">
+          <option value="low" data-i18n="m-sev-low">منخفضة</option>
+          <option value="med" data-i18n="m-sev-med">متوسطة</option>
+          <option value="high" data-i18n="m-sev-high">عالية</option>
+        </select>
+      </div>
+      <button class="btn" onclick="addMepRow()"><i class="fas fa-plus"></i> <span data-i18n="m-add-btn">إضافة للسجل</span></button>
+      <table id="m-table">
+        <thead><tr>
+          <th data-i18n="m-th-loc">الموقع</th><th data-i18n="m-th-disc">التخصصات</th><th data-i18n="m-th-desc">الوصف</th>
+          <th data-i18n="m-th-sev">الخطورة</th><th data-i18n="m-th-status">الحالة</th><th></th>
+        </tr></thead>
+        <tbody id="m-tbody"></tbody>
+      </table>
+      <div class="result-grid">
+        <div class="result-box"><div class="val" id="m-open-count">0</div><div class="lbl" data-i18n="m-open-lbl">تعارضات مفتوحة</div></div>
+        <div class="result-box"><div class="val" id="m-resolved-count">0</div><div class="lbl" data-i18n="m-resolved-lbl">تعارضات محلولة</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ التقرير النهائي ============ -->
+  <section class="section final-report" id="sec-report">
+    <div class="card">
+      <h2><i class="fas fa-file-invoice"></i> <span data-i18n="rep-title">التقرير الهندسي النهائي</span></h2>
+      <button class="btn green" id="printBtn" onclick="window.print()"><i class="fas fa-print"></i> <span data-i18n="rep-print-btn">طباعة / حفظ PDF</span></button>
+      <div id="report-body" style="margin-top:14px;"></div>
+      <div class="note" data-i18n="rep-disclaimer">⚠️ هذا التقرير أداة مساعدة لتنظيم البيانات المدخلة يدوياً، وليس بديلاً عن مراجعة واعتماد مهندس مختص مرخّص قبل التنفيذ أو التسعير.</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+let currentLang = 'ar';
+let currentProjectId = null;
+
+const REBAR_UNIT_WEIGHTS = { // كجم / متر طولي — حسب الجدول القياسي (كثافة الصلب 7850kg/m3)
+  8:0.395, 10:0.617, 12:0.888, 14:1.208, 16:1.578, 18:2.0, 20:2.466, 22:2.984, 25:3.853, 28:4.834, 32:6.313
+};
+
+function projectKey(id){ return 'eis_project_' + id; }
+function loadIndex(){ try{ return JSON.parse(localStorage.getItem('eis_projects_index')||'[]'); }catch(e){ return []; } }
+function saveIndex(list){ localStorage.setItem('eis_projects_index', JSON.stringify(list)); }
+function loadProject(id){ try{ return JSON.parse(localStorage.getItem(projectKey(id))||'null'); }catch(e){ return null; } }
+function saveProject(p){ localStorage.setItem(projectKey(p.id), JSON.stringify(p)); }
+
+function emptyProject(meta){
+  return { ...meta, quantities:[], rebar:[], finishes:[], mep:[], refFileName:'' };
+}
+
+function createProject(){
+  const name = document.getElementById('p-name').value.trim();
+  if(!name){ alert(t('alert-need-name')); return; }
+  const id = 'p_' + Date.now();
+  const meta = {
+    id, name,
+    client: document.getElementById('p-client').value.trim(),
+    consultant: document.getElementById('p-consultant').value.trim(),
+    engineer: document.getElementById('p-engineer').value.trim(),
+    date: document.getElementById('p-date').value
+  };
+  const proj = emptyProject(meta);
+  saveProject(proj);
+  const idx = loadIndex(); idx.push({id, name}); saveIndex(idx);
+  document.getElementById('p-name').value=''; document.getElementById('p-client').value=''; document.getElementById('p-consultant').value='';
+  selectProject(id);
+  renderProjectsList();
+}
+
+function selectProject(id){
+  currentProjectId = id;
+  renderProjectsList();
+  renderAll();
+}
+
+function deleteProject(id, e){
+  e.stopPropagation();
+  if(!confirm(t('confirm-delete-project'))) return;
+  localStorage.removeItem(projectKey(id));
+  saveIndex(loadIndex().filter(p=>p.id!==id));
+  if(currentProjectId===id) currentProjectId=null;
+  renderProjectsList();
+  renderAll();
+}
+
+function renderProjectsList(){
+  const idx = loadIndex();
+  const el = document.getElementById('projects-list');
+  el.innerHTML = '';
+  idx.forEach(p=>{
+    const chip = document.createElement('span');
+    chip.className = 'project-chip' + (p.id===currentProjectId ? ' active':'');
+    chip.innerHTML = `<i class="fas fa-folder"></i> ${p.name} <span class="icon-btn del" onclick="deleteProject('${p.id}', event)"><i class="fas fa-trash"></i></span>`;
+    chip.onclick = ()=> selectProject(p.id);
+    el.appendChild(chip);
+  });
+  document.getElementById('no-project-note').style.display = currentProjectId ? 'none' : 'block';
+}
+
+function getProj(){ return currentProjectId ? loadProject(currentProjectId) : null; }
+function requireProject(){
+  if(!currentProjectId){ alert(t('alert-select-project')); return false; }
+  return true;
+}
+
+// ---------------- حصر الكميات ----------------
+function addQuantityRow(){
+  if(!requireProject()) return;
+  const name = document.getElementById('q-name').value.trim() || '-';
+  const type = document.getElementById('q-type').value;
+  const count = parseFloat(document.getElementById('q-count').value)||1;
+  const l = parseFloat(document.getElementById('q-l').value)||0;
+  const w = parseFloat(document.getElementById('q-w').value)||0;
+  const h = parseFloat(document.getElementById('q-h').value)||0;
+  const vol = l*w*h*count;
+  const proj = getProj();
+  proj.quantities.push({name, type, count, l, w, h, vol});
+  saveProject(proj);
+  renderQuantities();
+  calcCement();
+}
+function removeQuantityRow(i){
+  const proj = getProj(); proj.quantities.splice(i,1); saveProject(proj); renderQuantities(); calcCement();
+}
+function renderQuantities(){
+  const proj = getProj();
+  const tbody = document.getElementById('q-tbody'); tbody.innerHTML='';
+  let totalVol = 0;
+  const typeLabels = {footing:'قاعدة', column:'عمود', beam:'كمرة', slab:'بلاطة', wall:'حائط خرساني', stair:'سلم'};
+  if(proj) proj.quantities.forEach((r,i)=>{
+    totalVol += r.vol;
+    tbody.innerHTML += `<tr><td>${r.name}</td><td>${typeLabels[r.type]||r.type}</td><td>${r.count}</td><td>${r.l}×${r.w}×${r.h}</td><td>${r.vol.toFixed(3)}</td>
+      <td class="row-actions"><button class="icon-btn del" onclick="removeQuantityRow(${i})"><i class="fas fa-trash"></i></button></td></tr>`;
+  });
+  document.getElementById('q-total-vol').textContent = totalVol.toFixed(2);
+  document.getElementById('q-total-elements').textContent = proj ? proj.quantities.reduce((s,r)=>s+r.count,0) : 0;
+}
+
+// ---------------- حديد التسليح ----------------
+function addRebarRow(){
+  if(!requireProject()) return;
+  const mark = document.getElementById('r-mark').value.trim() || '-';
+  const dia = parseInt(document.getElementById('r-dia').value);
+  const count = parseFloat(document.getElementById('r-count').value)||1;
+  const length = parseFloat(document.getElementById('r-length').value)||0;
+  const totalLength = count*length;
+  const unitW = REBAR_UNIT_WEIGHTS[dia]||0;
+  const totalWeight = totalLength*unitW;
+  const proj = getProj();
+  proj.rebar.push({mark, dia, count, length, totalLength, unitW, totalWeight});
+  saveProject(proj);
+  renderRebar();
+}
+function removeRebarRow(i){
+  const proj = getProj(); proj.rebar.splice(i,1); saveProject(proj); renderRebar();
+}
+function renderRebar(){
+  const proj = getProj();
+  const tbody = document.getElementById('r-tbody'); tbody.innerHTML='';
+  let totalW = 0;
+  if(proj) proj.rebar.forEach((r,i)=>{
+    totalW += r.totalWeight;
+    tbody.innerHTML += `<tr><td>${r.mark}</td><td>Ø${r.dia}</td><td>${r.count}</td><td>${r.length}</td><td>${r.totalLength.toFixed(2)}</td><td>${r.unitW}</td><td>${r.totalWeight.toFixed(2)}</td>
+      <td class="row-actions"><button class="icon-btn del" onclick="removeRebarRow(${i})"><i class="fas fa-trash"></i></button></td></tr>`;
+  });
+  document.getElementById('r-total-weight').textContent = totalW.toFixed(2);
+  document.getElementById('r-total-weight-ton').textContent = (totalW/1000).toFixed(3);
+  const totalVol = proj ? proj.quantities.reduce((s,r)=>s+r.vol,0) : 0;
+  document.getElementById('r-density').textContent = totalVol>0 ? (totalW/totalVol).toFixed(1) : '—';
+}
+
+// ---------------- الأسمنت ----------------
+function calcCement(){
+  const proj = getProj();
+  const totalVol = proj ? proj.quantities.reduce((s,r)=>s+r.vol,0) : 0;
+  document.getElementById('c-vol-ref').textContent = totalVol.toFixed(2);
+  const content = parseFloat(document.getElementById('c-content').value)||0;
+  const bagW = parseFloat(document.getElementById('c-bagweight').value)||50;
+  const totalKg = totalVol*content;
+  document.getElementById('c-total-kg').textContent = Math.round(totalKg);
+  document.getElementById('c-total-bags').textContent = Math.ceil(totalKg/bagW);
+  document.getElementById('c-total-tons').textContent = (totalKg/1000).toFixed(2);
+}
+
+// ---------------- التشطيبات ----------------
+function addFinishRow(){
+  if(!requireProject()) return;
+  const item = document.getElementById('f-item').value.trim(); if(!item) return;
+  const unit = document.getElementById('f-unit').value;
+  const qty = parseFloat(document.getElementById('f-qty').value)||0;
+  const proj = getProj();
+  proj.finishes.push({item, unit, qty});
+  saveProject(proj);
+  renderFinishes();
+}
+function removeFinishRow(i){ const proj=getProj(); proj.finishes.splice(i,1); saveProject(proj); renderFinishes(); }
+function renderFinishes(){
+  const proj = getProj();
+  const tbody = document.getElementById('f-tbody'); tbody.innerHTML='';
+  const unitLabels = {m2:'م²', m:'م.ط', unit:'قطعة'};
+  if(proj) proj.finishes.forEach((r,i)=>{
+    tbody.innerHTML += `<tr><td>${r.item}</td><td>${unitLabels[r.unit]||r.unit}</td><td>${r.qty}</td>
+      <td class="row-actions"><button class="icon-btn del" onclick="removeFinishRow(${i})"><i class="fas fa-trash"></i></button></td></tr>`;
+  });
+}
+
+// ---------------- مرجع الرسم ----------------
+function handleRefFile(e){
+  if(!requireProject()){ e.target.value=''; return; }
+  const file = e.target.files[0];
+  if(!file) return;
+  const proj = getProj();
+  proj.refFileName = file.name;
+  saveProject(proj);
+  document.getElementById('ref-filename').textContent = '📎 ' + file.name;
+  const preview = document.getElementById('ref-preview');
+  if(file.type === 'application/pdf'){
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+// ---------------- تعارضات MEP ----------------
+function addMepRow(){
+  if(!requireProject()) return;
+  const loc = document.getElementById('m-loc').value.trim();
+  const desc = document.getElementById('m-desc').value.trim();
+  const d1 = document.getElementById('m-d1').value;
+  const d2 = document.getElementById('m-d2').value;
+  const severity = document.getElementById('m-severity').value;
+  const proj = getProj();
+  proj.mep.push({loc, desc, d1, d2, severity, status:'open'});
+  saveProject(proj);
+  renderMep();
+}
+function toggleMepStatus(i){
+  const proj = getProj();
+  proj.mep[i].status = proj.mep[i].status==='open' ? 'resolved' : 'open';
+  saveProject(proj); renderMep();
+}
+function removeMepRow(i){ const proj=getProj(); proj.mep.splice(i,1); saveProject(proj); renderMep(); }
+function renderMep(){
+  const proj = getProj();
+  const tbody = document.getElementById('m-tbody'); tbody.innerHTML='';
+  const sevLabel = {low:'منخفضة', med:'متوسطة', high:'عالية'};
+  let openC=0, resC=0;
+  if(proj) proj.mep.forEach((r,i)=>{
+    if(r.status==='open') openC++; else resC++;
+    tbody.innerHTML += `<tr><td>${r.loc}</td><td>${r.d1} × ${r.d2}</td><td>${r.desc}</td>
+      <td><span class="badge ${r.severity}">${sevLabel[r.severity]}</span></td>
+      <td><span class="badge ${r.status}" style="cursor:pointer" onclick="toggleMepStatus(${i})">${r.status==='open'?'مفتوح':'محلول'}</span></td>
+      <td class="row-actions"><button class="icon-btn del" onclick="removeMepRow(${i})"><i class="fas fa-trash"></i></button></td></tr>`;
+  });
+  document.getElementById('m-open-count').textContent = openC;
+  document.getElementById('m-resolved-count').textContent = resC;
+}
+
+// ---------------- التقرير النهائي ----------------
+function renderReport(){
+  const proj = getProj();
+  const body = document.getElementById('report-body');
+  if(!proj){ body.innerHTML = `<p>${t('alert-select-project')}</p>`; return; }
+  const totalVol = proj.quantities.reduce((s,r)=>s+r.vol,0);
+  const totalRebarKg = proj.rebar.reduce((s,r)=>s+r.totalWeight,0);
+  const cementContent = parseFloat(document.getElementById('c-content').value)||350;
+  const totalCementKg = totalVol*cementContent;
+  let html = `
+    <h3>بيانات المشروع</h3>
+    <table><tr><th>اسم المشروع</th><td>${proj.name}</td></tr>
+    <tr><th>المالك/العميل</th><td>${proj.client||'—'}</td></tr>
+    <tr><th>الاستشاري</th><td>${proj.consultant||'—'}</td></tr>
+    <tr><th>المهندس المعد</th><td>${proj.engineer||'—'}</td></tr>
+    <tr><th>التاريخ</th><td>${proj.date||'—'}</td></tr></table>
+
+    <h3>ملخص حصر الكميات</h3>
+    <table><tr><th>إجمالي حجم الخرسانة</th><td>${totalVol.toFixed(2)} م³</td></tr>
+    <tr><th>عدد العناصر الإنشائية</th><td>${proj.quantities.length}</td></tr></table>
+
+    <h3>حديد التسليح</h3>
+    <table><tr><th>إجمالي وزن الحديد</th><td>${totalRebarKg.toFixed(2)} كجم (${(totalRebarKg/1000).toFixed(3)} طن)</td></tr>
+    <tr><th>كثافة التسليح</th><td>${totalVol>0 ? (totalRebarKg/totalVol).toFixed(1) : '—'} كجم/م³</td></tr></table>
+
+    <h3>الأسمنت</h3>
+    <table><tr><th>إجمالي كمية الأسمنت</th><td>${Math.round(totalCementKg)} كجم (${(totalCementKg/1000).toFixed(2)} طن)</td></tr></table>
+
+    <h3>التشطيبات</h3>
+    <table><tr><th>البند</th><th>الوحدة</th><th>الكمية</th></tr>
+    ${proj.finishes.map(f=>`<tr><td>${f.item}</td><td>${f.unit}</td><td>${f.qty}</td></tr>`).join('') || '<tr><td colspan="3">لا يوجد</td></tr>'}
+    </table>
+
+    <h3>تعارضات MEP</h3>
+    <table><tr><th>مفتوحة</th><th>محلولة</th></tr>
+    <tr><td>${proj.mep.filter(m=>m.status==='open').length}</td><td>${proj.mep.filter(m=>m.status==='resolved').length}</td></tr></table>
+
+    <h3>الملف المرجعي</h3>
+    <p>${proj.refFileName || 'لا يوجد ملف مرفق'}</p>
+  `;
+  body.innerHTML = html;
+}
+
+function renderAll(){
+  renderQuantities();
+  renderRebar();
+  calcCement();
+  renderFinishes();
+  renderMep();
+  renderReport();
+  const ref = getProj();
+  document.getElementById('ref-filename').textContent = ref && ref.refFileName ? '📎 ' + ref.refFileName : '';
+}
+
+function showTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+tab).classList.add('active');
+  if(tab==='report') renderReport();
+}
+
+function t(key){
+  const dict = {
+    'alert-need-name': currentLang==='ar' ? 'اكتب اسم المشروع الأول' : 'Please enter a project name first',
+    'alert-select-project': currentLang==='ar' ? 'اختر أو أنشئ مشروع الأول' : 'Please select or create a project first',
+    'confirm-delete-project': currentLang==='ar' ? 'متأكد من حذف المشروع ده وكل بياناته؟' : 'Delete this project and all its data?'
+  };
+  return dict[key] || key;
+}
+
+function toggleLang(){
+  currentLang = currentLang==='ar' ? 'en' : 'ar';
+  document.documentElement.lang = currentLang==='ar' ? 'ar' : 'en';
+  document.documentElement.dir = currentLang==='ar' ? 'rtl' : 'ltr';
+  // ملاحظة: النسخة الحالية عربي بالكامل كواجهة أساسية؛ التبديل هنا بيغير اتجاه الصفحة فقط
+}
+
+// تحميل أول مشروع تلقائياً لو موجود
+const idx0 = loadIndex();
+if(idx0.length){ currentProjectId = idx0[0].id; }
+renderProjectsList();
+renderAll();
+document.getElementById('p-date').value = new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
