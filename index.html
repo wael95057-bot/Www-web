@@ -9,9 +9,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style
-        /* تكبير ارتفاع مساحة الإعلان لأسفل */
-.top-banner-ad img {
+      /* تكبير الحاوية والصورة معاً لأسفل */
+.top-banner-ad, .banner-slide-wrap, .banner-slide {
     height: 400px !important;
+    max-height: 400px !important;
+}
+
+.top-banner-ad img {
+    height: 100% !important;
     max-height: 400px !important;
     object-fit: cover !important;
 }
