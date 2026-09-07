@@ -114,35 +114,9 @@ select{cursor:pointer;}
   .stage{grid-template-columns: 1.4fr 1fr;}
 }
 
-.mic-card{
+.chat-card{
   background:var(--panel);border:1px solid var(--line);border-radius:18px;
-  padding:26px;text-align:center;position:relative;overflow:hidden;
-}
-.mic-btn{
-  width:104px;height:104px;border-radius:50%;
-  border:2px solid var(--amber-dim);
-  background:var(--ink-2);
-  color:var(--amber);
-  font-size:34px;
-  cursor:pointer;
-  margin:6px auto 14px;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .15s ease;
-}
-.mic-btn.live{
-  background:var(--amber);color:#1a1305;border-color:var(--amber);
-  box-shadow:0 0 0 0 rgba(226,162,59,.5);
-  animation:pulse 1.6s infinite;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(226,162,59,.45);}
-  70%{box-shadow:0 0 0 22px rgba(226,162,59,0);}
-  100%{box-shadow:0 0 0 0 rgba(226,162,59,0);}
-}
-.mic-state{font-size:13.5px;color:var(--muted);min-height:18px;}
-.interim{
-  margin-top:14px;font-size:15px;color:var(--paper);
-  min-height:24px;opacity:.85;
+  padding:20px;position:relative;
 }
 
 .participants{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;}
@@ -154,9 +128,6 @@ select{cursor:pointer;}
 .p-item:last-child{border-bottom:none;}
 .p-item .who{display:flex;align-items:center;gap:8px;}
 .p-item .langs{font-size:11.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
-.dot.speaking{background:var(--amber);box-shadow:0 0 8px var(--amber);animation:dotpulse 1s infinite;}
-@keyframes dotpulse{0%{opacity:1;}50%{opacity:.35;}100%{opacity:1;}}
-.p-item.is-speaking .who{color:var(--amber);font-weight:700;}
 
 .transcript{
   background:var(--panel);border:1px solid var(--line);border-radius:18px;
@@ -316,11 +287,11 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
       </div>
       <div class="row">
         <div class="field">
-          <label data-i18n="lbl_speak">هتتكلم بلغة</label>
+          <label data-i18n="lbl_speak">هتكتب بلغة</label>
           <select id="in-speak"></select>
         </div>
         <div class="field">
-          <label data-i18n="lbl_listen">عايز تسمع الاجتماع بلغة</label>
+          <label data-i18n="lbl_listen">عايز تستقبل الاجتماع بلغة</label>
           <select id="in-listen"></select>
         </div>
       </div>
@@ -329,10 +300,6 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
           <label data-i18n="lbl_pin">رمز PIN للغرفة (اختياري، للحماية)</label>
           <input type="text" id="in-pin" placeholder="مثلاً: 1234">
         </div>
-      </div>
-      <div class="row" style="align-items:center;gap:8px;margin-bottom:14px;">
-        <input type="checkbox" id="in-ptt" style="width:18px;height:18px;">
-        <label for="in-ptt" data-i18n="lbl_ptt" style="margin:0;font-size:13px;color:var(--paper);">استخدم وضع اضغط واستمر (أدق في التقاط الصوت)</label>
       </div>
       <button class="btn btn-primary" id="btn-join" data-i18n="btn_join">ادخل الاجتماع</button>
       <div class="hint">
@@ -355,10 +322,10 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
     <div class="panel">
       <h2 data-i18n="notes_h2">ملاحظات مهمة قبل ما تبدأ</h2>
       <div class="hint" data-i18n="notes_body">
-        • التعرف على الصوت (تحويل كلامك لنص) بيشتغل بشكل موثوق على <b>Chrome / Edge</b> (كمبيوتر أو أندرويد). سفاري وفايرفوكس دعمهم محدود.<br>
-        • لازم تسمح للمتصفح بالوصول للميكروفون.<br>
+        • اكتب رسائلك بلغة الكتابة التي اخترتها، وسيستلمها كل مشارك مترجمة تلقائياً للغة الاستقبال الخاصة به.<br>
+        • يمكن تفعيل أو كتم القراءة الصوتية النصية (TTS) للرسائل القادمة عبر زر التحكم بالصوت.<br>
         • الترجمة بتتم عبر خدمة MyMemory المجانية، وممكن تقل دقتها في جمل طويلة جداً أو مصطلحات متخصصة.<br>
-        • ده نموذج أولي (Prototype) شغال فعلاً، مش مجرد شكل — لكنه أبسط من منصة إنتاجية زي اللي شرحناها (WebRTC + LiveKit + Deepgram) واللي بتحتاج سيرفر خلفي حقيقي لو عايز جودة صوت وزمن استجابة احترافي لعدد كبير من المستخدمين.
+        • ده نموذج أولي (Prototype) شغال فعلاً، مش مجرد شكل — لكنه أبسط من منصة إنتاجية احترافية.
       </div>
     </div>
   </div>
@@ -381,20 +348,9 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:36px;lin
     <div class="video-grid" id="video-grid" style="display:none;"></div>
 
     <div class="stage">
-      <div class="mic-card">
-        <button class="mic-btn" id="btn-mic">🎙</button>
-        <div class="mic-state" id="mic-state">اضغط للتحدث</div>
-        <div class="interim" id="interim"></div>
-        <div id="review-box" style="display:none;margin-top:14px;text-align:right;">
-          <textarea id="review-text" rows="2" style="width:100%;background:var(--ink-2);border:1px solid var(--line);border-radius:10px;color:var(--paper);padding:10px;font-family:'Cairo',sans-serif;font-size:14px;resize:vertical;"></textarea>
-          <div class="row" style="gap:8px;margin-top:8px;justify-content:flex-end;">
-            <span class="hint" id="review-countdown" style="align-self:center;"></span>
-            <button class="btn btn-ghost" id="btn-review-cancel" style="padding:7px 14px;font-size:12.5px;" data-i18n="btn_cancel">إلغاء</button>
-            <button class="btn btn-primary" id="btn-review-send" style="padding:7px 16px;font-size:12.5px;" data-i18n="btn_send_now">إرسال الآن</button>
-          </div>
-        </div>
-        <div class="row" style="gap:8px;margin-top:14px;">
-          <input type="text" id="text-input" placeholder="اكتب رسالتك هنا بدل ما تتكلم…" style="flex:1;">
+      <div class="chat-card">
+        <div class="row" style="gap:8px;">
+          <input type="text" id="text-input" placeholder="اكتب رسالتك بلغة مدخلاتك هنا…" style="flex:1;">
           <button class="btn btn-ghost" id="btn-attach" style="padding:10px 12px;font-size:16px;">📎</button>
           <input type="file" id="file-input" accept="image/*" style="display:none;">
           <button class="btn btn-primary" id="btn-send-text" style="padding:10px 16px;font-size:15px;">➤</button>
@@ -427,8 +383,8 @@ const I18N = {
     join_h2: "ادخل بيانات الاجتماع",
     lbl_name: "اسمك",
     lbl_room: "كود الغرفة (اتفقوا عليه مع بعض)",
-    lbl_speak: "هتتكلم بلغة",
-    lbl_listen: "عايز تسمع الاجتماع بلغة",
+    lbl_speak: "هتكتب بلغة",
+    lbl_listen: "عايز تستقبل الاجتماع بلغة",
     btn_join: "ادخل الاجتماع",
     toggle_fb: "إعداد اتصال بين أجهزة مختلفة (اختياري)",
     lbl_worker: "رابط Cloudflare Worker (WebSocket)",
@@ -437,10 +393,10 @@ const I18N = {
       انشر ملف <b>worker.js</b> المرفق على Cloudflare (خطوات النشر مرفقة)، وحط رابط الـ Worker هنا
       بصيغة <code>wss://...</code> — ونفس الرابط يتحط عند كل المشاركين.`,
     notes_h2: "ملاحظات مهمة قبل ما تبدأ",
-    notes_body: `• التعرف على الصوت (تحويل كلامك لنص) بيشتغل بشكل موثوق على <b>Chrome / Edge</b> (كمبيوتر أو أندرويد). سفاري وفايرفوكس دعمهم محدود.<br>
-      • لازم تسمح للمتصفح بالوصول للميكروفون.<br>
+    notes_body: `• اكتب رسائلك بلغة الكتابة التي اخترتها، وسيستلمها كل مشارك مترجمة تلقائياً للغة الاستقبال الخاصة به.<br>
+      • يمكن تفعيل أو كتم القراءة الصوتية النصية (TTS) للرسائل القادمة عبر زر التحكم بالصوت.<br>
       • الترجمة بتتم عبر خدمة MyMemory المجانية، وممكن تقل دقتها في جمل طويلة جداً أو مصطلحات متخصصة.<br>
-      • ده نموذج أولي (Prototype) شغال فعلاً، مش مجرد شكل — لكنه أبسط من منصة إنتاجية زي اللي شرحناها (WebRTC + LiveKit + Deepgram) واللي بتحتاج سيرفر خلفي حقيقي لو عايز جودة صوت وزمن استجابة احترافي لعدد كبير من المستخدمين.`,
+      • ده نموذج أولي (Prototype) شغال فعلاً، مش مجرد شكل — لكنه أبسط من منصة إنتاجية احترافية.`,
     room_label: "الغرفة:",
     btn_leave: "مغادرة",
     participants_h3: "المشاركون",
@@ -456,36 +412,24 @@ const I18N = {
     copied: "اتنسخ ✓",
     you: "أنت",
     waiting_participants: "في انتظار انضمام مشاركين آخرين بنفس كود الغرفة…",
-    press_to_talk: "اضغط للتحدث",
-    listening_now: "بيسمعك الآن… اتكلم",
-    mic_error: "خطأ: ",
-    retry_hint: " — حاول تاني",
-    no_speech_support: "متصفحك لا يدعم التعرف على الصوت. استخدم Chrome أو Edge.",
     translate_failed: " (تعذّرت الترجمة)",
     locale: "ar-EG",
-    audio_on: "🔊 الصوت شغال",
+    audio_on: "🔊 القراءة الصوتية شغالة",
     audio_off: "🔇 مكتوم (نص بس)",
-    btn_cancel: "إلغاء",
-    btn_send_now: "إرسال الآن",
+    type_placeholder: "اكتب رسالتك بلغة مدخلاتك هنا…",
+    lbl_pin: "رمز PIN للغرفة (اختياري، للحماية)",
+    pin_wrong: "الرقم السري غلط — اتأكد منه مع منظم الاجتماع وحاول تاني.",
     camera_on: "📷 الكاميرا شغالة",
     camera_off: "📷 شغّل الكاميرا",
     camera_local_only: "الفيديو متاح بس لما تكونوا متصلين عبر Cloudflare (أجهزة مختلفة)، مش في الوضع المحلي.",
     camera_denied: "معلش، متقدرش توصل للكاميرا — اتأكد إنك مديت صلاحية الوصول للكاميرا من إعدادات المتصفح.",
-    review_countdown_prefix: "هيتبعت تلقائياً خلال ",
-    review_countdown_suffix: " ثانية",
-    type_placeholder: "اكتب رسالتك هنا بدل ما تتكلم…",
-    lbl_pin: "رمز PIN للغرفة (اختياري، للحماية)",
-    pin_wrong: "الرقم السري غلط — اتأكد منه مع منظم الاجتماع وحاول تاني.",
-    lbl_ptt: "استخدم وضع اضغط واستمر (أدق في التقاط الصوت)",
-    press_hold_to_talk: "اضغط واستمر عشان تتكلم",
     screenshare_on: "🖥️ بتشارك الشاشة",
     screenshare_off: "🖥️ شارك الشاشة",
-    screenshare_unsupported: "مشاركة الشاشة مش مدعومة على متصفحات الموبايل (أندرويد وآيفون) — ده قيد من جوجل وآبل نفسهم، مش عيب في التطبيق. الميزة دي متاحة بس لما تفتح الموقع من كمبيوتر مكتبي (Chrome أو Edge).",
+    screenshare_unsupported: "مشاركة الشاشة مش مدعومة على متصفحات الموبايل — ده قيد من نظام التشغيل. الميزة دي متاحة بس على كمبيوتر مكتبي.",
     btn_download: "⬇️ تنزيل المحضر",
     transcript_empty: "لسه مفيش أي كلام اتقال في الاجتماع ده.",
     transcript_title: "محضر اجتماع — ترجمان",
-    hand_raised_hint: "✋ رافع إيده",
-    attach_not_image: "تقدر بس ترفق صور دلوقتي (مش فيديو أو ملفات) — هشرحلك السبب لو سألت.",
+    attach_not_image: "تقدر بس ترفق صور دلوقتي (مش فيديو أو ملفات).",
     image_too_large: "الصورة كبيرة قوي حتى بعد الضغط — جرب صورة تانية أصغر أو لقطة شاشة.",
     image_placeholder: "صورة",
     reg_title: "سجّل بياناتك للمتابعة",
@@ -509,8 +453,8 @@ const I18N = {
     join_h2: "Enter meeting details",
     lbl_name: "Your name",
     lbl_room: "Room code (agree on it together)",
-    lbl_speak: "You'll speak in",
-    lbl_listen: "You want to hear the meeting in",
+    lbl_speak: "You'll write in",
+    lbl_listen: "You want to receive the meeting in",
     btn_join: "Join meeting",
     toggle_fb: "Cross-device connection setup (optional)",
     lbl_worker: "Cloudflare Worker URL (WebSocket)",
@@ -519,10 +463,10 @@ const I18N = {
       deploy the included <b>worker.js</b> to Cloudflare (deployment steps included), and put the Worker URL here
       in the form <code>wss://...</code> — the same link goes to every participant.`,
     notes_h2: "Important notes before you start",
-    notes_body: `• Speech recognition (converting your speech to text) works reliably on <b>Chrome / Edge</b> (desktop or Android). Safari and Firefox have limited support.<br>
-      • You must allow the browser to access your microphone.<br>
+    notes_body: `• Type your messages in your chosen input language, and every participant will receive them translated to their listening language.<br>
+      • Text-to-speech audio for incoming messages can be toggled via the audio button.<br>
       • Translation runs through the free MyMemory service, and accuracy may drop for very long sentences or specialized terminology.<br>
-      • This is a working prototype, not just a mockup — but it's simpler than a production platform (WebRTC + LiveKit + Deepgram) which needs a real backend for professional audio quality and latency at scale.`,
+      • This is a working prototype, not just a mockup.`,
     room_label: "Room:",
     btn_leave: "Leave",
     participants_h3: "Participants",
@@ -538,36 +482,24 @@ const I18N = {
     copied: "Copied ✓",
     you: "you",
     waiting_participants: "Waiting for other participants with the same room code…",
-    press_to_talk: "Press to talk",
-    listening_now: "Listening… go ahead",
-    mic_error: "Error: ",
-    retry_hint: " — try again",
-    no_speech_support: "Your browser doesn't support speech recognition. Use Chrome or Edge.",
     translate_failed: " (translation failed)",
     locale: "en-US",
-    audio_on: "🔊 Audio on",
-    audio_off: "🔇 Muted (captions only)",
-    btn_cancel: "Cancel",
-    btn_send_now: "Send now",
+    audio_on: "🔊 TTS Audio on",
+    audio_off: "🔇 Muted (text only)",
+    type_placeholder: "Type your message in your language…",
+    lbl_pin: "Room PIN (optional, for protection)",
+    pin_wrong: "Wrong PIN — check it with the meeting organizer and try again.",
     camera_on: "📷 Camera on",
     camera_off: "📷 Turn on camera",
     camera_local_only: "Video only works when connected across devices via Cloudflare, not in local mode.",
     camera_denied: "Couldn't access your camera — make sure you've granted camera permission in your browser settings.",
-    review_countdown_prefix: "Auto-sending in ",
-    review_countdown_suffix: "s",
-    type_placeholder: "Type your message instead of speaking…",
-    lbl_pin: "Room PIN (optional, for protection)",
-    pin_wrong: "Wrong PIN — check it with the meeting organizer and try again.",
-    lbl_ptt: "Use push-to-talk mode (more accurate audio capture)",
-    press_hold_to_talk: "Press and hold to talk",
     screenshare_on: "🖥️ Sharing screen",
     screenshare_off: "🖥️ Share screen",
-    screenshare_unsupported: "Screen sharing isn't supported on mobile browsers (Android or iPhone) — this is a restriction from Google and Apple themselves, not an app bug. It only works when opening the site from a desktop computer (Chrome or Edge).",
+    screenshare_unsupported: "Screen sharing isn't supported on mobile browsers — it requires a desktop computer.",
     btn_download: "⬇️ Download transcript",
     transcript_empty: "No conversation has happened in this meeting yet.",
     transcript_title: "Meeting transcript — Terjoman",
-    hand_raised_hint: "✋ Hand raised",
-    attach_not_image: "You can only attach images right now (not video or files) — ask me why if you're curious.",
+    attach_not_image: "You can only attach images right now.",
     image_too_large: "The image is too large even after compression — try a smaller one or a screenshot.",
     image_placeholder: "Image",
     reg_title: "Register to continue",
@@ -599,7 +531,6 @@ function applyLang(lang){
     const key = el.getAttribute("data-i18n");
     if(I18N[lang][key] !== undefined) el.innerHTML = I18N[lang][key];
   });
-  document.getElementById("mic-state").textContent = t("press_to_talk");
   document.getElementById("sync-label").textContent = t("local_mode");
   const muteBtn = document.getElementById("btn-mute-audio");
   if(muteBtn) muteBtn.textContent = state.audioMuted ? t("audio_off") : t("audio_on");
@@ -621,8 +552,6 @@ document.querySelectorAll(".lang-card").forEach(card=>{
 });
 
 /* ===================== اللغات ===================== */
-// كود الكلام (BCP47) لازم يتطابق مع دعم SpeechRecognition/SpeechSynthesis في المتصفح
-// كود الترجمة (MyMemory) بيستخدم صيغة ISO مبسطة
 const LANGS = [
   {name:"العربية",       speech:"ar-EG", tr:"ar"},
   {name:"English (US)",  speech:"en-US", tr:"en"},
@@ -651,24 +580,20 @@ function fillLangSelect(sel){
 }
 fillLangSelect(document.getElementById("in-speak"));
 fillLangSelect(document.getElementById("in-listen"));
-document.getElementById("in-listen").selectedIndex = 1; // افتراضي: إنجليزي للاستماع
+document.getElementById("in-listen").selectedIndex = 1; // افتراضي: إنجليزي للاستقبال
 
 /* ===================== إعداد رابط الـ Worker (اختياري) ===================== */
-// لو عايز الرابط يتحط تلقائياً لكل من يفتح الصفحة (بدل ما كل واحد يكتبه يدوي)،
-// حط رابط الـ Worker بتاعك هنا بعد نشره على Cloudflare، بصيغة wss://...
-const DEFAULT_RELAY_URL = "wss://worker.wael95057.workers.dev"; // مثال: "wss://terjoman-relay.your-subdomain.workers.dev"
+const DEFAULT_RELAY_URL = "wss://worker.wael95057.workers.dev";
 
 /* ===================== الحالة العامة ===================== */
 const state = {
   id: Math.random().toString(36).slice(2,9),
   name:"", room:"", speak: LANGS[0], listen: LANGS[1],
   relayUrl:"", useRelay:false, socket:null, socketReady:false, msgQueue:[],
-  channel:null, listening:false, recognition:null,
-  participants:{}, lastMsgTs:0,
-  audioMuted:false, mySpeaking:false, speakingTimer:null,
+  channel:null, participants:{},
+  audioMuted:false,
   cameraOn:false, localStream:null, peerConnections:{},
-  pendingReview:null, reviewTimer:null, reviewCountdownInterval:null,
-  roomPin:"", pushToTalk:false, micFailCount:0, lastMicError:null,
+  roomPin:"",
   screenSharing:false, handRaised:false, transcriptLog:[],
   meetingStartTs:null, meetingTimerInterval:null, trialWarningShown:false,
 };
@@ -704,7 +629,6 @@ function checkMeetingTimeLimit(){
 }
 
 function stopAllMediaAndConnections(){
-  if(state.listening && state.recognition){ try{ state.recognition.stop(); }catch(e){} }
   if(state.localStream){ state.localStream.getTracks().forEach(tr=> tr.stop()); state.localStream = null; }
   Object.keys(state.peerConnections).forEach(pid=>{ try{ closePeerConnection(pid); }catch(e){} });
   if(state.channel){ try{ state.channel.close(); }catch(e){} }
@@ -739,7 +663,6 @@ document.getElementById("toggle-fb").onclick = ()=>{
   }
 })();
 
-/* زر توليد رابط دعوة فيه كل الإعدادات جاهزة (يظهر بعد دخول الاجتماع) */
 function buildInviteLink(){
   const url = new URL(location.href);
   url.search = "";
@@ -761,7 +684,6 @@ function actuallyJoinMeeting(){
   state.relayUrl = document.getElementById("in-firebase").value.trim().replace(/\/$/,"");
   state.useRelay = !!state.relayUrl;
   state.roomPin = document.getElementById("in-pin").value.trim();
-  state.pushToTalk = document.getElementById("in-ptt").checked;
 
   document.getElementById("screen-join").style.display = "none";
   document.getElementById("screen-meeting").style.display = "block";
@@ -776,7 +698,6 @@ function actuallyJoinMeeting(){
   initSync();
   renderParticipants();
   renderInviteLink();
-  micState.textContent = state.pushToTalk ? t("press_hold_to_talk") : t("press_to_talk");
   startMeetingTimeLimit();
 }
 
@@ -802,18 +723,16 @@ function isValidEmail(email){
 
 async function registerLead(fullName, email, whatsapp){
   const id = (crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(36).slice(2));
-  if(!sb){ return { id, isNew:true }; } // لا يوجد اتصال بقاعدة البيانات — نكمل محلياً فقط
+  if(!sb){ return { id, isNew:true }; }
   const { error: leadErr } = await sb.from("leads").insert({
     id, full_name: fullName, email, whatsapp_no: whatsapp
   });
   if(leadErr){
-    // البريد مسجل بالفعل من قبل (على جهاز آخر مثلاً) — نعتبره تسجيل ناجح ونكمل بدون إنشاء صف جديد
     if(leadErr.code === "23505" || /duplicate/i.test(leadErr.message || "")){
       return { id:null, isNew:false };
     }
     throw leadErr;
   }
-  // تسجيل جديد فعلاً: ننشئ له صف رصيد نقاط ابتدائي (يُستخدم لاحقاً بعد انتهاء التجربة المجانية)
   await sb.from("user_credits").insert({ user_id: id, total_tokens: 0 });
   return { id, isNew:true };
 }
@@ -857,7 +776,6 @@ document.getElementById("reg-submit").onclick = async ()=>{
     actuallyJoinMeeting();
   }catch(e){
     statusEl.textContent = t("reg_status_failed");
-    // حتى لو فشل الحفظ، نسمح للمستخدم بالمتابعة عشان تجربة الاستخدام متتقفش
     storeLead({ id:null, full_name: fullName, email, whatsapp, pending:true });
     closeRegModal();
     actuallyJoinMeeting();
@@ -875,7 +793,7 @@ document.getElementById("btn-join").onclick = ()=>{
   if(existingLead){
     actuallyJoinMeeting();
   } else {
-    document.getElementById("reg-name").value = name; // تعبئة تلقائية من اسم المستخدم اللي كتبه فوق
+    document.getElementById("reg-name").value = name;
     openRegModal();
   }
 };
@@ -885,13 +803,10 @@ document.getElementById("btn-leave").onclick = ()=>{ stopMeetingTimeLimit(); loc
 document.getElementById("btn-mute-audio").onclick = ()=>{
   state.audioMuted = !state.audioMuted;
   document.getElementById("btn-mute-audio").textContent = state.audioMuted ? t("audio_off") : t("audio_on");
-  if(state.audioMuted) speechSynthesis.cancel(); // وقف أي صوت شغال دلوقتي فوراً
+  if(state.audioMuted) speechSynthesis.cancel();
 };
 
 /* ===================== طبقة المزامنة ===================== */
-// وضع محلي: BroadcastChannel (نفس المتصفح/الجهاز، تابات مختلفة)
-// وضع الـ Worker: WebSocket حقيقي متصل بغرفة (Durable Object) على Cloudflare — لحظي فعلاً، بدون polling
-
 function initSync(){
   if(!state.useRelay){
     state.channel = new BroadcastChannel("terjoman-"+state.room);
@@ -899,10 +814,6 @@ function initSync(){
       const data = ev.data;
       if(data.type==="presence" && data.id){
         state.participants[data.id] = {name:data.name, speak:data.speak, listen:data.listen, ts:Date.now()};
-        renderParticipants();
-      } else if(data.type==="speaking"){
-        if(data.id===state.id || !state.participants[data.id]) return;
-        state.participants[data.id].speaking = data.speaking;
         renderParticipants();
       } else if(data.type==="hand"){
         if(data.id===state.id || !state.participants[data.id]) return;
@@ -942,7 +853,6 @@ function connectSocket(){
     document.getElementById("sync-dot").classList.add("on");
     document.getElementById("sync-label").textContent = t("connected_live");
     sendPresence();
-    // إرسال أي رسائل اتأخرت وقت الاتصال
     while(state.msgQueue.length) ws.send(JSON.stringify(state.msgQueue.shift()));
   };
 
@@ -964,10 +874,6 @@ function connectSocket(){
       renderParticipants();
     } else if(data.type==="rtc-signal"){
       handleRtcSignal(data);
-    } else if(data.type==="speaking"){
-      if(data.id===state.id || !state.participants[data.id]) return;
-      state.participants[data.id].speaking = data.speaking;
-      renderParticipants();
     } else if(data.type==="hand"){
       if(data.id===state.id || !state.participants[data.id]) return;
       state.participants[data.id].handRaised = data.raised;
@@ -988,7 +894,7 @@ function connectSocket(){
     state.socketReady = false;
     document.getElementById("sync-dot").classList.remove("on");
     document.getElementById("sync-label").textContent = t("disconnected_retry");
-    setTimeout(connectSocket, 2000); // إعادة محاولة تلقائية
+    setTimeout(connectSocket, 2000);
   };
 
   ws.onerror = ()=>{ ws.close(); };
@@ -1003,15 +909,6 @@ function sendPresence(){
   }
 }
 
-function sendSpeaking(speaking){
-  const payload = {type:"speaking", id:state.id, speaking};
-  if(!state.useRelay){
-    state.channel.postMessage(payload);
-  } else if(state.socketReady){
-    state.socket.send(JSON.stringify(payload));
-  }
-}
-
 function sendMessage(payload){
   const full = {type:"message", senderId:state.id, ...payload};
   if(!state.useRelay){
@@ -1019,7 +916,7 @@ function sendMessage(payload){
   } else if(state.socketReady){
     state.socket.send(JSON.stringify(full));
   } else {
-    state.msgQueue.push(full); // هتتبعت أول ما الاتصال يرجع
+    state.msgQueue.push(full);
   }
 }
 
@@ -1045,147 +942,22 @@ function renderInviteLink(){
 function renderParticipants(){
   const list = document.getElementById("p-list");
   const entries = Object.values(state.participants);
-  const myDotClass = "dot" + (state.mySpeaking ? " speaking" : " on");
   const myHand = state.handRaised ? "✋ " : "";
-  let html = `<div class="p-item ${state.mySpeaking?'is-speaking':''}"><div class="who"><span class="${myDotClass}"></span> ${myHand}${state.name} (${t("you")})</div>
+  let html = `<div class="p-item"><div class="who"><span class="dot on"></span> ${myHand}${state.name} (${t("you")})</div>
     <div class="langs">${state.speak.name} → ${state.listen.name}</div></div>`;
   if(entries.length===0){
     html += `<div class="hint" style="margin-top:10px;">${t("waiting_participants")}</div>`;
   } else {
     entries.forEach(p=>{
-      const dotClass = "dot" + (p.speaking ? " speaking" : " on");
       const hand = p.handRaised ? "✋ " : "";
-      html += `<div class="p-item ${p.speaking?'is-speaking':''}"><div class="who"><span class="${dotClass}"></span> ${hand}${p.name}</div>
+      html += `<div class="p-item"><div class="who"><span class="dot on"></span> ${hand}${p.name}</div>
         <div class="langs">${p.speak} → ${p.listen}</div></div>`;
     });
   }
   list.innerHTML = html;
 }
 
-/* ===================== التعرف على الصوت (STT) ===================== */
-const micBtn = document.getElementById("btn-mic");
-const micState = document.getElementById("mic-state");
-const interimEl = document.getElementById("interim");
-
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-micBtn.onclick = ()=>{
-  if(state.pushToTalk) return; // في وضع اضغط واستمر، التحكم بالضغط والإفلات مش بالنقر
-  if(!SR){
-    alert(t("no_speech_support"));
-    return;
-  }
-  if(state.listening){ stopListening(); } else { startListening(); }
-};
-
-micBtn.addEventListener("pointerdown", (e)=>{
-  if(!state.pushToTalk) return;
-  e.preventDefault();
-  if(!SR){ alert(t("no_speech_support")); return; }
-  if(!state.listening) startListening();
-});
-["pointerup","pointerleave","pointercancel"].forEach(evt=>{
-  micBtn.addEventListener(evt, ()=>{
-    if(!state.pushToTalk) return;
-    if(state.listening) stopListening();
-  });
-});
-
-function startListening(){
-  state.recognition = new SR();
-  state.recognition.lang = state.speak.speech;
-  state.recognition.continuous = !state.pushToTalk;
-  state.recognition.interimResults = true;
-
-  state.recognition.onresult = (ev)=>{
-    state.micFailCount = 0; // نتيجة ناجحة = نصفّر عداد الفشل
-    let interim = "", final = "";
-    for(let i=ev.resultIndex; i<ev.results.length; i++){
-      const chunk = ev.results[i][0].transcript;
-      if(ev.results[i].isFinal) final += chunk;
-      else interim += chunk;
-    }
-    interimEl.textContent = interim;
-
-    // مؤشر "بيتكلم الآن": يتفعّل فور وجود نشاط صوتي، ويتوقف تلقائياً بعد ثانية ونص من الصمت
-    if(interim.trim() || final.trim()){
-      if(!state.mySpeaking){
-        state.mySpeaking = true;
-        sendSpeaking(true);
-        renderParticipants();
-      }
-      clearTimeout(state.speakingTimer);
-      state.speakingTimer = setTimeout(()=>{
-        state.mySpeaking = false;
-        sendSpeaking(false);
-        renderParticipants();
-      }, 1500);
-    }
-
-    if(final.trim()){
-      interimEl.textContent = "";
-      showReviewBox(final.trim());
-    }
-  };
-
-  const FATAL_ERRORS = ["not-allowed", "service-not-allowed", "audio-capture"];
-
-  state.recognition.onerror = (ev)=>{
-    micState.textContent = t("mic_error") + ev.error + t("retry_hint");
-    state.lastMicError = ev.error;
-    if(FATAL_ERRORS.includes(ev.error)){
-      // أخطاء دائمة (صلاحية مرفوضة، مفيش ميكروفون) — إعادة المحاولة مش هتحل حاجة، نوقف تماماً
-      state.listening = false;
-    }
-  };
-
-  state.recognition.onend = ()=>{
-    if(!state.listening || state.pushToTalk) return; // متوقف عمداً أو وضع اضغط-واستمر، مفيش إعادة تشغيل تلقائي
-
-    if(FATAL_ERRORS.includes(state.lastMicError)){
-      stopListening();
-      return;
-    }
-
-    state.micFailCount = (state.micFailCount || 0) + 1;
-    if(state.micFailCount >= 4){
-      // فشل متكرر وسريع — نوقف تماماً بدل ما نلف في حلقة تجمد الجهاز
-      micState.textContent = t("mic_error") + "repeated-failure" + t("retry_hint");
-      stopListening();
-      return;
-    }
-
-    // تأخير بسيط قبل إعادة المحاولة عشان محدش يلف بسرعة جنونية لو فيه مشكلة عابرة
-    setTimeout(()=>{
-      if(state.listening) state.recognition.start();
-    }, 400);
-  };
-
-  state.lastMicError = null;
-  state.micFailCount = 0;
-  state.recognition.start();
-  state.listening = true;
-  micBtn.classList.add("live");
-  micState.textContent = state.pushToTalk ? t("listening_now") : t("listening_now");
-}
-
-function stopListening(){
-  state.listening = false;
-  if(state.recognition) state.recognition.stop();
-  micBtn.classList.remove("live");
-  micState.textContent = state.pushToTalk ? t("press_hold_to_talk") : t("press_to_talk");
-  interimEl.textContent = "";
-  clearTimeout(state.speakingTimer);
-  if(state.mySpeaking){
-    state.mySpeaking = false;
-    sendSpeaking(false);
-    renderParticipants();
-  }
-}
-
 /* ===================== الفيديو (WebRTC) ===================== */
-// الفيديو شغال بس لما تكونوا متصلين عبر Cloudflare Worker (مش الوضع المحلي)
-// لأنه محتاج قناة إشارة (signaling) بين أجهزة حقيقية مختلفة
 const ICE_SERVERS = [{urls:"stun:stun.l.google.com:19302"}];
 const videoGrid = document.getElementById("video-grid");
 
@@ -1225,7 +997,7 @@ document.getElementById("btn-screenshare").onclick = ()=>{
     document.getElementById("btn-screenshare").textContent = t("screenshare_on");
     addOrUpdateVideoTile(state.id, stream, state.name + " (" + t("you") + ") 🖥️", true);
     refreshVideoConnections();
-    stream.getVideoTracks()[0].onended = stopScreenShare; // لو المستخدم وقف المشاركة من واجهة المتصفح نفسها
+    stream.getVideoTracks()[0].onended = stopScreenShare;
   }).catch(()=>{ alert(t("camera_denied")); });
 };
 
@@ -1238,8 +1010,6 @@ function stopScreenShare(){
   Object.keys(state.peerConnections).forEach(pid=> closePeerConnection(pid));
 }
 
-// نسخ داخلية: بتوقف المصدر القديم بس من غير ما تقفل اتصالات الفيديو —
-// عشان لما تبدّل من كاميرا لمشاركة شاشة (أو العكس)، refreshVideoConnections تحت هي اللي هتعيد الوصل بالمصدر الجديد
 function stopCameraInternal(){
   if(state.localStream) state.localStream.getTracks().forEach(tr=> tr.stop());
   state.cameraOn = false;
@@ -1282,7 +1052,7 @@ function maybeInitiateConnection(peerId){
   if(!(state.cameraOn || state.screenSharing) || !state.useRelay) return;
   if(state.peerConnections[peerId]) return;
   const pc = getOrCreatePeerConnection(peerId);
-  if(state.id < peerId){ // ترتيب ثابت لتحديد مين يبدأ الاتصال، لتفادي تعارض عرضين في نفس الوقت
+  if(state.id < peerId){
     pc.createOffer().then(offer=>{
       pc.setLocalDescription(offer);
       sendSignal(peerId, "offer", offer);
@@ -1342,62 +1112,7 @@ function removeVideoTile(id){
   if(videoGrid.children.length === 0) videoGrid.style.display = "none";
 }
 
-/* ===================== مراجعة النص قبل الإرسال ===================== */
-// عشان لو التعرف على الصوت سمع كلام غلط، تقدر تصححه قبل ما يترجم ويتبعت للباقيين
-const reviewBox = document.getElementById("review-box");
-const reviewText = document.getElementById("review-text");
-const reviewCountdown = document.getElementById("review-countdown");
-const REVIEW_SECONDS = 3;
-
-function showReviewBox(text){
-  if(state.pendingReview !== null){
-    confirmSend(); // فيه مراجعة سابقة لسه معلقة؟ ابعتها زي ما هي الأول عشان محدش يضيع
-  }
-  state.pendingReview = text;
-  reviewText.value = text;
-  reviewBox.style.display = "block";
-  reviewText.focus();
-
-  let secondsLeft = REVIEW_SECONDS;
-  reviewCountdown.textContent = t("review_countdown_prefix") + secondsLeft + t("review_countdown_suffix");
-  state.reviewCountdownInterval = setInterval(()=>{
-    secondsLeft -= 1;
-    if(secondsLeft > 0){
-      reviewCountdown.textContent = t("review_countdown_prefix") + secondsLeft + t("review_countdown_suffix");
-    }
-  }, 1000);
-  state.reviewTimer = setTimeout(confirmSend, REVIEW_SECONDS * 1000);
-}
-
-function confirmSend(){
-  if(state.pendingReview === null) return;
-  clearTimeout(state.reviewTimer);
-  clearInterval(state.reviewCountdownInterval);
-  const finalText = reviewText.value.trim();
-  reviewBox.style.display = "none";
-  state.pendingReview = null;
-  if(!finalText) return;
-  const msg = {senderId: state.id, senderName: state.name, srcText: finalText, srcLangTr: state.speak.tr, srcLangName: state.speak.name};
-  sendMessage(msg);
-  addOwnMessageToTranscript(msg);
-}
-
-function cancelReview(){
-  clearTimeout(state.reviewTimer);
-  clearInterval(state.reviewCountdownInterval);
-  reviewBox.style.display = "none";
-  state.pendingReview = null;
-}
-
-document.getElementById("btn-review-send").onclick = confirmSend;
-document.getElementById("btn-review-cancel").onclick = cancelReview;
-reviewText.addEventListener("input", ()=>{
-  clearTimeout(state.reviewTimer);
-  clearInterval(state.reviewCountdownInterval);
-  reviewCountdown.textContent = "";
-});
-
-/* ===================== الكتابة بدل التحدث ===================== */
+/* ===================== الكتابة والإرسال ===================== */
 function sendTypedText(){
   const input = document.getElementById("text-input");
   const text = input.value.trim();
@@ -1416,7 +1131,7 @@ document.getElementById("text-input").addEventListener("keydown", (e)=>{
 document.getElementById("btn-attach").onclick = ()=> document.getElementById("file-input").click();
 document.getElementById("file-input").addEventListener("change", (e)=>{
   const file = e.target.files[0];
-  e.target.value = ""; // يسمح باختيار نفس الصورة تاني لو احتاج
+  e.target.value = "";
   if(!file) return;
   if(!file.type.startsWith("image/")){ alert(t("attach_not_image")); return; }
   handleImageFile(file);
@@ -1427,7 +1142,6 @@ function handleImageFile(file){
   reader.onload = (ev)=>{
     const img = new Image();
     img.onload = ()=>{
-      // نضغط الصورة (نصغّرها ونقلل جودتها) قبل الإرسال عشان تعدي عبر قناة الاتصال بسلاسة
       const maxDim = 900;
       let w = img.width, h = img.height;
       if(w > maxDim || h > maxDim){
@@ -1547,7 +1261,7 @@ function addMessageToTranscript(sender, orig, translated){
   list.prepend(div);
 }
 
-/* ===================== النطق (TTS) ===================== */
+/* ===================== النطق الصوتي للرسائل القادمة (TTS) ===================== */
 function speak(text, lang){
   if(state.audioMuted) return;
   if(!('speechSynthesis' in window)) return;
@@ -1558,7 +1272,7 @@ function speak(text, lang){
   if(match) utter.voice = match;
   speechSynthesis.speak(utter);
 }
-// تحميل الأصوات مبكراً (بعض المتصفحات تحتاج هذا)
+
 if('speechSynthesis' in window){
   speechSynthesis.onvoiceschanged = ()=> speechSynthesis.getVoices();
 }
