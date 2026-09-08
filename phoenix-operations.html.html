@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>منظومة العنقاء | PHOENIX Smart Operations</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+  :root{
+    --bg:#050b14; --panel:#0c1622; --panel2:#0f1c2c; --line:#16283b;
+    --cyan:#22d3ee; --cyan-dim:rgba(34,211,238,.12);
+    --amber:#f5b942; --rose:#fb7185; --emerald:#34d399; --violet:#a78bfa; --blue:#60a5fa;
+    --ink:#e7f1f8; --ink-dim:#7d92a6;
+  }
+  *{box-sizing:border-box;}
+  html,body{background:var(--bg);color:var(--ink);}
+  body{font-family:'Tajawal','Segoe UI',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-thumb{background:#1c3149;border-radius:4px;}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:20px;}
+  .chip{border-radius:999px;font-size:10px;font-weight:700;padding:3px 10px;display:inline-flex;align-items:center;gap:4px;}
+  .chip-ok{background:rgba(52,211,153,.12);color:var(--emerald);border:1px solid rgba(52,211,153,.28);}
+  .chip-warn{background:rgba(245,185,66,.12);color:var(--amber);border:1px solid rgba(245,185,66,.28);}
+  .chip-bad{background:rgba(251,113,133,.12);color:var(--rose);border:1px solid rgba(251,113,133,.28);}
+  .chip-info{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(34,211,238,.28);}
+  .btn{border-radius:14px;font-weight:700;font-size:12px;padding:10px 14px;transition:.15s;border:1px solid var(--line);}
+  .btn:active{transform:scale(.97);}
+  .glow{box-shadow:0 0 0 1px rgba(34,211,238,.15), 0 8px 30px -12px rgba(34,211,238,.25);}
+  .tab-active{color:var(--cyan) !important;}
+  .fade-in{animation:fadeIn .25s ease both;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .spin{animation:spin 1.4s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .pulse{animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+  .drawer{transition:transform .28s cubic-bezier(.2,.8,.2,1);}
+  input[type=range]{accent-color:var(--cyan);}
+  .progress-track{background:#0a1420;border:1px solid var(--line);border-radius:999px;overflow:hidden;}
+  .progress-fill{height:100%;border-radius:999px;}
+  @media print{
+    .no-print{display:none !important;}
+    .pdf-capture, .pdf-capture *{ color:#0f172a !important; border-color:#cbd5e1 !important; }
+    .pdf-capture{ background:#ffffff !important; }
+    .pdf-capture .card{ background:#f8fafc !important; }
+  }
+  .pdf-capture, .pdf-capture *{ color:#0f172a !important; border-color:#cbd5e1 !important; }
+  .pdf-capture{ background:#ffffff !important; }
+  .pdf-capture .card{ background:#f8fafc !important; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="pb-24">
+<div id="app" class="min-h-screen"></div>
+
+<script>
+/* =========================================================
+   PHOENIX SMART OPERATIONS — state
+   ========================================================= */
+const state = {
+  auth: { loggedIn:false, companyId:null },
+  loginError: '',
+  projects: [],
+  newProject: { name:'', loc:'', cap:'', status:'active', pue:'' },
+  lang: 'ar',
+  tab: 'dashboard',
+  drawerOpen: false,
+  isSimulating: false,
+  netPUE: 0.92,
+  serverTemp: 20.2,
+  humidity: 58,
+  flow: 4.2,
+  wue: 0.32,
+  bypassActive: false,
+  systemMode: 'hybrid',
+  copied: false,
+  faultScan: false,
+  faultFound: false,
+  failureSim: null,
+  voiceQuery: '',
+  voiceLog: [],
+  mfaStage: 0, // 0 idle, 1 biometric pending, 2 verified
+  offline: false,
+  weatherEta: null,
+  heatloadPct: 0,
+  heatloadRunning: false,
+  selectedProject: 'ph1',
+  alerts: [
+    {type:'info', ar:'النظام يعمل ضمن مستهدف Net-PUE < 1.0', en:'System operating under Net-PUE < 1.0 target', time:'10:42', audience:'general'},
+    {type:'ok', ar:'استقرار ضغط المائع للطبقة الثالثة عند 4.2 بار', en:'Layer-3 hydrodynamic pressure stable at 4.2 bar', time:'09:15', audience:'field'}
+  ],
+  inventory: [
+    {ar:'سائل بروميد الليثيوم (LiBr)', en:'Lithium Bromide fluid (LiBr)', stock:72, min:30, unit:'L'},
+    {ar:'حساسات تدفق', en:'Flow sensors', stock:14, min:10, unit:'pcs'},
+    {ar:'صمامات Bypass', en:'Bypass valves', stock:6, min:8, unit:'pcs'},
+    {ar:'طلاء نانو سيراميك', en:'Nano-ceramic coating', stock:40, min:15, unit:'L'}
+  ],
+  shipments: [
+    {ar:'وحدة امتصاص إضافية', en:'Extra absorption unit', origin:'ألمانيا', originEn:'Germany', pct:64, eta:'6 أيام / 6 days'},
+    {ar:'ألواح شمسية', en:'Solar panels', origin:'الصين', originEn:'China', pct:88, eta:'2 يوم / 2 days'}
+  ],
+  roster: [
+    {ar:'م. خالد سالم', en:'Eng. Khaled Salem', shift:'00:00–08:00', dist:'2.1 km'},
+    {ar:'م. ندى فوزي', en:'Eng. Nada Fawzy', shift:'08:00–16:00', dist:'0.8 km'},
+    {ar:'م. عمر راشد', en:'Eng. Omar Rashed', shift:'16:00–00:00', dist:'4.4 km'}
+  ],
+  leaderboard: [
+    {ar:'فريق أ — مناوبة ليلية', en:'Team A — Night Shift', pts:980, ncr:0},
+    {ar:'فريق ب — صيانة وقائية', en:'Team B — Preventive Maint.', pts:860, ncr:1},
+    {ar:'فريق ج — الجودة QA/QC', en:'Team C — QA/QC', pts:790, ncr:0}
+  ],
+  carbonLedger: [
+    {id:'0x9F2A...C41', ton:12.4, time:'اليوم 06:00 / Today 06:00'},
+    {id:'0x7B18...E02', ton:11.9, time:'أمس / Yesterday'},
+    {id:'0x3D90...A77', ton:12.7, time:'أول أمس / 2 days ago'}
+  ],
+  qcScanning: false,
+  qcEquip: null,
+  qcDraftType: null,
+  qcPhotoAttached: false,
+  qcRecords: [],
+  arActive: false,
+  arTarget: null,
+  roi: {price:0.12, capex:1100000, mwh:4200},
+  arbitrageHour: new Date().getHours(),
+  scaleServers: 200,
+  nanoThickness: 0.42,
+  nanoLastWeatherEvent: null,
+  librConc: 58,
+  mtbfAssets: [
+    {id:'pump1', ar:'مضخة الشيلر #1', en:'Chiller Pump #1', hours:8200, mtbf:10000},
+    {id:'compA', ar:'ضاغط A', en:'Compressor A', hours:6100, mtbf:12000},
+    {id:'pump2', ar:'مضخة التدوير #2', en:'Circulation Pump #2', hours:9400, mtbf:10000}
+  ],
+  kbSearch: '',
+  kbIncidents: [
+    {id:'INC-0142', titleAr:'ارتفاع مفاجئ في رطوبة صالة IT-2', titleEn:'Sudden humidity spike in IT Hall 2',
+     causeAr:'تسرب طفيف في عزل نافذة الصيانة أثناء عاصفة رملية', causeEn:'Minor seal leak at the maintenance hatch during a dust storm',
+     fixAr:'إحكام العزل واستبدال حشية الصيانة، تفعيل Bypass لمدة 12 دقيقة', fixEn:'Resealed and replaced the maintenance gasket; bypass engaged for 12 minutes',
+     tag:'humidity'},
+    {id:'INC-0119', titleAr:'انخفاض تدفق مبرد الامتصاص #A2', titleEn:'Flow drop on Absorption Chiller #A2',
+     causeAr:'انسداد جزئي في مرشح المدخل نتيجة تراكم الغبار', causeEn:'Partial inlet filter clogging from dust buildup',
+     fixAr:'تنظيف المرشح واستعادة التدفق للمعيار خلال 40 دقيقة', fixEn:'Filter cleaned, flow restored to standard within 40 minutes',
+     tag:'flow'},
+    {id:'INC-0087', titleAr:'تجاوز الحد الأقصى لحرارة صالة IT-1 لدقائق', titleEn:'IT Hall 1 briefly exceeded max temperature',
+     causeAr:'تأخر استجابة الشيلر المساعد عند اختبار الحمل الأقصى', causeEn:'Delayed backup chiller response during peak-load test',
+     fixAr:'تعديل عتبة تفعيل الشيلر المساعد لتصبح أكثر تحفظاً', fixEn:'Adjusted backup chiller trigger threshold to be more conservative',
+     tag:'temp'}
+  ],
+  role: 'admin'
+};
+
+const FAILURE_SCENARIOS = [
+  {id:'chillerA2', ar:'مبرد الامتصاص #A2 (طبقة 2)', en:'Absorption Chiller #A2 (Layer 2)',
+   impactAr:'ارتفاع فوري في حرارة صالة IT بمعدل ~0.8°C/دقيقة، تفعيل الشيلر المساعد خلال 15 ثانية، وارتفاع Net-PUE مؤقتاً إلى نحو 1.4.',
+   impactEn:'IT hall temperature rises ~0.8°C/min immediately; backup chiller engages within 15 seconds; Net-PUE temporarily spikes to ~1.4.', severity:'high'},
+  {id:'solarArray', ar:'مصفوفة الألواح الشمسية (طبقة 1)', en:'Solar Array (Layer 1)',
+   impactAr:'اعتماد كامل على الشبكة الكهربائية خلال ساعات النهار، وارتفاع تكلفة التشغيل دون تأثير مباشر على درجة الحرارة.',
+   impactEn:'Full reliance on grid power during daylight hours; operating cost rises with no direct temperature impact.', severity:'mid'},
+  {id:'bypassValve', ar:'صمام Bypass (طبقة 4)', en:'Bypass Valve (Layer 4)',
+   impactAr:'فقدان خط الدفاع الأخير عند الطوارئ — مخاطرة عالية جداً في حال حدوث عاصفة رملية أو ذروة حرارة.',
+   impactEn:'Loss of the last line of emergency defense — very high risk during a dust storm or heat peak.', severity:'high'},
+  {id:'flowSensor', ar:'حساس تدفق الطبقة 3', en:'Layer 3 Flow Sensor',
+   impactAr:'فقدان الرؤية اللحظية لمعدل التدفق فقط، دون تأثير مباشر على أداء التبريد الفعلي.',
+   impactEn:'Only loses real-time flow visibility, with no direct impact on actual cooling performance.', severity:'low'}
+];
+const LIBR_MIN = 52, LIBR_MAX = 62;
+const NANO_MIN = 0.30, NANO_MAX = 0.50;
+const ROLE_LEVEL = {viewer:0, engineer:1, admin:2};
+function canDo(minRole){ return ROLE_LEVEL[state.role] >= ROLE_LEVEL[minRole]; }
+function denyPerm(){ pushAlert('warn', T.ar.permDenied, T.en.permDenied); render(); }
+function visibleAlerts(){
+  if(state.role==='admin') return state.alerts;
+  if(state.role==='engineer') return state.alerts.filter(a=>a.audience!=='mgmt');
+  return state.alerts.filter(a=>a.audience==='general');
+}
+
+const SCALE_HEADROOM = 500;
+function scaleCompute(servers){
+  if(servers<=SCALE_HEADROOM) return {verdict:'ok', capex: servers*900};
+  return {verdict:'layer', capex: 450000 + servers*900};
+}
+
+const TARIFF_24H = [0.08,0.08,0.07,0.07,0.07,0.08,0.09,0.10,0.12,0.14,0.16,0.18,0.20,0.24,0.26,0.25,0.22,0.20,0.24,0.26,0.22,0.16,0.12,0.09];
+function tariffLevel(v){ return v<0.12?'low': v<0.20?'mid':'peak'; }
+
+const AR_TARGETS = [
+  {id:'l2', ar:'مبرد الامتصاص — الطبقة 2', en:'Absorption Chiller — Layer 2', flow:'3.8 L/s', temp:'85°C', pressure:'2.1 bar', status:'ok'},
+  {id:'l3', ar:'أنبوب التبريد — الطبقة 3', en:'Cooling Pipe — Layer 3', flow:'4.2 L/s', temp:'20°C', pressure:'4.2 bar', status:'ok'},
+  {id:'bypass', ar:'صمام Bypass — الطبقة 4', en:'Bypass Valve — Layer 4', flow:'0.0 L/s', temp:'22°C', pressure:'0.0 bar', status:'warn'}
+];
+
+const QC_EQUIPMENT = [
+  {ar:'مبرد الامتصاص #A2', en:'Absorption Chiller #A2', id:'EQ-A2-114'},
+  {ar:'لوح شمسي #14', en:'Solar Panel #14', id:'EQ-PV-014'},
+  {ar:'صمام Bypass #3', en:'Bypass Valve #3', id:'EQ-BV-003'},
+  {ar:'حساس تدفق #7', en:'Flow Sensor #7', id:'EQ-FS-007'}
+];
+
+/* =========================================================
+   DICTIONARY
+   ========================================================= */
+const T = {
+  ar: {
+    appName:'منظومة العنقاء (PHOENIX)', appSub:'العقل الرقمي الميداني وغرفة العمليات المتنقلة',
+    pm:'مدير المشروع: م. وائل علي عويس محمود', company:'شركة بناء للتطوير الاستراتيجي',
+    live:'تشغيل حي', realtime:'التحديث: لحظي (≤ 1 ثانية)', simulate:'محاكاة الحساسات', menu:'القائمة', close:'إغلاق',
+    navDash:'الرئيسية', navAI:'الذكاء الاصطناعي', navContracts:'الفيديك', navReport:'التقرير', navMore:'المزيد',
+    secDash:'لوحة القيادة', secLayers:'الطبقات الأربع', secTwin:'التوأم الرقمي BIM', secAI:'المساعد الصوتي والتنبؤ',
+    secContracts:'الفيديك والعقود الذكية', secSupply:'سلسلة الإمداد والمخزون', secHR:'التحفيز الميداني والمناوبات',
+    secESG:'بوابة المستثمرين وESG', secSecurity:'الأمن السيبراني OT', secProjects:'محفظة المشاريع', secReport:'التقرير الشامل',
+    netPue:'Net-PUE اللحظي', betterTarget:'أفضل من المستهدف (< 1.0)', itTemp:'حرارة صالات IT', tempNorm:'المعيار 20°C ± 1',
+    humidity:'الرطوبة النسبية', flow:'التدفق الهيدروليكي', bmsMode:'نمط BMS التشغيلي:',
+    wueLbl:'كفاءة استهلاك المياه WUE', wueUnit:'لتر/kWh', wueGood:'أفضل من متوسط القطاع (0.4)',
+    modeHybrid:'التحسين الهجين الذكي', modeBypass:'وضع الاحتياط والتجاوز الآلي', modeFull:'التبريد الكامل',
+    layersTitle:'حالة الطبقات الأربع', l1:'الطبقة الأولى', l1d:'الطاقة الشمسية والرياح',
+    l2:'الطبقة الثانية', l2d:'مبردات الامتصاص LiBr', l3:'الطبقة الثالثة', l3d:'شبكة المايكرو والنانو',
+    l4:'الطبقة الرابعة', l4d:'الشيلر المساعد والـ Bypass', active:'متصل', completed:'مكتمل',
+    emergencySim:'محاكاة أزمنة الطوارئ (15 ثانية Bypass)', valveStatus:'حالة الصمامات:',
+    inactive:'غير نشط (طبيعي)', bypassOn:'نشط (تجاوز طوارئ)', emergencyBtn:'طوارئ غبار/رطوبة', resetBtn:'إعادة ضبط النظام',
+    liveLogs:'سجل التنبيهات الحية (BMS & DCIM)', printPage:'طباعة', copyPage:'نسخ المحتوى', copied:'تم النسخ!',
+    l1full:'تكامل الألواح الكهروضوئية مع توربينات الرياح الدقيقة لتوفير طاقة نظيفة ومستدامة لغرف السيرفرات.',
+    l2full:'استغلال الحرارة المهدرة (85°C) لتشغيل مبردات الامتصاص ببروميد الليثيوم بكفاءة عالية واستهلاك كهرباء شبه معدوم.',
+    l3full:'طلاء نانو سيراميك عاكس (0.3–0.5 مم) وشبكة أنابيب مايكروية لتحقيق التبريد الفضائي السلبي (SRI 95%).',
+    l4full:'شيلر مساعد ونظام صمامات أوتوماتيكي يتفعل خلال 15 ثانية كحماية قصوى عند العواصف أو ذروة الحرارة.',
+    twinDesc:'نموذج BIM تفاعلي يغيّر ألوان الأنابيب حسب قراءات الحساسات الحية، مع تحديد إحداثيات XYZ لأي عطل ميداني.',
+    twinScan:'بدء تحديد الأعطال مكانياً', twinScanning:'جارٍ مسح الشبكة...', twinFound:'تم رصد انخفاض تدفق طفيف',
+    twinCoord:'الإحداثيات', twinNav:'فتح التوجيه للفني الميداني', twinClear:'لا أعطال — كل الأنابيب ضمن المعيار',
+    pipeNormal:'طبيعي', pipeWarn:'تنبيه', pipeHot:'حرج',
+    aiVoiceTitle:'المساعد الصوتي الهندسي — Phoenix Voice AI', aiVoicePh:'اسأل: ما هو Net-PUE الحالي؟',
+    aiVoiceSend:'إرسال', aiVoiceHint:'أوامر مقترحة:', aiIncident:'توليد تقرير حادثة تلقائي',
+    aiIncidentBody:'تم تفريغ سجلات الفريق والقراءات والوقت تلقائياً — المسودة جاهزة للاعتماد والإرسال للعميل.',
+    aiAcoustic:'التشخيص الصوتي للمضخات والضواغط', aiAcousticOK:'لا شذوذ صوتي — البصمة الصوتية طبيعية عبر الطبقات الأربع',
+    aiWeather:'محرك التنبؤ الجوي', aiWeatherDesc:'ربط بتوقعات الأقمار الصناعية لتعديل الصمامات استباقياً قبل ساعتين من أي تغيّر.',
+    aiWeatherBtn:'محاكاة إنذار عاصفة قادمة', aiWeatherAlert:'تحذير: عاصفة ترابية متوقعة خلال',
+    aiHeatload:'محاكي الأحمال القصوى (Stress-Test)', aiHeatloadDesc:'ماذا لو زادت أحمال السيرفرات 50% مع حرارة خارجية 48°C؟',
+    aiHeatloadRun:'تشغيل المحاكاة', aiHeatloadRunning:'جارٍ حساب استجابة الطبقات الأربع...',
+    aiHeatloadDone:'النتيجة: المنظومة تستوعب الحمل مع رفع تدفق الطبقة 3 بنسبة 18%',
+    aiArbitrage:'المراجعة والتحكيم الذكي لأسعار الطاقة', aiArbitrageDesc:'يحلل التطبيق تعرفة الكهرباء على مدار الساعة ويوجّه النظام لتخزين طاقة التبريد وقت انخفاض الأسعار وتشغيل الشيلر المساعد بأقل تكلفة وقت الذروة.',
+    aiArbitrageHour:'الساعة المحددة', aiArbitrageTariff:'التعرفة الحالية', aiArbitrageLow:'منخفضة', aiArbitrageMid:'متوسطة', aiArbitragePeak:'ذروة',
+    aiArbitrageRecLow:'توصية: تخزين طاقة التبريد الآن — التعرفة منخفضة', aiArbitrageRecMid:'توصية: تشغيل عادي — التعرفة متوسطة',
+    aiArbitrageRecPeak:'توصية: التحول للطاقة الشمسية المخزنة وخفض الحمل غير الحرج — وقت الذروة',
+    aiScale:'محدد السعة والتوسع المستقبلي', aiScaleDesc:'جرّب سيناريو توسع مستقبلي واحسب فوراً مدى استيعاب المنظومة الحالية والاستثمار المطلوب.',
+    aiScaleServers:'عدد السيرفرات الإضافية', aiScaleArea:'مساحة إضافية (م²)', aiScaleHeadroom:'فائض السعة الحالي',
+    aiScaleCapex:'الاستثمار الإضافي المطلوب (CapEx)', aiScaleVerdictOK:'الهيكل الحالي يستوعب الزيادة دون تعديل',
+    aiScaleVerdictLayer:'مطلوب إضافة طبقة تبريد جديدة لاستيعاب الزيادة',
+    nanoTitle:'حساسات مراقبة تآكل طلاء النانو سيراميك', nanoDesc:'قياس مستمر لسماكة وكفاءة الطلاء العاكس على أسطح التبريد، مع تنبيه تلقائي عند الحاجة لإعادة الطلاء نتيجة العوامل الجوية القاسية.',
+    nanoThicknessLbl:'السماكة الحالية', nanoMin:'الحد الأدنى الآمن', nanoOK:'الطلاء ضمن المعيار', nanoLow:'تنبيه: السماكة قاربت الحد الأدنى — إعادة طلاء مطلوبة',
+    nanoWeatherBtn:'محاكاة تآكل بفعل عاصفة رملية', nanoRecoatBtn:'جدولة إعادة الطلاء الوقائي', nanoRecoated:'تم جدولة إعادة الطلاء — السماكة استُعيدت للمعيار',
+    librTitle:'مراقبة تركيز محلول بروميد الليثيوم (LiBr)', librDesc:'تدهور تركيز المحلول يقلل كفاءة التبريد بشكل كبير — قياس مستمر مع تنبيه عند الخروج عن النطاق الآمن.',
+    librLbl:'التركيز الحالي', librRange:'النطاق الآمن', librOK:'التركيز ضمن النطاق الآمن', librOut:'تنبيه: التركيز خارج النطاق الآمن',
+    librDegradeBtn:'محاكاة تدهور المحلول', librRegenBtn:'إعادة تكرير المحلول',
+    mtbfTitle:'دورة حياة القطع التنبؤية (MTBF)', mtbfDesc:'عداد ساعات تشغيل لكل معدة رئيسية يتنبأ بموعد الصيانة القادمة قبل حدوث الفشل، بدل الانتظار حتى العطل.',
+    mtbfHours:'ساعات التشغيل', mtbfRemaining:'متبقٍ حتى الصيانة', mtbfDue:'الصيانة مستحقة قريباً', mtbfOK:'ضمن الدورة الطبيعية', mtbfSchedule:'جدولة صيانة الآن',
+    secKB:'سجل ما بعد الحادثة (Knowledge Base)', kbDesc:'أرشيف قابل للبحث لكل الحوادث السابقة وأسبابها الجذرية وحلولها — يساعد الفريق الجديد على التصرف بسرعة.',
+    kbSearchPh:'ابحث في الحوادث (مثال: رطوبة، تدفق، حرارة)...', kbCause:'السبب الجذري', kbFix:'الحل المتبع', kbNoResults:'لا توجد حوادث مطابقة',
+    roleLbl:'الدور', roleViewer:'مشاهد', roleEngineer:'مهندس', roleAdmin:'مدير', permDenied:'ليس لديك صلاحية كافية لهذا الإجراء',
+    twinFailTitle:'محاكي "ماذا لو" لفشل معدة', twinFailDesc:'اختر معدة لعرض الأثر الفوري لتوقفها على باقي الطبقات، دون أي تأثير فعلي على النظام الحي.',
+    twinFailSelect:'اختر المعدة:', twinFailImpact:'الأثر المتوقع عند التوقف', sevHigh:'خطورة عالية', sevMid:'خطورة متوسطة', sevLow:'خطورة منخفضة',
+    projCompareTitle:'مقارنة أداء Net-PUE بين المشاريع', projRegionAvg:'متوسط القطاع الإقليمي', exportPdf:'تصدير تقرير PDF تنفيذي',
+    bmsManualLbl:'التبديل اليدوي للنمط:', bmsFull:'التبريد الكامل', bmsHybrid:'الهجين', bmsBypassShort:'تجاوز',
+    contractsTitle:'مساعد مطالبات الفيديك (تتبع مهلة 28 يوماً)', contractsCompliant:'متوافق',
+    contractsDesc:'رصد آلي للتوقفات الناتجة عن ظروف قاهرة، وتوليد مسودات إشعارات الفيديك تلقائياً.',
+    contractsNotice:'توليد إشعار فيديك جديد', contractsSign:'توقيع إلكتروني معتمد',
+    invoiceTitle:'الفوترة الذكية المرتبطة بالإنجاز', invoiceDesc:'عند اجتياز اختبار 72 ساعة، يُنشأ المستخلص المالي تلقائياً ويُرسل للتحصيل.',
+    invoiceMilestone:'اختبار الـ 72 ساعة', invoiceStatus:'بانتظار اعتماد الاستشاري', invoiceApprove:'اعتماد وإصدار المستخلص',
+    invoiceIssued:'تم إصدار المستخلص وإرساله للتحصيل الفوري',
+    supplyInvTitle:'مخزون قطع الغيار الاستراتيجية', supplyReorder:'إعادة طلب تلقائي', supplyOK:'المخزون كافٍ',
+    supplyShipTitle:'تتبع شحنات الموردين عبر الأقمار الصناعية', supplyEta:'الوصول المتوقع:', supplySite:'الموقع',
+    hrLeaderTitle:'لوحة الشرف — التحفيز الميداني', hrPoints:'نقطة', hrNCR:'NCR',
+    hrRosterTitle:'جدولة المناوبات الطارئة الذكية', hrDist:'المسافة من الموقع:',
+    esgInvestor:'بوابة المستثمرين الخضراء', esgSaving:'التوفير التراكمي منذ التشغيل', esgPayback:'فترة استرداد رأس المال المتبقية',
+    esgCalcTitle:'حاسبة العائد الاستثماري الحية (ROI & LCCA)', esgCalcPrice:'سعر الكهرباء ($/kWh)', esgCalcCapex:'الاستثمار الرأسمالي CapEx ($)',
+    esgCalcMwh:'الطاقة الموفرة سنوياً (MWh)', esgCalcAnnualSaving:'الوفر السنوي المحسوب', esgCalcPayback:'فترة استرداد رأس المال', esgCalcYears:'سنة',
+    esgLedger:'سجل بلوكتشين لانبعاثات الكربون (غير قابل للتعديل)', esgTon:'طن CO2',
+    esgAudit:'المدقق الآلي لشهادات LEED / EDGE', esgAuditDesc:'جمع بيانات الأداء البيئي وتوليد ملفات الاعتماد تلقائياً دون أعمال ورقية.',
+    esgAuditRun:'توليد حزمة التوثيق', esgAuditDone:'تم توليد 42 مستنداً جاهزاً للرفع لمنصة LEED',
+    secTitleFull:'درع الحماية السيبرانية OT/IoT', secDesc:'مراقبة مستمرة لبروتوكولات Modbus وBACnet مع عزل فوري لأي وحدة مشبوهة.',
+    secStatus:'الحالة الأمنية', secClear:'لا اختراقات مكتشفة', secMFA:'التحكم المزدوج للطوارئ (MFA)',
+    secMFAStart:'محاولة تفعيل Emergency Override', secMFAWait:'بانتظار التحقق البيومتري...', secMFADone:'تم التحقق — الصلاحية ممنوحة',
+    secOffline:'الوضع غير المتصل', secOfflineDesc:'يستمر التطبيق بحفظ القراءات محلياً عند انقطاع الشبكة، وتتم المزامنة فور عودة الاتصال.',
+    secOfflineToggle:'محاكاة انقطاع الشبكة', secOfflineOn:'غير متصل — يتم الحفظ محلياً', secOfflineOff:'متصل — مزامنة سحابية نشطة',
+    projectsTitle:'محفظة مشاريع شركة بناء الاستراتيجية', location:'الموقع:', capacity:'السعة:', manager:'مدير المشروع:',
+    reportTitle:'التقرير الشامل والموحد لمنظومة العنقاء الهجينة', reportSub:'وثيقة حوكمة الأداء الهندسي والتعاقدي والاستثماري',
+    reportSupervised:'إشراف: م. وائل علي عويس محمود (Senior PM | PMP®)', execSummary:'الملخص التنفيذي:',
+    execText:'تم إعداد هذه المنظومة تحت إشراف م. وائل علي عويس محمود لربط هندسة مراكز البيانات الحيوية بالذكاء الاصطناعي وتخفيض استهلاك الطاقة، محققاً Net-PUE أقل من 1.0 مع توفير سنوي يتجاوز 590,000 دولار.',
+    annualSaving:'الوفر السنوي في الكهرباء:', carbonReduction:'خفض الانبعاثات (Scope 1 & 2):',
+    docId:'رقم الوثيقة: BENA-PHX-MASTER-REPORT-01',
+    secQC:'مفتش الجودة الميداني QA/QC', qcDesc:'مسح رمز QR على المعدة المورّدة لفتح محضر فحص ميداني (MIR)، تسجيل عدم مطابقة (NCR)، أو فتح تذكرة صيانة رقمية (Work Order) وتتبعها حتى الإغلاق.',
+    qcScanBtn:'مسح رمز QR', qcScanning:'جارٍ مسح الرمز...', qcEquipFound:'تم التعرف على المعدة',
+    qcChooseAction:'اختر الإجراء:', qcMIR:'اعتماد محضر فحص (MIR)', qcNCR:'تسجيل عدم مطابقة (NCR)',
+    qcNotePh:'أضف ملاحظة الفحص...', qcAttachPhoto:'إرفاق صورة من الموقع', qcPhotoAttached:'تم إرفاق الصورة',
+    qcSubmit:'اعتماد وإرسال', qcCancel:'إلغاء', qcRecordsTitle:'سجل المحاضر الأخيرة',
+    qcApproved:'معتمد', qcOpen:'مفتوح', qcNoRecords:'لا توجد محاضر بعد — ابدأ بمسح رمز QR',
+    qcWO:'فتح تذكرة صيانة (WO)', qcInProgress:'قيد التنفيذ', qcClosed:'مغلقة', qcAdvance:'تحديث الحالة',
+    secAR:'مساعد الواقع المعزز الميداني', arDesc:'وجّه كاميرا الهاتف نحو الأنابيب أو الصمامات ليظهر التدفق والحرارة والضغط فوراً دون الرجوع لغرفة التحكم.',
+    arActivate:'تفعيل عدسة الواقع المعزز', arDeactivate:'إيقاف الكاميرا', arScanning:'وجّه الكاميرا نحو المعدة...',
+    arDetected:'اختر المعدة الظاهرة في الإطار:', arFlow:'التدفق', arTemp:'الحرارة', arPressure:'الضغط', arStatus:'الحالة'
+  },
+  en: {
+    appName:'PHOENIX System', appSub:'Field Digital Brain & Mobile Operations Room',
+    pm:'Project Manager: Eng. Wael Ali Oweis Mahmoud', company:'Bena Strategic Development',
+    live:'Live Status', realtime:'Update: real-time (≤1s)', simulate:'Simulate Sensors', menu:'Menu', close:'Close',
+    navDash:'Dashboard', navAI:'AI Co-Pilot', navContracts:'FIDIC', navReport:'Report', navMore:'More',
+    secDash:'Dashboard', secLayers:'Four Layers', secTwin:'Digital Twin (BIM)', secAI:'Voice AI & Prediction',
+    secContracts:'FIDIC & Smart Contracts', secSupply:'Supply Chain & Inventory', secHR:'Field Rewards & Rosters',
+    secESG:'Investor & ESG Portal', secSecurity:'OT Cybersecurity', secProjects:'Project Portfolio', secReport:'Master Report',
+    netPue:'Real-time Net-PUE', betterTarget:'Better than target (< 1.0)', itTemp:'IT Hall Temperature', tempNorm:'Standard 20°C ± 1',
+    humidity:'Relative Humidity', flow:'Hydraulic Flow', bmsMode:'BMS Operational Mode:',
+    wueLbl:'Water Usage Effectiveness (WUE)', wueUnit:'L/kWh', wueGood:'Better than industry average (0.4)',
+    modeHybrid:'Hybrid AI Optimization', modeBypass:'Standby / Full Bypass Mode', modeFull:'Full Cooling',
+    layersTitle:'Four Layers Status', l1:'Layer 1', l1d:'Solar & Wind Energy',
+    l2:'Layer 2', l2d:'LiBr Absorption Chillers', l3:'Layer 3', l3d:'Micro-Nano Channel Grid',
+    l4:'Layer 4', l4d:'Backup Chiller & Bypass', active:'Active', completed:'Completed',
+    emergencySim:'Emergency Simulation (15s Bypass)', valveStatus:'Valve Status:',
+    inactive:'Inactive (Normal)', bypassOn:'Active (Emergency Bypass)', emergencyBtn:'Dust/Humidity Emergency', resetBtn:'Reset System',
+    liveLogs:'Live BMS & DCIM Logs', printPage:'Print', copyPage:'Copy Content', copied:'Copied!',
+    l1full:'Integration of PV solar panels and micro-wind turbines to supply clean, sustainable power to server halls.',
+    l2full:'Utilizing waste heat (85°C) to drive Lithium Bromide absorption chillers with high efficiency and near-zero electricity draw.',
+    l3full:'Reflective nano-ceramic coating (0.3–0.5mm) and micro-channel pipe grid achieving passive radiative cooling (SRI 95%).',
+    l4full:'Backup chiller and automated valve system triggering within 15 seconds as ultimate protection during storms or heat peaks.',
+    twinDesc:'Interactive BIM model that recolors pipework from live sensor data, pinpointing any field fault by XYZ coordinate.',
+    twinScan:'Start spatial fault localization', twinScanning:'Scanning network...', twinFound:'Minor flow drop detected',
+    twinCoord:'Coordinates', twinNav:'Open field technician routing', twinClear:'No faults — all pipes within standard',
+    pipeNormal:'Normal', pipeWarn:'Warning', pipeHot:'Critical',
+    aiVoiceTitle:'Phoenix Voice AI Co-Pilot', aiVoicePh:'Ask: what is the current Net-PUE?',
+    aiVoiceSend:'Send', aiVoiceHint:'Suggested commands:', aiIncident:'Auto-generate incident report',
+    aiIncidentBody:'Team logs, readings, and timestamps were auto-compiled — draft ready for approval and client dispatch.',
+    aiAcoustic:'Acoustic diagnostics for pumps & compressors', aiAcousticOK:'No acoustic anomalies — signature normal across all 4 layers',
+    aiWeather:'AI Weather-Adaptive Predictor', aiWeatherDesc:'Linked to satellite forecasts to preemptively adjust valves up to 2 hours ahead.',
+    aiWeatherBtn:'Simulate incoming storm alert', aiWeatherAlert:'Warning: dust storm expected in',
+    aiHeatload:'Virtual Heatload Stress-Test', aiHeatloadDesc:'What if server load rises 50% with outdoor temp at 48°C?',
+    aiHeatloadRun:'Run simulation', aiHeatloadRunning:'Calculating four-layer response...',
+    aiHeatloadDone:'Result: system absorbs the load by raising Layer-3 flow 18%',
+    aiArbitrage:'Smart Energy Arbitrage', aiArbitrageDesc:'The app reads the hourly grid tariff and directs the system to store cooling energy at low prices and run the backup chiller at lowest cost during peak hours.',
+    aiArbitrageHour:'Selected hour', aiArbitrageTariff:'Current tariff', aiArbitrageLow:'Low', aiArbitrageMid:'Mid', aiArbitragePeak:'Peak',
+    aiArbitrageRecLow:'Recommendation: store cooling energy now — low tariff', aiArbitrageRecMid:'Recommendation: normal operation — mid tariff',
+    aiArbitrageRecPeak:'Recommendation: switch to stored solar power and shed non-critical load — peak hour',
+    aiScale:'AI Scalability Modeler', aiScaleDesc:'Test a future expansion scenario and instantly see how much headroom the current system has and the CapEx required.',
+    aiScaleServers:'Additional servers', aiScaleArea:'Additional area (m²)', aiScaleHeadroom:'Current capacity headroom',
+    aiScaleCapex:'Additional CapEx required', aiScaleVerdictOK:'Current structure absorbs the increase with no changes',
+    aiScaleVerdictLayer:'A new cooling layer is required to absorb the increase',
+    nanoTitle:'Nano-Coat Integrity Sensors', nanoDesc:'Continuous measurement of reflective coating thickness and efficiency on cooling surfaces, with automatic alerts when recoating is needed due to severe weather.',
+    nanoThicknessLbl:'Current thickness', nanoMin:'Safe minimum', nanoOK:'Coating within standard', nanoLow:'Alert: thickness near minimum — recoating required',
+    nanoWeatherBtn:'Simulate dust-storm wear', nanoRecoatBtn:'Schedule preventive recoating', nanoRecoated:'Recoating scheduled — thickness restored to standard',
+    librTitle:'Lithium Bromide (LiBr) Concentration Monitor', librDesc:'Degraded solution concentration sharply cuts cooling efficiency — continuous measurement with alerts when outside the safe range.',
+    librLbl:'Current concentration', librRange:'Safe range', librOK:'Concentration within safe range', librOut:'Alert: concentration outside safe range',
+    librDegradeBtn:'Simulate solution degradation', librRegenBtn:'Regenerate solution',
+    mtbfTitle:'Predictive Asset Lifecycle (MTBF) Tracker', mtbfDesc:'Operating-hour counter for each major asset that predicts the next maintenance window before failure occurs, instead of waiting for a breakdown.',
+    mtbfHours:'Operating hours', mtbfRemaining:'Remaining until maintenance', mtbfDue:'Maintenance due soon', mtbfOK:'Within normal cycle', mtbfSchedule:'Schedule maintenance now',
+    secKB:'Post-Incident Knowledge Base', kbDesc:'Searchable archive of past incidents, root causes, and resolutions — helps new team members act faster.',
+    kbSearchPh:'Search incidents (e.g. humidity, flow, temperature)...', kbCause:'Root cause', kbFix:'Resolution', kbNoResults:'No matching incidents found',
+    roleLbl:'Role', roleViewer:'Viewer', roleEngineer:'Engineer', roleAdmin:'Admin', permDenied:'You do not have sufficient permission for this action',
+    twinFailTitle:'Equipment Failure "What-If" Simulator', twinFailDesc:'Pick a piece of equipment to see the immediate impact of its failure on the rest of the layers — with no effect on the live system.',
+    twinFailSelect:'Select equipment:', twinFailImpact:'Expected impact if it fails', sevHigh:'High severity', sevMid:'Medium severity', sevLow:'Low severity',
+    projCompareTitle:'Net-PUE Comparison Across Projects', projRegionAvg:'Regional industry average', exportPdf:'Export Executive PDF Report',
+    bmsManualLbl:'Manual mode switch:', bmsFull:'Full Cooling', bmsHybrid:'Hybrid', bmsBypassShort:'Bypass',
+    contractsTitle:'FIDIC Claim Assistant (28-Day Notice Tracker)', contractsCompliant:'Compliant',
+    contractsDesc:'Automated monitoring of force-majeure delays, auto-drafting FIDIC notices within contractual deadlines.',
+    contractsNotice:'Generate new FIDIC notice', contractsSign:'Certified e-signature',
+    invoiceTitle:'Milestone-Linked Smart Invoicing', invoiceDesc:'Once the 72-hour test passes, the payment certificate is auto-generated and sent for collection.',
+    invoiceMilestone:'72-Hour Test', invoiceStatus:'Pending consultant approval', invoiceApprove:'Approve & issue certificate',
+    invoiceIssued:'Certificate issued and sent for immediate collection',
+    supplyInvTitle:'Critical Spares Inventory Tracker', supplyReorder:'Auto-reorder', supplyOK:'Stock sufficient',
+    supplyShipTitle:'Satellite Supplier Shipment Tracking', supplyEta:'ETA:', supplySite:'Site',
+    hrLeaderTitle:'Honor Board — Field Gamification', hrPoints:'pts', hrNCR:'NCR',
+    hrRosterTitle:'Smart Emergency Roster', hrDist:'Distance from site:',
+    esgInvestor:'Green Investor Portal', esgSaving:'Cumulative savings since go-live', esgPayback:'Remaining payback period',
+    esgCalcTitle:'Dynamic ROI & LCCA Calculator', esgCalcPrice:'Electricity Price ($/kWh)', esgCalcCapex:'Capital Investment CapEx ($)',
+    esgCalcMwh:'Annual Energy Saved (MWh)', esgCalcAnnualSaving:'Calculated Annual Saving', esgCalcPayback:'Payback Period', esgCalcYears:'years',
+    esgLedger:'Immutable Blockchain Carbon Ledger', esgTon:'t CO2',
+    esgAudit:'Automated LEED / EDGE Auditor', esgAuditDesc:'Continuously collects ESG data and auto-generates certification files, paperwork-free.',
+    esgAuditRun:'Generate documentation package', esgAuditDone:'42 documents generated, ready for LEED upload',
+    secTitleFull:'OT/IoT Cybersecurity Shield', secDesc:'Continuous monitoring of Modbus & BACnet traffic with instant isolation of any suspicious node.',
+    secStatus:'Security Status', secClear:'No intrusions detected', secMFA:'Multi-Factor Emergency Override',
+    secMFAStart:'Attempt Emergency Override', secMFAWait:'Awaiting biometric verification...', secMFADone:'Verified — access granted',
+    secOffline:'Offline Field Mode', secOfflineDesc:'The app keeps saving readings locally during connectivity loss and syncs the moment it returns.',
+    secOfflineToggle:'Simulate network outage', secOfflineOn:'Offline — saving locally', secOfflineOff:'Online — cloud sync active',
+    projectsTitle:'Bena Strategic Project Portfolio', location:'Location:', capacity:'Capacity:', manager:'Project Manager:',
+    reportTitle:'Comprehensive Master Report — PHOENIX Hybrid System', reportSub:'Engineering, Contractual & ESG Governance Document',
+    reportSupervised:'Supervised by: Eng. Wael Ali Oweis Mahmoud (Senior PM | PMP®)', execSummary:'Executive Summary:',
+    execText:'This system is supervised by Eng. Wael Ali Oweis Mahmoud, integrating mission-critical data center engineering with AI to achieve Net-PUE < 1.0 with annual savings exceeding $590,000.',
+    annualSaving:'Annual Electricity Saving:', carbonReduction:'Carbon Reduction (Scope 1 & 2):',
+    docId:'Document ID: BENA-PHX-MASTER-REPORT-01',
+    secQC:'Field QA/QC Inspector', qcDesc:'Scan the equipment QR code to open a field Material Inspection Report (MIR), log a Non-Conformance Report (NCR), or open a digital Work Order tracked through to closure.',
+    qcScanBtn:'Scan QR Code', qcScanning:'Scanning code...', qcEquipFound:'Equipment identified',
+    qcChooseAction:'Choose action:', qcMIR:'Approve Inspection (MIR)', qcNCR:'Log Non-Conformance (NCR)',
+    qcNotePh:'Add inspection note...', qcAttachPhoto:'Attach site photo', qcPhotoAttached:'Photo attached',
+    qcSubmit:'Approve & submit', qcCancel:'Cancel', qcRecordsTitle:'Recent Records',
+    qcApproved:'Approved', qcOpen:'Open', qcNoRecords:'No records yet — start by scanning a QR code',
+    qcWO:'Open Work Order (WO)', qcInProgress:'In Progress', qcClosed:'Closed', qcAdvance:'Advance status',
+    secAR:'AR Field Assistant', arDesc:'Point the phone camera at pipes or valves to instantly see flow, temperature, and pressure — no trip back to the control room.',
+    arActivate:'Activate AR lens', arDeactivate:'Stop camera', arScanning:'Point the camera at equipment...',
+    arDetected:'Select the equipment in frame:', arFlow:'Flow', arTemp:'Temperature', arPressure:'Pressure', arStatus:'Status'
+  }
+};
+
+const PROJECTS = {
+  ar: [
+    {id:'ph1', name:'PHOENIX Hybrid System — Tier IV', status:'active', loc:'سوهاج / دبي', cap:'2.5 MW', pue:0.92},
+    {id:'ph2', name:'BENA Digital Carbon Tracker', status:'completed', loc:'مصر', cap:'ESG Net-Zero', pue:1.05},
+    {id:'ph3', name:'BENA North Campus — Tier III', status:'active', loc:'القاهرة', cap:'1.2 MW', pue:1.35}
+  ],
+  en: [
+    {id:'ph1', name:'PHOENIX Hybrid System — Tier IV', status:'active', loc:'Sohag / Dubai', cap:'2.5 MW', pue:0.92},
+    {id:'ph2', name:'BENA Digital Carbon Tracker', status:'completed', loc:'Egypt', cap:'ESG Net-Zero', pue:1.05},
+    {id:'ph3', name:'BENA North Campus — Tier III', status:'active', loc:'Cairo', cap:'1.2 MW', pue:1.35}
+  ]
+};
+const REGION_AVG_PUE = 1.55;
+
+/* =========================================================
+   تسجيل الشركات (ID + كلمة سر) — تفعيل مباشر بدون انتظار
+   كل شركة بياناتها (سجل المشاريع) محفوظة منفصلة تماماً عن باقي الشركات
+   ========================================================= */
+const COMPANIES_KEY = 'phoenix_companies_v1';
+const SESSION_KEY = 'phoenix_session_v1';
+
+function simpleHash(str){
+  // تشفير بسيط لكلمة السر (مش تشفير أمني حقيقي، بس كفاية لمنع تخزينها كنص صريح في هذا السياق)
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = ((h<<5)-h) + str.charCodeAt(i); h |= 0; }
+  return 'h'+h;
+}
+function loadCompanies(){
+  try{ return JSON.parse(localStorage.getItem(COMPANIES_KEY) || '{}'); }catch(e){ return {}; }
+}
+function saveCompanies(obj){
+  try{ localStorage.setItem(COMPANIES_KEY, JSON.stringify(obj)); }catch(e){}
+}
+function companyDataKey(id){ return 'phoenix_data_' + id; }
+
+function loadCompanyData(companyId){
+  let data = null;
+  try{ data = JSON.parse(localStorage.getItem(companyDataKey(companyId)) || 'null'); }catch(e){}
+  if(data && Array.isArray(data.projects)){
+    state.projects = data.projects;
+  } else {
+    // أول مرة للشركة دي: نبدأ بمشاريع تجريبية افتراضية
+    state.projects = PROJECTS[state.lang].map(p=>({...p}));
+    saveCompanyData();
+  }
+}
+function saveCompanyData(){
+  if(!state.auth.companyId) return;
+  try{ localStorage.setItem(companyDataKey(state.auth.companyId), JSON.stringify({ projects: state.projects })); }catch(e){}
+}
+
+function attemptLogin(){
+  const idEl = document.getElementById('loginCompanyId');
+  const pwEl = document.getElementById('loginPassword');
+  const companyId = (idEl.value||'').trim();
+  const password = (pwEl.value||'').trim();
+  if(!companyId || !password){
+    state.loginError = isAr() ? 'من فضلك اكتب معرّف الشركة وكلمة السر' : 'Please enter both Company ID and password';
+    render(); return;
+  }
+  const companies = loadCompanies();
+  const hashed = simpleHash(password);
+  if(companies[companyId]){
+    if(companies[companyId] !== hashed){
+      state.loginError = isAr() ? 'كلمة السر غير صحيحة لمعرّف الشركة ده' : 'Incorrect password for this Company ID';
+      render(); return;
+    }
+  } else {
+    // تفعيل مباشر: أول دخول لمعرّف الشركة ده يسجّله تلقائياً بكلمة السر دي
+    companies[companyId] = hashed;
+    saveCompanies(companies);
+  }
+  state.auth.loggedIn = true;
+  state.auth.companyId = companyId;
+  state.loginError = '';
+  try{ localStorage.setItem(SESSION_KEY, companyId); }catch(e){}
+  loadCompanyData(companyId);
+  render();
+}
+function logoutCompany(){
+  state.auth.loggedIn = false;
+  state.auth.companyId = null;
+  state.projects = [];
+  try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+  render();
+}
+function tryResumeSession(){
+  let saved = null;
+  try{ saved = localStorage.getItem(SESSION_KEY); }catch(e){}
+  if(saved){
+    state.auth.loggedIn = true;
+    state.auth.companyId = saved;
+    loadCompanyData(saved);
+  }
+}
+
+function renderLogin(){
+  const ar = isAr();
+  return `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;" class="bg-[#0a1a2a]">
+    <div class="card p-6 w-full max-w-sm space-y-4">
+      <div class="text-center space-y-1 mb-2">
+        <div class="text-2xl">🔥</div>
+        <h2 class="text-white font-bold text-base">PHOENIX — ${ar?'تسجيل دخول الشركة':'Company Login'}</h2>
+        <p class="text-slate-400 text-xs">${ar?'كل شركة ليها معرّف وكلمة سر منفصلة، وبياناتها محفوظة لوحدها بدون أي تداخل مع شركات تانية.':'Each company has its own ID and password, with fully separate saved data — no mix-ups with other companies.'}</p>
+      </div>
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">${ar?'معرّف الشركة (Company ID)':'Company ID'}</label>
+        <input id="loginCompanyId" type="text" class="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="${ar?'مثال: bena-2026':'e.g. bena-2026'}">
+      </div>
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">${ar?'كلمة السر':'Password'}</label>
+        <input id="loginPassword" type="password" class="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="${ar?'كلمة سر':'Password'}" onkeydown="if(event.key==='Enter') attemptLogin();">
+      </div>
+      ${state.loginError ? `<div class="text-rose-400 text-xs text-center">${state.loginError}</div>` : ''}
+      <button onclick="attemptLogin()" class="btn w-full bg-cyan-500/20 hover:bg-cyan-500/30 border-cyan-500/40 text-cyan-300 justify-center">${ar?'دخول / تفعيل مباشر':'Login / Instant Activation'}</button>
+      <p class="text-[10px] text-slate-500 text-center pt-1">${ar?'أول مرة تكتب فيها معرّف شركة جديد، هيتسجل تلقائياً بكلمة السر دي — مفيش انتظار موافقة.':'First time using a new Company ID auto-registers it with this password — no approval wait.'}</p>
+    </div>
+  </div>`;
+}
+
+const NAV_ITEMS = [
+  {id:'dashboard', icon:'activity', key:'navDash'},
+  {id:'ai', icon:'cpu', key:'navAI'},
+  {id:'contracts', icon:'briefcase', key:'navContracts'},
+  {id:'report', icon:'file-text', key:'navReport'}
+];
+const ALL_SECTIONS = [
+  {id:'dashboard', icon:'activity', key:'secDash'},
+  {id:'layers', icon:'layers', key:'secLayers'},
+  {id:'twin', icon:'box', key:'secTwin'},
+  {id:'ai', icon:'cpu', key:'secAI'},
+  {id:'contracts', icon:'briefcase', key:'secContracts'},
+  {id:'qc', icon:'qr-code', key:'secQC'},
+  {id:'ar', icon:'scan-face', key:'secAR'},
+  {id:'kb', icon:'book-open', key:'secKB'},
+  {id:'supply', icon:'truck', key:'secSupply'},
+  {id:'hr', icon:'users', key:'secHR'},
+  {id:'esg', icon:'leaf', key:'secESG'},
+  {id:'security', icon:'shield', key:'secSecurity'},
+  {id:'projects', icon:'database', key:'secProjects'},
+  {id:'report', icon:'file-text', key:'secReport'}
+];
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function t(){ return T[state.lang]; }
+function isAr(){ return state.lang==='ar'; }
+function two(txt_ar, txt_en){ return isAr()? txt_ar : txt_en; }
+function setTab(id){ state.tab=id; state.drawerOpen=false; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function toggleLang(){ state.lang = state.lang==='ar' ? 'en' : 'ar'; document.documentElement.lang=state.lang; document.documentElement.dir= state.lang==='ar'?'rtl':'ltr'; render(); }
+function toggleDrawer(){ state.drawerOpen = !state.drawerOpen; render(); }
+function toggleSim(){ state.isSimulating = !state.isSimulating; render(); }
+function cycleRole(){
+  state.role = state.role==='viewer' ? 'engineer' : state.role==='engineer' ? 'admin' : 'viewer';
+  render();
+}
+
+function pushAlert(type, ar, en, audience='general'){
+  state.alerts.unshift({type, ar, en, audience, time:new Date().toLocaleTimeString(isAr()?'ar-EG':'en-US',{hour:'2-digit',minute:'2-digit'})});
+  state.alerts = state.alerts.slice(0,6);
+}
+
+function setBmsMode(mode){
+  if(!canDo('engineer')){ denyPerm(); return; }
+  state.systemMode = mode;
+  state.bypassActive = (mode==='bypass');
+  render();
+}
+function triggerEmergency(){
+  if(!canDo('engineer')){ denyPerm(); return; }
+  state.bypassActive = true;
+  state.systemMode = 'bypass';
+  pushAlert('warn', 'ارتفاع مفاجئ في الرطوبة/الغبار! تم تفعيل Bypass خلال 15 ثانية.', 'Humidity/dust spike detected! 15s bypass triggered.', 'field');
+  render();
+}
+function resetSystem(){
+  if(!canDo('engineer')){ denyPerm(); return; }
+  state.bypassActive = false;
+  state.systemMode = 'hybrid';
+  state.netPUE = 0.92; state.serverTemp = 20.0;
+  pushAlert('ok', 'تم إعادة ضبط النظام والعودة لوضع التبريد الإشعاعي الأمثل.', 'System reset to optimal radiative cooling mode.', 'field');
+  render();
+}
+
+function copyPageContent(){
+  const el = document.getElementById('main-content-area');
+  if(el){ navigator.clipboard.writeText(el.innerText).catch(()=>{}); }
+  state.copied = true; render();
+  setTimeout(()=>{ state.copied=false; render(); }, 1600);
+}
+
+function downloadCurrentPagePdf(){
+  if(typeof html2canvas==='undefined' || typeof window.jspdf==='undefined'){
+    alert(isAr() ? '⚠️ مكتبة PDF غير متاحة (تحقق من الاتصال بالإنترنت)' : '⚠️ PDF library unavailable (check internet connection)');
+    return;
+  }
+  const el = document.getElementById('main-content-area');
+  if(!el) return;
+  el.classList.add('pdf-capture');
+  html2canvas(el, { scale: 2, backgroundColor: '#ffffff', useCORS: true }).then(canvas=>{
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    let heightLeft = imgHeight, position = 0;
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while(heightLeft > 0){
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    pdf.save('PHOENIX_' + (state.tab||'page') + '_' + new Date().toISOString().slice(0,10) + '.pdf');
+  }).catch(()=>{
+    alert(isAr() ? '⚠️ فشل تصدير PDF، جرب زر الطباعة واختر "حفظ كـ PDF"' : '⚠️ PDF export failed — try Print and choose "Save as PDF"');
+  }).finally(()=>{
+    el.classList.remove('pdf-capture');
+  });
+}
+
+function selectFailure(id){ state.failureSim = id; render(); }
+function runFaultScan(){
+  state.faultScan = true; state.faultFound=false; render();
+  setTimeout(()=>{ state.faultScan=false; state.faultFound=true; render(); }, 1800);
+}
+
+const VOICE_KB = [
+  { match:['pue','عنقاء','net-pue'], ar:(s)=>`مؤشر Net-PUE الحالي هو ${s.netPUE} — أفضل من المستهدف 1.0.`, en:(s)=>`Current Net-PUE is ${s.netPUE} — better than the 1.0 target.` },
+  { match:['ضغط','pressure','بار','bar'], ar:(s)=>`ضغط المائع في الطبقة الثالثة مستقر عند ${s.flow} بار خلال آخر ساعة.`, en:(s)=>`Layer-3 fluid pressure has been stable at ${s.flow} bar over the last hour.` },
+  { match:['حرارة','temp','درجة'], ar:(s)=>`حرارة صالات IT الحالية ${s.serverTemp}°C، ضمن المعيار 20°C ± 1.`, en:(s)=>`Current IT hall temperature is ${s.serverTemp}°C, within the 20°C ± 1 standard.` },
+  { match:['رطوبة','humidity'], ar:(s)=>`مستوى الرطوبة النسبية الحالي ${s.humidity}%.`, en:(s)=>`Current relative humidity is ${s.humidity}%.` },
+];
+function runVoiceQuery(){
+  const q = (document.getElementById('voiceInput')||{}).value || '';
+  if(!q.trim()) return;
+  const lower = q.toLowerCase();
+  let hit = VOICE_KB.find(k => k.match.some(m => lower.includes(m)));
+  const answer = hit ? (isAr()? hit.ar(state) : hit.en(state))
+    : two('لم أجد بيانات مباشرة لهذا الاستفسار — جارٍ تسجيله لمراجعة الفريق الهندسي.', "No direct telemetry for that query — logging it for the engineering team's review.");
+  state.voiceLog.unshift({q, a:answer});
+  state.voiceLog = state.voiceLog.slice(0,4);
+  render();
+  setTimeout(()=>{ const inp=document.getElementById('voiceInput'); if(inp) inp.value=''; },0);
+}
+function askSuggested(q){ const inp=document.getElementById('voiceInput'); if(inp){ inp.value=q; runVoiceQuery(); } }
+
+function simulateWeatherAlert(){
+  state.weatherEta = Math.floor(6+Math.random()*6);
+  pushAlert('warn', `محرك التنبؤ الجوي: عاصفة ترابية متوقعة خلال ${state.weatherEta} ساعة — تم تفعيل الحماية النانوية.`, `Weather predictor: dust storm expected in ${state.weatherEta}h — nano-shield pre-activated.`, 'field');
+  render();
+}
+function refreshNanoUI(){
+  const c = t();
+  const nanoLow = state.nanoThickness <= NANO_MIN;
+  const nanoPct = Math.round(((state.nanoThickness-NANO_MIN)/(NANO_MAX-NANO_MIN))*100);
+  const val = document.getElementById('nanoThicknessVal'); if(val) val.textContent = state.nanoThickness.toFixed(2)+' mm';
+  const bar = document.getElementById('nanoBar'); if(bar){ bar.style.width = Math.max(0,nanoPct)+'%'; bar.className = 'progress-fill '+(nanoLow?'bg-rose-400':'bg-violet-400'); }
+  const chip = document.getElementById('nanoChip'); if(chip){ chip.className = 'chip w-full justify-center py-2 '+(nanoLow?'chip-bad':'chip-ok'); chip.textContent = nanoLow? c.nanoLow : c.nanoOK; }
+}
+function nanoWeatherWear(){
+  state.nanoThickness = Math.max(0.15, +(state.nanoThickness - (0.05+Math.random()*0.05)).toFixed(2));
+  refreshNanoUI();
+  if(state.nanoThickness<=NANO_MIN) pushAlert('warn','تنبيه حساسات النانو: السماكة قاربت الحد الأدنى، إعادة الطلاء مطلوبة.','Nano-coat sensor alert: thickness near minimum, recoating required.', 'field');
+  render();
+}
+function nanoRecoat(){
+  state.nanoThickness = NANO_MAX;
+  pushAlert('ok','تم جدولة إعادة طلاء النانو سيراميك — السماكة استُعيدت للمعيار.','Nano-ceramic recoating scheduled — thickness restored to standard.', 'field');
+  render();
+}
+function refreshLibrUI(){
+  const c = t();
+  const bad = state.librConc<LIBR_MIN || state.librConc>LIBR_MAX;
+  const val = document.getElementById('librVal'); if(val) val.textContent = state.librConc.toFixed(1)+'%';
+  const bar = document.getElementById('librBar');
+  if(bar){ bar.style.width = Math.min(100,Math.max(0,((state.librConc-45)/(70-45))*100))+'%'; bar.className = 'progress-fill '+(bad?'bg-rose-400':'bg-cyan-400'); }
+  const chip = document.getElementById('librChip');
+  if(chip){ chip.className = 'chip w-full justify-center py-2 '+(bad?'chip-bad':'chip-ok'); chip.textContent = bad? c.librOut : c.librOK; }
+}
+function librDegrade(){
+  state.librConc = +(state.librConc - (1+Math.random()*2)).toFixed(1);
+  refreshLibrUI();
+  if(state.librConc<LIBR_MIN) pushAlert('warn','تنبيه: تركيز محلول LiBr انخفض عن النطاق الآمن — كفاءة التبريد تتأثر.','Alert: LiBr concentration dropped below safe range — cooling efficiency affected.', 'field');
+  render();
+}
+function librRegen(){
+  state.librConc = 58;
+  pushAlert('ok','تمت إعادة تكرير محلول بروميد الليثيوم للتركيز الأمثل.','LiBr solution regenerated to optimal concentration.', 'field');
+  render();
+}
+function scheduleMTBF(idx){
+  const a = state.mtbfAssets[idx];
+  if(!a) return;
+  a.hours = 0;
+  pushAlert('ok', `تم جدولة صيانة ${a.ar} وإعادة تصفير عداد الساعات.`, `Maintenance scheduled for ${a.en}, hour counter reset.`, 'field');
+  render();
+}
+
+function updateScale(){
+  const el = document.getElementById('scaleServers');
+  if(!el) return;
+  const servers = parseInt(el.value)||0;
+  state.scaleServers = servers;
+  const c = t();
+  const {verdict, capex} = scaleCompute(servers);
+  const valEl = document.getElementById('scaleServersVal'); if(valEl) valEl.textContent = servers;
+  const verdictEl = document.getElementById('scaleVerdict');
+  if(verdictEl){
+    verdictEl.className = 'chip w-full justify-center py-2 '+(verdict==='ok'?'chip-ok':'chip-warn');
+    verdictEl.textContent = verdict==='ok'? c.aiScaleVerdictOK : c.aiScaleVerdictLayer;
+  }
+  const capexEl = document.getElementById('scaleCapexVal'); if(capexEl) capexEl.textContent = '$'+capex.toLocaleString();
+}
+
+function setArbitrageHour(h){
+  state.arbitrageHour = h;
+  const c = t();
+  document.querySelectorAll('[id^="bar-"]').forEach(el=>el.classList.remove('ring-2','ring-white'));
+  const bar = document.getElementById('bar-'+h); if(bar) bar.classList.add('ring-2','ring-white');
+  const hourVal = document.getElementById('arbHourVal'); if(hourVal) hourVal.textContent = String(h).padStart(2,'0')+':00';
+  const tariffVal = document.getElementById('arbTariffVal'); if(tariffVal) tariffVal.textContent = '$'+TARIFF_24H[h].toFixed(2);
+  const lvl = tariffLevel(TARIFF_24H[h]);
+  const rec = document.getElementById('arbRec');
+  if(rec){
+    rec.className = 'chip w-full justify-center py-2 '+(lvl==='low'?'chip-ok':lvl==='mid'?'chip-info':'chip-warn');
+    rec.textContent = lvl==='low'?c.aiArbitrageRecLow:lvl==='mid'?c.aiArbitrageRecMid:c.aiArbitrageRecPeak;
+  }
+}
+
+function runHeatloadSim(){
+  state.heatloadRunning = true; state.heatloadPct = 0; render();
+  const iv = setInterval(()=>{
+    state.heatloadPct += 20;
+    if(state.heatloadPct>=100){ state.heatloadPct=100; state.heatloadRunning=false; clearInterval(iv); }
+    render();
+  }, 280);
+}
+
+let invoiceIssued=false;
+function approveInvoice(){ if(!canDo('admin')){ denyPerm(); return; } invoiceIssued=true; render(); }
+let noticeCount=1;
+function newFidicNotice(){ noticeCount++; pushAlert('info', `تم توليد إشعار فيديك رقم NTC-${String(noticeCount).padStart(3,'0')}`, `FIDIC notice NTC-${String(noticeCount).padStart(3,'0')} generated`, 'mgmt'); render(); }
+
+function reorderStock(idx){ state.inventory[idx].stock = state.inventory[idx].min + 40; render(); }
+
+function startMFA(){ if(!canDo('engineer')){ denyPerm(); return; } state.mfaStage=1; render(); setTimeout(()=>{ state.mfaStage=2; render(); }, 1500); }
+function toggleOffline(){ state.offline = !state.offline; render(); }
+
+let auditGenerated=false;
+function runAudit(){ auditGenerated=true; render(); }
+
+function updateROI(){
+  const priceEl = document.getElementById('roiPrice');
+  const capexEl = document.getElementById('roiCapex');
+  const mwhEl = document.getElementById('roiMwh');
+  if(!priceEl || !capexEl || !mwhEl) return;
+  const price = parseFloat(priceEl.value)||0;
+  const capex = parseFloat(capexEl.value)||0;
+  const mwh = parseFloat(mwhEl.value)||0;
+  state.roi = {price, capex, mwh};
+  const annualSaving = price*mwh*1000;
+  const payback = annualSaving>0 ? (capex/annualSaving) : 0;
+
+  const priceVal = document.getElementById('roiPriceVal'); if(priceVal) priceVal.textContent = price.toFixed(2);
+  const capexVal = document.getElementById('roiCapexVal'); if(capexVal) capexVal.textContent = '$'+capex.toLocaleString();
+  const mwhVal = document.getElementById('roiMwhVal'); if(mwhVal) mwhVal.textContent = mwh.toLocaleString();
+  const out = document.getElementById('roiAnnualOut'); if(out) out.textContent = '$'+Math.round(annualSaving).toLocaleString();
+  const pay = document.getElementById('roiPaybackOut'); if(pay) pay.textContent = payback.toFixed(1)+' '+t().esgCalcYears;
+  const bar = document.getElementById('roiBar'); if(bar) bar.style.width = Math.min(100, (annualSaving/(capex||1))*100)+'%';
+}
+
+function scanQR(){
+  state.qcScanning = true; state.qcEquip = null; state.qcDraftType = null; state.qcPhotoAttached=false; render();
+  setTimeout(()=>{
+    state.qcScanning = false;
+    state.qcEquip = QC_EQUIPMENT[Math.floor(Math.random()*QC_EQUIPMENT.length)];
+    render();
+  }, 1300);
+}
+function chooseQCAction(type){ state.qcDraftType = type; state.qcPhotoAttached=false; render(); }
+function toggleQCPhoto(){ state.qcPhotoAttached = !state.qcPhotoAttached; render(); }
+function cancelQCDraft(){ state.qcEquip=null; state.qcDraftType=null; state.qcPhotoAttached=false; render(); }
+function submitQCRecord(){
+  const noteEl = document.getElementById('qcNote');
+  const note = noteEl ? noteEl.value : '';
+  state.qcRecords.unshift({
+    type: state.qcDraftType, equip: state.qcEquip, note,
+    photo: state.qcPhotoAttached,
+    status: state.qcDraftType==='MIR' ? 'approved' : state.qcDraftType==='WO' ? 'open' : 'open',
+    time: new Date().toLocaleTimeString(isAr()?'ar-EG':'en-US',{hour:'2-digit',minute:'2-digit'})
+  });
+  state.qcRecords = state.qcRecords.slice(0,8);
+  state.qcEquip=null; state.qcDraftType=null; state.qcPhotoAttached=false;
+  render();
+}
+function advanceWOStatus(idx){
+  const rec = state.qcRecords[idx];
+  if(!rec || rec.type!=='WO') return;
+  rec.status = rec.status==='open' ? 'in_progress' : rec.status==='in_progress' ? 'closed' : rec.status;
+  render();
+}
+
+/* =========================================================
+   RENDER — small ui atoms
+   ========================================================= */
+function icon(name, cls=''){ return `<i data-lucide="${name}" class="${cls}"></i>`; }
+function chip(text, kind='info'){ return `<span class="chip chip-${kind}">${text}</span>`; }
+function sectionTitle(iconName, text, colorCls='text-cyan-400'){
+  return `<h2 class="text-base font-bold text-white flex items-center gap-2 px-1">${icon(iconName, 'w-5 h-5 '+colorCls)}<span>${text}</span></h2>`;
+}
+
+/* =========================================================
+   TAB RENDERERS
+   ========================================================= */
+function renderDashboard(){
+  const c = t();
+  const modeLabel = state.systemMode==='hybrid'? c.modeHybrid : state.systemMode==='bypass'? c.modeBypass : c.modeFull;
+  return `
+  <div class="space-y-4 fade-in">
+    <div class="card p-5 glow relative overflow-hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span class="chip chip-info">${icon('radio','w-3 h-3')} ${c.live}</span>
+        <span class="text-[11px] text-slate-400">${c.realtime}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-center">
+        <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
+          <div class="text-slate-400 text-[11px] mb-1 flex items-center justify-center gap-1">${icon('activity','w-3.5 h-3.5 text-cyan-400')} ${c.netPue}</div>
+          <div class="text-3xl font-black text-cyan-400 mono">${state.netPUE.toFixed(2)}</div>
+          <div class="text-[10px] text-emerald-400 mt-1 font-medium">${c.betterTarget}</div>
+        </div>
+        <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
+          <div class="text-slate-400 text-[11px] mb-1 flex items-center justify-center gap-1">${icon('server','w-3.5 h-3.5 text-blue-400')} ${c.itTemp}</div>
+          <div class="text-3xl font-black text-white mono">${state.serverTemp.toFixed(1)}°</div>
+          <div class="text-[10px] text-blue-400 mt-1 font-medium">${c.tempNorm}</div>
+        </div>
+        <div class="bg-black/30 p-3 rounded-2xl border border-white/5">
+          <div class="text-slate-400 text-[10px] mb-1 flex items-center justify-center gap-1">${icon('droplets','w-3 h-3 text-blue-300')} ${c.humidity}</div>
+          <div class="text-xl font-bold text-white mono">${state.humidity}%</div>
+        </div>
+        <div class="bg-black/30 p-3 rounded-2xl border border-white/5">
+          <div class="text-slate-400 text-[10px] mb-1 flex items-center justify-center gap-1">${icon('waves','w-3 h-3 text-cyan-300')} ${c.flow}</div>
+          <div class="text-xl font-bold text-white mono">${state.flow.toFixed(1)} L/s</div>
+        </div>
+        <div class="bg-black/30 p-3 rounded-2xl border border-white/5 col-span-2">
+          <div class="text-slate-400 text-[10px] mb-1 flex items-center justify-center gap-1">${icon('glass-water','w-3 h-3 text-emerald-300')} ${c.wueLbl}</div>
+          <div class="text-xl font-bold text-emerald-300 mono">${state.wue.toFixed(2)} <span class="text-[10px] text-slate-400">${c.wueUnit}</span></div>
+          <div class="text-[9px] text-emerald-400 mt-0.5">${c.wueGood}</div>
+        </div>
+      </div>
+      <div class="mt-4 pt-3 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center text-xs gap-2">
+        <span class="text-slate-400">${c.bmsMode}</span>
+        <span class="font-bold text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">${modeLabel}</span>
+      </div>
+      <div class="mt-3 pt-3 border-t border-white/5 flex items-center justify-between gap-2 text-[11px]">
+        <span class="text-slate-400">${c.bmsManualLbl}</span>
+        <div class="flex gap-1.5">
+          <button onclick="setBmsMode('full')" class="chip ${state.systemMode==='full'?'chip-info':'chip-bad !text-slate-300 !bg-white/5 !border-white/10'}">${c.bmsFull}</button>
+          <button onclick="setBmsMode('hybrid')" class="chip ${state.systemMode==='hybrid'?'chip-info':'chip-bad !text-slate-300 !bg-white/5 !border-white/10'}">${c.bmsHybrid}</button>
+          <button onclick="setBmsMode('bypass')" class="chip ${state.systemMode==='bypass'?'chip-info':'chip-bad !text-slate-300 !bg-white/5 !border-white/10'}">${c.bmsBypassShort}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <h2 class="text-sm font-bold text-slate-300 px-1">${c.layersTitle}</h2>
+      <div class="grid grid-cols-2 gap-3">
+        ${layerMini('sun','amber',c.l1,c.l1d,c.active)}
+        ${layerMini('cpu','cyan',c.l2,c.l2d,'85°C')}
+        ${layerMini('droplets','blue',c.l3,c.l3d,'SRI 95%')}
+        ${layerMini('wind','violet',c.l4,c.l4d,'N+1')}
+      </div>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <h3 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">${icon('shield-alert','w-4 h-4 text-rose-400')} ${c.emergencySim}</h3>
+        <span class="text-xs text-slate-400">${c.valveStatus} <strong class="text-white">${state.bypassActive? c.bypassOn : c.inactive}</strong></span>
+      </div>
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <button onclick="triggerEmergency()" class="btn bg-rose-500/15 hover:bg-rose-500/25 border-rose-500/40 text-rose-300 flex items-center justify-center gap-1.5 ${canDo('engineer')?'':'opacity-40'}">${icon(canDo('engineer')?'alert-triangle':'lock','w-3.5 h-3.5')} ${c.emergencyBtn}</button>
+        <button onclick="resetSystem()" class="btn bg-slate-800/60 hover:bg-slate-700/60 text-slate-200 flex items-center justify-center gap-1.5 ${canDo('engineer')?'':'opacity-40'}">${icon(canDo('engineer')?'check-circle-2':'lock','w-3.5 h-3.5 text-emerald-400')} ${c.resetBtn}</button>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <h3 class="text-xs font-bold text-slate-400 px-1">${c.liveLogs}</h3>
+      ${visibleAlerts().map(a=>`
+        <div class="card p-3 text-xs flex gap-3 items-start">
+          ${icon(a.type==='warn'?'alert-triangle':a.type==='ok'?'check-circle-2':'activity', 'w-4 h-4 shrink-0 mt-0.5 '+(a.type==='warn'?'text-amber-400':a.type==='ok'?'text-emerald-400':'text-cyan-400'))}
+          <div class="flex-1"><p class="text-slate-200">${isAr()?a.ar:a.en}</p><span class="text-[10px] text-slate-500 mt-1 block">${a.time}</span></div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+function layerMini(iconName,color,title,desc,badge){
+  return `<div class="card p-3.5">
+    <div class="flex items-center justify-between mb-2">
+      <div class="p-2 rounded-xl bg-${color}-500/10 text-${color}-400">${icon(iconName,'w-4 h-4')}</div>
+      <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-bold">${badge}</span>
+    </div>
+    <div class="text-xs font-bold text-white">${title}</div>
+    <div class="text-[10px] text-slate-400 mt-0.5">${desc}</div>
+  </div>`;
+}
+
+function renderLayers(){
+  const c = t();
+  const nanoLow = state.nanoThickness <= NANO_MIN;
+  const nanoPct = Math.round(((state.nanoThickness-NANO_MIN)/(NANO_MAX-NANO_MIN))*100);
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('layers', c.secLayers)}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      ${layerFull('sun','amber','Layer 1 — Renewable Integration','SEI RE100',c.l1full)}
+      ${layerFull('cpu','cyan','Layer 2 — LiBr Absorption Chillers','85°C Waste Heat',c.l2full)}
+      ${layerFull('droplets','blue','Layer 3 — Micro-Channel & Nano-Ceramic','SRI 95%',c.l3full)}
+      ${layerFull('wind','violet','Layer 4 — Backup & 15s Bypass','N+1',c.l4full)}
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('sparkles','w-4 h-4 text-violet-300')} ${c.nanoTitle}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.nanoDesc}</p>
+      <div class="flex justify-between text-[11px] text-slate-400">
+        <span>${c.nanoThicknessLbl}: <span id="nanoThicknessVal" class="mono text-white">${state.nanoThickness.toFixed(2)} mm</span></span>
+        <span>${c.nanoMin}: <span class="mono text-slate-300">${NANO_MIN.toFixed(2)} mm</span></span>
+      </div>
+      <div class="progress-track h-2"><div id="nanoBar" class="progress-fill ${nanoLow?'bg-rose-400':'bg-violet-400'}" style="width:${Math.max(0,nanoPct)}%"></div></div>
+      <div id="nanoChip" class="chip w-full justify-center py-2 ${nanoLow?'chip-bad':'chip-ok'}">${nanoLow? c.nanoLow : c.nanoOK}</div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="nanoWeatherWear()" class="btn bg-amber-500/10 border-amber-500/30 text-amber-300 !text-[11px]">${c.nanoWeatherBtn}</button>
+        <button onclick="nanoRecoat()" class="btn bg-violet-500/10 border-violet-500/30 text-violet-300 !text-[11px]">${c.nanoRecoatBtn}</button>
+      </div>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('flask-conical','w-4 h-4 text-cyan-300')} ${c.librTitle}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.librDesc}</p>
+      <div class="flex justify-between text-[11px] text-slate-400">
+        <span>${c.librLbl}: <span id="librVal" class="mono text-white">${state.librConc.toFixed(1)}%</span></span>
+        <span>${c.librRange}: <span class="mono text-slate-300">${LIBR_MIN}–${LIBR_MAX}%</span></span>
+      </div>
+      <div class="progress-track h-2"><div id="librBar" class="progress-fill ${state.librConc<LIBR_MIN||state.librConc>LIBR_MAX?'bg-rose-400':'bg-cyan-400'}" style="width:${Math.min(100,Math.max(0,((state.librConc-45)/(70-45))*100))}%"></div></div>
+      <div id="librChip" class="chip w-full justify-center py-2 ${state.librConc<LIBR_MIN||state.librConc>LIBR_MAX?'chip-bad':'chip-ok'}">${state.librConc<LIBR_MIN||state.librConc>LIBR_MAX? c.librOut : c.librOK}</div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="librDegrade()" class="btn bg-amber-500/10 border-amber-500/30 text-amber-300 !text-[11px]">${c.librDegradeBtn}</button>
+        <button onclick="librRegen()" class="btn bg-cyan-500/10 border-cyan-500/30 text-cyan-300 !text-[11px]">${c.librRegenBtn}</button>
+      </div>
+    </div>
+  </div>`;
+}
+function layerFull(iconName,color,title,badge,desc){
+  return `<div class="card p-4 space-y-2">
+    <div class="flex justify-between items-center">
+      <span class="text-xs font-bold text-${color}-400 flex items-center gap-1.5">${icon(iconName,'w-4 h-4')} ${title}</span>
+      <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded">${badge}</span>
+    </div>
+    <p class="text-xs text-slate-300 leading-relaxed">${desc}</p>
+  </div>`;
+}
+
+function renderTwin(){
+  const c = t();
+  const pipeColor = state.faultFound ? '#f5b942' : '#22d3ee';
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('box', c.secTwin)}
+    <div class="card p-4 space-y-3">
+      <p class="text-xs text-slate-300 leading-relaxed">${c.twinDesc}</p>
+      <div class="bg-black/40 rounded-2xl border border-white/5 p-3">
+        <svg viewBox="0 0 320 140" class="w-full h-36">
+          <rect x="0" y="0" width="320" height="140" rx="16" fill="#050b14"/>
+          ${[0,1,2,3].map(i=>`<circle cx="${30+i*80}" cy="30" r="10" fill="#0f1c2c" stroke="${i===2 && state.faultFound?'#f5b942':'#16283b'}" stroke-width="2"/>`).join('')}
+          <path d="M30 30 H270" stroke="${state.faultScan? '#a78bfa':pipeColor}" stroke-width="4" stroke-linecap="round" ${state.faultScan?'stroke-dasharray="8 6"':''}/>
+          <path d="M30 30 V110 H270 V30" stroke="#16283b" stroke-width="2" fill="none"/>
+          ${state.faultFound? `<circle cx="190" cy="30" r="16" fill="none" stroke="#f5b942" stroke-width="2"><animate attributeName="r" values="10;18;10" dur="1.4s" repeatCount="indefinite"/></circle>` : ''}
+          <text x="16" y="128" fill="#7d92a6" font-size="9" font-family="monospace">L1</text>
+          <text x="96" y="128" fill="#7d92a6" font-size="9" font-family="monospace">L2</text>
+          <text x="176" y="128" fill="#7d92a6" font-size="9" font-family="monospace">L3</text>
+          <text x="256" y="128" fill="#7d92a6" font-size="9" font-family="monospace">L4</text>
+        </svg>
+      </div>
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">${isAr()?'حالة الأنابيب':'Pipe status'}</span>
+        ${state.faultFound? chip(c.pipeWarn,'warn') : chip(c.pipeNormal,'ok')}
+      </div>
+      ${state.faultScan ? `<div class="chip chip-info w-full justify-center py-2">${icon('loader-2','w-3.5 h-3.5 spin')} ${c.twinScanning}</div>` : ''}
+      ${(!state.faultScan && state.faultFound) ? `
+        <div class="bg-amber-500/10 border border-amber-500/25 rounded-xl p-3 text-xs text-amber-200 space-y-1">
+          <div class="font-bold">${c.twinFound}</div>
+          <div class="mono text-[11px]">${c.twinCoord}: X=41.2, Y=8.7, Z=2.0</div>
+          <button onclick="alert('${two('تم فتح مسار التوجيه للفني','Routing opened for technician')}')" class="btn bg-amber-500/15 border-amber-500/40 text-amber-200 mt-1 w-full">${c.twinNav}</button>
+        </div>` : ''}
+      ${(!state.faultScan && !state.faultFound) ? `<div class="text-[11px] text-slate-500">${c.twinClear}</div>` : ''}
+      <button onclick="runFaultScan()" class="btn bg-cyan-500/10 hover:bg-cyan-500/20 border-cyan-500/30 text-cyan-300 w-full flex items-center justify-center gap-2">${icon('scan','w-4 h-4')} ${c.twinScan}</button>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('git-branch','w-4 h-4 text-rose-300')} ${c.twinFailTitle}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.twinFailDesc}</p>
+      <div class="text-[11px] text-slate-400">${c.twinFailSelect}</div>
+      <div class="flex flex-wrap gap-1.5">
+        ${FAILURE_SCENARIOS.map(f=>`<button onclick="selectFailure('${f.id}')" class="chip ${state.failureSim===f.id?'chip-info':'chip-bad !text-slate-300 !bg-white/5 !border-white/10'}">${isAr()?f.ar:f.en}</button>`).join('')}
+      </div>
+      ${state.failureSim ? (()=>{
+        const f = FAILURE_SCENARIOS.find(x=>x.id===state.failureSim);
+        const sevKind = f.severity==='high'?'bad':f.severity==='mid'?'warn':'ok';
+        const sevLabel = f.severity==='high'?c.sevHigh:f.severity==='mid'?c.sevMid:c.sevLow;
+        return `<div class="bg-black/30 rounded-xl p-3 border border-white/5 space-y-2 fade-in">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white">${isAr()?f.ar:f.en}</span>
+            <span class="chip chip-${sevKind}">${sevLabel}</span>
+          </div>
+          <div class="text-[11px] text-slate-400">${c.twinFailImpact}:</div>
+          <p class="text-xs text-slate-300 leading-relaxed">${isAr()?f.impactAr:f.impactEn}</p>
+        </div>`;
+      })() : ''}
+    </div>
+  </div>`;
+}
+
+function renderAI(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('cpu', c.secAI)}
+
+    <div class="card p-4 space-y-3">
+      <div class="flex items-center gap-2 text-cyan-400 text-xs font-bold">${icon('mic','w-4 h-4')} ${c.aiVoiceTitle}</div>
+      <div class="flex gap-2">
+        <input id="voiceInput" type="text" placeholder="${c.aiVoicePh}" class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50" onkeydown="if(event.key==='Enter')runVoiceQuery()"/>
+        <button onclick="runVoiceQuery()" class="btn bg-cyan-500/15 border-cyan-500/40 text-cyan-300">${c.aiVoiceSend}</button>
+      </div>
+      <div class="text-[10px] text-slate-500">${c.aiVoiceHint}</div>
+      <div class="flex flex-wrap gap-1.5">
+        <button onclick="askSuggested('${two('ما هو Net-PUE','net-pue')}')" class="chip chip-info">Net-PUE</button>
+        <button onclick="askSuggested('${two('الضغط الحالي','pressure now')}')" class="chip chip-info">${two('الضغط','pressure')}</button>
+        <button onclick="askSuggested('${two('الحرارة الحالية','temperature now')}')" class="chip chip-info">${two('الحرارة','temperature')}</button>
+      </div>
+      ${state.voiceLog.length? `<div class="space-y-2 pt-1 border-t border-white/5">
+        ${state.voiceLog.map(l=>`<div class="text-xs"><div class="text-slate-500 mono">› ${l.q}</div><div class="text-emerald-300 mt-0.5">${l.a}</div></div>`).join('')}
+      </div>` : ''}
+    </div>
+
+    <div class="card p-4 space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-white flex items-center gap-1.5">${icon('ear','w-4 h-4 text-violet-400')} ${c.aiAcoustic}</span>
+      </div>
+      <div class="p-3 bg-black/40 rounded-xl border border-white/5 text-[11px] text-emerald-400 mono">&gt; ${c.aiAcousticOK}</div>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('gauge','w-4 h-4 text-amber-300')} ${c.mtbfTitle}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.mtbfDesc}</p>
+      ${state.mtbfAssets.map((a,idx)=>{
+        const pct = Math.min(100, Math.round((a.hours/a.mtbf)*100));
+        const due = pct>=85;
+        const remaining = Math.max(0, a.mtbf-a.hours);
+        return `<div class="space-y-1">
+          <div class="flex justify-between text-xs"><span class="text-slate-300">${isAr()?a.ar:a.en}</span><span class="mono text-slate-400">${a.hours.toLocaleString()} / ${a.mtbf.toLocaleString()} h</span></div>
+          <div class="progress-track h-2"><div class="progress-fill ${due?'bg-rose-400':'bg-amber-400'}" style="width:${pct}%"></div></div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-slate-500">${c.mtbfRemaining}: ${remaining.toLocaleString()} h</span>
+            ${due? `<button onclick="scheduleMTBF(${idx})" class="chip chip-bad">${icon('wrench','w-3 h-3')} ${c.mtbfSchedule}</button>` : `<span class="chip chip-ok">${c.mtbfOK}</span>`}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="card p-4 space-y-2">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('cloud-lightning','w-4 h-4 text-blue-400')} ${c.aiWeather}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.aiWeatherDesc}</p>
+      <button onclick="simulateWeatherAlert()" class="btn bg-blue-500/10 border-blue-500/30 text-blue-300 w-full">${c.aiWeatherBtn}</button>
+      ${state.weatherEta!==null? `<div class="chip chip-warn w-full justify-center py-2">${icon('alert-triangle','w-3.5 h-3.5')} ${c.aiWeatherAlert} ${state.weatherEta}h</div>`:''}
+    </div>
+
+    <div class="card p-4 space-y-2">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('flame','w-4 h-4 text-rose-400')} ${c.aiHeatload}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.aiHeatloadDesc}</p>
+      <div class="progress-track h-2"><div class="progress-fill bg-rose-400" style="width:${state.heatloadPct}%"></div></div>
+      ${state.heatloadRunning? `<div class="text-[11px] text-slate-400">${c.aiHeatloadRunning}</div>` : ''}
+      ${(!state.heatloadRunning && state.heatloadPct===100)? `<div class="text-[11px] text-emerald-400">${c.aiHeatloadDone}</div>`:''}
+      <button ${state.heatloadRunning?'disabled':''} onclick="runHeatloadSim()" class="btn bg-rose-500/10 border-rose-500/30 text-rose-300 w-full ${state.heatloadRunning?'opacity-50':''}">${c.aiHeatloadRun}</button>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('trending-up','w-4 h-4 text-amber-300')} ${c.aiArbitrage}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.aiArbitrageDesc}</p>
+      <div class="flex items-end gap-[2px] h-16 overflow-x-auto">
+        ${TARIFF_24H.map((v,h)=>{
+          const lvl = tariffLevel(v);
+          const colorCls = lvl==='low'?'bg-emerald-400':lvl==='mid'?'bg-amber-400':'bg-rose-400';
+          const hpx = Math.round((v/0.28)*100);
+          return `<div id="bar-${h}" onclick="setArbitrageHour(${h})" class="flex-1 min-w-[9px] rounded-t cursor-pointer ${colorCls} ${h===state.arbitrageHour?'ring-2 ring-white':''}" style="height:${hpx}%" title="${h}:00"></div>`;
+        }).join('')}
+      </div>
+      <div class="flex items-center justify-between text-[11px] text-slate-400">
+        <span>${c.aiArbitrageHour}: <span id="arbHourVal" class="mono text-white">${String(state.arbitrageHour).padStart(2,'0')}:00</span></span>
+        <span>${c.aiArbitrageTariff}: <span id="arbTariffVal" class="mono text-white">$${TARIFF_24H[state.arbitrageHour].toFixed(2)}</span></span>
+      </div>
+      <div id="arbRec" class="chip w-full justify-center py-2 ${tariffLevel(TARIFF_24H[state.arbitrageHour])==='low'?'chip-ok':tariffLevel(TARIFF_24H[state.arbitrageHour])==='mid'?'chip-info':'chip-warn'}">
+        ${tariffLevel(TARIFF_24H[state.arbitrageHour])==='low'?c.aiArbitrageRecLow:tariffLevel(TARIFF_24H[state.arbitrageHour])==='mid'?c.aiArbitrageRecMid:c.aiArbitrageRecPeak}
+      </div>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('expand','w-4 h-4 text-cyan-300')} ${c.aiScale}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.aiScaleDesc}</p>
+      <div class="space-y-1">
+        <div class="flex justify-between text-[11px] text-slate-400"><span>${c.aiScaleServers}</span><span id="scaleServersVal" class="mono text-cyan-300">${state.scaleServers}</span></div>
+        <input id="scaleServers" type="range" min="0" max="1000" step="10" value="${state.scaleServers}" oninput="updateScale()" class="w-full"/>
+      </div>
+      <div class="flex justify-between text-[11px] text-slate-400"><span>${c.aiScaleHeadroom}</span><span class="mono text-white">${SCALE_HEADROOM} ${two('سيرفر','servers')}</span></div>
+      <div id="scaleVerdict" class="chip w-full justify-center py-2 ${scaleCompute(state.scaleServers).verdict==='ok'?'chip-ok':'chip-warn'}">
+        ${scaleCompute(state.scaleServers).verdict==='ok'? c.aiScaleVerdictOK : c.aiScaleVerdictLayer}
+      </div>
+      <div class="bg-black/30 p-3 rounded-xl border border-white/5 flex justify-between items-center">
+        <span class="text-[11px] text-slate-400">${c.aiScaleCapex}</span>
+        <span id="scaleCapexVal" class="text-sm font-bold text-emerald-400 mono">$${scaleCompute(state.scaleServers).capex.toLocaleString()}</span>
+      </div>
+    </div>
+
+    <div class="card p-4 space-y-2">
+      <button onclick="pushAlert('info', 'تم توليد مسودة تقرير حادثة رقم INC-'+Date.now().toString().slice(-4), 'Incident report draft INC-'+Date.now().toString().slice(-4)+' generated', 'mgmt'); render();" class="btn bg-slate-800/60 border-slate-700 text-slate-200 w-full flex items-center justify-center gap-2">${icon('file-clock','w-4 h-4 text-amber-300')} ${c.aiIncident}</button>
+      <p class="text-[11px] text-slate-500">${c.aiIncidentBody}</p>
+    </div>
+  </div>`;
+}
+
+function renderContracts(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('briefcase', c.secContracts)}
+    <div class="card p-4 space-y-3">
+      <div class="flex justify-between items-center">
+        <span class="text-xs font-bold text-white">${c.contractsTitle}</span>
+        ${chip(c.contractsCompliant,'ok')}
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.contractsDesc}</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="newFidicNotice()" class="btn bg-cyan-500/10 border-cyan-500/30 text-cyan-300">${c.contractsNotice}</button>
+        <button onclick="alert('${two('تم فتح شاشة التوقيع الإلكتروني','E-signature screen opened')}')" class="btn bg-slate-800/60 border-slate-700 text-slate-200">${c.contractsSign}</button>
+      </div>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('receipt','w-4 h-4 text-emerald-400')} ${c.invoiceTitle}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.invoiceDesc}</p>
+      <div class="flex items-center justify-between text-xs bg-black/30 rounded-xl p-3 border border-white/5">
+        <span class="text-slate-300">${c.invoiceMilestone}</span>
+        ${invoiceIssued? chip(two('صادر','Issued'),'ok') : chip(c.invoiceStatus,'warn')}
+      </div>
+      ${!invoiceIssued? `<button onclick="approveInvoice()" class="btn bg-emerald-500/10 border-emerald-500/30 text-emerald-300 w-full ${canDo('admin')?'':'opacity-40'} flex items-center justify-center gap-1.5">${canDo('admin')?'':icon('lock','w-3.5 h-3.5')} ${c.invoiceApprove}</button>`
+        : `<div class="text-[11px] text-emerald-400">${c.invoiceIssued}</div>`}
+    </div>
+  </div>`;
+}
+
+function toggleAR(){ state.arActive = !state.arActive; state.arTarget=null; render(); }
+function selectARTarget(id){ state.arTarget = id; render(); }
+
+function renderAR(){
+  const c = t();
+  const target = state.arTarget ? AR_TARGETS.find(a=>a.id===state.arTarget) : null;
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('scan-face', c.secAR)}
+    <div class="card p-4 space-y-3">
+      <p class="text-xs text-slate-300 leading-relaxed">${c.arDesc}</p>
+
+      <div class="relative rounded-2xl overflow-hidden border border-white/10" style="aspect-ratio:4/3;background:radial-gradient(circle at 50% 40%,#0f2233,#050b14 75%);">
+        ${state.arActive ? `
+          <svg class="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 100 75">
+            ${Array.from({length:5}).map((_,i)=>`<line x1="0" y1="${i*15}" x2="100" y2="${i*15}" stroke="#22d3ee" stroke-width="0.3"/>`).join('')}
+            ${Array.from({length:7}).map((_,i)=>`<line x1="${i*15}" y1="0" x2="${i*15}" y2="75" stroke="#22d3ee" stroke-width="0.3"/>`).join('')}
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-16 h-16 border-2 border-cyan-400/70 rounded-xl relative">
+              <div class="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-cyan-300"></div>
+              <div class="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-cyan-300"></div>
+              <div class="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-cyan-300"></div>
+              <div class="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-cyan-300"></div>
+            </div>
+          </div>
+          ${target? `
+            <div class="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur rounded-xl border border-cyan-500/40 p-3 fade-in">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-white">${isAr()?target.ar:target.en}</span>
+                <span class="chip ${target.status==='ok'?'chip-ok':'chip-warn'}">${target.status==='ok'?c.pipeNormal:c.pipeWarn}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div><div class="text-[9px] text-slate-400">${c.arFlow}</div><div class="text-xs font-bold text-cyan-300 mono">${target.flow}</div></div>
+                <div><div class="text-[9px] text-slate-400">${c.arTemp}</div><div class="text-xs font-bold text-white mono">${target.temp}</div></div>
+                <div><div class="text-[9px] text-slate-400">${c.arPressure}</div><div class="text-xs font-bold text-blue-300 mono">${target.pressure}</div></div>
+              </div>
+            </div>` : `
+            <div class="absolute top-2 left-2 right-2 text-center">
+              <span class="chip chip-info">${icon('scan-line','w-3 h-3')} ${c.arScanning}</span>
+            </div>`}
+        ` : `
+          <div class="absolute inset-0 flex items-center justify-center">
+            ${icon('camera-off','w-10 h-10 text-slate-600')}
+          </div>`}
+      </div>
+
+      <button onclick="toggleAR()" class="btn w-full flex items-center justify-center gap-2 ${state.arActive?'bg-rose-500/10 border-rose-500/30 text-rose-300':'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'}">
+        ${icon(state.arActive?'camera-off':'camera','w-4 h-4')} ${state.arActive? c.arDeactivate : c.arActivate}
+      </button>
+
+      ${state.arActive ? `
+        <div class="space-y-1.5">
+          <div class="text-[11px] text-slate-400">${c.arDetected}</div>
+          <div class="flex flex-wrap gap-1.5">
+            ${AR_TARGETS.map(a=>`<button onclick="selectARTarget('${a.id}')" class="chip ${state.arTarget===a.id?'chip-info':'chip-bad'} ${state.arTarget===a.id?'':'!text-slate-300 !bg-white/5 !border-white/10'}">${isAr()?a.ar:a.en}</button>`).join('')}
+          </div>
+        </div>` : ''}
+    </div>
+  </div>`;
+}
+
+function filterKB(){
+  const el = document.getElementById('kbSearchInput');
+  state.kbSearch = el ? el.value : '';
+  const listEl = document.getElementById('kbList');
+  if(!listEl) return;
+  listEl.innerHTML = kbListHTML();
+  lucide.createIcons();
+}
+function kbListHTML(){
+  const c = t();
+  const q = state.kbSearch.trim().toLowerCase();
+  const filtered = state.kbIncidents.filter(inc=>{
+    if(!q) return true;
+    const hay = (inc.id+' '+inc.titleAr+' '+inc.titleEn+' '+inc.tag+' '+inc.causeAr+' '+inc.causeEn).toLowerCase();
+    return hay.includes(q);
+  });
+  if(filtered.length===0) return `<div class="text-[11px] text-slate-500 px-1 py-4 text-center">${c.kbNoResults}</div>`;
+  return filtered.map(inc=>`
+    <div class="card p-3 text-xs space-y-1.5">
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-white">${isAr()?inc.titleAr:inc.titleEn}</span>
+        <span class="chip chip-info mono">${inc.id}</span>
+      </div>
+      <div class="text-slate-400"><span class="text-slate-500">${c.kbCause}:</span> ${isAr()?inc.causeAr:inc.causeEn}</div>
+      <div class="text-emerald-300"><span class="text-slate-500">${c.kbFix}:</span> ${isAr()?inc.fixAr:inc.fixEn}</div>
+    </div>`).join('');
+}
+function renderKB(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('book-open', c.secKB)}
+    <div class="card p-4 space-y-3">
+      <p class="text-xs text-slate-300 leading-relaxed">${c.kbDesc}</p>
+      <input id="kbSearchInput" type="text" placeholder="${c.kbSearchPh}" oninput="filterKB()" value="${state.kbSearch}" class="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50"/>
+    </div>
+    <div id="kbList" class="space-y-2">${kbListHTML()}</div>
+  </div>`;
+}
+
+function renderQC(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('qr-code', c.secQC)}
+    <div class="card p-4 space-y-3">
+      <p class="text-xs text-slate-300 leading-relaxed">${c.qcDesc}</p>
+
+      ${!state.qcScanning && !state.qcEquip ? `
+        <button onclick="scanQR()" class="btn bg-cyan-500/10 hover:bg-cyan-500/20 border-cyan-500/30 text-cyan-300 w-full flex items-center justify-center gap-2 !py-4">
+          ${icon('qr-code','w-5 h-5')} ${c.qcScanBtn}
+        </button>` : ''}
+
+      ${state.qcScanning ? `
+        <div class="flex flex-col items-center justify-center gap-3 py-6">
+          <div class="relative w-20 h-20 rounded-2xl border-2 border-cyan-400/50 flex items-center justify-center">
+            ${icon('qr-code','w-10 h-10 text-cyan-400')}
+            <div class="absolute inset-x-0 top-0 h-0.5 bg-cyan-400" style="animation:pulse 1s ease-in-out infinite;"></div>
+          </div>
+          <div class="chip chip-info">${icon('loader-2','w-3.5 h-3.5 spin')} ${c.qcScanning}</div>
+        </div>` : ''}
+
+      ${(!state.qcScanning && state.qcEquip) ? `
+        <div class="bg-black/30 rounded-xl p-3 border border-white/5 space-y-1">
+          <div class="text-[10px] text-slate-500">${c.qcEquipFound}</div>
+          <div class="text-sm font-bold text-white">${isAr()?state.qcEquip.ar:state.qcEquip.en}</div>
+          <div class="text-[11px] text-cyan-400 mono">${state.qcEquip.id}</div>
+        </div>
+
+        ${!state.qcDraftType ? `
+          <div class="text-[11px] text-slate-400 pt-1">${c.qcChooseAction}</div>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="chooseQCAction('MIR')" class="btn bg-emerald-500/10 border-emerald-500/30 text-emerald-300 !px-2 !text-[11px]">${c.qcMIR}</button>
+            <button onclick="chooseQCAction('NCR')" class="btn bg-rose-500/10 border-rose-500/30 text-rose-300 !px-2 !text-[11px]">${c.qcNCR}</button>
+            <button onclick="chooseQCAction('WO')" class="btn bg-blue-500/10 border-blue-500/30 text-blue-300 !px-2 !text-[11px]">${c.qcWO}</button>
+          </div>
+          <button onclick="cancelQCDraft()" class="text-[11px] text-slate-500 underline w-full text-center pt-1">${c.qcCancel}</button>
+        ` : `
+          <div class="space-y-2 pt-1">
+            <span class="chip ${state.qcDraftType==='MIR'?'chip-ok':state.qcDraftType==='NCR'?'chip-bad':'chip-info'}">${state.qcDraftType==='MIR'?c.qcMIR:state.qcDraftType==='NCR'?c.qcNCR:c.qcWO}</span>
+            <textarea id="qcNote" rows="2" placeholder="${c.qcNotePh}" class="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50"></textarea>
+            <button onclick="toggleQCPhoto()" class="btn w-full flex items-center justify-center gap-2 ${state.qcPhotoAttached?'bg-emerald-500/10 border-emerald-500/30 text-emerald-300':'bg-white/5 border-white/10 text-slate-300'}">
+              ${icon(state.qcPhotoAttached?'check':'camera','w-4 h-4')} ${state.qcPhotoAttached? c.qcPhotoAttached : c.qcAttachPhoto}
+            </button>
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="submitQCRecord()" class="btn bg-cyan-500/15 border-cyan-500/40 text-cyan-300">${c.qcSubmit}</button>
+              <button onclick="cancelQCDraft()" class="btn bg-white/5 border-white/10 text-slate-300">${c.qcCancel}</button>
+            </div>
+          </div>
+        `}
+      ` : ''}
+    </div>
+
+    <div class="space-y-2">
+      <h3 class="text-xs font-bold text-slate-400 px-1">${c.qcRecordsTitle}</h3>
+      ${state.qcRecords.length===0 ? `<div class="text-[11px] text-slate-500 px-1">${c.qcNoRecords}</div>` :
+        state.qcRecords.map((r,idx)=>{
+          const statusLabel = r.status==='approved'? c.qcApproved : r.status==='in_progress'? c.qcInProgress : r.status==='closed'? c.qcClosed : c.qcOpen;
+          const statusKind = r.status==='approved'||r.status==='closed' ? 'ok' : r.status==='in_progress' ? 'info' : 'warn';
+          return `
+        <div class="card p-3 text-xs flex gap-3 items-start">
+          ${icon(r.type==='MIR'?'clipboard-check':r.type==='WO'?'wrench':'clipboard-x', 'w-4 h-4 shrink-0 mt-0.5 '+(r.type==='MIR'?'text-emerald-400':r.type==='WO'?'text-blue-400':'text-rose-400'))}
+          <div class="flex-1 space-y-0.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-200">${r.type} — ${isAr()?r.equip.ar:r.equip.en}</span>
+              <span class="chip chip-${statusKind}">${statusLabel}</span>
+            </div>
+            ${r.note? `<p class="text-slate-400">${r.note}</p>` : ''}
+            <div class="flex items-center gap-2 text-[10px] text-slate-500">
+              <span>${r.time}</span>${r.photo? `<span class="flex items-center gap-1">${icon('image','w-3 h-3')} ${isAr()?'صورة مرفقة':'photo attached'}</span>`:''}
+            </div>
+            ${r.type==='WO' && r.status!=='closed' ? `<button onclick="advanceWOStatus(${idx})" class="chip chip-info mt-1">${icon('arrow-right-circle','w-3 h-3')} ${c.qcAdvance}</button>` : ''}
+          </div>
+        </div>`;}).join('')}
+    </div>
+  </div>`;
+}
+
+function renderSupply(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('truck', c.secSupply)}
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white">${c.supplyInvTitle}</div>
+      ${state.inventory.map((it,idx)=>{
+        const pct = Math.min(100, Math.round((it.stock/(it.min*3))*100));
+        const low = it.stock < it.min;
+        return `<div class="space-y-1">
+          <div class="flex justify-between text-xs"><span class="text-slate-300">${isAr()?it.ar:it.en}</span><span class="mono text-slate-400">${it.stock} ${it.unit}</span></div>
+          <div class="progress-track h-2"><div class="progress-fill ${low?'bg-rose-400':'bg-emerald-400'}" style="width:${pct}%"></div></div>
+          ${low? `<button onclick="reorderStock(${idx})" class="chip chip-bad">${icon('rotate-cw','w-3 h-3')} ${c.supplyReorder}</button>` : `<span class="chip chip-ok">${c.supplyOK}</span>`}
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="card p-4 space-y-4">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('satellite','w-4 h-4 text-violet-400')} ${c.supplyShipTitle}</div>
+      ${state.shipments.map(s=>`
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs"><span class="text-slate-300">${isAr()?s.ar:s.en}</span><span class="text-slate-400">${c.supplyEta} ${s.eta}</span></div>
+          <div class="relative h-8 flex items-center">
+            <div class="absolute left-0 right-0 h-0.5 border-t-2 border-dashed border-white/15"></div>
+            <div class="absolute left-0 flex flex-col items-center gap-1 -translate-x-1/2">
+              ${icon('factory','w-3.5 h-3.5 text-slate-400')}
+            </div>
+            <div class="absolute right-0 flex flex-col items-center gap-1 translate-x-1/2">
+              ${icon('server','w-3.5 h-3.5 text-cyan-300')}
+            </div>
+            <div class="absolute -translate-x-1/2" style="left:${s.pct}%;">
+              <div class="w-5 h-5 rounded-full bg-violet-500/20 border-2 border-violet-400 flex items-center justify-center">
+                ${icon('satellite','w-3 h-3 text-violet-300')}
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-500">
+            <span>${isAr()?s.origin:s.originEn}</span><span>${c.supplySite}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderHR(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('users', c.secHR)}
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('award','w-4 h-4 text-amber-300')} ${c.hrLeaderTitle}</div>
+      ${state.leaderboard.map((l,i)=>`
+        <div class="flex items-center justify-between text-xs bg-black/30 rounded-xl p-3 border border-white/5">
+          <div class="flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-cyan-500/15 text-cyan-300 flex items-center justify-center text-[10px] font-bold">${i+1}</span><span class="text-slate-200">${isAr()?l.ar:l.en}</span></div>
+          <div class="flex items-center gap-2"><span class="mono text-amber-300 font-bold">${l.pts} ${c.hrPoints}</span><span class="chip ${l.ncr===0?'chip-ok':'chip-warn'}">${l.ncr} ${c.hrNCR}</span></div>
+        </div>`).join('')}
+    </div>
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('calendar-clock','w-4 h-4 text-blue-300')} ${c.hrRosterTitle}</div>
+      ${state.roster.map(r=>`
+        <div class="flex items-center justify-between text-xs bg-black/30 rounded-xl p-3 border border-white/5">
+          <span class="text-slate-200">${isAr()?r.ar:r.en}</span>
+          <div class="text-slate-400 flex items-center gap-3"><span class="mono">${r.shift}</span><span>${c.hrDist} ${r.dist}</span></div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderESG(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('leaf', c.secESG, 'text-emerald-400')}
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white">${c.esgInvestor}</div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+          <div class="text-[10px] text-slate-400">${c.esgSaving}</div>
+          <div class="text-lg font-bold text-emerald-400 mono">$612,400</div>
+        </div>
+        <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+          <div class="text-[10px] text-slate-400">${c.esgPayback}</div>
+          <div class="text-lg font-bold text-cyan-400 mono">1.8 ${two('سنة','yr')}</div>
+        </div>
+      </div>
+    </div>
+    <div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('calculator','w-4 h-4 text-cyan-300')} ${c.esgCalcTitle}</div>
+      <div class="space-y-2.5">
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] text-slate-400"><span>${c.esgCalcPrice}</span><span id="roiPriceVal" class="mono text-cyan-300">${state.roi.price.toFixed(2)}</span></div>
+          <input id="roiPrice" type="range" min="0.03" max="0.30" step="0.01" value="${state.roi.price}" oninput="updateROI()" class="w-full"/>
+        </div>
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] text-slate-400"><span>${c.esgCalcCapex}</span><span id="roiCapexVal" class="mono text-cyan-300">$${state.roi.capex.toLocaleString()}</span></div>
+          <input id="roiCapex" type="range" min="200000" max="3000000" step="50000" value="${state.roi.capex}" oninput="updateROI()" class="w-full"/>
+        </div>
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] text-slate-400"><span>${c.esgCalcMwh}</span><span id="roiMwhVal" class="mono text-cyan-300">${state.roi.mwh.toLocaleString()}</span></div>
+          <input id="roiMwh" type="range" min="500" max="10000" step="100" value="${state.roi.mwh}" oninput="updateROI()" class="w-full"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+          <div class="text-[10px] text-slate-400">${c.esgCalcAnnualSaving}</div>
+          <div id="roiAnnualOut" class="text-base font-bold text-emerald-400 mono"></div>
+        </div>
+        <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+          <div class="text-[10px] text-slate-400">${c.esgCalcPayback}</div>
+          <div id="roiPaybackOut" class="text-base font-bold text-cyan-400 mono"></div>
+        </div>
+      </div>
+      <div class="progress-track h-2"><div id="roiBar" class="progress-fill bg-cyan-400" style="width:0%"></div></div>
+    </div>
+    <div class="card p-4 space-y-2">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('link','w-4 h-4 text-violet-400')} ${c.esgLedger}</div>
+      ${state.carbonLedger.map(l=>`
+        <div class="flex items-center justify-between text-[11px] bg-black/30 rounded-xl p-2.5 border border-white/5 mono">
+          <span class="text-violet-300">${l.id}</span><span class="text-emerald-400">${l.ton} ${c.esgTon}</span><span class="text-slate-500">${l.time}</span>
+        </div>`).join('')}
+    </div>
+    <div class="card p-4 space-y-2">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('badge-check','w-4 h-4 text-emerald-300')} ${c.esgAudit}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.esgAuditDesc}</p>
+      ${auditGenerated? `<div class="text-[11px] text-emerald-400">${c.esgAuditDone}</div>` :
+      `<button onclick="runAudit()" class="btn bg-emerald-500/10 border-emerald-500/30 text-emerald-300 w-full">${c.esgAuditRun}</button>`}
+    </div>
+  </div>`;
+}
+
+function renderSecurity(){
+  const c = t();
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('shield', c.secSecurity, 'text-rose-400')}
+    <div class="card p-4 space-y-2">
+      <div class="text-xs font-bold text-white">${c.secTitleFull}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.secDesc}</p>
+      <div class="flex items-center justify-between text-xs bg-black/30 rounded-xl p-3 border border-white/5">
+        <span class="text-slate-300">${c.secStatus}</span>${chip(c.secClear,'ok')}
+      </div>
+    </div>
+    <div class="card p-4 space-y-2">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('fingerprint','w-4 h-4 text-amber-300')} ${c.secMFA}</div>
+      ${state.mfaStage===0? `<button onclick="startMFA()" class="btn bg-amber-500/10 border-amber-500/30 text-amber-300 w-full">${c.secMFAStart}</button>` :
+        state.mfaStage===1? `<div class="chip chip-warn w-full justify-center py-2">${icon('loader-2','w-3.5 h-3.5 spin')} ${c.secMFAWait}</div>` :
+        `<div class="chip chip-ok w-full justify-center py-2">${icon('check-circle-2','w-3.5 h-3.5')} ${c.secMFADone}</div>`}
+    </div>
+    <div class="card p-4 space-y-2">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('wifi-off','w-4 h-4 text-slate-300')} ${c.secOffline}</div>
+      <p class="text-xs text-slate-300 leading-relaxed">${c.secOfflineDesc}</p>
+      <div class="flex items-center justify-between text-xs bg-black/30 rounded-xl p-3 border border-white/5">
+        <span class="text-slate-300">${state.offline? c.secOfflineOn : c.secOfflineOff}</span>
+        <button onclick="toggleOffline()" class="chip ${state.offline?'chip-warn':'chip-ok'}">${c.secOfflineToggle}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function addProjectFromForm(){
+  const name = (document.getElementById('np-name').value||'').trim();
+  const loc = (document.getElementById('np-loc').value||'').trim();
+  const cap = (document.getElementById('np-cap').value||'').trim();
+  const status = document.getElementById('np-status').value;
+  const pueVal = parseFloat(document.getElementById('np-pue').value);
+  if(!name){ alert(isAr()?'اكتب اسم المشروع الأول':'Please enter a project name'); return; }
+  const id = 'p_' + Date.now();
+  state.projects.push({ id, name, loc: loc||'-', cap: cap||'-', status: status||'active', pue: isNaN(pueVal)?1.0:pueVal });
+  state.selectedProject = id;
+  saveCompanyData();
+  render();
+}
+function deleteProject(id){
+  if(!confirm(isAr()?'متأكد من حذف المشروع ده نهائياً؟':'Delete this project permanently?')) return;
+  state.projects = state.projects.filter(p=>p.id!==id);
+  if(state.selectedProject===id) state.selectedProject = state.projects.length ? state.projects[0].id : null;
+  saveCompanyData();
+  render();
+}
+
+function renderProjects(){
+  const c = t();
+  const list = state.projects || [];
+  return `<div class="space-y-4 fade-in">
+    ${sectionTitle('database', c.secProjects)}
+
+    <div class="card p-4 space-y-3 no-print">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('plus-circle','w-4 h-4 text-cyan-300')} ${isAr()?'إضافة مشروع جديد':'Add New Project'}</div>
+      <div class="grid grid-cols-2 gap-2">
+        <input id="np-name" type="text" placeholder="${isAr()?'اسم المشروع':'Project name'}" class="col-span-2 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+        <input id="np-loc" type="text" placeholder="${isAr()?'الموقع':'Location'}" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+        <input id="np-cap" type="text" placeholder="${isAr()?'السعة':'Capacity'}" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+        <select id="np-status" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+          <option value="active">${c.active}</option>
+          <option value="completed">${c.completed}</option>
+        </select>
+        <input id="np-pue" type="number" step="0.01" placeholder="PUE" class="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+      </div>
+      <button onclick="addProjectFromForm()" class="btn w-full bg-cyan-500/15 hover:bg-cyan-500/25 border-cyan-500/30 text-cyan-300 justify-center">${icon('plus','w-4 h-4')} ${isAr()?'حفظ المشروع':'Save Project'}</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      ${list.length ? list.map(p=>`
+        <div class="card p-4 ${state.selectedProject===p.id?'border-cyan-500/50':''}">
+          <div onclick="state.selectedProject='${p.id}';render();" class="cursor-pointer">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-white">${p.name}</span>
+              ${chip(p.status==='active'?c.active:c.completed, p.status==='active'?'ok':'info')}
+            </div>
+            <p class="text-xs text-slate-400">${c.location} ${p.loc} | ${c.capacity} ${p.cap}</p>
+            <p class="text-[11px] text-cyan-400 mt-2 font-medium">${c.manager} ${isAr()?'م. وائل علي عويس محمود':'Eng. Wael Ali Oweis Mahmoud'}</p>
+          </div>
+          <button onclick="deleteProject('${p.id}')" class="no-print mt-2 text-[11px] text-rose-400 flex items-center gap-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> ${isAr()?'حذف المشروع':'Delete Project'}</button>
+        </div>`).join('') : `<p class="text-xs text-slate-500 col-span-2 text-center py-4">${isAr()?'لا توجد مشاريع محفوظة بعد — أضف أول مشروع من الفورم فوق.':'No saved projects yet — add your first one above.'}</p>`}
+    </div>
+
+    ${list.length ? `<div class="card p-4 space-y-3">
+      <div class="text-xs font-bold text-white flex items-center gap-1.5">${icon('bar-chart-3','w-4 h-4 text-cyan-300')} ${c.projCompareTitle}</div>
+      <div class="space-y-2.5">
+        ${list.map(p=>`
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs"><span class="text-slate-300">${p.name}</span><span class="mono ${p.pue<1?'text-emerald-400':'text-amber-300'}">${(+p.pue).toFixed(2)}</span></div>
+            <div class="progress-track h-2"><div class="progress-fill ${p.pue<1?'bg-emerald-400':'bg-amber-400'}" style="width:${Math.min(100,(p.pue/REGION_AVG_PUE)*100)}%"></div></div>
+          </div>`).join('')}
+        <div class="space-y-1 pt-1 border-t border-white/5">
+          <div class="flex justify-between text-xs"><span class="text-slate-400">${c.projRegionAvg}</span><span class="mono text-rose-300">${REGION_AVG_PUE.toFixed(2)}</span></div>
+          <div class="progress-track h-2"><div class="progress-fill bg-rose-400/60" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>` : ''}
+  </div>`;
+}
+
+function renderReport(){
+  const c = t();
+  // كل الأقسام (عدا التقرير نفسه) بنفس ترتيب القائمة الجانبية
+  const reportSections = ALL_SECTIONS.filter(s=>s.id!=='report');
+  const combined = reportSections.map(s=>{
+    const fn = TAB_RENDERERS[s.id];
+    if(!fn) return '';
+    let html = '';
+    try{ html = fn(); }catch(e){ html = ''; }
+    // إزالة أي أحداث تفاعلية (onclick) من النسخة المدمجة في التقرير لتفادي أي تفاعل غير مقصود
+    html = html.replace(/\sonclick="[^"]*"/g, '');
+    return `<div class="pt-2">${html}</div>`;
+  }).join('<div class="border-t border-white/10 my-1"></div>');
+
+  return `<div class="space-y-3 fade-in">
+    <div class="flex gap-2 no-print">
+      <button onclick="window.print()" class="btn bg-cyan-500/10 hover:bg-cyan-500/20 border-cyan-500/30 text-cyan-300 flex-1 flex items-center justify-center gap-2">${icon('printer','w-4 h-4')} ${c.printPage}</button>
+      <button onclick="downloadCurrentPagePdf()" class="btn bg-cyan-500/10 hover:bg-cyan-500/20 border-cyan-500/30 text-cyan-300 flex-1 flex items-center justify-center gap-2">${icon('file-down','w-4 h-4')} ${c.exportPdf}</button>
+    </div>
+    <div class="card p-6 space-y-6">
+      <div class="text-center pb-4 border-b border-white/5 space-y-1">
+        <h2 class="text-lg font-black text-white">${c.reportTitle}</h2>
+        <p class="text-xs text-slate-400">${c.reportSub}</p>
+        <p class="text-xs font-bold text-cyan-400 pt-1">${c.reportSupervised}</p>
+      </div>
+      <div class="space-y-4 text-xs text-slate-300">
+        <div><h3 class="font-bold text-white mb-1">${c.execSummary}</h3><p class="leading-relaxed">${c.execText}</p></div>
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <div class="bg-black/30 p-3.5 rounded-2xl border border-white/5"><div class="text-slate-400 mb-1">${c.annualSaving}</div><div class="text-base font-bold text-emerald-400 mono">$590,000</div></div>
+          <div class="bg-black/30 p-3.5 rounded-2xl border border-white/5"><div class="text-slate-400 mb-1">${c.carbonReduction}</div><div class="text-base font-bold text-cyan-400 mono">-72% CO2e</div></div>
+        </div>
+      </div>
+    </div>
+
+    ${combined}
+
+    <div class="card p-4">
+      <div class="pt-2 border-t border-white/5 flex justify-between text-[10px] text-slate-500 mono">
+        <span>BENA CONSTRUCTION © 2026</span><span>${c.docId}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+const TAB_RENDERERS = {
+  dashboard: renderDashboard, layers: renderLayers, twin: renderTwin, ai: renderAI,
+  contracts: renderContracts, qc: renderQC, ar: renderAR, kb: renderKB, supply: renderSupply, hr: renderHR, esg: renderESG,
+  security: renderSecurity, projects: renderProjects, report: renderReport
+};
+
+/* =========================================================
+   SHELL RENDER
+   ========================================================= */
+function render(){
+  const c = t();
+  const app = document.getElementById('app');
+  if(!state.auth.loggedIn){
+    app.innerHTML = renderLogin();
+    lucide.createIcons();
+    return;
+  }
+  app.innerHTML = `
+    <header class="bg-[#070f1a] border-b border-[var(--line)] sticky top-0 z-40 px-4 py-3">
+      <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <button onclick="toggleDrawer()" class="p-2 rounded-xl bg-white/5 border border-white/10 no-print">${icon('menu','w-5 h-5 text-cyan-300')}</button>
+          <div class="bg-cyan-500/10 p-2 rounded-xl border border-cyan-500/30 hidden sm:block">${icon('zap','w-5 h-5 text-cyan-400 pulse')}</div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 class="text-sm font-black text-white">${c.appName}</h1>
+              <span class="text-[9px] bg-cyan-500/15 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/30 font-bold">${c.company}</span>
+            </div>
+            <p class="text-[11px] text-slate-400">${c.pm}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 no-print">
+          <button onclick="cycleRole()" class="btn bg-white/5 border-white/10 text-slate-200 flex items-center gap-1.5 !py-1.5 !px-2.5" title="${c.roleLbl}">
+            ${icon('user-cog','w-3.5 h-3.5 text-amber-300')}<span class="text-[11px] font-bold">${state.role==='admin'?c.roleAdmin:state.role==='engineer'?c.roleEngineer:c.roleViewer}</span>
+          </button>
+          <button onclick="toggleLang()" class="btn bg-white/5 border-white/10 text-slate-200 flex items-center gap-1.5 !py-1.5 !px-2.5">${icon('globe','w-3.5 h-3.5 text-cyan-400')}<span class="hidden xs:inline">${isAr()?'English':'العربية'}</span></button>
+          <button onclick="if(confirm(isAr()?'تسجيل خروج من حساب الشركة؟':'Log out of company account?')) logoutCompany();" class="btn bg-white/5 border-white/10 text-slate-200 flex items-center gap-1.5 !py-1.5 !px-2.5" title="${isAr()?'تسجيل خروج':'Logout'}">${icon('log-out','w-3.5 h-3.5 text-rose-300')}</button>
+          <button onclick="toggleSim()" class="btn ${state.isSimulating?'bg-amber-500/15 border-amber-500/40 text-amber-300':'bg-white/5 border-white/10 text-slate-300'} flex items-center gap-1.5 !py-1.5 !px-2.5">
+            ${icon('refresh-cw','w-3.5 h-3.5 '+(state.isSimulating?'spin':''))}<span class="hidden sm:inline">${c.simulate}</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 space-y-3">
+      <div class="flex justify-end gap-2 no-print">
+        <button onclick="copyPageContent()" class="btn bg-black/20 border-white/10 text-slate-300 flex items-center gap-1 !py-1.5 !px-2.5 text-[11px]">${icon('copy','w-3 h-3 text-cyan-400')} ${state.copied? c.copied : c.copyPage}</button>
+        <button onclick="window.print()" class="btn bg-black/20 border-white/10 text-slate-300 flex items-center gap-1 !py-1.5 !px-2.5 text-[11px]">${icon('printer','w-3 h-3 text-cyan-400')} ${c.printPage}</button>
+        <button onclick="downloadCurrentPagePdf()" class="btn bg-black/20 border-white/10 text-slate-300 flex items-center gap-1 !py-1.5 !px-2.5 text-[11px]">${icon('file-down','w-3 h-3 text-cyan-400')} PDF</button>
+      </div>
+      <div id="main-content-area">${(TAB_RENDERERS[state.tab]||renderDashboard)()}</div>
+    </main>
+
+    <nav class="bg-[#070f1a] border-t border-[var(--line)] fixed bottom-0 left-0 right-0 z-40 px-2 py-2 no-print">
+      <div class="max-w-4xl mx-auto flex justify-around items-center">
+        ${NAV_ITEMS.map(n=>`
+          <button onclick="setTab('${n.id}')" class="flex flex-col items-center gap-1 px-2 py-1 ${state.tab===n.id?'tab-active':'text-slate-400'}">
+            ${icon(n.icon,'w-5 h-5')}<span class="text-[9px] font-bold">${c[n.key]}</span>
+          </button>`).join('')}
+        <button onclick="toggleDrawer()" class="flex flex-col items-center gap-1 px-2 py-1 text-slate-400">
+          ${icon('grid-3x3','w-5 h-5')}<span class="text-[9px] font-bold">${c.navMore}</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="fixed inset-0 z-50 no-print ${state.drawerOpen?'':'pointer-events-none'}">
+      <div onclick="toggleDrawer()" class="absolute inset-0 bg-black/60 transition-opacity ${state.drawerOpen?'opacity-100':'opacity-0'}"></div>
+      <div class="drawer absolute bottom-0 left-0 right-0 bg-[#0a1420] border-t border-[var(--line)] rounded-t-3xl p-5 max-w-4xl mx-auto"
+           style="transform:translateY(${state.drawerOpen?'0':'100%'})">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-sm font-bold text-white">${c.menu}</h3>
+          <button onclick="toggleDrawer()" class="p-1.5 rounded-lg bg-white/5">${icon('x','w-4 h-4 text-slate-300')}</button>
+        </div>
+        <div class="grid grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto pb-2">
+          ${ALL_SECTIONS.map(s=>`
+            <button onclick="setTab('${s.id}')" class="card p-3 flex flex-col items-center gap-2 ${state.tab===s.id?'border-cyan-500/50':''}">
+              ${icon(s.icon,'w-5 h-5 '+(state.tab===s.id?'text-cyan-400':'text-slate-300'))}
+              <span class="text-[10px] text-center text-slate-200 font-medium leading-tight">${c[s.key]}</span>
+            </button>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
+  if(state.tab==='esg') updateROI();
+}
+
+/* =========================================================
+   SIMULATION LOOP
+   ========================================================= */
+setInterval(()=>{
+  if(state.isSimulating){
+    state.serverTemp = +(state.serverTemp + (Math.random()*0.4-0.2)).toFixed(1);
+    state.netPUE = +(state.netPUE + (Math.random()*0.02-0.01)).toFixed(2);
+    state.humidity = Math.max(30, Math.min(80, Math.round(state.humidity + (Math.random()*6-3))));
+    state.flow = +(state.flow + (Math.random()*0.2-0.1)).toFixed(1);
+    state.wue = +Math.max(0.18, Math.min(0.45, state.wue + (Math.random()*0.02-0.01))).toFixed(2);
+    state.mtbfAssets.forEach(a=>{ a.hours = Math.min(a.mtbf+500, a.hours+2); });
+    if(state.tab==='dashboard' || state.tab==='ai') render();
+  }
+}, 3000);
+
+document.documentElement.lang = state.lang;
+document.documentElement.dir = 'rtl';
+tryResumeSession();
+render();
+</script>
+</body>
+</html>
