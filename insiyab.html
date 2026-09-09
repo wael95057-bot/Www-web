@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق انسياب للتقارير والاجتماعات الرقمية | نسخة سحابية (Cloud Sync)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: white !important; color: black !important; }
+            .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+        }
+        .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
+        .watermark-author { position: fixed; bottom: 10px; left: 15px; font-size: 11px; color: #64748b; z-index: 9999; pointer-events: none; }
+        .star-btn { font-size: 28px; cursor: pointer; color: #cbd5e1; transition: color .15s; }
+        .star-btn.active, .star-btn:hover { color: #f59e0b; }
+        .heat-bar { height: 10px; border-radius: 6px; background: #e2e8f0; overflow: hidden; }
+        .heat-fill { height: 100%; border-radius: 6px; }
+        .agenda-item-row.active-timer { background: #eff6ff; border-color: #93c5fd; }
+        .agenda-item-row.expired-timer { background: #fef2f2; border-color: #fca5a5; }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .sync-online { background: #10b981; }
+        .sync-offline { background: #ef4444; }
+        .sync-syncing { background: #f59e0b; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative">
+
+    <div class="watermark-author no-print">
+        <i class="fa-solid fa-cloud"></i> منظومة انسياب — نسخة سحابية (Cloud Sync + RBAC)
+    </div>
+
+    <!-- ============ LOGIN GATE ============ -->
+    <div id="auth-gate" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 space-y-5">
+            <div class="text-center">
+                <div class="bg-blue-600 w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+                    <i class="fa-solid fa-diagram-project text-2xl text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold text-slate-800">منظومة انسياب (INSIYAB FLOW)</h1>
+                <p class="text-xs text-slate-500 mt-1">تسجيل الدخول للوصول لبيانات الاجتماعات السحابية</p>
+            </div>
+
+            <div id="config-warning" class="hidden bg-amber-50 border border-amber-300 text-amber-800 text-xs p-3 rounded-lg">
+                <i class="fa-solid fa-triangle-exclamation ml-1"></i>
+                لم يتم ضبط إعدادات Firebase بعد. افتح الملف وضع بيانات مشروعك في <code>firebaseConfig</code> أعلى الكود، وراجع ملف الإعداد المرفق (INSIYAB-FIREBASE-SETUP.md).
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">البريد الإلكتروني</label>
+                    <input type="email" id="login-email" required class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">كلمة المرور</label>
+                    <input type="password" id="login-password" required class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <p id="login-error" class="hidden text-xs text-red-600"></p>
+                <button type="submit" class="w-full py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700">
+                    <i class="fa-solid fa-right-to-bracket ml-1"></i> تسجيل الدخول
+                </button>
+                <button type="button" onclick="handleSignup()" class="w-full py-2 bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-200">
+                    إنشاء حساب جديد (يُمنح صلاحية "مشاهد" مبدئياً)
+                </button>
+            </form>
+            <p class="text-[11px] text-slate-400 text-center leading-relaxed">
+                الحسابات الجديدة تُمنح صلاحية "مشاهد" تلقائياً. يجب على المسؤول (Admin) ترقية الصلاحية إلى "محرر" من Firebase Console حسب ملف الإعداد.
+            </p>
+        </div>
+    </div>
+
+    <!-- ============ MAIN APP (hidden until authenticated) ============ -->
+    <div id="app-root" class="hidden">
+
+    <header class="gradient-header text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="bg-blue-600 p-2.5 rounded-xl shadow-inner">
+                    <i class="fa-solid fa-diagram-project text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wide">منظومة انسياب (INSIYAB FLOW)</h1>
+                    <p class="text-xs text-blue-200">إدارة الاجتماعات الرقمية وتتبع التوصيات - ISO 9001 & Lean Construction</p>
+                </div>
+            </div>
+
+            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20 text-left space-y-1">
+                <div class="flex items-center gap-2 justify-end">
+                    <span class="sync-dot sync-offline" id="sync-indicator"></span>
+                    <span class="text-[11px] text-blue-200" id="sync-label">غير متصل</span>
+                </div>
+                <div class="text-sm font-bold text-white" id="current-user-email">—</div>
+                <div class="text-[10px] text-gray-300">الصلاحية: <span id="current-user-role">—</span></div>
+                <div class="flex items-center gap-2 justify-end">
+                    <button onclick="enablePushNotifications()" id="push-btn" class="text-[10px] text-emerald-300 hover:text-emerald-200 underline">تفعيل إشعارات Push</button>
+                    <button onclick="handleLogout()" class="text-[10px] text-red-300 hover:text-red-200 underline">تسجيل الخروج</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bg-slate-800 border-t border-slate-700 px-4 no-print">
+            <div class="max-w-7xl mx-auto flex space-x-2 space-x-reverse overflow-x-auto py-2">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition">
+                    <i class="fa-solid fa-chart-line ml-1"></i> لوحة التحكم والتقييم
+                </button>
+                <button onclick="switchTab('new-meeting')" id="tab-new-meeting" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-300 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-calendar-plus ml-1"></i> إضافة اجتماع وأجندة مسبقة
+                </button>
+                <button onclick="switchTab('meetings-log')" id="tab-meetings-log" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-300 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-list-check ml-1"></i> سجل الاجتماعات والتسجيل
+                </button>
+                <button onclick="switchTab('analytics')" id="tab-analytics" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-300 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-fire ml-1"></i> تحليلات المعوقات
+                </button>
+                <button onclick="switchTab('full-report')" id="tab-full-report" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-300 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-file-contract ml-1"></i> التقرير الكامل الشامل
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div id="notification-banner" class="hidden max-w-7xl mx-auto my-3 px-4 no-print">
+        <div class="bg-amber-500 text-white p-4 rounded-xl shadow-lg flex justify-between items-center animate-pulse">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <i class="fa-solid fa-bell text-2xl"></i>
+                <div>
+                    <h4 class="font-bold">تنبيه اجتماع قادم!</h4>
+                    <p id="notification-text" class="text-sm"></p>
+                </div>
+            </div>
+            <button onclick="closeNotification()" class="bg-amber-700 px-3 py-1 rounded-lg text-sm hover:bg-amber-800">تجاهل</button>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- 1. DASHBOARD -->
+        <section id="sec-dashboard" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div><div class="text-xs text-slate-500 font-semibold">إجمالي الاجتماعات</div><div class="text-3xl font-extrabold text-slate-800 mt-1" id="stat-total">0</div></div>
+                    <div class="bg-blue-50 text-blue-600 p-3 rounded-xl"><i class="fa-solid fa-users text-2xl"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div><div class="text-xs text-slate-500 font-semibold">التوصيات المفتوحة</div><div class="text-3xl font-extrabold text-amber-600 mt-1" id="stat-pending">0</div></div>
+                    <div class="bg-amber-50 text-amber-600 p-3 rounded-xl"><i class="fa-solid fa-clock-rotate-left text-2xl"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div><div class="text-xs text-slate-500 font-semibold">التوصيات المكتملة</div><div class="text-3xl font-extrabold text-emerald-600 mt-1" id="stat-completed">0</div></div>
+                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl"><i class="fa-solid fa-circle-check text-2xl"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div><div class="text-xs text-slate-500 font-semibold">مؤشر الانسياب (Flow Rate)</div><div class="text-3xl font-extrabold text-indigo-600 mt-1" id="stat-nps">100%</div></div>
+                    <div class="bg-indigo-50 text-indigo-600 p-3 rounded-xl"><i class="fa-solid fa-chart-pie text-2xl"></i></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div><div class="text-xs text-slate-500 font-semibold">تقييم الاجتماعات (NPS)</div><div class="text-3xl font-extrabold text-amber-500 mt-1" id="stat-meeting-nps">—</div></div>
+                    <div class="bg-amber-50 text-amber-500 p-3 rounded-xl"><i class="fa-solid fa-star text-2xl"></i></div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-bullseye text-blue-600 ml-2"></i>منهجية انسياب (Insiyab Principles)</h3>
+                    <span class="text-xs bg-slate-100 px-3 py-1 rounded-full text-slate-600 font-semibold">ISO 9001 Aligned</span>
+                </div>
+                <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                    تضمن المنظومة عدم إغلاق أي اجتماع دون محضر رقمي موزع (MoM)، ومصفوفة مسؤوليّات محددة (RACI)، وجدول متابعة دقيق لضمان الانسياب الكامل وعدم تعطيل المسار الحرج للمشروع. جميع البيانات الآن تُخزَّن وتُزامَن سحابياً عبر Firebase Firestore مع صلاحيات وصول محددة (RBAC).
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 no-print">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <h3 class="font-bold text-slate-800"><i class="fa-solid fa-database text-slate-600 ml-2"></i>نسخة احتياطية محلية إضافية</h3>
+                        <p class="text-xs text-slate-500 mt-1">بالإضافة للمزامنة السحابية التلقائية، يمكنك تنزيل نسخة JSON محلية وقت الحاجة.</p>
+                    </div>
+                    <button onclick="exportBackup()" class="px-4 py-2 bg-slate-700 text-white text-sm font-bold rounded-lg hover:bg-slate-800">
+                        <i class="fa-solid fa-download ml-1"></i> تنزيل نسخة احتياطية
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. NEW MEETING -->
+        <section id="sec-new-meeting" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="border-b pb-4 mb-4 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-calendar-plus text-blue-600 ml-2"></i>إضافة اجتماع جديد وأجندة مسبقة</h2>
+                </div>
+                <div id="editor-only-notice" class="hidden bg-amber-50 border border-amber-300 text-amber-800 text-xs p-3 rounded-lg mb-4">
+                    <i class="fa-solid fa-lock ml-1"></i> صلاحيتك الحالية "مشاهد" — لا يمكنك إضافة اجتماعات جديدة. تواصل مع المسؤول لترقية صلاحيتك.
+                </div>
+
+                <form id="meeting-form" onsubmit="handleSaveMeeting(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">عنوان الاجتماع / المشروع *</label>
+                            <input type="text" id="m-title" required class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">تصنيف الاجتماع *</label>
+                            <select id="m-type" required class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Daily Stand-up (يومي 15 دقيقة)">Daily Stand-up (تنسيقي يومي - 15 دقيقة)</option>
+                                <option value="Weekly Progress Review (أسبوعي)">Weekly Progress Review (مراجعة أسبوعية)</option>
+                                <option value="Quality & ISO Audit (شهري جودة)">Quality & ISO Audit (شهري جودة وتدقيق)</option>
+                                <option value="Management Review (ربعي/استراتيجي)">Management Review (ربعي / استراتيجي)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ ووقت الاجتماع *</label>
+                            <input type="datetime-local" id="m-datetime" required class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">التنبيه المسبق *</label>
+                            <select id="m-reminder" required class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="15">قبل الموعد بـ 15 دقيقة</option>
+                                <option value="30">قبل الموعد بـ 30 دقيقة</option>
+                                <option value="60">قبل الموعد بـ ساعة واحدة</option>
+                                <option value="1440">قبل الموعد بـ 24 ساعة</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">قائمة الحضور المطلوبين (افصل بينهم بفاصلة)</label>
+                            <input type="text" id="m-attendees" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">بريد التوزيع لإرسال المحضر (MoM) تلقائياً — افصل بينهم بفاصلة</label>
+                            <input type="text" id="m-distribution-emails" placeholder="مثال: pm@company.com, site.engineer@company.com" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-4">
+                        <h4 class="text-sm font-bold text-slate-800 mb-2"><i class="fa-solid fa-list-ol text-blue-600 ml-1"></i>الأجندة المسبقة المحددة بالوقت</h4>
+                        <div id="agenda-builder" class="space-y-2"></div>
+                        <button type="button" onclick="addAgendaRow()" class="mt-2 px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200">
+                            <i class="fa-solid fa-plus ml-1"></i> إضافة بند للأجندة
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-4">
+                        <h4 class="text-sm font-bold text-slate-800 mb-2"><i class="fa-solid fa-chart-line text-indigo-600 ml-1"></i>بيانات قيمة العمل المكتسبة (EVM) — اختياري، لاجتماعات المراجعة الإدارية والربعية</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">القيمة المخططة PV</label>
+                                <input type="number" step="0.01" id="m-evm-pv" placeholder="مثال: 100000" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">القيمة المكتسبة EV</label>
+                                <input type="number" step="0.01" id="m-evm-ev" placeholder="مثال: 85000" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">التكلفة الفعلية AC</label>
+                                <input type="number" step="0.01" id="m-evm-ac" placeholder="مثال: 90000" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-2">اترك الحقول فارغة إن لم تكن متاحة الآن — سيتم حساب SPI وCPI تلقائياً وعرضها في تبويب التحليلات فقط عند توفر القيم الثلاث.</p>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-3">
+                        <button type="reset" onclick="resetAgendaBuilder()" class="px-4 py-2 bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-300">تفريغ الحقول</button>
+                        <button type="submit" id="save-meeting-btn" class="px-6 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 shadow-md">
+                            <i class="fa-solid fa-cloud-arrow-up ml-1"></i> حفظ الاجتماع سحابياً
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. MEETINGS LOG -->
+        <section id="sec-meetings-log" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-wrap justify-between items-center gap-4 border-b pb-4 mb-4">
+                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-rectangle-list text-blue-600 ml-2"></i>سجل الاجتماعات والتسجيل والمتابعة</h2>
+                    <input type="text" id="search-input" oninput="renderMeetingsLog()" placeholder="بحث في السجل..." class="px-3 py-1.5 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div id="meetings-list-container" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- 4. ANALYTICS -->
+        <section id="sec-analytics" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="border-b pb-4 mb-4">
+                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-fire text-red-500 ml-2"></i>خريطة حرارية للمعوقات المتكررة</h2>
+                </div>
+                <div id="heatmap-container" class="space-y-3"></div>
+                <div id="heatmap-empty" class="hidden text-center py-8 text-slate-400 text-sm">لا توجد بيانات كافية بعد لعرض التحليل.</div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-star text-amber-500 ml-2"></i>تقييمات كفاءة الاجتماعات</h3>
+                <div id="nps-list-container" class="space-y-2"></div>
+                <div id="nps-empty" class="hidden text-center py-6 text-slate-400 text-sm">لا توجد تقييمات مسجلة بعد.</div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="border-b pb-4 mb-4">
+                    <h3 class="font-bold text-slate-800"><i class="fa-solid fa-chart-line text-indigo-600 ml-2"></i>لوحة قيمة العمل المكتسبة (EVM Dashboard)</h3>
+                    <p class="text-xs text-slate-500 mt-1">SPI = القيمة المكتسبة ÷ القيمة المخططة (أداء الجدول الزمني) — CPI = القيمة المكتسبة ÷ التكلفة الفعلية (أداء التكلفة). القيمة 1.0 فأعلى تعني أداءً جيداً.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700">
+                                <th class="p-2 border">الاجتماع</th><th class="p-2 border">التاريخ</th>
+                                <th class="p-2 border">PV</th><th class="p-2 border">EV</th><th class="p-2 border">AC</th>
+                                <th class="p-2 border">SPI</th><th class="p-2 border">CPI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evm-table-body"></tbody>
+                    </table>
+                </div>
+                <div id="evm-empty" class="hidden text-center py-6 text-slate-400 text-sm">لا توجد بيانات EVM مسجلة بعد — أضفها عند إنشاء اجتماع مراجعة إدارية.</div>
+            </div>
+        </section>
+
+        <!-- 5. FULL REPORT -->
+        <section id="sec-full-report" class="hidden space-y-6">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-3 no-print">
+                <h3 class="font-bold text-slate-800">التقرير التنفيذي الشامل والموحد</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="copyFullReportText()" class="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700">
+                        <i class="fa-solid fa-copy ml-1"></i> نسخ التقرير الشامل
+                    </button>
+                    <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700">
+                        <i class="fa-solid fa-print ml-1"></i> طباعة / تصدير PDF
+                    </button>
+                    <button onclick="exportPrimaveraCsv()" class="px-4 py-2 bg-orange-600 text-white text-sm font-bold rounded-lg hover:bg-orange-700">
+                        <i class="fa-solid fa-file-csv ml-1"></i> تصدير لجدول Primavera P6 (CSV)
+                    </button>
+                </div>
+            </div>
+            <div id="printable-full-report" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <div class="border-b-2 border-slate-800 pb-4">
+                    <h1 class="text-2xl font-black text-slate-900">تقرير منظومة انسياب الشامل للاجتماعات</h1>
+                    <p class="text-xs text-slate-600 mt-1">المعايير المعتمدة: ISO 9001 - Lean Construction - RACI Framework</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5" id="report-date-stamp"></p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div class="grid grid-cols-5 gap-2 text-center text-xs">
+                        <div class="p-2 bg-white rounded border"><span class="block text-slate-500">إجمالي الاجتماعات</span><strong id="rep-total" class="text-base text-slate-800">0</strong></div>
+                        <div class="p-2 bg-white rounded border"><span class="block text-slate-500">التوصيات القائمة</span><strong id="rep-pending" class="text-base text-amber-600">0</strong></div>
+                        <div class="p-2 bg-white rounded border"><span class="block text-slate-500">التوصيات المنفذة</span><strong id="rep-completed" class="text-base text-emerald-600">0</strong></div>
+                        <div class="p-2 bg-white rounded border"><span class="block text-slate-500">نسبة الالتزام</span><strong id="rep-rate" class="text-base text-indigo-600">100%</strong></div>
+                        <div class="p-2 bg-white rounded border"><span class="block text-slate-500">متوسط تقييم الاجتماعات</span><strong id="rep-nps" class="text-base text-amber-500">—</strong></div>
+                    </div>
+                </div>
+                <div id="full-report-body" class="space-y-6"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Live Session Modal -->
+    <div id="recording-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800" id="modal-meeting-title"></h3>
+                    <p class="text-xs text-blue-600" id="modal-meeting-type"></p>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-xs font-bold text-indigo-800"><i class="fa-solid fa-clipboard-user ml-1"></i> تسجيل الحضور</h4>
+                    <button onclick="showAttendanceQr()" class="text-[10px] px-2 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        <i class="fa-solid fa-qrcode ml-1"></i> QR للحضور الذاتي
+                    </button>
+                </div>
+                <div id="attendance-list" class="flex flex-wrap gap-2"></div>
+                <p class="text-[11px] text-indigo-700 mt-2" id="attendance-summary"></p>
+                <div id="attendance-qr-box" class="hidden mt-3 bg-white p-3 rounded-lg border border-indigo-200 text-center">
+                    <img id="attendance-qr-img" class="mx-auto mb-1" width="130" height="130" alt="QR check-in">
+                    <p class="text-[10px] text-slate-500">اطبع هذا الرمز أو اعرضه على شاشة قاعة الاجتماع ليمسحه الحضور بهواتفهم</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                <h4 class="text-xs font-bold text-blue-800 mb-2"><i class="fa-solid fa-stopwatch ml-1"></i> مؤقت الأجندة الذكي</h4>
+                <div id="agenda-timer-list" class="space-y-2"></div>
+                <p id="agenda-timer-empty" class="hidden text-xs text-slate-500 italic">لا توجد بنود أجندة محددة بالوقت.</p>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-blue-800"><i class="fa-solid fa-microphone-lines ml-1 animate-pulse text-red-500"></i> تفريغ صوتي احترافي (Whisper API — عربي/إنجليزي)</span>
+                    <button id="record-btn" onclick="toggleVoiceRecording()" class="px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700">
+                        <i class="fa-solid fa-microphone ml-1"></i> بدء التسجيل الصوتي الاحترافي
+                    </button>
+                </div>
+                <p id="recording-status" class="text-xs text-slate-500 italic">انقر لبدء تسجيل حديث الاجتماع، وسيتم تفريغه تلقائياً بدقة عالية عبر Whisper API فور إيقاف التسجيل...</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <h4 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-plus-circle ml-1 text-emerald-600"></i> إضافة توصية / مهمة جديدة (RACI)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div class="md:col-span-2"><input type="text" id="raci-task" placeholder="وصف التوصية / القرار / المعوق..." class="w-full px-3 py-1.5 border rounded-lg outline-none"></div>
+                    <div><label class="block font-semibold mb-0.5">Responsible:</label><input type="text" id="raci-r" class="w-full px-2 py-1 border rounded outline-none"></div>
+                    <div><label class="block font-semibold mb-0.5">Accountable:</label><input type="text" id="raci-a" class="w-full px-2 py-1 border rounded outline-none"></div>
+                    <div><label class="block font-semibold mb-0.5">Consulted:</label><input type="text" id="raci-c" class="w-full px-2 py-1 border rounded outline-none"></div>
+                    <div><label class="block font-semibold mb-0.5">Informed:</label><input type="text" id="raci-i" class="w-full px-2 py-1 border rounded outline-none"></div>
+                    <div><label class="block font-semibold mb-0.5">الموعد النهائي:</label><input type="date" id="raci-deadline" class="w-full px-2 py-1 border rounded outline-none"></div>
+                    <div><label class="block font-semibold mb-0.5">الحالة:</label>
+                        <select id="raci-status" class="w-full px-2 py-1 border rounded outline-none">
+                            <option value="قيد الانتظار">قيد الانتظار</option>
+                            <option value="جاري التنفيذ">جاري التنفيذ</option>
+                            <option value="مكتملة">مكتملة</option>
+                        </select>
+                    </div>
+                    <div><label class="block font-semibold mb-0.5">معرّف نشاط Primavera P6 (اختياري):</label><input type="text" id="raci-primavera-id" placeholder="مثال: A1030" class="w-full px-2 py-1 border rounded outline-none"></div>
+                </div>
+                <button onclick="addRaciItemToCurrentMeeting()" class="w-full py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700">
+                    <i class="fa-solid fa-check ml-1"></i> تسجيل التوصية
+                </button>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold text-slate-800 mb-2">جدول التوصيات المسجلة</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-xs border-collapse border border-slate-200">
+                        <thead><tr class="bg-slate-100 text-slate-700">
+                            <th class="p-2 border">المهمة/التوصية</th><th class="p-2 border">R</th><th class="p-2 border">A</th>
+                            <th class="p-2 border">الموعد</th><th class="p-2 border">الحالة</th><th class="p-2 border">التكامل</th><th class="p-2 border text-center">إجراء</th>
+                        </tr></thead>
+                        <tbody id="modal-raci-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <details class="bg-slate-50 rounded-xl border border-slate-200 p-3">
+                <summary class="text-xs font-bold text-slate-700 cursor-pointer"><i class="fa-solid fa-clock-rotate-left ml-1"></i> سجل التعديلات (Audit Trail)</summary>
+                <div id="audit-trail-list" class="mt-2 space-y-1 text-[11px] text-slate-500"></div>
+            </details>
+
+            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 space-y-2">
+                <h4 class="text-xs font-bold text-emerald-800"><i class="fa-solid fa-envelope-circle-check ml-1"></i> إرسال محضر الاجتماع (MoM) بالبريد الإلكتروني</h4>
+                <input type="text" id="modal-distribution-emails" placeholder="بريد إلكتروني واحد أو أكثر مفصولة بفاصلة" class="w-full px-3 py-1.5 border rounded-lg text-xs outline-none">
+                <button onclick="sendMomEmailNow()" class="w-full py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700">
+                    <i class="fa-solid fa-paper-plane ml-1"></i> إرسال المحضر الآن
+                </button>
+                <p class="text-[10px] text-emerald-700">يتطلب نشر Cloud Function (راجع ملف الإعداد المرفق).</p>
+            </div>
+
+            <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 space-y-2">
+                <h4 class="text-xs font-bold text-indigo-800"><i class="fa-solid fa-stamp ml-1"></i> التوقيع الرقمي وأرشفة الصندوق الأسود (Digital Black Box)</h4>
+                <p class="text-[11px] text-indigo-700">يُجمِّد نسخة معتمدة من المحضر الحالي بتوقيع مشفّر (HMAC-SHA256) غير قابل للتزوير، مع رمز QR للتحقق من الأصالة لاحقاً.</p>
+                <button onclick="signMeetingNow()" class="w-full py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700">
+                    <i class="fa-solid fa-signature ml-1"></i> توليد التوقيع الرقمي + QR الأرشفة
+                </button>
+                <div id="signature-result" class="hidden mt-2 bg-white p-3 rounded-lg border border-indigo-200 text-center">
+                    <img id="signature-qr" class="mx-auto mb-2" width="140" height="140" alt="QR verification code">
+                    <p class="text-[11px] text-slate-600" id="signature-details"></p>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-3 border-t">
+                <button onclick="closeModal()" class="px-5 py-1.5 bg-slate-700 text-white text-xs font-bold rounded-lg">إغلاق الجلسة وتقييمها</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="nps-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 text-center">
+            <i class="fa-solid fa-clipboard-check text-4xl text-blue-600"></i>
+            <h3 class="text-lg font-bold text-slate-800">تقييم كفاءة الاجتماع</h3>
+            <div class="flex justify-center gap-2" id="nps-stars">
+                <i class="fa-solid fa-star star-btn" data-val="1"></i><i class="fa-solid fa-star star-btn" data-val="2"></i>
+                <i class="fa-solid fa-star star-btn" data-val="3"></i><i class="fa-solid fa-star star-btn" data-val="4"></i>
+                <i class="fa-solid fa-star star-btn" data-val="5"></i>
+            </div>
+            <div class="flex justify-center gap-2 pt-2">
+                <button onclick="skipNpsRating()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-300">تخطي</button>
+                <button onclick="submitNpsRating()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700">حفظ التقييم</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-slate-900 text-slate-400 py-4 border-t border-slate-800 text-xs text-center no-print">
+        <div class="max-w-7xl mx-auto px-4"><p>جميع الحقوق محفوظة © 2026 | تطبيق انسياب — نسخة سحابية (Cloud Sync + RBAC)</p></div>
+    </footer>
+
+    </div> <!-- /#app-root -->
+
+    <!-- ============ FIREBASE SDK & APP LOGIC ============ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import {
+            getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+            createUserWithEmailAndPassword, signOut
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import {
+            getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc,
+            onSnapshot, query, orderBy, getDoc, serverTimestamp, enableIndexedDbPersistence
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+        import {
+            getFunctions, httpsCallable
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-functions.js";
+        import {
+            getMessaging, getToken, isSupported as isMessagingSupported
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js";
+        import {
+            getStorage, ref, uploadBytes
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+
+        // ⚠️ استبدل هذا بمفتاح VAPID الخاص بمشروعك (Firebase Console → Project settings
+        // → Cloud Messaging → Web configuration → Generate key pair). راجع ملف الإعداد.
+        const VAPID_KEY = "YOUR_VAPID_KEY";
+
+        // =====================================================================
+        // ⚠️ خطوة الإعداد المطلوبة: ضع بيانات مشروع Firebase الخاص بك هنا.
+        // راجع ملف INSIYAB-FIREBASE-SETUP.md المرفق للحصول على الخطوات كاملة.
+        // =====================================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const isConfigured = !Object.values(firebaseConfig).some(v => String(v).startsWith('YOUR_'));
+        if (!isConfigured) {
+            document.getElementById('config-warning').classList.remove('hidden');
+        }
+
+        let app, auth, db, functions, messaging, storage;
+        if (isConfigured) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            functions = getFunctions(app, 'europe-west1');
+            storage = getStorage(app);
+            enableIndexedDbPersistence(db).catch(() => { /* offline persistence unavailable in this browser/tab */ });
+        }
+
+        // ===== App State =====
+        let meetings = [];
+        let currentUser = null;
+        let currentUserRole = 'viewer'; // 'viewer' | 'editor' | 'admin'
+        let activeMeetingId = null;
+        let isRecording = false;
+        let recognition = null;
+        let agendaTimerInterval = null;
+        let selectedNpsValue = 0;
+        let agendaRowCounter = 0;
+        let unsubscribeMeetings = null;
+
+        const STOPWORDS = ['في','من','على','الى','إلى','عن','مع','هذا','هذه','ذلك','التي','الذي','و','أو','او','ثم','لا','لم','ما','قد','تم','كل','بين','عند','بعد','قبل','التوصية','توصية'];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            addAgendaRow();
+            setupNpsStars();
+            document.getElementById('report-date-stamp').innerText = 'تاريخ التقرير: ' + new Date().toLocaleDateString('ar-EG');
+            setInterval(checkUpcomingReminders, 30000);
+        });
+
+        // ===== Auth =====
+        window.handleLogin = async function (e) {
+            e.preventDefault();
+            if (!isConfigured) { alert('يرجى ضبط إعدادات Firebase أولاً (راجع ملف الإعداد المرفق).'); return; }
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errEl = document.getElementById('login-error');
+            errEl.classList.add('hidden');
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                errEl.innerText = 'تعذر تسجيل الدخول: ' + mapAuthError(err.code);
+                errEl.classList.remove('hidden');
+            }
+        };
+
+        window.handleSignup = async function () {
+            if (!isConfigured) { alert('يرجى ضبط إعدادات Firebase أولاً (راجع ملف الإعداد المرفق).'); return; }
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            if (!email || !password) { alert('يرجى إدخال البريد الإلكتروني وكلمة المرور أولاً.'); return; }
+            const errEl = document.getElementById('login-error');
+            errEl.classList.add('hidden');
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                // Default role = viewer; an admin must upgrade this in Firestore (roles/{uid})
+                await setDoc(doc(db, 'roles', cred.user.uid), { role: 'viewer', email, createdAt: serverTimestamp() });
+            } catch (err) {
+                errEl.innerText = 'تعذر إنشاء الحساب: ' + mapAuthError(err.code);
+                errEl.classList.remove('hidden');
+            }
+        };
+
+        window.handleLogout = async function () {
+            if (unsubscribeMeetings) unsubscribeMeetings();
+            await signOut(auth);
+        };
+
+        // ===== Push Notifications (FCM) =====
+        window.enablePushNotifications = async function () {
+            if (!isConfigured) { alert('يرجى ضبط إعدادات Firebase أولاً.'); return; }
+            if (VAPID_KEY.startsWith('YOUR_')) {
+                alert('يرجى إضافة VAPID_KEY أولاً من إعدادات Firebase (راجع ملف الإعداد المرفق).');
+                return;
+            }
+            try {
+                const supported = await isMessagingSupported();
+                if (!supported) { alert('متصفحك لا يدعم إشعارات Push.'); return; }
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') { alert('لم يتم منح إذن الإشعارات.'); return; }
+
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                messaging = getMessaging(app);
+                const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+                if (token && currentUser) {
+                    await setDoc(doc(db, 'roles', currentUser.uid), { fcmToken: token }, { merge: true });
+                    document.getElementById('push-btn').innerText = 'الإشعارات مفعّلة ✓';
+                    document.getElementById('push-btn').classList.add('opacity-60', 'pointer-events-none');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('تعذر تفعيل الإشعارات: ' + err.message);
+            }
+        };
+
+        // ===== MoM Email =====
+        window.sendMomEmailNow = async function () {
+            if (!requireEditor()) return;
+            const emailsRaw = document.getElementById('modal-distribution-emails').value;
+            const distributionEmails = emailsRaw.split(',').map(s => s.trim()).filter(Boolean);
+            if (distributionEmails.length === 0) { alert('يرجى إدخال بريد إلكتروني واحد على الأقل.'); return; }
+            try {
+                const callable = httpsCallable(functions, 'sendMomEmail');
+                const result = await callable({ meetingId: activeMeetingId, distributionEmails });
+                alert(`تم إرسال المحضر بنجاح إلى ${result.data.sentTo} عنوان بريد.`);
+            } catch (err) {
+                alert('تعذر إرسال المحضر: ' + err.message + '\n(تأكد من نشر Cloud Functions أولاً — راجع ملف الإعداد)');
+            }
+        };
+
+        // ===== Digital Signature + QR Archive =====
+        window.signMeetingNow = async function () {
+            if (!requireEditor()) return;
+            try {
+                const callable = httpsCallable(functions, 'signMeetingRecord');
+                const result = await callable({ meetingId: activeMeetingId });
+                const { hash, signedAt, verifyUrl } = result.data;
+                const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(verifyUrl)}`;
+                document.getElementById('signature-qr').src = qrImgUrl;
+                document.getElementById('signature-details').innerHTML =
+                    `تم التوقيع بنجاح في ${new Date(signedAt).toLocaleString('ar-EG')}<br>
+                     بصمة التوثيق: <span class="font-mono text-[10px]">${hash.slice(0, 16)}...</span><br>
+                     امسح الرمز للتحقق من أصالة المحضر لاحقاً.`;
+                document.getElementById('signature-result').classList.remove('hidden');
+            } catch (err) {
+                alert('تعذر توليد التوقيع الرقمي: ' + err.message + '\n(تأكد من نشر Cloud Functions أولاً — راجع ملف الإعداد)');
+            }
+        };
+
+        function mapAuthError(code) {
+            const map = {
+                'auth/invalid-email': 'بريد إلكتروني غير صالح',
+                'auth/user-not-found': 'المستخدم غير موجود',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة',
+                'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
+                'auth/weak-password': 'كلمة المرور ضعيفة جداً (6 أحرف على الأقل)',
+                'auth/invalid-credential': 'بيانات الدخول غير صحيحة'
+            };
+            return map[code] || code;
+        }
+
+        if (isConfigured) {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const roleSnap = await getDoc(doc(db, 'roles', user.uid));
+                    currentUserRole = roleSnap.exists() ? (roleSnap.data().role || 'viewer') : 'viewer';
+                    document.getElementById('current-user-email').innerText = user.email;
+                    document.getElementById('current-user-role').innerText =
+                        currentUserRole === 'admin' ? 'مسؤول (Admin)' : currentUserRole === 'editor' ? 'محرر (Editor)' : 'مشاهد (Viewer)';
+                    document.getElementById('editor-only-notice').classList.toggle('hidden', currentUserRole !== 'viewer');
+                    document.getElementById('save-meeting-btn').disabled = currentUserRole === 'viewer';
+                    document.getElementById('save-meeting-btn').classList.toggle('opacity-50', currentUserRole === 'viewer');
+
+                    document.getElementById('auth-gate').classList.add('hidden');
+                    document.getElementById('app-root').classList.remove('hidden');
+
+                    subscribeToMeetings();
+                } else {
+                    currentUser = null;
+                    if (unsubscribeMeetings) unsubscribeMeetings();
+                    document.getElementById('auth-gate').classList.remove('hidden');
+                    document.getElementById('app-root').classList.add('hidden');
+                    setSyncStatus('offline');
+                }
+            });
+        }
+
+        // ===== Firestore real-time sync =====
+        function subscribeToMeetings() {
+            setSyncStatus('syncing');
+            const q = query(collection(db, 'meetings'), orderBy('createdAt', 'asc'));
+            unsubscribeMeetings = onSnapshot(q, (snapshot) => {
+                meetings = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                setSyncStatus('online');
+                updateDashboardStats();
+                renderMeetingsLog();
+                renderHeatmap();
+                renderNpsList();
+                renderEvmDashboard();
+                checkUpcomingReminders();
+                localStorage.setItem('insiyab_meetings_cache', JSON.stringify(meetings)); // offline fallback cache
+
+                // إذا كانت نافذة الجلسة المباشرة مفتوحة، حدّث نص التفريغ الصوتي فور وصوله من Whisper API
+                if (activeMeetingId && !isRecording) {
+                    const activeMeeting = meetings.find(x => x.id === activeMeetingId);
+                    const statusElem = document.getElementById('recording-status');
+                    const modalOpen = !document.getElementById('recording-modal').classList.contains('hidden');
+                    if (activeMeeting && activeMeeting.transcription && statusElem && modalOpen) {
+                        statusElem.innerHTML = `<strong>النص المُفرَّغ:</strong><br><span class="whitespace-pre-line">${activeMeeting.transcription}</span>`;
+                    }
+                    // تحديث قائمة الحضور فور وصول تسجيل ذاتي عبر QR
+                    if (activeMeeting && modalOpen) {
+                        renderAttendanceList(activeMeeting);
+                    }
+                }
+            }, (err) => {
+                console.error(err);
+                setSyncStatus('offline');
+                const cached = localStorage.getItem('insiyab_meetings_cache');
+                if (cached) { meetings = JSON.parse(cached); updateDashboardStats(); renderMeetingsLog(); }
+            });
+        }
+
+        function setSyncStatus(status) {
+            const dot = document.getElementById('sync-indicator');
+            const label = document.getElementById('sync-label');
+            dot.className = 'sync-dot sync-' + status;
+            label.innerText = status === 'online' ? 'متصل ومُزامَن' : status === 'syncing' ? 'جارٍ المزامنة...' : 'غير متصل';
+        }
+
+        function requireEditor() {
+            if (currentUserRole === 'viewer') {
+                alert('صلاحيتك الحالية "مشاهد" فقط. لا يمكنك تعديل البيانات. تواصل مع المسؤول لترقية صلاحيتك.');
+                return false;
+            }
+            return true;
+        }
+
+        // ===== Tabs =====
+        window.switchTab = function (tabId) {
+            ['dashboard', 'new-meeting', 'meetings-log', 'analytics', 'full-report'].forEach(id => {
+                document.getElementById(`sec-${id}`).classList.add('hidden');
+                document.getElementById(`tab-${id}`).classList.remove('bg-blue-600', 'text-white');
+                document.getElementById(`tab-${id}`).classList.add('text-gray-300');
+            });
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('bg-blue-600', 'text-white');
+            if (tabId === 'full-report') renderFullReport();
+            if (tabId === 'analytics') { renderHeatmap(); renderNpsList(); renderEvmDashboard(); }
+        };
+
+        // ===== Agenda Builder =====
+        window.addAgendaRow = function (text = '', minutes = 5) {
+            agendaRowCounter++;
+            const rowId = `agenda-row-${agendaRowCounter}`;
+            const container = document.getElementById('agenda-builder');
+            const row = document.createElement('div');
+            row.id = rowId;
+            row.className = 'flex gap-2 items-center';
+            row.innerHTML = `
+                <input type="text" value="${text}" placeholder="بند الأجندة..." class="agenda-text flex-grow px-3 py-1.5 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="number" min="1" value="${minutes}" class="agenda-minutes w-20 px-2 py-1.5 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="text-xs text-slate-400">دقيقة</span>
+                <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-red-500 hover:text-red-700 px-2"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+        };
+
+        window.resetAgendaBuilder = function () {
+            document.getElementById('agenda-builder').innerHTML = '';
+            agendaRowCounter = 0;
+            addAgendaRow();
+        };
+
+        function collectAgendaItems() {
+            const rows = document.querySelectorAll('#agenda-builder > div');
+            const items = [];
+            rows.forEach(row => {
+                const text = row.querySelector('.agenda-text').value.trim();
+                const minutes = parseInt(row.querySelector('.agenda-minutes').value) || 5;
+                if (text) items.push({ text, minutes, done: false });
+            });
+            return items;
+        }
+
+        // ===== Save New Meeting (Firestore) =====
+        window.handleSaveMeeting = async function (e) {
+            e.preventDefault();
+            if (!requireEditor()) return;
+
+            const title = document.getElementById('m-title').value;
+            const type = document.getElementById('m-type').value;
+            const datetime = document.getElementById('m-datetime').value;
+            const reminder = document.getElementById('m-reminder').value;
+            const attendeesRaw = document.getElementById('m-attendees').value;
+            const distributionEmailsRaw = document.getElementById('m-distribution-emails').value;
+            const agendaItems = collectAgendaItems();
+            const attendees = attendeesRaw.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, present: false }));
+            const distributionEmails = distributionEmailsRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+            const pv = parseFloat(document.getElementById('m-evm-pv').value);
+            const ev = parseFloat(document.getElementById('m-evm-ev').value);
+            const ac = parseFloat(document.getElementById('m-evm-ac').value);
+            const evm = (!isNaN(pv) && !isNaN(ev) && !isNaN(ac)) ? { pv, ev, ac } : null;
+
+            const newMeeting = {
+                title, type, datetime, reminder,
+                agendaItems,
+                agenda: agendaItems.map((a, i) => `${i + 1}. ${a.text} (${a.minutes} دقيقة)`).join('\n'),
+                attendees,
+                distributionEmails,
+                evm,
+                transcription: '',
+                raciItems: [],
+                auditTrail: [{ ts: Date.now(), text: `تم إنشاء الاجتماع بواسطة ${currentUser.email}` }],
+                npsRating: null,
+                createdBy: currentUser.email,
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, 'meetings'), newMeeting);
+                alert('تم حفظ الاجتماع سحابياً وتفعيل التنبيه بنجاح!');
+                document.getElementById('meeting-form').reset();
+                resetAgendaBuilder();
+                switchTab('meetings-log');
+            } catch (err) {
+                alert('تعذر الحفظ السحابي: ' + err.message);
+            }
+        };
+
+        // ===== Render Meetings Log =====
+        window.renderMeetingsLog = function () {
+            const container = document.getElementById('meetings-list-container');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            container.innerHTML = '';
+            const filtered = meetings.filter(m => (m.title || '').toLowerCase().includes(search) || (m.type || '').toLowerCase().includes(search));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">لا توجد اجتماعات مسجلة حالياً...</div>`;
+                return;
+            }
+
+            filtered.slice().reverse().forEach(m => {
+                const dateFormatted = m.datetime ? new Date(m.datetime).toLocaleString('ar-EG') : '';
+                const npsHtml = m.npsRating ? `<span class="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full"><i class="fa-solid fa-star"></i> ${m.npsRating}/5</span>` : '';
+                const card = document.createElement('div');
+                card.className = "p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3";
+                card.innerHTML = `
+                    <div class="flex flex-wrap justify-between items-start gap-2 border-b pb-2">
+                        <div>
+                            <span class="text-[10px] font-bold px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">${m.type || ''}</span>
+                            ${npsHtml}
+                            <h3 class="font-bold text-slate-800 text-base mt-1">${m.title || ''}</h3>
+                            <div class="text-xs text-slate-500 mt-0.5"><i class="fa-regular fa-clock ml-1"></i> ${dateFormatted} | أنشأه: <strong>${m.createdBy || '-'}</strong></div>
+                        </div>
+                        <div class="flex gap-1 no-print">
+                            <button onclick="openLiveSession('${m.id}')" class="px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700">
+                                <i class="fa-solid fa-microphone ml-1"></i> التسجيل والمتابعة
+                            </button>
+                            <button onclick="printSingleMeeting('${m.id}')" class="px-3 py-1 bg-slate-700 text-white text-xs font-semibold rounded-lg hover:bg-slate-800">
+                                <i class="fa-solid fa-print ml-1"></i> طباعة PDF
+                            </button>
+                            <button onclick="deleteMeeting('${m.id}')" class="px-2 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-200">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-600">
+                        <strong>الأجندة المسبقة:</strong>
+                        <p class="whitespace-pre-line bg-white p-2 rounded border mt-1 text-slate-700">${m.agenda || 'لا توجد أجندة محددة'}</p>
+                    </div>
+                    ${m.attendees && m.attendees.length > 0 ? `
+                        <div class="text-xs">
+                            <strong class="text-slate-700">الحضور:</strong>
+                            ${m.attendees.map(a => `<span class="inline-block text-[10px] px-2 py-0.5 rounded-full ml-1 mb-1 ${a.present ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}">${a.present ? '✓' : '—'} ${a.name}</span>`).join('')}
+                        </div>` : ''}
+                    ${m.raciItems && m.raciItems.length > 0 ? `
+                        <div class="text-xs">
+                            <strong class="text-slate-700 block mb-1">جدول التوصيات (RACI):</strong>
+                            <div class="overflow-x-auto"><table class="w-full text-right text-[11px] border">
+                                <tr class="bg-slate-200 text-slate-800 font-bold">
+                                    <th class="p-1 border">التوصية</th><th class="p-1 border">R</th><th class="p-1 border">A</th>
+                                    <th class="p-1 border">الموعد</th><th class="p-1 border">الحالة</th>
+                                </tr>
+                                ${m.raciItems.map(r => `
+                                    <tr class="border-b bg-white">
+                                        <td class="p-1 border">${r.task}</td><td class="p-1 border">${r.r}</td><td class="p-1 border">${r.a}</td>
+                                        <td class="p-1 border">${r.deadline}</td>
+                                        <td class="p-1 border font-semibold ${r.status==='مكتملة'?'text-emerald-600':'text-amber-600'}">${r.status}</td>
+                                    </tr>`).join('')}
+                            </table></div>
+                        </div>` : ''}
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        window.deleteMeeting = async function (id) {
+            if (!requireEditor()) return;
+            if (confirm('هل أنت تأكد من حذف هذا الاجتماع؟')) {
+                try { await deleteDoc(doc(db, 'meetings', id)); }
+                catch (err) { alert('تعذر الحذف: ' + err.message); }
+            }
+        };
+
+        // ===== Live Session =====
+        window.openLiveSession = function (id) {
+            activeMeetingId = id;
+            const m = meetings.find(x => x.id === id);
+            if (!m) return;
+            if (!m.attendees) m.attendees = [];
+            if (!m.agendaItems) m.agendaItems = [];
+            if (!m.auditTrail) m.auditTrail = [];
+
+            document.getElementById('modal-meeting-title').innerText = m.title;
+            document.getElementById('modal-meeting-type').innerText = `${m.type} - إعداد: ${m.createdBy || ''}`;
+            document.getElementById('recording-status').innerText = m.transcription ? `النص المسجل: ${m.transcription}` : 'انقر لبدء التفريغ الصوتي...';
+
+            renderAttendanceList(m);
+            renderAgendaTimerList(m);
+            renderModalRaciTable(m);
+            renderAuditTrail(m);
+            document.getElementById('modal-distribution-emails').value = (m.distributionEmails || []).join(', ');
+            document.getElementById('recording-modal').classList.remove('hidden');
+
+            clearInterval(agendaTimerInterval);
+            agendaTimerInterval = setInterval(() => tickAgendaTimers(m.id), 1000);
+        };
+
+        window.closeModal = function () {
+            document.getElementById('recording-modal').classList.add('hidden');
+            clearInterval(agendaTimerInterval);
+            openNpsModal();
+        };
+
+        async function persistMeeting(m, silent = false) {
+            const { id, ...data } = m;
+            try {
+                await updateDoc(doc(db, 'meetings', id), data);
+            } catch (err) {
+                if (!silent) alert('تعذر حفظ التغييرات سحابياً: ' + err.message);
+            }
+        }
+
+        // ===== QR Attendance Self Check-in =====
+        window.showAttendanceQr = function () {
+            if (!activeMeetingId) return;
+            const checkinUrl = `https://${window.location.hostname}/checkin.html?id=${activeMeetingId}`;
+            const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(checkinUrl)}`;
+            document.getElementById('attendance-qr-img').src = qrImgUrl;
+            document.getElementById('attendance-qr-box').classList.remove('hidden');
+        };
+
+        // ===== Attendance =====
+        function renderAttendanceList(m) {
+            const container = document.getElementById('attendance-list');
+            container.innerHTML = '';
+            if (!m.attendees || m.attendees.length === 0) {
+                container.innerHTML = `<span class="text-xs text-indigo-600 italic">لم يتم تحديد قائمة حضور مسبقة.</span>`;
+                document.getElementById('attendance-summary').innerText = '';
+                return;
+            }
+            m.attendees.forEach((a) => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = `px-3 py-1 rounded-full text-xs font-semibold border transition ${a.present ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-slate-600 border-slate-300'}`;
+                chip.innerHTML = `<i class="fa-solid ${a.present ? 'fa-check' : 'fa-user'} ml-1"></i>${a.name}`;
+                chip.onclick = () => {
+                    if (!requireEditor()) return;
+                    a.present = !a.present;
+                    persistMeeting(m, true);
+                    renderAttendanceList(m);
+                };
+                container.appendChild(chip);
+            });
+            const presentCount = m.attendees.filter(a => a.present).length;
+            document.getElementById('attendance-summary').innerText = `الحضور المسجل: ${presentCount} من ${m.attendees.length}`;
+        }
+
+        // ===== Agenda Timer =====
+        function renderAgendaTimerList(m) {
+            const list = document.getElementById('agenda-timer-list');
+            const emptyMsg = document.getElementById('agenda-timer-empty');
+            list.innerHTML = '';
+            if (!m.agendaItems || m.agendaItems.length === 0) { emptyMsg.classList.remove('hidden'); return; }
+            emptyMsg.classList.add('hidden');
+            m.agendaItems.forEach((item, idx) => {
+                const row = document.createElement('div');
+                row.id = `timer-row-${idx}`;
+                row.className = 'agenda-item-row flex items-center justify-between gap-2 bg-white p-2 rounded-lg border text-xs';
+                row.innerHTML = `
+                    <div class="flex-grow"><span class="font-semibold text-slate-700">${item.text}</span><span class="text-slate-400"> — ${item.minutes} دقيقة</span></div>
+                    <div class="font-mono font-bold text-slate-700" id="timer-display-${idx}">${formatSeconds((item.remainingSeconds ?? item.minutes * 60))}</div>
+                    <div class="flex gap-1">
+                        <button onclick="startAgendaTimer(${idx})" class="px-2 py-1 bg-blue-600 text-white rounded"><i class="fa-solid fa-play"></i></button>
+                        <button onclick="pauseAgendaTimer(${idx})" class="px-2 py-1 bg-slate-400 text-white rounded"><i class="fa-solid fa-pause"></i></button>
+                        <button onclick="extendAgendaTimer(${idx})" class="px-2 py-1 bg-amber-500 text-white rounded" title="تمديد دقيقة واحدة">+1</button>
+                    </div>`;
+                list.appendChild(row);
+            });
+        }
+
+        function formatSeconds(s) {
+            s = Math.max(0, Math.round(s));
+            const m = Math.floor(s / 60), sec = s % 60;
+            return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+
+        window.startAgendaTimer = function (idx) {
+            const m = meetings.find(x => x.id === activeMeetingId);
+            if (!m) return;
+            const item = m.agendaItems[idx];
+            if (item.remainingSeconds == null) item.remainingSeconds = item.minutes * 60;
+            item.running = true; item.expired = false;
+            persistMeeting(m, true);
+        };
+        window.pauseAgendaTimer = function (idx) {
+            const m = meetings.find(x => x.id === activeMeetingId);
+            if (!m) return;
+            m.agendaItems[idx].running = false;
+            persistMeeting(m, true);
+        };
+        window.extendAgendaTimer = function (idx) {
+            const m = meetings.find(x => x.id === activeMeetingId);
+            if (!m) return;
+            const item = m.agendaItems[idx];
+            item.remainingSeconds = (item.remainingSeconds ?? 0) + 60;
+            item.expired = false;
+            logAudit(m, `تم تمديد بند "${item.text}" بدقيقة إضافية`);
+            persistMeeting(m, true);
+        };
+
+        function tickAgendaTimers(meetingId) {
+            const m = meetings.find(x => x.id === meetingId);
+            if (!m || !m.agendaItems) return;
+            let changed = false;
+            m.agendaItems.forEach((item, idx) => {
+                if (item.running && (item.remainingSeconds ?? item.minutes * 60) > 0) {
+                    item.remainingSeconds = (item.remainingSeconds ?? item.minutes * 60) - 1;
+                    changed = true;
+                    const display = document.getElementById(`timer-display-${idx}`);
+                    const row = document.getElementById(`timer-row-${idx}`);
+                    if (display) display.innerText = formatSeconds(item.remainingSeconds);
+                    if (item.remainingSeconds <= 0 && !item.expired) {
+                        item.expired = true; item.running = false;
+                        logAudit(m, `انتهى الوقت المخصص لبند "${item.text}"`);
+                        if (row) row.classList.add('expired-timer');
+                    } else if (row) row.classList.toggle('active-timer', item.running);
+                }
+            });
+            // local-only tick display; persist every ~5s to limit writes
+            if (changed && Math.random() < 0.2) persistMeeting(m, true);
+        }
+
+        // ===== Voice Recording (professional transcription via Whisper API) =====
+        let mediaRecorder = null;
+        let mediaStream = null;
+        let audioChunks = [];
+
+        window.toggleVoiceRecording = async function () {
+            const statusElem = document.getElementById('recording-status');
+            const btn = document.getElementById('record-btn');
+
+            if (!navigator.mediaDevices || !window.MediaRecorder) {
+                alert('متصفحك لا يدعم تسجيل الصوت. جرّب متصفحاً حديثاً مثل Chrome أو Edge.');
+                return;
+            }
+
+            if (!isRecording) {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                } catch (err) {
+                    alert('تعذر الوصول للميكروفون: ' + err.message);
+                    return;
+                }
+                audioChunks = [];
+                const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+                mediaRecorder = new MediaRecorder(mediaStream, { mimeType });
+                mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) audioChunks.push(e.data); };
+
+                mediaRecorder.onstop = async () => {
+                    mediaStream.getTracks().forEach(t => t.stop());
+                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                    if (blob.size === 0) { statusElem.innerText = 'لم يتم التقاط أي صوت.'; return; }
+
+                    statusElem.innerHTML = `<i class="fa-solid fa-spinner fa-spin ml-1"></i> جارٍ رفع التسجيل ومعالجته عبر Whisper API (قد يستغرق دقيقة حسب طول التسجيل)...`;
+                    try {
+                        const filePath = `recordings/${activeMeetingId}/${Date.now()}.webm`;
+                        await uploadBytes(ref(storage, filePath), blob);
+                        statusElem.innerHTML = `<i class="fa-solid fa-check text-emerald-500 ml-1"></i> تم رفع التسجيل بنجاح. سيظهر النص المُفرَّغ تلقائياً هنا خلال لحظات فور اكتمال المعالجة سحابياً.`;
+                    } catch (err) {
+                        statusElem.innerText = 'تعذر رفع التسجيل: ' + err.message + ' (تأكد من تفعيل Firebase Storage — راجع ملف الإعداد)';
+                    }
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                btn.innerHTML = `<i class="fa-solid fa-stop ml-1"></i> إيقاف التسجيل وبدء التفريغ`;
+                btn.classList.replace('bg-red-600', 'bg-gray-600');
+                statusElem.innerHTML = `<i class="fa-solid fa-circle text-red-500 ml-1 animate-pulse"></i> جارٍ تسجيل صوت الاجتماع...`;
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                btn.innerHTML = `<i class="fa-solid fa-microphone ml-1"></i> بدء التسجيل الصوتي الاحترافي`;
+                btn.classList.replace('bg-gray-600', 'bg-red-600');
+            }
+        };
+
+        // ===== RACI =====
+        window.addRaciItemToCurrentMeeting = function () {
+            if (!requireEditor()) return;
+            const m = meetings.find(x => x.id === activeMeetingId);
+            if (!m) return;
+            const task = document.getElementById('raci-task').value;
+            if (!task) { alert('يرجى كتابة وصف التوصية على الأقل.'); return; }
+            if (!m.raciItems) m.raciItems = [];
+            m.raciItems.push({
+                id: Date.now(),
+                task,
+                r: document.getElementById('raci-r').value,
+                a: document.getElementById('raci-a').value,
+                c: document.getElementById('raci-c').value,
+                i: document.getElementById('raci-i').value,
+                deadline: document.getElementById('raci-deadline').value,
+                status: document.getElementById('raci-status').value,
+                primaveraActivityId: document.getElementById('raci-primavera-id').value || null
+            });
+            logAudit(m, `تمت إضافة توصية جديدة: "${task}" بواسطة ${currentUser.email}`);
+            persistMeeting(m);
+            renderModalRaciTable(m);
+            renderAuditTrail(m);
+            ['raci-task','raci-r','raci-a','raci-c','raci-i','raci-deadline','raci-primavera-id'].forEach(id => document.getElementById(id).value = '');
+        };
+
+        function renderModalRaciTable(m) {
+            const tbody = document.getElementById('modal-raci-tbody');
+            tbody.innerHTML = '';
+            if (!m.raciItems || m.raciItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center p-3 text-slate-400">لا توجد توصيات قائمة.</td></tr>`;
+                return;
+            }
+            m.raciItems.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b";
+                const integrationHtml = `
+                    ${item.jiraIssueKey
+                        ? `<a href="${item.jiraIssueUrl}" target="_blank" class="text-blue-600 underline block">${item.jiraIssueKey}</a>`
+                        : `<button onclick="sendToJira(${item.id})" class="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">إرسال لـ Jira</button>`}
+                    ${item.primaveraActivityId ? `<div class="text-[10px] text-slate-500 mt-0.5">P6: ${item.primaveraActivityId}</div>` : ''}
+                `;
+                tr.innerHTML = `
+                    <td class="p-2 border font-semibold text-slate-800">${item.task}</td>
+                    <td class="p-2 border">${item.r || '-'}</td><td class="p-2 border">${item.a || '-'}</td>
+                    <td class="p-2 border">${item.deadline || '-'}</td>
+                    <td class="p-2 border">
+                        <select onchange="updateRaciStatus(${item.id}, this.value)" class="border rounded px-1 py-0.5 text-[11px]">
+                            <option value="قيد الانتظار" ${item.status==='قيد الانتظار'?'selected':''}>قيد الانتظار</option>
+                            <option value="جاري التنفيذ" ${item.status==='جاري التنفيذ'?'selected':''}>جاري التنفيذ</option>
+                            <option value="مكتملة" ${item.status==='مكتملة'?'selected':''}>مكتملة</option>
+                        </select>
+                    </td>
+                    <td class="p-2 border text-center">${integrationHtml}</td>
+                    <td class="p-2 border text-center"><button onclick="deleteRaciItem(${item.id})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ===== Jira Integration =====
+        window.sendToJira = async function (itemId) {
+            if (!requireEditor()) return;
+            let projectKey = localStorage.getItem('insiyab_jira_project_key');
+            if (!projectKey) {
+                projectKey = prompt('أدخل مفتاح مشروع Jira (Project Key)، مثال: PROJ');
+                if (!projectKey) return;
+                localStorage.setItem('insiyab_jira_project_key', projectKey);
+            }
+            try {
+                const callable = httpsCallable(functions, 'createJiraIssue');
+                const result = await callable({ meetingId: activeMeetingId, raciItemId: itemId, projectKey, issueType: 'Task' });
+                alert(`تم إنشاء تذكرة Jira بنجاح: ${result.data.issueKey}`);
+            } catch (err) {
+                alert('تعذر إنشاء تذكرة Jira: ' + err.message + '\n(تأكد من نشر Cloud Functions وضبط بيانات Jira — راجع ملف الإعداد)');
+            }
+        };
+
+        window.updateRaciStatus = function (itemId, newStatus) {
+            if (!requireEditor()) { renderModalRaciTable(meetings.find(x => x.id === activeMeetingId)); return; }
+            const m = meetings.find(x => x.id === activeMeetingId);
+            if (!m) return;
+            const item = m.raciItems.find(x => x.id === itemId);
+            if (item) {
+                logAudit(m, `تغيير حالة "${item.task}" إلى: ${newStatus} بواسطة ${currentUser.email}`);
+                item.status = newStatus;
+                persistMeeting(m);
+                renderAuditTrail(m);
+            }
+        };
+
+        window.deleteRaciItem = function (itemId) {
+            if (!requireEditor()) return;
+            const m = meetings.find(x => x.id === activeMeetingId);
+            if (!m) return;
+            const item = m.raciItems.find(x => x.id === itemId);
+            m.raciItems = m.raciItems.filter(x => x.id !== itemId);
+            if (item) logAudit(m, `تم حذف توصية: "${item.task}" بواسطة ${currentUser.email}`);
+            persistMeeting(m);
+            renderModalRaciTable(m);
+            renderAuditTrail(m);
+        };
+
+        // ===== Audit Trail =====
+        function logAudit(meeting, text) {
+            if (!meeting.auditTrail) meeting.auditTrail = [];
+            meeting.auditTrail.push({ ts: Date.now(), text });
+        }
+        function renderAuditTrail(m) {
+            const list = document.getElementById('audit-trail-list');
+            list.innerHTML = '';
+            if (!m.auditTrail || m.auditTrail.length === 0) { list.innerHTML = `<div class="italic">لا توجد سجلات تعديل بعد.</div>`; return; }
+            m.auditTrail.slice().reverse().forEach(entry => {
+                const row = document.createElement('div');
+                row.innerText = `${new Date(entry.ts).toLocaleString('ar-EG')} — ${entry.text}`;
+                list.appendChild(row);
+            });
+        }
+
+        // ===== NPS =====
+        function setupNpsStars() {
+            const stars = document.querySelectorAll('#nps-stars .star-btn');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    selectedNpsValue = parseInt(star.dataset.val);
+                    stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.val) <= selectedNpsValue));
+                });
+            });
+        }
+        function openNpsModal() {
+            selectedNpsValue = 0;
+            document.querySelectorAll('#nps-stars .star-btn').forEach(s => s.classList.remove('active'));
+            document.getElementById('nps-modal').classList.remove('hidden');
+        }
+        window.submitNpsRating = function () {
+            const m = meetings.find(x => x.id === activeMeetingId);
+            if (m && selectedNpsValue > 0) { m.npsRating = selectedNpsValue; persistMeeting(m); }
+            document.getElementById('nps-modal').classList.add('hidden');
+            activeMeetingId = null;
+        };
+        window.skipNpsRating = function () {
+            document.getElementById('nps-modal').classList.add('hidden');
+            activeMeetingId = null;
+        };
+        function renderNpsList() {
+            const container = document.getElementById('nps-list-container');
+            const emptyMsg = document.getElementById('nps-empty');
+            container.innerHTML = '';
+            const rated = meetings.filter(m => m.npsRating);
+            if (rated.length === 0) { emptyMsg.classList.remove('hidden'); return; }
+            emptyMsg.classList.add('hidden');
+            rated.slice().reverse().forEach(m => {
+                const row = document.createElement('div');
+                row.className = 'flex justify-between items-center text-xs bg-slate-50 p-2 rounded-lg border';
+                row.innerHTML = `<span class="text-slate-700">${m.title}</span><span class="text-amber-500 font-bold">${'★'.repeat(m.npsRating)}${'☆'.repeat(5 - m.npsRating)}</span>`;
+                container.appendChild(row);
+            });
+        }
+
+        // ===== EVM Dashboard (SPI/CPI) =====
+        function renderEvmDashboard() {
+            const tbody = document.getElementById('evm-table-body');
+            const emptyMsg = document.getElementById('evm-empty');
+            tbody.innerHTML = '';
+            const withEvm = meetings.filter(m => m.evm && m.evm.pv > 0 && m.evm.ac > 0);
+            if (withEvm.length === 0) { emptyMsg.classList.remove('hidden'); return; }
+            emptyMsg.classList.add('hidden');
+
+            withEvm.slice().reverse().forEach(m => {
+                const spi = (m.evm.ev / m.evm.pv);
+                const cpi = (m.evm.ev / m.evm.ac);
+                const spiColor = spi >= 1 ? 'text-emerald-600' : 'text-red-600';
+                const cpiColor = cpi >= 1 ? 'text-emerald-600' : 'text-red-600';
+                const tr = document.createElement('tr');
+                tr.className = 'border-b';
+                tr.innerHTML = `
+                    <td class="p-2 border font-semibold text-slate-800">${m.title}</td>
+                    <td class="p-2 border">${m.datetime ? new Date(m.datetime).toLocaleDateString('ar-EG') : '-'}</td>
+                    <td class="p-2 border">${m.evm.pv.toLocaleString('ar-EG')}</td>
+                    <td class="p-2 border">${m.evm.ev.toLocaleString('ar-EG')}</td>
+                    <td class="p-2 border">${m.evm.ac.toLocaleString('ar-EG')}</td>
+                    <td class="p-2 border font-bold ${spiColor}">${spi.toFixed(2)}</td>
+                    <td class="p-2 border font-bold ${cpiColor}">${cpi.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ===== Reminders =====
+        function checkUpcomingReminders() {
+            const now = new Date().getTime();
+            meetings.forEach(m => {
+                if (!m.datetime) return;
+                const meetingTime = new Date(m.datetime).getTime();
+                const reminderMs = (parseInt(m.reminder) || 15) * 60 * 1000;
+                if (meetingTime - now > 0 && meetingTime - now <= reminderMs && !m._notifiedLocally) {
+                    showNotificationBanner(m);
+                    m._notifiedLocally = true;
+                }
+            });
+        }
+        function showNotificationBanner(m) {
+            const banner = document.getElementById('notification-banner');
+            document.getElementById('notification-text').innerText = `الاجتماع: "${m.title}" ميعاده اقترب (${new Date(m.datetime).toLocaleTimeString('ar-EG')}). الأجندة جاهزة.`;
+            banner.classList.remove('hidden');
+        }
+        window.closeNotification = function () { document.getElementById('notification-banner').classList.add('hidden'); };
+
+        // ===== Dashboard Stats =====
+        function updateDashboardStats() {
+            let total = meetings.length, pending = 0, completed = 0;
+            meetings.forEach(m => (m.raciItems || []).forEach(r => r.status === 'مكتملة' ? completed++ : pending++));
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-completed').innerText = completed;
+            const totalTasks = pending + completed;
+            const rate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 100;
+            document.getElementById('stat-nps').innerText = `${rate}%`;
+            const ratedMeetings = meetings.filter(m => m.npsRating);
+            const avgNps = ratedMeetings.length > 0 ? (ratedMeetings.reduce((s, m) => s + m.npsRating, 0) / ratedMeetings.length).toFixed(1) : null;
+            document.getElementById('stat-meeting-nps').innerText = avgNps ? `${avgNps}/5` : '—';
+            document.getElementById('rep-total').innerText = total;
+            document.getElementById('rep-pending').innerText = pending;
+            document.getElementById('rep-completed').innerText = completed;
+            document.getElementById('rep-rate').innerText = `${rate}%`;
+            document.getElementById('rep-nps').innerText = avgNps ? `${avgNps}/5` : '—';
+        }
+
+        // ===== Heatmap =====
+        function renderHeatmap() {
+            const container = document.getElementById('heatmap-container');
+            const emptyMsg = document.getElementById('heatmap-empty');
+            container.innerHTML = '';
+            const wordCounts = {};
+            meetings.forEach(m => (m.raciItems || []).forEach(r => {
+                (r.task || '').split(/\s+/).map(w => w.replace(/[.,;:!؟?]/g, '')).filter(Boolean).forEach(w => {
+                    if (w.length < 3 || STOPWORDS.includes(w)) return;
+                    wordCounts[w] = (wordCounts[w] || 0) + 1;
+                });
+            }));
+            const sorted = Object.entries(wordCounts).sort((a, b) => b[1] - a[1]).slice(0, 12);
+            if (sorted.length === 0) { emptyMsg.classList.remove('hidden'); return; }
+            emptyMsg.classList.add('hidden');
+            const max = sorted[0][1];
+            const colors = ['#dc2626', '#ea580c', '#f59e0b', '#eab308', '#84cc16'];
+            sorted.forEach(([word, count], idx) => {
+                const pct = Math.round((count / max) * 100);
+                const color = colors[Math.min(Math.floor(idx / 3), colors.length - 1)];
+                const row = document.createElement('div');
+                row.innerHTML = `
+                    <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-slate-700">${word}</span><span class="text-slate-500">${count} مرة</span></div>
+                    <div class="heat-bar"><div class="heat-fill" style="width:${pct}%; background:${color};"></div></div>`;
+                container.appendChild(row);
+            });
+        }
+
+        // ===== Full Report =====
+        function renderFullReport() {
+            updateDashboardStats();
+            const container = document.getElementById('full-report-body');
+            container.innerHTML = '';
+            if (meetings.length === 0) { container.innerHTML = `<p class="text-center text-slate-400 py-6">لا توجد بيانات متاحة...</p>`; return; }
+            meetings.forEach((m, idx) => {
+                const block = document.createElement('div');
+                block.className = "border-b pb-4 space-y-2";
+                block.innerHTML = `
+                    <div class="flex justify-between items-center text-xs text-slate-700 bg-slate-100 p-2 rounded">
+                        <strong>#${idx + 1} ${m.title} (${m.type})</strong>
+                        <span>${m.datetime ? new Date(m.datetime).toLocaleString('ar-EG') : ''} ${m.npsRating ? '| التقييم: ' + '★'.repeat(m.npsRating) : ''}</span>
+                    </div>
+                    <div class="text-xs text-slate-600"><strong>الأجندة المسبقة:</strong> ${m.agenda || 'لا توجد'}</div>
+                    ${m.attendees && m.attendees.length ? `<div class="text-xs text-slate-600"><strong>الحضور:</strong> ${m.attendees.filter(a=>a.present).map(a=>a.name).join('، ') || 'لم يُسجَّل حضور'}</div>` : ''}
+                    ${m.transcription ? `<div class="text-xs text-blue-800"><strong>تفريغ النقاش:</strong> ${m.transcription}</div>` : ''}
+                    ${m.raciItems && m.raciItems.length > 0 ? `
+                        <table class="w-full text-right text-[11px] border mt-2">
+                            <tr class="bg-slate-200 font-bold"><th class="p-1 border">التوصية</th><th class="p-1 border">R</th><th class="p-1 border">A</th><th class="p-1 border">الموعد</th><th class="p-1 border">الحالة</th></tr>
+                            ${m.raciItems.map(r => `<tr><td class="p-1 border">${r.task}</td><td class="p-1 border">${r.r}</td><td class="p-1 border">${r.a}</td><td class="p-1 border">${r.deadline}</td><td class="p-1 border">${r.status}</td></tr>`).join('')}
+                        </table>` : '<p class="text-[11px] text-slate-400 italic">لا توجد توصيات مسجلة.</p>'}
+                `;
+                container.appendChild(block);
+            });
+        }
+
+        window.copyFullReportText = function () {
+            let reportText = `=== تقرير منظومة انسياب للاجتماعات والتوصيات ===\n`;
+            reportText += `تاريخ التقرير: ${new Date().toLocaleDateString('ar-EG')}\n--------------------------------------------------\n\n`;
+            meetings.forEach((m, i) => {
+                reportText += `[اجتماع #${i + 1}] ${m.title}\nالتصنيف: ${m.type}\n`;
+                if (m.datetime) reportText += `التاريخ: ${new Date(m.datetime).toLocaleString('ar-EG')}\n`;
+                if (m.npsRating) reportText += `تقييم كفاءة الاجتماع: ${m.npsRating}/5\n`;
+                reportText += `الأجندة المسبقة:\n${m.agenda || 'بدون أجندة'}\n`;
+                if (m.attendees && m.attendees.length) reportText += `الحضور: ${m.attendees.filter(a=>a.present).map(a=>a.name).join('، ') || 'لم يُسجَّل'}\n`;
+                if (m.transcription) reportText += `تفريغ الجلسة: ${m.transcription}\n`;
+                if (m.raciItems && m.raciItems.length > 0) {
+                    reportText += `جدول التوصيات (RACI):\n`;
+                    m.raciItems.forEach(r => reportText += `- التوصية: ${r.task} | المسؤول: ${r.r} | المساءل: ${r.a} | الموعد: ${r.deadline} | الحالة: ${r.status}\n`);
+                }
+                reportText += `\n--------------------------------------------------\n`;
+            });
+            navigator.clipboard.writeText(reportText).then(() => alert('تم نسخ التقرير الشامل بنجاح إلى الحافظة!'));
+        };
+
+        window.printSingleMeeting = function (id) {
+            const m = meetings.find(x => x.id === id);
+            if (!m) return;
+            const printWin = window.open('', '_blank');
+            printWin.document.write(`
+                <html lang="ar" dir="rtl"><head><title>تقرير اجتماع - ${m.title}</title>
+                <style>body{font-family:sans-serif;padding:20px;line-height:1.6}.header{border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:20px;display:flex;justify-content:space-between}table{width:100%;border-collapse:collapse;margin-top:15px}th,td{border:1px solid #ccc;padding:8px;text-align:right;font-size:12px}th{background:#f0f0f0}</style>
+                </head><body>
+                <div class="header"><div><h2>محضر اجتماع - منظومة انسياب</h2>
+                <p><strong>العنوان:</strong> ${m.title} (${m.type})</p>
+                <p><strong>التاريخ:</strong> ${m.datetime ? new Date(m.datetime).toLocaleString('ar-EG') : ''}</p>
+                ${m.npsRating ? `<p><strong>تقييم كفاءة الاجتماع:</strong> ${m.npsRating}/5</p>` : ''}</div>
+                <div style="text-align:left"><p><strong>أنشأه:</strong></p><p>${m.createdBy || ''}</p></div></div>
+                <h3>الأجندة المسبقة:</h3><p>${(m.agenda || 'لا توجد').replace(/\n/g, '<br>')}</p>
+                ${m.attendees && m.attendees.length ? `<h3>الحضور:</h3><p>${m.attendees.filter(a=>a.present).map(a=>a.name).join('، ') || 'لم يُسجَّل حضور'}</p>` : ''}
+                ${m.transcription ? `<h3>تفريغ النقاش:</h3><p>${m.transcription}</p>` : ''}
+                <h3>جدول التوصيات والقرارات:</h3>
+                ${m.raciItems && m.raciItems.length > 0 ? `<table><tr><th>التوصية</th><th>R</th><th>A</th><th>C</th><th>I</th><th>الموعد</th><th>الحالة</th></tr>
+                ${m.raciItems.map(r => `<tr><td>${r.task}</td><td>${r.r}</td><td>${r.a}</td><td>${r.c}</td><td>${r.i}</td><td>${r.deadline}</td><td>${r.status}</td></tr>`).join('')}
+                </table>` : '<p>لا توجد توصيات مسجلة.</p>'}
+                ${m.digitalSignature ? `
+                <div style="margin-top:24px;padding:12px;border:2px dashed #4f46e5;border-radius:8px;text-align:center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://' + window.location.hostname + '/verify.html?id=' + m.id)}" width="120" height="120" style="margin:0 auto;">
+                    <p style="font-size:11px;color:#4f46e5;font-weight:bold;margin-top:6px;">محضر موثّق رقمياً — أرشيف الصندوق الأسود</p>
+                    <p style="font-size:10px;color:#64748b;">تم التوقيع: ${new Date(m.digitalSignature.signedAt).toLocaleString('ar-EG')} بواسطة ${m.digitalSignature.signedBy}</p>
+                </div>` : ''}
+                <br><br><p style="font-size:10px;text-align:center">تقرير مُولَّد من منظومة انسياب</p>
+                <script>window.onload=function(){window.print();}<\/script></body></html>`);
+            printWin.document.close();
+        };
+
+        // ===== Primavera P6 CSV Export (schedule update bridge) =====
+        window.exportPrimaveraCsv = function () {
+            const rows = [['Activity ID', 'Activity Name', '% Complete', 'Status', 'Actual Finish Date', 'Notes']];
+            let hasAnyActivityId = false;
+
+            meetings.forEach(m => {
+                (m.raciItems || []).forEach(r => {
+                    if (!r.primaveraActivityId) return;
+                    hasAnyActivityId = true;
+                    const pct = r.status === 'مكتملة' ? '100' : r.status === 'جاري التنفيذ' ? '50' : '0';
+                    const actualFinish = r.status === 'مكتملة' ? (r.deadline || '') : '';
+                    const notes = `من اجتماع: ${m.title} — ${r.task}`.replace(/"/g, "'");
+                    rows.push([r.primaveraActivityId, r.task.replace(/"/g, "'"), pct, r.status, actualFinish, notes]);
+                });
+            });
+
+            if (!hasAnyActivityId) {
+                alert('لا توجد توصيات مرتبطة بمعرّف نشاط Primavera (Activity ID) بعد. أضف المعرّف عند تسجيل التوصية داخل نافذة الجلسة المباشرة.');
+                return;
+            }
+
+            const csvContent = rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `insiyab-primavera-update-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click(); URL.revokeObjectURL(url);
+        };
+
+        // ===== Local backup export (secondary to cloud) =====
+        window.exportBackup = function () {
+            const blob = new Blob([JSON.stringify(meetings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `insiyab-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click(); URL.revokeObjectURL(url);
+        };
+    </script>
+</body>
+</html>
