@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RASEEN | منصة الإنشاءات الرشيقة بالذكاء الاصطناعي | Engr. Wael Ewis</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap');
+body{ font-family:'Cairo',sans-serif; background:#f8fafc; color:#0f172a; margin:0; }
+.card{ background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:20px; }
+.tab-btn{ background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:999px; padding:8px 16px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.tab-btn.active{ background:#2563eb; color:#fff; border-color:#2563eb; }
+.tab-content{ display:none; }
+.tab-content.active{ display:block; }
+.print-toolbar{ display:flex; gap:8px; margin-bottom:14px; }
+.print-toolbar button{ font-size:12px; font-weight:700; padding:7px 14px; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#f8fafc; }
+.print-toolbar button.pdf-btn{ background:#0f172a; color:#fff; border-color:#0f172a; }
+input,select,textarea{ width:100%; box-sizing:border-box; background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:8px 10px; font-size:12px; font-family:inherit; }
+label{ display:block; font-size:11px; font-weight:700; color:#475569; margin-bottom:4px; }
+.btn{ background:#0f172a; color:#fff; font-weight:700; padding:9px 16px; border-radius:10px; font-size:12px; border:none; cursor:pointer; }
+.btn.amber{ background:#f59e0b; color:#0f172a; }
+.btn.green{ background:#059669; }
+table{ width:100%; font-size:11px; border-collapse:collapse; }
+th,td{ padding:8px; text-align:right; border-bottom:1px solid #f1f5f9; }
+th{ color:#64748b; background:#f8fafc; }
+@media print{
+  .no-print{ display:none !important; }
+  body.printing-one *{ visibility:hidden !important; }
+  body.printing-one .print-active, body.printing-one .print-active *{ visibility:visible !important; }
+  body.printing-one .print-active{ position:absolute; top:0; left:0; width:100%; padding:16px; }
+}
+.pdf-capture, .pdf-capture *{ color:#0f172a !important; border-color:#cbd5e1 !important; }
+.pdf-capture{ background:#ffffff !important; }
+</style>
+</head>
+<body>
+
+<header class="bg-slate-900 text-white sticky top-0 z-50 no-print">
+  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <i data-lucide="cpu" class="w-5 h-5 text-blue-400"></i>
+      <div>
+        <h1 class="text-base font-bold">RASEEN <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">QAI v3.0</span></h1>
+        <p class="text-[10px] text-slate-400">مبادرة الإنشاءات الرشيقة بالذكاء الاصطناعي — إشراف م. وائل علي عويس محمود</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="bg-slate-800 sticky top-16 z-40 no-print" style="overflow-x:auto;">
+  <div class="flex gap-2 p-2 max-w-7xl mx-auto">
+    <button class="tab-btn active" onclick="showTab('dashboard',this)">📊 لوحة التحكم</button>
+    <button class="tab-btn" onclick="showTab('reports',this)">📋 تقارير الهدر</button>
+    <button class="tab-btn" onclick="showTab('pokayoke',this)">✅ Poka-Yoke</button>
+    <button class="tab-btn" onclick="showTab('fmea',this)">⚠️ FMEA</button>
+    <button class="tab-btn" onclick="showTab('fivewhys',this)">🐟 5 Whys</button>
+    <button class="tab-btn" onclick="showTab('fives',this)">🧹 تدقيق 5S</button>
+    <button class="tab-btn" onclick="showTab('roi',this)">💰 حاسبة العائد ROI</button>
+  </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+
+<!-- ============ لوحة التحكم ============ -->
+<section id="tab-dashboard" class="tab-content active">
+  <div class="print-toolbar no-print"><button onclick="printSection('tab-dashboard')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('tab-dashboard','RASEEN_Dashboard.pdf')">📄 حفظ PDF</button></div>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="card"><span class="text-[11px] text-slate-400 block mb-1">نسبة الإعادة (Rework)</span><span class="text-2xl font-black text-emerald-600" id="kpi-rework">—</span></div>
+    <div class="card"><span class="text-[11px] text-slate-400 block mb-1">حجم الخردة (Scrap)</span><span class="text-2xl font-black text-blue-600" id="kpi-scrap">—</span></div>
+    <div class="card"><span class="text-[11px] text-slate-400 block mb-1">إجمالي تكلفة الهدر</span><span class="text-2xl font-black text-rose-600" id="kpi-totalcost">—</span></div>
+    <div class="card"><span class="text-[11px] text-slate-400 block mb-1">الوفر المحقق (المُغلق)</span><span class="text-2xl font-black text-indigo-600" id="kpi-saved">—</span></div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card">
+      <h3 class="font-bold text-sm mb-3">توزيع أنواع الهدر (DOWNTIME)</h3>
+      <canvas id="wasteChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h3 class="font-bold text-sm mb-3">أهم 3 أسباب جذرية للهدر</h3>
+      <div id="topCauses" class="space-y-2 text-xs"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ تقارير الهدر ============ -->
+<section id="tab-reports" class="tab-content">
+  <div class="print-toolbar no-print"><button onclick="printSection('tab-reports')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('tab-reports','RASEEN_Waste_Reports.pdf')">📄 حفظ PDF</button>
+    <button onclick="exportReportsCSV()">📥 تصدير CSV</button>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="card no-print h-fit">
+      <h2 class="font-bold text-sm mb-3">➕ إضافة تقرير جديد</h2>
+      <form id="reportForm" onsubmit="addReport(event)" class="space-y-3">
+        <div><label>اسم المشروع / القطاع</label><input type="text" id="inputProject" required></div>
+        <div><label>تصنيف الهدر (DOWNTIME)</label>
+          <select id="inputWasteType">
+            <option>Defects - عيوب التنفيذ</option>
+            <option>Overproduction - إنتاج زائد</option>
+            <option>Waiting - هدر الانتظار</option>
+            <option>Non-Utilized Talent - طاقات غير مستغلة</option>
+            <option>Transportation - نقل مفرط</option>
+            <option>Inventory - زيادة المخزون</option>
+            <option>Motion - حركة غير منتجة</option>
+            <option>Extra-Processing - معالجة زائدة</option>
+          </select>
+        </div>
+        <div><label>السبب الجذر / التحليل</label><textarea id="inputCause" rows="2" required></textarea></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label>التكلفة المالية ($)</label><input type="number" id="inputCost" required></div>
+          <div><label>الحالة</label>
+            <select id="inputStatus">
+              <option>Critical - جوهري</option>
+              <option>Under Action - قيد المعالجة</option>
+              <option>Resolved - تم الحل</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn w-full">💾 حفظ التقرير</button>
+      </form>
+    </div>
+    <div class="lg:col-span-2 card">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 no-print">
+        <input type="text" id="searchBox" placeholder="🔎 بحث بالمشروع أو السبب..." style="max-width:220px;" oninput="renderReports()">
+        <select id="filterWaste" onchange="renderReports()" style="max-width:200px;"><option value="">كل أنواع الهدر</option></select>
+        <select id="filterStatus" onchange="renderReports()" style="max-width:160px;">
+          <option value="">كل الحالات</option><option>Critical</option><option>Under Action</option><option>Resolved</option>
+        </select>
+        <span class="text-xs bg-slate-100 px-3 py-1 rounded-full font-bold" id="record-count">0 تقارير</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>الكود</th><th>المشروع</th><th>نوع الهدر</th><th>السبب</th><th>التكلفة</th><th>الحالة</th><th class="no-print">حذف</th></tr></thead>
+          <tbody id="reportsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Poka-Yoke ============ -->
+<section id="tab-pokayoke" class="tab-content">
+  <div class="print-toolbar no-print"><button onclick="printSection('tab-pokayoke')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('tab-pokayoke','RASEEN_PokaYoke.pdf')">📄 حفظ PDF</button></div>
+  <div class="card no-print mb-4">
+    <h2 class="font-bold text-sm mb-3">➕ إضافة بند فحص جديد (Poka-Yoke Checklist)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+      <input type="text" id="pyActivity" placeholder="النشاط (مثال: صب خرسانة)">
+      <input type="text" id="pyCheck" placeholder="بند الفحص الملزم">
+      <button class="btn" onclick="addPokaYoke()">إضافة</button>
+    </div>
+  </div>
+  <div class="card"><table><thead><tr><th>النشاط</th><th>بند الفحص</th><th>تم التحقق؟</th><th class="no-print">حذف</th></tr></thead><tbody id="pyTableBody"></tbody></table></div>
+</section>
+
+<!-- ============ FMEA ============ -->
+<section id="tab-fmea" class="tab-content">
+  <div class="print-toolbar no-print"><button onclick="printSection('tab-fmea')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('tab-fmea','RASEEN_FMEA.pdf')">📄 حفظ PDF</button></div>
+  <div class="card no-print mb-4">
+    <h2 class="font-bold text-sm mb-3">➕ إضافة خطر جديد (RPN = S × O × D)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
+      <input type="text" id="fmeaFailure" placeholder="نمط الفشل المحتمل">
+      <input type="number" id="fmeaS" placeholder="الشدة (S) 1-10" min="1" max="10">
+      <input type="number" id="fmeaO" placeholder="الاحتمالية (O) 1-10" min="1" max="10">
+      <input type="number" id="fmeaD" placeholder="سهولة الاكتشاف (D) 1-10" min="1" max="10">
+      <button class="btn" onclick="addFmea()">حساب وإضافة</button>
+    </div>
+  </div>
+  <div class="card"><table><thead><tr><th>نمط الفشل</th><th>S</th><th>O</th><th>D</th><th>RPN</th><th>الأولوية</th><th class="no-print">حذف</th></tr></thead><tbody id="fmeaTableBody"></tbody></table></div>
+</section>
+
+<!-- ============ 5 Whys ============ -->
+<section id="tab-fivewhys" class="tab-content">
+  <div class="print-toolbar no-print"><button onclick="printSection('tab-fivewhys')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('tab-fivewhys','RASEEN_5Whys.pdf')">📄 حفظ PDF</button></div>
+  <div class="card no-print mb-4">
+    <h2 class="font-bold text-sm mb-3">➕ تحليل مشكلة جديدة (5 Whys)</h2>
+    <input type="text" id="whyProblem" placeholder="وصف المشكلة" class="mb-2">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2">
+      <input type="text" id="why1" placeholder="لماذا؟ 1">
+      <input type="text" id="why2" placeholder="لماذا؟ 2">
+      <input type="text" id="why3" placeholder="لماذا؟ 3">
+      <input type="text" id="why4" placeholder="لماذا؟ 4">
+      <input type="text" id="why5" placeholder="لماذا؟ 5 (السبب الجذري)">
+    </div>
+    <button class="btn" onclick="addFiveWhys()">حفظ التحليل</button>
+  </div>
+  <div id="fiveWhysList" class="space-y-3"></div>
+</section>
+
+<!-- ============ تدقيق 5S ============ -->
+<section id="tab-fives" class="tab-content">
+  <div class="print-toolbar no-print"><button onclick="printSection('tab-fives')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('tab-fives','RASEEN_5S_Audit.pdf')">📄 حفظ PDF</button></div>
+  <div class="card no-print mb-4">
+    <h2 class="font-bold text-sm mb-3">تدقيق 5S الأسبوعي (Sort, Set, Shine, Standardize, Sustain)</h2>
+    <input type="text" id="fiveSArea" placeholder="اسم المنطقة/الموقع" class="mb-3">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 text-center text-xs font-bold">
+      <div>Sort (فرز)</div><div>Set (ترتيب)</div><div>Shine (نظافة)</div><div>Standardize (توحيد)</div><div>Sustain (استدامة)</div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-3">
+      <input type="number" id="s1" placeholder="0-100" min="0" max="100">
+      <input type="number" id="s2" placeholder="0-100" min="0" max="100">
+      <input type="number" id="s3" placeholder="0-100" min="0" max="100">
+      <input type="number" id="s4" placeholder="0-100" min="0" max="100">
+      <input type="number" id="s5" placeholder="0-100" min="0" max="100">
+    </div>
+    <button class="btn" onclick="addFiveS()">حفظ التدقيق</button>
+  </div>
+  <div class="card"><table><thead><tr><th>المنطقة</th><th>Sort</th><th>Set</th><th>Shine</th><th>Standardize</th><th>Sustain</th><th>المتوسط</th><th class="no-print">حذف</th></tr></thead><tbody id="fiveSTableBody"></tbody></table></div>
+</section>
+
+<!-- ============ حاسبة العائد ROI ============ -->
+<section id="tab-roi" class="tab-content">
+  <div class="print-toolbar no-print"><button onclick="printSection('tab-roi')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('tab-roi','RASEEN_ROI.pdf')">📄 حفظ PDF</button></div>
+  <div class="card max-w-xl mx-auto">
+    <h2 class="font-bold text-sm mb-4">💰 حاسبة العائد على استثمار تطبيق RASEEN</h2>
+    <label>القيمة الإجمالية للمشروع ($)</label>
+    <input type="number" id="roiProjectValue" oninput="calcRoi()" class="mb-3">
+    <label>نسبة التوفير المتوقعة من تقليل الهدر (%) — النطاق المرجعي 15-20%</label>
+    <input type="number" id="roiSavingPct" value="17" oninput="calcRoi()" class="mb-4">
+    <div class="grid grid-cols-2 gap-3">
+      <div class="card"><span class="text-[11px] text-slate-400 block">الوفر المالي المتوقع</span><span class="text-xl font-black text-emerald-600" id="roiSavingVal">$0</span></div>
+      <div class="card"><span class="text-[11px] text-slate-400 block">نسبة من قيمة المشروع</span><span class="text-xl font-black text-blue-600" id="roiPctVal">0%</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="bg-white border-t py-4 mt-8 no-print text-center text-[11px] text-slate-500">
+  © 2026 منصة بناء للتطوير الاستراتيجي | مبادرة رصين (RASEEN) — إعداد وإشراف: المهندس وائل علي عويس محمود
+</footer>
+
+<script>
+/* ===================== تخزين دائم ===================== */
+const STORE_KEY = 'raseen_data_v1';
+function loadStore(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || {}; }catch(e){ return {}; }
+}
+function saveStore(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+let state = Object.assign({
+  reports: [
+    { id:"RSN-101", project:"مشروع مركز البيانات - Tier IV", waste:"Defects - عيوب التنفيذ", cause:"خطأ بتوزيع حديد التسليح بسبب عدم مطابقة الـ BBS", cost:12000, status:"Under Action - قيد المعالجة" },
+    { id:"RSN-102", project:"مشروع الميناء البحري", waste:"Waiting - هدر الانتظار", cause:"تأخر اعتماد مخططات الـ MEP من الاستشاري", cost:45000, status:"Critical - جوهري" },
+    { id:"RSN-103", project:"مبنى الخدمات اللوجستية", waste:"Inventory - زيادة المخزون", cause:"تكسير وتلف مواد العزل لتخزينها المبكر", cost:8500, status:"Resolved - تم الحل" }
+  ],
+  pokayoke: [],
+  fmea: [],
+  fivewhys: [],
+  fives: []
+}, loadStore());
+
+/* ===================== التنقل بين التبويبات ===================== */
+function showTab(id, btn){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(id==='dashboard') renderDashboard();
+}
+
+/* ===================== الطباعة و PDF ===================== */
+function printSection(id){
+  const el = document.getElementById(id);
+  document.body.classList.add('printing-one');
+  el.classList.add('print-active');
+  window.print();
+  setTimeout(()=>{ el.classList.remove('print-active'); document.body.classList.remove('printing-one'); }, 600);
+}
+function downloadSectionPdf(id, filename){
+  const el = document.getElementById(id);
+  if(typeof html2canvas==='undefined' || typeof window.jspdf==='undefined'){ alert('⚠️ مكتبة PDF غير متاحة'); return; }
+  el.classList.add('pdf-capture');
+  html2canvas(el, { scale:2, backgroundColor:'#ffffff', useCORS:true }).then(canvas=>{
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p','mm','a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    let heightLeft = imgHeight, position = 0;
+    pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+    heightLeft -= pageHeight;
+    while(heightLeft > 0){
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+      heightLeft -= pageHeight;
+    }
+    pdf.save(filename);
+  }).finally(()=> el.classList.remove('pdf-capture'));
+}
+
+/* ===================== تقارير الهدر ===================== */
+function getStatusBadge(status){
+  if(status.includes('Critical')) return '<span style="background:#fee2e2;color:#b91c1c;padding:2px 8px;border-radius:999px;font-weight:800;">Critical</span>';
+  if(status.includes('Resolved')) return '<span style="background:#d1fae5;color:#047857;padding:2px 8px;border-radius:999px;font-weight:800;">Resolved</span>';
+  return '<span style="background:#fef3c7;color:#b45309;padding:2px 8px;border-radius:999px;font-weight:800;">Under Action</span>';
+}
+function populateWasteFilter(){
+  const sel = document.getElementById('filterWaste');
+  const types = [...new Set(state.reports.map(r=>r.waste))];
+  sel.innerHTML = '<option value="">كل أنواع الهدر</option>' + types.map(t=>`<option>${t}</option>`).join('');
+}
+function renderReports(){
+  const tbody = document.getElementById('reportsTableBody');
+  const search = (document.getElementById('searchBox').value||'').toLowerCase();
+  const fWaste = document.getElementById('filterWaste').value;
+  const fStatus = document.getElementById('filterStatus').value;
+  let list = state.reports.filter(r=>{
+    const matchSearch = !search || r.project.toLowerCase().includes(search) || r.cause.toLowerCase().includes(search);
+    const matchWaste = !fWaste || r.waste === fWaste;
+    const matchStatus = !fStatus || r.status.includes(fStatus);
+    return matchSearch && matchWaste && matchStatus;
+  });
+  tbody.innerHTML = list.map((item)=>{
+    const realIndex = state.reports.indexOf(item);
+    return `<tr>
+      <td class="font-mono font-bold text-blue-600">${item.id}</td>
+      <td>${item.project}</td>
+      <td><span style="background:#f1f5f9;padding:2px 6px;border-radius:6px;">${item.waste}</span></td>
+      <td style="max-width:200px;" class="truncate" title="${item.cause}">${item.cause}</td>
+      <td class="font-bold">$${item.cost.toLocaleString()}</td>
+      <td>${getStatusBadge(item.status)}</td>
+      <td class="no-print"><button onclick="deleteReport(${realIndex})" style="color:#e11d48;">🗑️</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('record-count').innerText = list.length + ' تقارير';
+  populateWasteFilter();
+  renderDashboard();
+}
+function addReport(e){
+  e.preventDefault();
+  const project = document.getElementById('inputProject').value;
+  const waste = document.getElementById('inputWasteType').value;
+  const cause = document.getElementById('inputCause').value;
+  const cost = parseFloat(document.getElementById('inputCost').value) || 0;
+  const status = document.getElementById('inputStatus').value;
+  const id = 'RSN-' + Math.floor(100 + Math.random()*900);
+  state.reports.unshift({id, project, waste, cause, cost, status});
+  saveStore();
+  renderReports();
+  document.getElementById('reportForm').reset();
+}
+function deleteReport(index){
+  if(!confirm('متأكد من حذف هذا التقرير؟')) return;
+  state.reports.splice(index,1);
+  saveStore();
+  renderReports();
+}
+function exportReportsCSV(){
+  let csv = 'الكود,المشروع,نوع الهدر,السبب,التكلفة,الحالة\n';
+  state.reports.forEach(r=>{
+    csv += `"${r.id}","${r.project}","${r.waste}","${r.cause}",${r.cost},"${r.status}"\n`;
+  });
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'RASEEN_Waste_Reports.csv';
+  link.click();
+}
+
+/* ===================== لوحة التحكم ===================== */
+let wasteChartInstance = null;
+function renderDashboard(){
+  const totalCost = state.reports.reduce((s,r)=>s+r.cost,0);
+  const savedCost = state.reports.filter(r=>r.status.includes('Resolved')).reduce((s,r)=>s+r.cost,0);
+  const reworkCount = state.reports.filter(r=>r.waste.includes('Defects')).length;
+  const scrapCount = state.reports.filter(r=>r.waste.includes('Inventory')).length;
+  document.getElementById('kpi-rework').innerText = state.reports.length ? ((reworkCount/state.reports.length)*100).toFixed(1)+'%' : '0%';
+  document.getElementById('kpi-scrap').innerText = state.reports.length ? ((scrapCount/state.reports.length)*100).toFixed(1)+'%' : '0%';
+  document.getElementById('kpi-totalcost').innerText = '$' + totalCost.toLocaleString();
+  document.getElementById('kpi-saved').innerText = '$' + savedCost.toLocaleString();
+
+  // رسم بياني لتوزيع أنواع الهدر
+  const counts = {};
+  state.reports.forEach(r=>{ counts[r.waste] = (counts[r.waste]||0) + r.cost; });
+  const labels = Object.keys(counts);
+  const values = Object.values(counts);
+  const ctx = document.getElementById('wasteChart');
+  if(wasteChartInstance) wasteChartInstance.destroy();
+  if(labels.length && ctx){
+    wasteChartInstance = new Chart(ctx, {
+      type: 'pie',
+      data: { labels, datasets: [{ data: values, backgroundColor:['#2563eb','#f59e0b','#ef4444','#10b981','#8b5cf6','#ec4899','#14b8a6','#f97316'] }] },
+      options: { plugins:{ legend:{ position:'bottom', labels:{ font:{ size:9 } } } } }
+    });
+  }
+
+  // أهم 3 أسباب جذرية (الأعلى تكلفة)
+  const sorted = [...state.reports].sort((a,b)=>b.cost-a.cost).slice(0,3);
+  document.getElementById('topCauses').innerHTML = sorted.map((r,i)=>`
+    <div style="background:#f8fafc;border-radius:10px;padding:10px;">
+      <b>${i+1}. ${r.project}</b><br><span style="color:#64748b;">${r.cause}</span>
+      <span style="float:left;font-weight:800;color:#e11d48;">$${r.cost.toLocaleString()}</span>
+    </div>`).join('') || '<p style="color:#94a3b8;">لا توجد بيانات بعد</p>';
+}
+
+/* ===================== Poka-Yoke ===================== */
+function renderPokaYoke(){
+  document.getElementById('pyTableBody').innerHTML = state.pokayoke.map((p,i)=>`
+    <tr><td>${p.activity}</td><td>${p.check}</td>
+    <td><input type="checkbox" ${p.done?'checked':''} onchange="togglePokaYoke(${i})"></td>
+    <td class="no-print"><button onclick="deletePokaYoke(${i})" style="color:#e11d48;">🗑️</button></td></tr>`).join('')
+    || '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">لا توجد بنود بعد</td></tr>';
+}
+function addPokaYoke(){
+  const activity = document.getElementById('pyActivity').value.trim();
+  const check = document.getElementById('pyCheck').value.trim();
+  if(!activity || !check) return;
+  state.pokayoke.push({activity, check, done:false});
+  saveStore(); renderPokaYoke();
+  document.getElementById('pyActivity').value=''; document.getElementById('pyCheck').value='';
+}
+function togglePokaYoke(i){ state.pokayoke[i].done = !state.pokayoke[i].done; saveStore(); renderPokaYoke(); }
+function deletePokaYoke(i){ state.pokayoke.splice(i,1); saveStore(); renderPokaYoke(); }
+
+/* ===================== FMEA ===================== */
+function renderFmea(){
+  document.getElementById('fmeaTableBody').innerHTML = state.fmea.map((f,i)=>{
+    const priority = f.rpn > 200 ? '<span style="color:#e11d48;font-weight:800;">حرج ⚠</span>' : (f.rpn > 100 ? '<span style="color:#b45309;font-weight:800;">متوسط</span>' : '<span style="color:#059669;font-weight:800;">منخفض</span>');
+    return `<tr><td>${f.failure}</td><td>${f.s}</td><td>${f.o}</td><td>${f.d}</td><td class="font-bold">${f.rpn}</td><td>${priority}</td>
+      <td class="no-print"><button onclick="deleteFmea(${i})" style="color:#e11d48;">🗑️</button></td></tr>`;
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#94a3b8;">لا توجد بيانات بعد</td></tr>';
+}
+function addFmea(){
+  const failure = document.getElementById('fmeaFailure').value.trim();
+  const s = parseInt(document.getElementById('fmeaS').value)||0;
+  const o = parseInt(document.getElementById('fmeaO').value)||0;
+  const d = parseInt(document.getElementById('fmeaD').value)||0;
+  if(!failure || !s || !o || !d) { alert('املأ كل الحقول (S,O,D من 1 إلى 10)'); return; }
+  state.fmea.push({failure, s, o, d, rpn: s*o*d});
+  saveStore(); renderFmea();
+  document.getElementById('fmeaFailure').value='';document.getElementById('fmeaS').value='';document.getElementById('fmeaO').value='';document.getElementById('fmeaD').value='';
+}
+function deleteFmea(i){ state.fmea.splice(i,1); saveStore(); renderFmea(); }
+
+/* ===================== 5 Whys ===================== */
+function renderFiveWhys(){
+  document.getElementById('fiveWhysList').innerHTML = state.fivewhys.map((w,i)=>`
+    <div class="card">
+      <div class="flex justify-between items-start">
+        <b>${w.problem}</b>
+        <button onclick="deleteFiveWhys(${i})" class="no-print" style="color:#e11d48;">🗑️ حذف</button>
+      </div>
+      <ol style="margin:10px 0 0; padding-inline-start:20px; font-size:12px; color:#475569;">
+        ${w.whys.filter(x=>x).map((x,idx)=>`<li>لماذا ${idx+1}: ${x}</li>`).join('')}
+      </ol>
+    </div>`).join('') || '<p style="color:#94a3b8;">لا توجد تحليلات بعد</p>';
+}
+function addFiveWhys(){
+  const problem = document.getElementById('whyProblem').value.trim();
+  if(!problem) { alert('اكتب وصف المشكلة الأول'); return; }
+  const whys = [1,2,3,4,5].map(n=>document.getElementById('why'+n).value.trim());
+  state.fivewhys.unshift({problem, whys});
+  saveStore(); renderFiveWhys();
+  document.getElementById('whyProblem').value='';
+  [1,2,3,4,5].forEach(n=>document.getElementById('why'+n).value='');
+}
+function deleteFiveWhys(i){ state.fivewhys.splice(i,1); saveStore(); renderFiveWhys(); }
+
+/* ===================== تدقيق 5S ===================== */
+function renderFiveS(){
+  document.getElementById('fiveSTableBody').innerHTML = state.fives.map((f,i)=>{
+    const avg = ((f.s1+f.s2+f.s3+f.s4+f.s5)/5).toFixed(0);
+    return `<tr><td>${f.area}</td><td>${f.s1}</td><td>${f.s2}</td><td>${f.s3}</td><td>${f.s4}</td><td>${f.s5}</td>
+      <td class="font-bold" style="color:${avg>=80?'#059669':avg>=60?'#b45309':'#e11d48'}">${avg}%</td>
+      <td class="no-print"><button onclick="deleteFiveS(${i})" style="color:#e11d48;">🗑️</button></td></tr>`;
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#94a3b8;">لا توجد تدقيقات بعد</td></tr>';
+}
+function addFiveS(){
+  const area = document.getElementById('fiveSArea').value.trim();
+  const vals = [1,2,3,4,5].map(n=>parseInt(document.getElementById('s'+n).value)||0);
+  if(!area){ alert('اكتب اسم المنطقة الأول'); return; }
+  state.fives.unshift({area, s1:vals[0], s2:vals[1], s3:vals[2], s4:vals[3], s5:vals[4]});
+  saveStore(); renderFiveS();
+  document.getElementById('fiveSArea').value='';
+  [1,2,3,4,5].forEach(n=>document.getElementById('s'+n).value='');
+}
+function deleteFiveS(i){ state.fives.splice(i,1); saveStore(); renderFiveS(); }
+
+/* ===================== حاسبة ROI ===================== */
+function calcRoi(){
+  const val = parseFloat(document.getElementById('roiProjectValue').value) || 0;
+  const pct = parseFloat(document.getElementById('roiSavingPct').value) || 0;
+  const saving = val * (pct/100);
+  document.getElementById('roiSavingVal').innerText = '$' + saving.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('roiPctVal').innerText = pct + '%';
+}
+
+/* ===================== التهيئة ===================== */
+renderReports();
+renderPokaYoke();
+renderFmea();
+renderFiveWhys();
+renderFiveS();
+calcRoi();
+lucide.createIcons();
+</script>
+</body>
+</html>
