@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IQAN Initiative | مبادرة إتقان - نظام حوكمة الكفاءات والتدريب</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0f172a; --navy2:#1e293b; --amber:#d97706; --amber2:#f59e0b;
+    --slate-bg:#f5f6f8;
+  }
+  *{ box-sizing:border-box; }
+  body{ font-family:'Cairo', 'Segoe UI', Tahoma, sans-serif; background:var(--slate-bg); margin:0; color:#1e293b; }
+
+  /* ===== Top identity bar ===== */
+  .iqan-top{ background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%); color:#e2e8f0; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; border-bottom:3px solid var(--amber2); }
+  .iqan-top .brand{ display:flex; align-items:center; gap:10px; }
+  .iqan-top .brand .logo{ width:38px; height:38px; border-radius:10px; background:var(--amber2); color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:16px; }
+  .iqan-top .brand h1{ font-size:15px; margin:0; color:#fbbf24; font-weight:800; }
+  .iqan-top .brand p{ font-size:10.5px; margin:0; color:#94a3b8; }
+  .role-select{ background:#0b1120; color:#e2e8f0; border:1px solid #334155; border-radius:8px; padding:6px 10px; font-size:12px; font-family:inherit; }
+
+  /* ===== Nav ===== */
+  .iqan-nav{ position:sticky; top:0; z-index:200; background:#111827; padding:8px 10px; display:flex; gap:6px; overflow-x:auto; white-space:nowrap; border-bottom:1px solid #1e293b; }
+  .iqan-nav::-webkit-scrollbar{ height:4px; }
+  .iqan-btn{ flex:none; background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:999px; padding:7px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .iqan-btn.active{ background:var(--amber2); color:#0f172a; border-color:var(--amber2); }
+  .iqan-tab.hidden{ display:none !important; }
+
+  .print-toolbar{ display:flex; gap:8px; padding:10px 14px; background:#fff; border-bottom:1px solid #e2e8f0; }
+  .print-toolbar button{ font-size:12px; font-weight:700; padding:7px 14px; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#f8fafc; color:#0f172a; font-family:inherit; }
+  .print-toolbar button.pdf-btn{ background:#0f172a; color:#fff; border-color:#0f172a; }
+  @media print{
+    .iqan-nav, .print-toolbar, .iqan-top, .no-print{ display:none !important; }
+    body.printing-one *{ visibility:hidden !important; }
+    body.printing-one .print-active, body.printing-one .print-active *{ visibility:visible !important; }
+    body.printing-one .print-active{ position:absolute; top:0; left:0; width:100%; padding:10px; }
+  }
+
+  .card{ background:#fff; border:1px solid #e2e8f0; border-radius:16px; }
+  .card-dark{ background:var(--navy); border:1px solid #1e293b; border-radius:16px; color:#e2e8f0; }
+  .badge{ display:inline-block; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; }
+  .badge-critical{ background:#fee2e2; color:#991b1b; }
+  .badge-high{ background:#fef3c7; color:#92400e; }
+  .badge-medium{ background:#dbeafe; color:#1e40af; }
+  .badge-continuous{ background:#d1fae5; color:#065f46; }
+  .badge-green{ background:#d1fae5; color:#065f46; }
+  .badge-red{ background:#fee2e2; color:#991b1b; }
+  .badge-amber{ background:#fef3c7; color:#92400e; }
+  .badge-slate{ background:#e2e8f0; color:#334155; }
+
+  .kpi{ background:var(--navy); border-radius:14px; padding:16px; text-align:center; color:#e2e8f0; }
+  .kpi b{ display:block; font-size:26px; color:#34d399; }
+  .kpi.amber b{ color:#fbbf24; }
+  .kpi.red b{ color:#f87171; }
+
+  table.iqan-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.iqan-table th{ background:#0f172a; color:#e2e8f0; padding:9px 8px; text-align:right; }
+  table.iqan-table td{ padding:8px; border-bottom:1px solid #e2e8f0; }
+  table.iqan-table tr:hover td{ background:#f8fafc; }
+
+  input[type=text], input[type=number], input[type=date], select, textarea{
+    width:100%; padding:9px 10px; border:1px solid #cbd5e1; border-radius:9px; font-family:inherit; font-size:13px; background:#fff;
+  }
+  input:focus, select:focus, textarea:focus{ outline:2px solid var(--amber2); outline-offset:1px; border-color:var(--amber2); }
+  label.f-label{ display:block; font-size:12px; color:#64748b; margin-bottom:4px; font-weight:700; }
+  .btn-amber{ background:var(--amber2); color:#0f172a; font-weight:800; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-family:inherit; font-size:13px; }
+  .btn-amber:hover{ background:#ea9a1f; }
+  .btn-dark{ background:#0f172a; color:#fbbf24; font-weight:800; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-family:inherit; font-size:13px; }
+  .btn-dark:hover{ background:#1e293b; }
+  .btn-ghost{ background:#fff; color:#0f172a; font-weight:700; padding:8px 14px; border-radius:9px; border:1px solid #cbd5e1; cursor:pointer; font-family:inherit; font-size:12px; }
+  .btn-danger{ background:#fee2e2; color:#991b1b; font-weight:700; padding:6px 12px; border-radius:8px; border:1px solid #fecaca; cursor:pointer; font-family:inherit; font-size:11px; }
+
+  .section-title{ font-size:17px; font-weight:800; color:#0f172a; margin:0 0 4px; }
+  .section-sub{ font-size:12px; color:#64748b; margin:0 0 16px; }
+  .doc-tag{ font-size:10.5px; background:rgba(217,119,6,.15); color:#fbbf24; border:1px solid rgba(217,119,6,.35); padding:3px 10px; border-radius:999px; font-family:monospace; }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:8px; }
+</style>
+</head>
+<body>
+
+<div class="iqan-top">
+  <div class="brand">
+    <div class="logo">IQ</div>
+    <div>
+      <h1>IQAN INITIATIVE | مبادرة إتقان</h1>
+      <p>Intelligent Qualification &amp; Advancement Network — Digital Black Box Platform</p>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <label style="font-size:11px; color:#94a3b8;">عرض حسب الدور:</label>
+    <select id="roleSelect" class="role-select" onchange="applyRoleView()">
+      <option value="director">مدير المبادرة / الإدارة العليا</option>
+      <option value="supervisor">المدير المباشر / المشرف</option>
+      <option value="trainee">الموظف المتدرب</option>
+    </select>
+  </div>
+</div>
+
+<nav class="iqan-nav" id="iqanNav">
+<button class="iqan-btn active" data-tab="0" onclick="switchTab(0)">🏠 نظرة عامة</button>
+<button class="iqan-btn" data-tab="1" onclick="switchTab(1)" data-roles="director,supervisor,trainee">📝 T-01: التقييم الفردي</button>
+<button class="iqan-btn" data-tab="2" onclick="switchTab(2)" data-roles="director,supervisor">📉 T-02: مصفوفة الفجوات</button>
+<button class="iqan-btn" data-tab="3" onclick="switchTab(3)" data-roles="director,supervisor,trainee">🎯 T-03: تقييم الأثر</button>
+<button class="iqan-btn" data-tab="4" onclick="switchTab(4)" data-roles="director,supervisor">💰 T-04: العائد ROI</button>
+<button class="iqan-btn" data-tab="5" onclick="switchTab(5)" data-roles="director,supervisor">📅 الخطة والميزانية</button>
+<button class="iqan-btn" data-tab="6" onclick="switchTab(6)" data-roles="director,supervisor,trainee">🧭 RACI وأدوات الحوكمة</button>
+<button class="iqan-btn" data-tab="7" onclick="switchTab(7)" data-roles="director,supervisor,trainee">🪪 جواز الكفاءات الرقمي</button>
+<button class="iqan-btn" data-tab="8" onclick="switchTab(8)" data-roles="director,supervisor">✅ الامتثال والالتزامات</button>
+<button class="iqan-btn" data-tab="9" onclick="switchTab(9)" data-roles="director,supervisor">🤖 التوصية الذكية والمساعد</button>
+<button class="iqan-btn" data-tab="10" onclick="switchTab(10)" data-roles="director,supervisor">🗄️ الأرشيف والسجلات</button>
+<button class="iqan-btn" data-tab="11" onclick="switchTab(11)" data-roles="director" style="background:#166534;">📊 لوحة القيادة التنفيذية</button>
+<button class="iqan-btn" data-tab="12" onclick="switchTab(12)" data-roles="director" style="background:#166534;">📋 السجل النهائي الشامل</button>
+</nav>
+
+<main id="iqanMain">
+
+<section id="tab-0" class="iqan-tab">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-0')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-0','IQAN_Overview.pdf')">📄 حفظ PDF</button></div>
+
+<div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 60%,#0f172a 100%); color:#fff; padding:44px 24px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <span class="doc-tag">Training &amp; Development Policy Manual 2026</span>
+    <h1 style="font-size:32px;font-weight:900;margin:14px 0 8px;color:#fff;">من التدريب العشوائي إلى <span style="color:#fbbf24;">الاستثمار الاستراتيجي في الكفاءات</span></h1>
+    <p style="color:#94a3b8;font-size:14px;max-width:680px;line-height:1.9;">مبادرة IQAN هي منظومة حوكمة كفاءات متكاملة تحوّل التدريب من التزام إداري روتيني إلى استثمار محسوب يُقاس أثره بأرقام واضحة عبر أربعة نماذج معتمدة: T-01 إلى T-04.</p>
+    <div style="display:flex; gap:10px; margin-top:22px; flex-wrap:wrap;">
+      <button class="btn-amber" onclick="switchTab(1)">ابدأ تقييم كفاءة (T-01)</button>
+      <button class="btn-ghost" style="background:transparent;color:#e2e8f0;border-color:#334155;" onclick="switchTab(11)">لوحة القيادة التنفيذية</button>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1100px;margin:-28px auto 0;padding:0 20px;">
+  <div id="overviewKpis" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+</div>
+
+<div style="max-width:1100px;margin:28px auto;padding:0 20px;">
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="card p-5">
+      <div class="text-xs font-mono text-amber-600 mb-1">Phase 1</div>
+      <h3 class="font-bold text-slate-800 mb-2">تحليل الاحتياج التدريبي (TNA)</h3>
+      <p class="text-slate-500 text-xs leading-relaxed">استكمال تقييم T-01 لكل موظف، ثم تجميعها في مصفوفة T-02 لتحديد الفجوات وترتيب الأولويات.</p>
+    </div>
+    <div class="card p-5">
+      <div class="text-xs font-mono text-amber-600 mb-1">Phase 2</div>
+      <h3 class="font-bold text-slate-800 mb-2">التخطيط والتنفيذ</h3>
+      <p class="text-slate-500 text-xs leading-relaxed">توزيع الميزانية حسب شدة الفجوة (45% حاسمة، 30% عالية، 25% تطوير مستمر) وجدولة التنفيذ على الأرباع Q1–Q4.</p>
+    </div>
+    <div class="card p-5">
+      <div class="text-xs font-mono text-amber-600 mb-1">Phase 3</div>
+      <h3 class="font-bold text-slate-800 mb-2">تقييم الأثر والعائد</h3>
+      <p class="text-slate-500 text-xs leading-relaxed">تقييم كيركباتريك بأربعة مستويات (T-03) واحتساب العائد المالي على الاستثمار (T-04) بعد 6 أشهر.</p>
+    </div>
+  </div>
+
+  <div class="card p-6 mb-8">
+    <h2 class="section-title">🧭 خريطة الوصول السريع لأدوات الحوكمة</h2>
+    <p class="section-sub">أربعة نماذج معتمدة تغطي دورة حياة التدريب بالكامل</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <button onclick="switchTab(1)" class="text-right p-4 rounded-xl border border-slate-200 hover:border-amber-400 transition">
+        <div class="font-mono text-xs text-amber-600 font-bold mb-1">T-01</div>
+        <div class="font-bold text-sm text-slate-800">التقييم الفردي للكفاءات</div>
+        <div class="text-[11px] text-slate-500 mt-1">قياس كل موظف مقابل 13 كفاءة قياسية</div>
+      </button>
+      <button onclick="switchTab(2)" class="text-right p-4 rounded-xl border border-slate-200 hover:border-amber-400 transition">
+        <div class="font-mono text-xs text-amber-600 font-bold mb-1">T-02</div>
+        <div class="font-bold text-sm text-slate-800">مصفوفة الفجوات المجمعة</div>
+        <div class="text-[11px] text-slate-500 mt-1">تجميع النتائج وتحديد الأولويات تلقائياً</div>
+      </button>
+      <button onclick="switchTab(3)" class="text-right p-4 rounded-xl border border-slate-200 hover:border-amber-400 transition">
+        <div class="font-mono text-xs text-amber-600 font-bold mb-1">T-03</div>
+        <div class="font-bold text-sm text-slate-800">تقييم أثر التدريب (Kirkpatrick)</div>
+        <div class="text-[11px] text-slate-500 mt-1">4 مستويات: رد الفعل، التعلم، السلوك، النتائج</div>
+      </button>
+      <button onclick="switchTab(4)" class="text-right p-4 rounded-xl border border-slate-200 hover:border-amber-400 transition">
+        <div class="font-mono text-xs text-amber-600 font-bold mb-1">T-04</div>
+        <div class="font-bold text-sm text-slate-800">تقرير العائد على الاستثمار</div>
+        <div class="text-[11px] text-slate-500 mt-1">القيمة المالية المتحققة مقابل التكلفة</div>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-dark p-6">
+    <div class="flex items-center justify-between flex-wrap gap-3 border-b border-slate-700 pb-3 mb-3">
+      <h2 class="font-bold text-white">عن مُعِدّ المبادرة</h2>
+      <span class="doc-tag">Digital Black Box Initiative</span>
+    </div>
+    <p class="text-sm text-slate-200 font-bold">م. وائل علي عويس محمود</p>
+    <p class="text-xs text-slate-400 mt-1 leading-relaxed">مدير مبادرة IQAN | مدير مشاريع أول ومهندس مدني بخبرة تتجاوز 16 عاماً في قطاع الإنشاءات والبنية التحتية، خريج جامعة أسيوط 2010، حاصل على شهادة PMP، ويدرس حالياً ماجستير بجامعة Salford بالمملكة المتحدة. يركّز عمله على إدارة العقود الدولية (FIDIC) ودمج الحلول الذكية في إدارة الجودة (QAI).</p>
+    <p class="text-[11px] text-slate-500 mt-3">www.bena-blackbox.com</p>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-1" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-1')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-1','IQAN_T01.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6 flex justify-between items-start flex-wrap gap-4">
+    <div>
+      <span class="doc-tag">DOC-IQAN-T01</span>
+      <h1 class="text-xl font-bold mt-2 text-white">T-01: نموذج التقييم الفردي لكفاءة الموظف</h1>
+      <p class="text-slate-400 text-xs mt-1">قياس كفاءة المهندس / الموظف مقابل 13 معياراً قياسياً وتحديد الفجوات الفردية.</p>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">بيانات الموظف والتقييم</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div><label class="f-label">اسم الموظف</label><input type="text" id="t01_name" placeholder="مثال: أحمد محمد"></div>
+      <div><label class="f-label">المسمى الوظيفي</label><input type="text" id="t01_title" placeholder="مثال: مهندس مدني أول"></div>
+      <div><label class="f-label">القسم / الإدارة</label><input type="text" id="t01_dept" placeholder="مثال: إدارة المشاريع"></div>
+      <div>
+        <label class="f-label">المستوى الوظيفي</label>
+        <select id="t01_level" onchange="renderT01Competencies()">
+          <option value="Senior Mgmt">إدارة عليا (Senior Mgmt.)</option>
+          <option value="Middle Mgmt">إدارة وسطى (Middle Mgmt.)</option>
+          <option value="Engineer" selected>مهندس (Engineer)</option>
+          <option value="Technician">فني (Technician)</option>
+        </select>
+      </div>
+      <div><label class="f-label">تاريخ التقييم</label><input type="date" id="t01_date"></div>
+      <div><label class="f-label">المقيّم / المدير المباشر</label><input type="text" id="t01_assessor" placeholder="اسم المقيّم"></div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex justify-between items-center flex-wrap gap-2 mb-1">
+      <h2 class="section-title" style="margin:0;">تقييم الكفاءات الـ 13</h2>
+      <span class="text-[11px] text-slate-500">مقياس التقييم: 1=معرفة | 2=مبتدئ | 3=ممارس | 4=محترف | 5=خبير/ماستر</span>
+    </div>
+    <p class="section-sub">المستهدف يُحدَّد تلقائياً حسب المستوى الوظيفي المختار أعلاه</p>
+    <div id="t01_competencies_grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <button class="btn-amber" onclick="saveT01()">💾 حفظ تقييم الموظف (T-01)</button>
+    <span id="t01_saveMsg" class="text-emerald-600 text-xs font-bold"></span>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">سجل التقييمات المحفوظة</h2>
+    <p class="section-sub">آخر التقييمات المُدخلة لكل الموظفين</p>
+    <div class="overflow-x-auto"><table class="iqan-table" id="t01_recordsTable">
+      <thead><tr><th>الموظف</th><th>المسمى الوظيفي</th><th>المستوى</th><th>التاريخ</th><th>متوسط الفجوة</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="t01_recordsBody"></tbody>
+    </table></div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-2" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-2')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-2','IQAN_T02.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6 flex justify-between items-start flex-wrap gap-4">
+    <div>
+      <span class="doc-tag">DOC-IQAN-T02</span>
+      <h1 class="text-xl font-bold mt-2 text-white">T-02: مصفوفة تحليل الفجوات المجمعة</h1>
+      <p class="text-slate-400 text-xs mt-1">تجميع تلقائي لكل تقييمات T-01 المحفوظة، واحتساب نسبة العجز وترتيب الأولويات وفق معادلات الدليل.</p>
+    </div>
+    <button class="btn-amber" onclick="renderT02()">🔄 إعادة احتساب المصفوفة</button>
+  </div>
+
+  <div id="t02_empty" class="card p-10 text-center text-slate-400 text-sm">لا توجد تقييمات T-01 محفوظة بعد. أضف تقييمات من تبويب T-01 لعرض المصفوفة هنا.</div>
+
+  <div id="t02_content" class="space-y-6 hidden">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="kpi red"><b id="t02_criticalCount">0</b><span class="text-slate-400 text-xs">كفاءات حاسمة (عجز &gt;50%)</span></div>
+      <div class="kpi amber"><b id="t02_highCount">0</b><span class="text-slate-400 text-xs">كفاءات عالية الأولوية (20–50%)</span></div>
+      <div class="kpi"><b id="t02_standardCount">0</b><span class="text-slate-400 text-xs">كفاءات قياسية (&lt;20%)</span></div>
+      <div class="kpi"><b id="t02_empCount">0</b><span class="text-slate-400 text-xs">إجمالي الموظفين المقيَّمين</span></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-5"><h3 class="font-bold text-sm text-slate-800 mb-3">📈 نسبة العجز مجمعة لكل كفاءة (%)</h3><canvas id="t02_barChart" height="230"></canvas></div>
+      <div class="card p-5"><h3 class="font-bold text-sm text-slate-800 mb-3">🎯 المستهدف مقابل الفعلي (رادار)</h3><canvas id="t02_radarChart" height="230"></canvas></div>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="section-title">جدول تحليل الفجوات وترتيب الأولويات</h2>
+      <div class="overflow-x-auto"><table class="iqan-table">
+        <thead><tr><th>#</th><th>الكفاءة</th><th>الفئة</th><th>متوسط المستهدف</th><th>متوسط الفعلي</th><th>الفجوة</th><th>نسبة العجز</th><th>الأولوية</th></tr></thead>
+        <tbody id="t02_tableBody"></tbody>
+      </table></div>
+    </div>
+
+    <div class="card-dark p-6">
+      <h2 class="font-bold text-white mb-1">💰 التوزيع الآلي للميزانية حسب الأولوية</h2>
+      <p class="text-slate-400 text-xs mb-4">أدخل إجمالي الميزانية السنوية المخصصة للتدريب ليُوزَّع تلقائياً وفق نسب السياسة (45% حاسمة / 30% عالية / 25% تطوير مستمر)</p>
+      <div class="flex gap-3 flex-wrap items-end mb-4">
+        <div style="max-width:260px;">
+          <label class="f-label" style="color:#94a3b8;">إجمالي الميزانية السنوية (EGP)</label>
+          <input type="number" id="t02_totalBudget" value="500000" oninput="renderBudgetSplit()">
+        </div>
+        <button class="btn-amber" onclick="renderBudgetSplit()">توزيع الميزانية</button>
+      </div>
+      <div id="t02_budgetSplit" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-3" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-3')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-3','IQAN_T03.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">DOC-IQAN-T03</span>
+    <h1 class="text-xl font-bold mt-2 text-white">T-03: تقييم أثر التدريب الميداني (Kirkpatrick 4 Levels)</h1>
+    <p class="text-slate-400 text-xs mt-1">تقييم فعالية التدريب عبر أربعة مستويات زمنية متتابعة من نهاية البرنامج وحتى 6 أشهر بعده.</p>
+  </div>
+
+  <div class="card p-6 space-y-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div><label class="f-label">اسم البرنامج التدريبي</label><input type="text" id="t03_prog" placeholder="مثال: عقود FIDIC وإدارة المطالبات"></div>
+      <div><label class="f-label">اسم المتدرب</label><input type="text" id="t03_trainee" placeholder="اسم الموظف"></div>
+      <div><label class="f-label">القسم</label><input type="text" id="t03_dept" placeholder="القسم / الإدارة"></div>
+      <div><label class="f-label">تاريخ انتهاء التدريب</label><input type="date" id="t03_date"></div>
+    </div>
+
+    <div class="border-t border-slate-100 pt-4">
+      <h3 class="font-bold text-sm text-slate-800 mb-2">1️⃣ المستوى الأول — رد الفعل <span class="text-[11px] text-slate-400 font-normal">(فوراً بعد التدريب | المقيّم: المتدرب)</span></h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><label class="f-label">مدى ملاءمة المحتوى للعمل</label>
+          <select id="t03_relevance"><option>غير ملائم</option><option>مقبول</option><option selected>جيد</option><option>ممتاز</option></select>
+        </div>
+        <div><label class="f-label">الرضا العام عن طريقة التقديم</label>
+          <select id="t03_satisfaction"><option>ضعيف</option><option>متوسط</option><option selected>جيد</option><option>ممتاز</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-100 pt-4">
+      <h3 class="font-bold text-sm text-slate-800 mb-2">2️⃣ المستوى الثاني — التعلم <span class="text-[11px] text-slate-400 font-normal">(فوراً بعد التدريب | المقيّم: منسق التدريب)</span></h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><label class="f-label">درجة الاختبار القبلية (%)</label><input type="number" id="t03_pre" min="0" max="100" value="45" oninput="updateT03Improvement()"></div>
+        <div><label class="f-label">درجة الاختبار البعدية (%)</label><input type="number" id="t03_post" min="0" max="100" value="85" oninput="updateT03Improvement()"></div>
+      </div>
+      <p class="text-xs mt-2">معدل تحسن المعرفة: <b id="t03_improvement" class="text-emerald-600">+40%</b></p>
+    </div>
+
+    <div class="border-t border-slate-100 pt-4">
+      <h3 class="font-bold text-sm text-slate-800 mb-2">3️⃣ المستوى الثالث — السلوك الميداني <span class="text-[11px] text-slate-400 font-normal">(بعد 3 أشهر | المقيّم: المدير المباشر)</span></h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><label class="f-label">تطبيق المهارات في الموقع</label>
+          <select id="t03_behavior"><option>نعم، بشكل مستمر</option><option>جزئياً</option><option selected>لم يُلاحَظ بعد</option></select>
+        </div>
+        <div><label class="f-label">الجاهزية لقيادة الصف الثاني</label>
+          <select id="t03_leadership"><option>مؤكدة</option><option>قيد التطور</option><option selected>ليست بعد</option></select>
+        </div>
+      </div>
+      <div class="mt-3"><label class="f-label">معوقات ميدانية تمنع التطبيق (إن وجدت)</label><textarea id="t03_barriers" rows="2" placeholder="مثال: نقص أدوات، ضغط الجدول الزمني..."></textarea></div>
+    </div>
+
+    <div class="border-t border-slate-100 pt-4">
+      <h3 class="font-bold text-sm text-slate-800 mb-2">4️⃣ المستوى الرابع — النتائج <span class="text-[11px] text-slate-400 font-normal">(بعد 6 أشهر | المقيّم: مدير القسم + HR)</span></h3>
+      <div><label class="f-label">القيمة/الوفر المالي التقديري المضاف للمشروع (EGP)</label><input type="number" id="t03_value" min="0" value="50000"></div>
+      <div class="mt-3"><label class="f-label">نتائج محددة تحققت</label><textarea id="t03_results" rows="2" placeholder="وصف مختصر للنتيجة الملموسة"></textarea></div>
+    </div>
+
+    <div class="flex items-center justify-between pt-2">
+      <button class="btn-amber" onclick="saveT03()">💾 حفظ تقييم أثر التدريب (T-03)</button>
+      <span id="t03_saveMsg" class="text-emerald-600 text-xs font-bold"></span>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">سجل تقييمات الأثر المحفوظة</h2>
+    <div class="overflow-x-auto"><table class="iqan-table">
+      <thead><tr><th>البرنامج</th><th>المتدرب</th><th>تحسن المعرفة</th><th>السلوك الميداني</th><th>القيمة المضافة</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="t03_recordsBody"></tbody>
+    </table></div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-4" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-4')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-4','IQAN_T04.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">DOC-IQAN-T04</span>
+    <h1 class="text-xl font-bold mt-2 text-white">T-04: تقرير العائد المالي على الاستثمار التدريبي (ROI)</h1>
+    <p class="text-slate-400 text-xs mt-1">احتساب القيمة المالية المحققة مقابل تكلفة البرنامج التدريبي — ROI% = ((B − A) ÷ A) × 100</p>
+  </div>
+
+  <div class="card p-6 space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div><label class="f-label">اسم البرنامج التدريبي</label><input type="text" id="t04_prog" placeholder="مثال: برنامج QAI للذكاء الاصطناعي"></div>
+      <div><label class="f-label">عدد المشاركين</label><input type="number" id="t04_participants" value="5" min="1"></div>
+      <div><label class="f-label">العملة</label>
+        <select id="t04_currency"><option value="EGP" selected>جنيه مصري (EGP)</option><option value="USD">دولار أمريكي (USD)</option></select>
+      </div>
+    </div>
+    <div><label class="f-label">إجمالي التكلفة الاستثمارية (رسوم + وقت + مواد) — [A]</label><input type="number" id="t04_cost" value="30000" min="0" oninput="calcT04Live()"></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div><label class="f-label">تخفيض غرامات التأخير (FIDIC)</label><input type="number" id="t04_delay" value="40000" min="0" oninput="calcT04Live()"></div>
+      <div><label class="f-label">تقليل أخطاء إعادة العمل (QA/QC)</label><input type="number" id="t04_rework" value="25000" min="0" oninput="calcT04Live()"></div>
+      <div><label class="f-label">توفير إنتاجية الذكاء الاصطناعي</label><input type="number" id="t04_ai" value="15000" min="0" oninput="calcT04Live()"></div>
+    </div>
+    <div><label class="f-label">الأصول والمنافع غير الملموسة</label><textarea id="t04_intangible" rows="2">تحسين سمعة الفريق، تقليل النزاعات التعاقدية، وزيادة ولاء الموظفين.</textarea></div>
+
+    <div class="card-dark p-5" id="t04_liveResult">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+        <div><div class="text-xs text-slate-400">إجمالي الفوائد (B)</div><div class="text-xl font-bold text-emerald-400" id="t04_totalBenefits">0</div></div>
+        <div><div class="text-xs text-slate-400">صافي الفائدة (B−A)</div><div class="text-xl font-bold text-amber-400" id="t04_netBenefit">0</div></div>
+        <div><div class="text-xs text-slate-400">نسبة العائد ROI%</div><div class="text-2xl font-bold text-white" id="t04_roiPct">0%</div></div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between pt-2">
+      <button class="btn-amber" onclick="saveT04()">🧮 احتساب وحفظ العائد المالي (ROI)</button>
+      <span id="t04_saveMsg" class="text-emerald-600 text-xs font-bold"></span>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">🔮 محاكي السيناريوهات التقديرية (Predictive ROI Simulator)</h2>
+    <p class="section-sub">جرّب سيناريو افتراضي قبل اعتماد الميزانية الفعلية — لا يتم حفظه ضمن السجلات</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div><label class="f-label">التكلفة الافتراضية</label><input type="number" id="sim_cost" value="50000" oninput="runSimulator()"></div>
+      <div><label class="f-label">نسبة خفض متوقعة في الغرامات/الأخطاء</label><input type="number" id="sim_pct" value="20" oninput="runSimulator()">%</div>
+      <div><label class="f-label">القاعدة الحالية للغرامات/الأخطاء سنوياً</label><input type="number" id="sim_base" value="300000" oninput="runSimulator()"></div>
+    </div>
+    <p class="text-sm mt-3">العائد المتوقع لهذا السيناريو: <b id="sim_result" class="text-emerald-600 text-lg">0%</b></p>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">سجل تقارير العائد على الاستثمار</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <canvas id="t04_trendChart" height="200"></canvas>
+      <div class="overflow-x-auto"><table class="iqan-table">
+        <thead><tr><th>البرنامج</th><th>التكلفة</th><th>الفوائد</th><th>ROI%</th><th class="no-print">إجراء</th></tr></thead>
+        <tbody id="t04_recordsBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-5" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-5')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-5','IQAN_Plan_Budget.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Annual Training Plan 2026</span>
+    <h1 class="text-xl font-bold mt-2 text-white">📅 الخطة السنوية للتدريب والميزانية</h1>
+    <p class="text-slate-400 text-xs mt-1">توزيع البرامج المعتمدة على الأرباع السنوية Q1–Q4، مع تتبع حالة كل برنامج ونسبة الحضور المطلوبة (90%).</p>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">جدول الخطة السنوية المعتمدة</h2>
+    <div class="overflow-x-auto"><table class="iqan-table">
+      <thead><tr><th>الربع</th><th>البرنامج</th><th>الكفاءة المستهدفة</th><th>الجهة</th><th>النمط</th><th>الميزانية %</th><th>الأولوية</th><th>الحالة</th></tr></thead>
+      <tbody id="plan_tableBody"></tbody>
+    </table></div>
+  </div>
+
+  <div class="card-dark p-6">
+    <h2 class="font-bold text-white mb-1">💰 حاسبة توزيع الميزانية السنوية</h2>
+    <p class="text-slate-400 text-xs mb-4">أدخل الميزانية الإجمالية ليُطبَّق التوزيع المعتمد بالسياسة تلقائياً</p>
+    <div class="flex gap-3 items-end flex-wrap mb-4">
+      <div style="max-width:260px;"><label class="f-label" style="color:#94a3b8;">الميزانية الإجمالية (EGP)</label><input type="number" id="plan_totalBudget" value="500000" oninput="renderPlanBudget()"></div>
+    </div>
+    <div id="plan_budgetSplit" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">📊 مؤشر الحضور والالتزام (الحد الأدنى 90%)</h2>
+    <p class="section-sub">أضف سجل حضور لكل موظف/برنامج لمتابعة الالتزام بالسياسة</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+      <input type="text" id="att_name" placeholder="اسم الموظف">
+      <input type="text" id="att_prog" placeholder="اسم البرنامج">
+      <input type="number" id="att_total" placeholder="إجمالي الجلسات" value="10">
+      <input type="number" id="att_attended" placeholder="عدد الجلسات الحاضرة" value="9">
+    </div>
+    <button class="btn-ghost mb-4" onclick="addAttendance()">+ إضافة سجل حضور</button>
+    <div class="overflow-x-auto"><table class="iqan-table">
+      <thead><tr><th>الموظف</th><th>البرنامج</th><th>نسبة الحضور</th><th>الحالة</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="att_tableBody"></tbody>
+    </table></div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-6" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-6')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-6','IQAN_RACI.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Governance Tools</span>
+    <h1 class="text-xl font-bold mt-2 text-white">🧭 مصفوفة الأدوار (RACI) وأدوات الحوكمة المعتمدة</h1>
+    <p class="text-slate-400 text-xs mt-1">توزيع المسؤوليات بين الموظف، المشرف المباشر، مدير المبادرة، والإدارة العليا.</p>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">مصفوفة RACI</h2>
+    <div class="overflow-x-auto"><table class="iqan-table">
+      <thead><tr><th>المهمة / النموذج</th><th>الموظف المتدرب</th><th>المشرف المباشر</th><th>مدير المبادرة</th><th>الإدارة العليا / HR</th></tr></thead>
+      <tbody>
+        <tr><td class="font-bold">استكمال التقييم الذاتي (T-01)</td><td><span class="badge badge-red">R</span></td><td><span class="badge badge-slate">I</span></td><td><span class="badge badge-slate">I</span></td><td><span class="badge badge-slate">I</span></td></tr>
+        <tr><td class="font-bold">اعتماد مصفوفة الفجوات (T-02)</td><td><span class="badge badge-slate">I</span></td><td><span class="badge badge-amber">C</span></td><td><span class="badge badge-green">A/R</span></td><td><span class="badge badge-amber">C</span></td></tr>
+        <tr><td class="font-bold">تقييم رد الفعل L1 (T-03)</td><td><span class="badge badge-red">R</span></td><td><span class="badge badge-slate">I</span></td><td><span class="badge badge-slate">I</span></td><td><span class="badge badge-slate">-</span></td></tr>
+        <tr><td class="font-bold">تقييم السلوك الميداني L3 (T-03)</td><td><span class="badge badge-slate">I</span></td><td><span class="badge badge-red">R</span></td><td><span class="badge badge-amber">C</span></td><td><span class="badge badge-slate">I</span></td></tr>
+        <tr><td class="font-bold">اعتماد ميزانية التدريب (T-04)</td><td><span class="badge badge-slate">-</span></td><td><span class="badge badge-amber">C</span></td><td><span class="badge badge-green">A/R</span></td><td><span class="badge badge-green">A</span></td></tr>
+        <tr><td class="font-bold">تقييم واختيار جهات التدريب</td><td><span class="badge badge-slate">-</span></td><td><span class="badge badge-slate">I</span></td><td><span class="badge badge-green">A</span></td><td><span class="badge badge-amber">C</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="text-[11px] text-slate-500 mt-3">R = المسؤول عن التنفيذ · A = المعتمد النهائي · C = الاستشاري · I = المُطّلع</p>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">أدوات الحوكمة المعتمدة (T-01 → T-04)</h2>
+    <div class="overflow-x-auto"><table class="iqan-table">
+      <thead><tr><th>الأداة</th><th>الغرض</th></tr></thead>
+      <tbody>
+        <tr><td class="font-bold font-mono">T-01</td><td>نموذج التقييم الفردي — قياس كفاءة كل موظف مقابل 13 معياراً قياسياً</td></tr>
+        <tr><td class="font-bold font-mono">T-02</td><td>مصفوفة الفجوات المجمعة — تجميع الفجوات على مستوى المجموعة وترتيب أولويات الاستثمار</td></tr>
+        <tr><td class="font-bold font-mono">T-03</td><td>نموذج تقييم أثر التدريب — قياس فعالية التدريب عبر مستويات كيركباتريك الأربعة</td></tr>
+        <tr><td class="font-bold font-mono">T-04</td><td>تقرير العائد على الاستثمار — احتساب العائد المالي والمنافع غير الملموسة للتدريب</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">مصفوفة اختيار نمط التدريب الأمثل</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-xl border border-slate-200"><div class="font-bold text-sm mb-1">🌐 خارجي معتمد</div><p class="text-xs text-slate-500">للمواضيع التعاقدية والشهادات المعتمدة: FIDIC، QAI، PMP.</p></div>
+      <div class="p-4 rounded-xl border border-slate-200"><div class="font-bold text-sm mb-1">🏗️ داخلي/بالموقع</div><p class="text-xs text-slate-500">للمواضيع التطبيقية الميدانية: BIM، إجراءات الموقع — لتعظيم كفاءة التكلفة.</p></div>
+      <div class="p-4 rounded-xl border border-slate-200"><div class="font-bold text-sm mb-1">💻 تعلّم ذاتي</div><p class="text-xs text-slate-500">للتطوير المستمر عبر منصات مثل Coursera وLinkedIn Learning.</p></div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">📜 التزامات المتدرب والشركة</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <h3 class="font-bold text-sm mb-2 text-amber-700">التزامات المتدرب</h3>
+        <ul class="text-xs text-slate-600 space-y-2 list-disc pr-4">
+          <li>الحفاظ على نسبة حضور 90% كحد أدنى في كل الجلسات.</li>
+          <li>تسليم تقرير نقل المعرفة خلال 14 يوماً من انتهاء البرنامج.</li>
+          <li>تطبيق الكفاءات المكتسبة في المشاريع بتوجيه الإدارة المباشرة.</li>
+          <li>توقيع اتفاقية الالتزام بالخدمة لفترة محددة بعد التدريب.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-sm mb-2 text-amber-700">التزامات الشركة</h3>
+        <ul class="text-xs text-slate-600 space-y-2 list-disc pr-4">
+          <li>توفير برامج معتمدة وملائمة للدور الوظيفي.</li>
+          <li>إتاحة وقت كافٍ للمشاركة دون التأثير على مؤشرات الأداء التشغيلية.</li>
+          <li>مراجعة وتحديث أولويات التدريب سنوياً بناءً على نتائج تحليل الفجوات.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-7" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-7')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-7','IQAN_Passport.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Digital Competency Passport</span>
+    <h1 class="text-xl font-bold mt-2 text-white">🪪 جواز السفر الرقمي للكفاءات</h1>
+    <p class="text-slate-400 text-xs mt-1">سجل مهارات كل موظف عبر الزمن: التقييمات، الدورات، الشارات الرقمية، ونسب التطور.</p>
+  </div>
+
+  <div class="card p-6">
+    <label class="f-label">اختر الموظف</label>
+    <select id="passport_select" onchange="renderPassport()"><option value="">-- اختر موظفاً --</option></select>
+  </div>
+
+  <div id="passport_content" class="space-y-6 hidden">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="kpi"><b id="pp_avgActual">0</b><span class="text-slate-400 text-xs">متوسط المستوى الحالي (من 5)</span></div>
+      <div class="kpi amber"><b id="pp_assessCount">0</b><span class="text-slate-400 text-xs">عدد التقييمات المسجّلة</span></div>
+      <div class="kpi"><b id="pp_badgeCount">0</b><span class="text-slate-400 text-xs">الشارات الرقمية المكتسبة</span></div>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="font-bold text-sm text-slate-800 mb-3">🏅 الشارات الرقمية (Digital Badges)</h3>
+      <div id="pp_badges" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="font-bold text-sm text-slate-800 mb-3">📈 تطور الكفاءات عبر آخر تقييم</h3>
+      <div class="overflow-x-auto"><table class="iqan-table">
+        <thead><tr><th>الكفاءة</th><th>المستهدف</th><th>الفعلي</th><th>الفجوة</th></tr></thead>
+        <tbody id="pp_scoresBody"></tbody>
+      </table></div>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="font-bold text-sm text-slate-800 mb-3">🎯 برامج تدريبية تم تقييم أثرها (T-03)</h3>
+      <div class="overflow-x-auto"><table class="iqan-table">
+        <thead><tr><th>البرنامج</th><th>التاريخ</th><th>السلوك الميداني</th><th>الجاهزية القيادية</th></tr></thead>
+        <tbody id="pp_evalsBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-8" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-8')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-8','IQAN_Compliance.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Compliance &amp; Governance</span>
+    <h1 class="text-xl font-bold mt-2 text-white">✅ لوحة الامتثال والالتزامات التشغيلية</h1>
+    <p class="text-slate-400 text-xs mt-1">متابعة نسبة الحضور، تقارير نقل المعرفة، واتفاقيات الالتزام بالخدمة وفق الدليل التشغيلي.</p>
+  </div>
+
+  <div id="compliance_kpis" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+
+  <div class="card p-6">
+    <h2 class="section-title">📄 متابعة تقرير نقل المعرفة (خلال 14 يوماً)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+      <input type="text" id="kn_name" placeholder="اسم الموظف">
+      <input type="text" id="kn_prog" placeholder="اسم البرنامج">
+      <div><label class="f-label">تاريخ انتهاء التدريب</label><input type="date" id="kn_end"></div>
+      <div><label class="f-label">تاريخ تسليم التقرير (إن تم)</label><input type="date" id="kn_submit"></div>
+    </div>
+    <button class="btn-ghost mb-4" onclick="addKnowledge()">+ إضافة سجل</button>
+    <div class="overflow-x-auto"><table class="iqan-table">
+      <thead><tr><th>الموظف</th><th>البرنامج</th><th>الموعد النهائي (+14 يوم)</th><th>تاريخ التسليم</th><th>الحالة</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="kn_tableBody"></tbody>
+    </table></div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">📝 متابعة اتفاقية الالتزام بالخدمة (Retention Agreement)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+      <input type="text" id="rt_name" placeholder="اسم الموظف">
+      <input type="text" id="rt_prog" placeholder="اسم البرنامج">
+      <div><label class="f-label">تاريخ انتهاء التدريب</label><input type="date" id="rt_end"></div>
+      <div><label class="f-label">مدة الالتزام (أشهر)</label><input type="number" id="rt_months" value="12" min="1"></div>
+    </div>
+    <button class="btn-ghost mb-4" onclick="addRetention()">+ إضافة اتفاقية</button>
+    <div class="overflow-x-auto"><table class="iqan-table">
+      <thead><tr><th>الموظف</th><th>البرنامج</th><th>نهاية الالتزام</th><th>الحالة</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="rt_tableBody"></tbody>
+    </table></div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">📊 مؤشر جاهزية التدقيق الداخلي/الخارجي (Audit Readiness)</h2>
+    <p class="section-sub">نسبة جاهزية توثيق المبادرة لأعمال التدقيق الفني أو تدقيق الجودة ISO 9001</p>
+    <div class="flex items-center gap-6 flex-wrap">
+      <div style="width:140px;height:140px;border-radius:50%;background:conic-gradient(#10b981 calc(var(--p,0)*1%), #e2e8f0 0); display:flex; align-items:center; justify-content:center;" id="audit_gauge">
+        <div style="width:104px;height:104px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#0f172a;" id="audit_gaugeText">0%</div>
+      </div>
+      <ul class="text-xs text-slate-600 space-y-1" id="audit_checklist"></ul>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-9" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-9')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-9','IQAN_Recommender.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Smart Training Recommender</span>
+    <h1 class="text-xl font-bold mt-2 text-white">🤖 مركز التوصيات الذكية ومساعد السياسات</h1>
+    <p class="text-slate-400 text-xs mt-1">ترشيح آلي للدورات بناءً على مصفوفة الفجوات T-02، ومساعد يجيب على أسئلتك حول بنود الدليل.</p>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">🎯 الدورات المُرشَّحة لسد الفجوات الحالية</h2>
+    <p class="section-sub">مبنية تلقائياً على نتائج مصفوفة T-02 — الكفاءات ذات نسبة عجز أعلى من 20%</p>
+    <div id="reco_empty" class="text-center text-slate-400 text-sm py-8">لا توجد بيانات فجوات كافية بعد. أضف تقييمات T-01 أولاً.</div>
+    <div class="overflow-x-auto"><table class="iqan-table hidden" id="reco_table">
+      <thead><tr><th>الكفاءة</th><th>نسبة العجز</th><th>الدورة المُقترحة</th><th>نمط التقديم المناسب</th></tr></thead>
+      <tbody id="reco_tableBody"></tbody>
+    </table></div>
+  </div>
+
+  <div class="card-dark p-6">
+    <h2 class="font-bold text-white mb-1">💬 مساعد IQAN للسياسات (Policy Assistant)</h2>
+    <p class="text-slate-400 text-xs mb-4">اسأل عن نِسَب الميزانية، الحضور، مواعيد التقارير، أو طريقة تعبئة النماذج T-01 إلى T-04</p>
+    <div class="flex gap-2 mb-3">
+      <input type="text" id="assistant_q" placeholder="مثال: ما هي نسبة الحضور المطلوبة؟" onkeydown="if(event.key==='Enter') askAssistant();">
+      <button class="btn-amber" style="white-space:nowrap;" onclick="askAssistant()">اسأل</button>
+    </div>
+    <div id="assistant_answer" class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm text-slate-200 min-h-[60px]">اكتب سؤالك أعلاه وسيجيبك المساعد بناءً على بنود دليل السياسة المعتمد.</div>
+    <div class="flex flex-wrap gap-2 mt-3">
+      <button class="btn-ghost" style="background:#1e293b;color:#cbd5e1;border-color:#334155;" onclick="quickAsk('ما هي نسبة الحضور المطلوبة؟')">نسبة الحضور؟</button>
+      <button class="btn-ghost" style="background:#1e293b;color:#cbd5e1;border-color:#334155;" onclick="quickAsk('كم يوم لتسليم تقرير نقل المعرفة؟')">موعد تقرير المعرفة؟</button>
+      <button class="btn-ghost" style="background:#1e293b;color:#cbd5e1;border-color:#334155;" onclick="quickAsk('كيف توزع الميزانية؟')">توزيع الميزانية؟</button>
+      <button class="btn-ghost" style="background:#1e293b;color:#cbd5e1;border-color:#334155;" onclick="quickAsk('كيف تحسب نسبة العجز؟')">معادلة العجز؟</button>
+      <button class="btn-ghost" style="background:#1e293b;color:#cbd5e1;border-color:#334155;" onclick="quickAsk('كيف تحسب العائد على الاستثمار؟')">معادلة ROI؟</button>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-10" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-10')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-10','IQAN_Archive.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6 flex justify-between items-start flex-wrap gap-3">
+    <div>
+      <span class="doc-tag">Historical Governance Archive</span>
+      <h1 class="text-xl font-bold mt-2 text-white">🗄️ الأرشيف الرقمي الشامل للسجلات</h1>
+      <p class="text-slate-400 text-xs mt-1">جميع النماذج المحفوظة (T-01 إلى T-04) في قاعدة بيانات واحدة سهلة البحث والمراجعة.</p>
+    </div>
+    <input type="text" id="archive_search" placeholder="🔍 بحث بالاسم أو البرنامج..." style="max-width:240px;" oninput="renderArchive()">
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">تقييمات T-01</h2>
+    <div class="overflow-x-auto"><table class="iqan-table"><thead><tr><th>الموظف</th><th>المسمى</th><th>التاريخ</th><th class="no-print">حذف</th></tr></thead><tbody id="arch_t01Body"></tbody></table></div>
+  </div>
+  <div class="card p-6">
+    <h2 class="section-title">تقييمات الأثر T-03</h2>
+    <div class="overflow-x-auto"><table class="iqan-table"><thead><tr><th>البرنامج</th><th>المتدرب</th><th>التاريخ</th><th class="no-print">حذف</th></tr></thead><tbody id="arch_t03Body"></tbody></table></div>
+  </div>
+  <div class="card p-6">
+    <h2 class="section-title">تقارير العائد T-04</h2>
+    <div class="overflow-x-auto"><table class="iqan-table"><thead><tr><th>البرنامج</th><th>ROI%</th><th>التاريخ</th><th class="no-print">حذف</th></tr></thead><tbody id="arch_t04Body"></tbody></table></div>
+  </div>
+
+  <div class="card p-6 flex items-center justify-between flex-wrap gap-3">
+    <div>
+      <h2 class="section-title" style="margin:0;">تصدير كل البيانات</h2>
+      <p class="section-sub" style="margin:0;">نسخة احتياطية كاملة بصيغة JSON لكل سجلات النظام</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn-dark" onclick="exportAllJson()">⬇️ تصدير JSON</button>
+      <button class="btn-ghost" onclick="document.getElementById('importFile').click()">⬆️ استيراد نسخة</button>
+      <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importAllJson(event)">
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-11" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-11')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-11','IQAN_Executive_Dashboard.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Executive Reporting</span>
+    <h1 class="text-xl font-bold mt-2 text-white">📊 لوحة القيادة التنفيذية لمبادرة IQAN</h1>
+    <p class="text-slate-400 text-xs mt-1">نظرة شاملة لحظية على أداء المبادرة لعرضها في اجتماعات الإدارة العليا أو المستثمرين.</p>
+  </div>
+
+  <div id="exec_kpis" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="card p-5"><h3 class="font-bold text-sm text-slate-800 mb-3">🏆 قائمة المتصدرين في تطور الكفاءات</h3><div id="exec_leaderboard" class="space-y-2"></div></div>
+    <div class="card p-5"><h3 class="font-bold text-sm text-slate-800 mb-3">💰 اتجاه العائد على الاستثمار عبر البرامج</h3><canvas id="exec_roiChart" height="220"></canvas></div>
+  </div>
+
+  <div class="card p-5">
+    <h3 class="font-bold text-sm text-slate-800 mb-3">🧩 توزيع الميزانية الحرجة مقابل الفعلي المخطط</h3>
+    <canvas id="exec_budgetChart" height="200"></canvas>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-12" class="iqan-tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('finalReportArea')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('finalReportArea','IQAN_Final_Comprehensive_Report.pdf')">📄 حفظ PDF شامل</button></div>
+
+<div id="finalReportArea" class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6 flex justify-between items-center flex-wrap gap-4">
+    <div>
+      <span class="doc-tag">IQAN-2026-FULL — FINAL RECORD</span>
+      <h1 class="text-xl font-bold mt-2 text-white">📋 السجل النهائي الشامل لمبادرة IQAN</h1>
+      <p class="text-slate-400 text-xs mt-1">تقرير موحّد يجمع كل البيانات والنماذج المحفوظة في النظام، جاهز للطباعة أو الحفظ كملف PDF واحد.</p>
+    </div>
+    <button class="btn-amber no-print" onclick="generateFinalReport()">🧾 توليد / تحديث السجل النهائي</button>
+  </div>
+
+  <div class="card p-6 text-center text-xs text-slate-400">
+    <p><strong>IQAN INITIATIVE</strong> | Intelligent Qualification &amp; Advancement Network</p>
+    <p>مدير المبادرة: م. وائل علي عويس محمود | مدير مشاريع أول ومهندس مدني</p>
+    <p>www.bena-blackbox.com | Digital Black Box Initiative © 2026</p>
+    <p class="mt-2">تاريخ توليد التقرير: <span id="finalReportDate">—</span></p>
+  </div>
+
+  <div id="finalReportBody"><p class="text-center text-slate-400 py-10">اضغط "توليد / تحديث السجل النهائي" أعلاه لتجميع أحدث بيانات النظام.</p></div>
+
+</div>
+</section>
+
+</main>
+
+<script>
+/* =========================================================
+   IQAN INITIATIVE — بيانات ثابتة (Competencies / Plan / Recommender)
+   ========================================================= */
+const COMPETENCIES = [
+  {id:1,  name:"Financial Management",              nameAr:"الإدارة المالية",                     category:"Critical",   target:5, course:"دورة الإدارة المالية للمشاريع الهندسية", mode:"خارجي معتمد"},
+  {id:2,  name:"Technical Documentation",           nameAr:"التوثيق الفني",                       category:"Critical",   target:5, course:"دورة التوثيق الفني والمعايير الهندسية",  mode:"داخلي"},
+  {id:3,  name:"Quality Management & Standards",    nameAr:"إدارة الجودة والمعايير",              category:"Critical",   target:5, course:"ISO 9001 / QAI للجودة الذكية",           mode:"خارجي معتمد"},
+  {id:4,  name:"Risk Management",                   nameAr:"إدارة المخاطر",                       category:"Critical",   target:5, course:"دورة إدارة المخاطر التعاقدية والتشغيلية", mode:"خارجي معتمد"},
+  {id:5,  name:"Digital Transformation (AI/QAI)",   nameAr:"التحول الرقمي (AI/QAI)",              category:"High",       target:5, course:"الذكاء الاصطناعي في إدارة الجودة QAI",    mode:"خارجي معتمد"},
+  {id:6,  name:"FIDIC Contracts & Administration",  nameAr:"عقود الفيديك وإدارتها",               category:"High",       target:5, course:"عقود الفيديك FIDIC وإدارة المطالبات",     mode:"خارجي معتمد"},
+  {id:7,  name:"Cost Control & Estimation",         nameAr:"التحكم بالتكاليف والتقدير",          category:"High",       target:5, course:"التحكم في التكاليف والتقدير السعري",     mode:"خارجي معتمد"},
+  {id:8,  name:"Contract Language Proficiency",     nameAr:"اللغة والصياغة التعاقدية",           category:"High",       target:5, course:"اللغة التعاقدية والترجمة الفنية",         mode:"أونلاين/هجين"},
+  {id:9,  name:"Digital Tools (BIM/Software)",      nameAr:"الأدوات الرقمية (BIM/برمجيات)",       category:"Medium",     target:4, course:"BIM / Revit / Navisworks",                mode:"داخلي"},
+  {id:10, name:"Planning & Scheduling",             nameAr:"التخطيط والجدولة الزمنية",           category:"Medium",     target:4, course:"التخطيط والجدولة باستخدام Primavera P6",  mode:"داخلي"},
+  {id:11, name:"Communication & Reporting",         nameAr:"التواصل وإعداد التقارير",            category:"Medium",     target:3, course:"مهارات التواصل والتقارير الاحترافية",    mode:"ورشة عمل"},
+  {id:12, name:"Leadership & Team Building",        nameAr:"القيادة وبناء الفريق",                category:"Medium",     target:4, course:"القيادة وبناء الفريق الهندسي",           mode:"ورشة عمل"},
+  {id:13, name:"AI Applications in Construction",   nameAr:"تطبيقات الذكاء الاصطناعي بالإنشاءات", category:"Continuous", target:4, course:"تطبيقات الذكاء الاصطناعي في الإنشاءات",   mode:"تعلّم ذاتي"}
+];
+
+const CATEGORY_LABEL = {Critical:"حاسمة", High:"عالية", Medium:"متوسطة", Continuous:"مستمرة"};
+const CATEGORY_BADGE  = {Critical:"badge-critical", High:"badge-high", Medium:"badge-medium", Continuous:"badge-continuous"};
+const LEVEL_ADJUST = {"Senior Mgmt":0, "Middle Mgmt":0, "Engineer":1, "Technician":2};
+const LEVEL_LABEL_AR = {"Senior Mgmt":"إدارة عليا","Middle Mgmt":"إدارة وسطى","Engineer":"مهندس","Technician":"فني"};
+
+const ANNUAL_PLAN = [
+  {q:"Q1", course:"FIDIC Contracts & Administration", comp:"عقود الفيديك", provider:"جهة خارجية معتمدة", mode:"ورشة عمل", budget:"25%", priority:"CRITICAL"},
+  {q:"Q1", course:"AI & Quality Management (QAI)", comp:"الذكاء الاصطناعي / الجودة", provider:"جهة خارجية معتمدة", mode:"تطبيقي", budget:"20%", priority:"CRITICAL"},
+  {q:"Q2", course:"Contract Language & Technical Writing", comp:"اللغة التعاقدية", provider:"أونلاين/هجين", mode:"مدمج", budget:"15%", priority:"HIGH"},
+  {q:"Q2", course:"Project Management Professional (PMP)", comp:"إدارة المشاريع", provider:"جهة خارجية معتمدة", mode:"ورشة+تعلم ذاتي", budget:"10%", priority:"HIGH"},
+  {q:"Q3", course:"BIM / Revit / Navisworks", comp:"الأدوات الرقمية", provider:"داخلي وخارجي", mode:"تطبيقي", budget:"10%", priority:"HIGH"},
+  {q:"Q3", course:"Soft Skills & Communication", comp:"القيادة/التواصل", provider:"جهة خارجية", mode:"ورشة عمل", budget:"5%", priority:"MEDIUM"},
+  {q:"Q4", course:"Total Quality Management (TQM)", comp:"نظم الجودة", provider:"داخلي", mode:"بالموقع", budget:"10%", priority:"MEDIUM"},
+  {q:"Q4", course:"Self-Learning Platforms", comp:"تطوير مستمر", provider:"Coursera/LinkedIn", mode:"تعلّم ذاتي", budget:"5%", priority:"CONTINUOUS"}
+];
+
+const PRIORITY_BADGE = {CRITICAL:"badge-critical", HIGH:"badge-high", MEDIUM:"badge-medium", CONTINUOUS:"badge-continuous"};
+
+const ASSISTANT_FAQ = [
+  {keys:["حضور","attendance","90"], a:"الحد الأدنى المطلوب لنسبة الحضور في الجلسات التدريبية هو <b>90%</b>. أي انخفاض عن هذه النسبة يستوجب تنبيهاً آلياً للمدير المباشر."},
+  {keys:["نقل المعرفة","14","تقرير"], a:"يجب على المتدرب تسليم <b>تقرير نقل المعرفة</b> خلال <b>14 يوماً</b> من تاريخ انتهاء البرنامج التدريبي."},
+  {keys:["ميزانية","توزيع","45","30","25"], a:"تُوزَّع الميزانية السنوية للتدريب كالتالي: <b>45%</b> للأولويات الحاسمة (Critical)، <b>30%</b> للأولويات العالية (High)، و<b>25%</b> للتطوير المستمر (Continuous)."},
+  {keys:["عجز","deficit","فجوة","gap"], a:"تُحسب نسبة العجز بالمعادلة: <b>Deficit% = (Gap ÷ Target) × 100</b>، حيث Gap = المستهدف − الفعلي. فوق 50% = حاسمة، بين 20% و50% = عالية، أقل من 20% = قياسية."},
+  {keys:["roi","عائد","استثمار"], a:"تُحسب نسبة العائد على الاستثمار بالمعادلة: <b>ROI% = ((B − A) ÷ A) × 100</b>، حيث A إجمالي التكلفة وB إجمالي الفوائد والمنافع المقدرة."},
+  {keys:["كيركباتريك","kirkpatrick","مستويات","t-03","t03"], a:"نموذج T-03 يقيس أثر التدريب عبر 4 مستويات: <b>1) رد الفعل</b> فوراً بعد التدريب، <b>2) التعلم</b> فوراً بعد التدريب، <b>3) السلوك</b> بعد 3 أشهر، <b>4) النتائج</b> بعد 6 أشهر."},
+  {keys:["t-01","t01","تقييم فردي"], a:"نموذج T-01 يُستخدم لقياس كفاءة كل موظف مقابل 13 معياراً قياسياً على مقياس من 1 (معرفة) إلى 5 (خبير)."},
+  {keys:["احتفاظ","retention","التزام بالخدمة"], a:"يوقّع المتدرب على اتفاقية التزام بالخدمة لفترة محددة بعد انتهاء التدريب، تُحدَّد مدتها حسب سياسة الشركة وقيمة الاستثمار التدريبي."},
+  {keys:["13","كفاءة","كفاءات"], a:"يعتمد الدليل على <b>13 كفاءة قياسية</b> موزعة على 4 فئات: حاسمة، عالية، متوسطة، ومستمرة، تُقاس جميعها عبر نموذج T-01."}
+];
+
+/* =========================================================
+   طبقة التخزين المحلي (LocalStorage Persistence)
+   ========================================================= */
+const STORE_KEYS = {assessments:"iqan_assessments", evaluations:"iqan_evaluations", roi:"iqan_roi", attendance:"iqan_attendance", knowledge:"iqan_knowledge", retention:"iqan_retention"};
+
+function loadStore(key){ try{ return JSON.parse(localStorage.getItem(STORE_KEYS[key])) || []; }catch(e){ return []; } }
+function saveStore(key, arr){ try{ localStorage.setItem(STORE_KEYS[key], JSON.stringify(arr)); }catch(e){ console.error('save error', e); } }
+function nextId(arr){ return arr.length ? Math.max.apply(null, arr.map(function(x){return x.id||0;})) + 1 : 1; }
+function fmtNum(n){ return Number(n||0).toLocaleString('en-US', {maximumFractionDigits:1}); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+/* =========================================================
+   التنقل بين التبويبات
+   ========================================================= */
+function switchTab(i){
+  document.querySelectorAll('.iqan-tab').forEach(function(el){ el.classList.add('hidden'); });
+  var t = document.getElementById('tab-'+i);
+  if(t) t.classList.remove('hidden');
+  document.querySelectorAll('.iqan-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === String(i));
+  });
+  refreshTabData(i);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function refreshTabData(i){
+  try{
+    if(i===0) renderOverview();
+    if(i===1) renderT01Competencies(), renderT01Records();
+    if(i===2) renderT02();
+    if(i===3) renderT03Records();
+    if(i===4) renderT04Records();
+    if(i===5) renderPlanTable(), renderPlanBudget(), renderAttendance();
+    if(i===7) renderPassportSelect();
+    if(i===8) renderCompliance();
+    if(i===9) renderRecommender();
+    if(i===10) renderArchive();
+    if(i===11) renderExecutiveDashboard();
+  }catch(e){ console.error('refreshTabData error', i, e); }
+}
+
+function applyRoleView(){
+  var role = document.getElementById('roleSelect').value;
+  document.querySelectorAll('.iqan-btn[data-roles]').forEach(function(btn){
+    var roles = btn.getAttribute('data-roles').split(',');
+    btn.style.display = roles.indexOf(role) !== -1 ? '' : 'none';
+  });
+}
+
+/* =========================================================
+   الطباعة وتصدير PDF (نفس منهجية تطبيق ISO)
+   ========================================================= */
+function printSection(id){
+  document.body.classList.add('printing-one');
+  document.querySelectorAll('.iqan-tab').forEach(function(el){ el.classList.remove('print-active'); });
+  var el = document.getElementById(id);
+  if(el) el.classList.add('print-active');
+  window.print();
+  setTimeout(function(){ document.body.classList.remove('printing-one'); }, 500);
+}
+
+function downloadPdf(id, filename){
+  var el = document.getElementById(id);
+  if(!el){ alert('تعذر العثور على القسم المطلوب تصديره'); return; }
+  var btns = el.querySelectorAll('.no-print');
+  btns.forEach(function(b){ b.dataset._disp = b.style.display; b.style.display='none'; });
+  html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'}).then(function(canvas){
+    btns.forEach(function(b){ b.style.display = b.dataset._disp || ''; });
+    var imgData = canvas.toDataURL('image/jpeg', 0.92);
+    var pdf = new jspdf.jsPDF('p','mm','a4');
+    var pageW = pdf.internal.pageSize.getWidth();
+    var pageH = pdf.internal.pageSize.getHeight();
+    var imgW = pageW;
+    var imgH = canvas.height * imgW / canvas.width;
+    var heightLeft = imgH;
+    var position = 0;
+    pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+    heightLeft -= pageH;
+    while(heightLeft > 0){
+      position = heightLeft - imgH;
+      pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+      heightLeft -= pageH;
+    }
+    pdf.save(filename || 'IQAN_Report.pdf');
+  }).catch(function(err){
+    btns.forEach(function(b){ b.style.display = b.dataset._disp || ''; });
+    console.error(err);
+    alert('حدث خطأ أثناء توليد PDF. تأكد من اتصال الإنترنت (لتحميل مكتبات التصدير) وأعد المحاولة.');
+  });
+}
+
+/* =========================================================
+   تبويب 0: نظرة عامة
+   ========================================================= */
+function renderOverview(){
+  var assessments = loadStore('assessments');
+  var rois = loadStore('roi');
+  var evals = loadStore('evaluations');
+  var totalRoi = rois.length ? (rois.reduce(function(s,r){return s+r.roiPct;},0)/rois.length) : 0;
+  var el = document.getElementById('overviewKpis');
+  el.innerHTML =
+    '<div class="kpi"><b>'+assessments.length+'</b><span class="text-slate-400 text-xs">تقييمات T-01 محفوظة</span></div>'+
+    '<div class="kpi"><b>'+evals.length+'</b><span class="text-slate-400 text-xs">تقييمات أثر T-03</span></div>'+
+    '<div class="kpi amber"><b>'+totalRoi.toFixed(1)+'%</b><span class="text-slate-400 text-xs">متوسط العائد على الاستثمار</span></div>'+
+    '<div class="kpi"><b>13</b><span class="text-slate-400 text-xs">كفاءة قياسية معتمدة</span></div>';
+}
+
+/* =========================================================
+   تبويب 1: T-01 التقييم الفردي
+   ========================================================= */
+function renderT01Competencies(){
+  var level = document.getElementById('t01_level').value;
+  var grid = document.getElementById('t01_competencies_grid');
+  grid.innerHTML = COMPETENCIES.map(function(c){
+    var target = Math.max(1, c.target - (LEVEL_ADJUST[level]||0));
+    return '<div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-3">'+
+      '<div><div class="font-bold text-xs text-slate-800">'+c.nameAr+'</div>'+
+      '<div class="text-[10px] text-slate-400 font-mono">'+c.name+' <span class="badge '+CATEGORY_BADGE[c.category]+'" style="margin-inline-start:6px;">'+CATEGORY_LABEL[c.category]+'</span></div></div>'+
+      '<div class="flex items-center gap-2">'+
+      '<span class="text-[11px] text-slate-500">المستهدف: <b>'+target+'</b></span>'+
+      '<select id="t01_actual_'+c.id+'" style="width:70px;" data-target="'+target+'">'+
+        [1,2,3,4,5].map(function(v){ return '<option value="'+v+'" '+(v===3?'selected':'')+'>'+v+'</option>'; }).join('')+
+      '</select>'+
+      '</div></div>';
+  }).join('');
+}
+
+function saveT01(){
+  var name = document.getElementById('t01_name').value.trim();
+  var title = document.getElementById('t01_title').value.trim();
+  if(!name || !title){ alert('يرجى إدخال اسم الموظف والمسمى الوظيفي.'); return; }
+  var level = document.getElementById('t01_level').value;
+  var scores = COMPETENCIES.map(function(c){
+    var sel = document.getElementById('t01_actual_'+c.id);
+    var target = parseInt(sel.getAttribute('data-target'),10);
+    var actual = parseInt(sel.value,10);
+    return {id:c.id, name:c.nameAr, category:c.category, target:target, actual:actual, gap:target-actual};
+  });
+  var record = {
+    id: 0, empName:name, jobTitle:title, dept: document.getElementById('t01_dept').value.trim(),
+    level:level, date: document.getElementById('t01_date').value || todayStr(),
+    assessor: document.getElementById('t01_assessor').value.trim() || '-', scores:scores
+  };
+  var arr = loadStore('assessments');
+  record.id = nextId(arr);
+  arr.push(record);
+  saveStore('assessments', arr);
+  document.getElementById('t01_saveMsg').textContent = '✅ تم حفظ تقييم '+name+' بنجاح';
+  setTimeout(function(){ document.getElementById('t01_saveMsg').textContent=''; }, 3000);
+  renderT01Records();
+}
+
+function renderT01Records(){
+  var arr = loadStore('assessments');
+  var body = document.getElementById('t01_recordsBody');
+  if(!arr.length){ body.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-6">لا توجد تقييمات محفوظة بعد.</td></tr>'; return; }
+  body.innerHTML = arr.slice().reverse().map(function(r){
+    var avgGap = (r.scores.reduce(function(s,x){return s+x.gap;},0)/r.scores.length).toFixed(1);
+    return '<tr><td class="font-bold">'+r.empName+'</td><td>'+r.jobTitle+'</td><td>'+(LEVEL_LABEL_AR[r.level]||r.level)+'</td><td>'+r.date+'</td><td>'+avgGap+'</td>'+
+      '<td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'assessments\','+r.id+')">حذف</button></td></tr>';
+  }).join('');
+}
+
+function deleteRecord(store, id){
+  if(!confirm('هل أنت متأكد من حذف هذا السجل؟')) return;
+  var arr = loadStore(store).filter(function(x){ return x.id !== id; });
+  saveStore(store, arr);
+  renderT01Records(); renderT03Records(); renderT04Records(); renderArchive();
+}
+
+/* =========================================================
+   تبويب 2: T-02 مصفوفة الفجوات المجمعة
+   ========================================================= */
+var t02_charts = {bar:null, radar:null};
+
+function computeAggregateGaps(){
+  var assessments = loadStore('assessments');
+  if(!assessments.length) return null;
+  var byComp = {};
+  COMPETENCIES.forEach(function(c){ byComp[c.id] = {id:c.id, name:c.nameAr, category:c.category, targets:[], actuals:[]}; });
+  assessments.forEach(function(a){
+    a.scores.forEach(function(s){
+      if(byComp[s.id]){ byComp[s.id].targets.push(s.target); byComp[s.id].actuals.push(s.actual); }
+    });
+  });
+  var rows = Object.keys(byComp).map(function(k){
+    var c = byComp[k];
+    var tAvg = c.targets.reduce(function(a,b){return a+b;},0)/c.targets.length;
+    var aAvg = c.actuals.reduce(function(a,b){return a+b;},0)/c.actuals.length;
+    var gap = tAvg - aAvg;
+    var deficit = tAvg ? (gap/tAvg*100) : 0;
+    var priority = deficit > 50 ? 'CRITICAL' : (deficit >= 20 ? 'HIGH' : 'STANDARD');
+    return {id:c.id, name:c.name, category:c.category, targetAvg:tAvg, actualAvg:aAvg, gap:gap, deficit:deficit, priority:priority};
+  });
+  rows.sort(function(a,b){ return b.deficit - a.deficit; });
+  return {rows:rows, empCount: assessments.length};
+}
+
+function renderT02(){
+  var data = computeAggregateGaps();
+  if(!data){ document.getElementById('t02_empty').classList.remove('hidden'); document.getElementById('t02_content').classList.add('hidden'); return; }
+  document.getElementById('t02_empty').classList.add('hidden');
+  document.getElementById('t02_content').classList.remove('hidden');
+
+  var critical = data.rows.filter(function(r){return r.priority==='CRITICAL';}).length;
+  var high = data.rows.filter(function(r){return r.priority==='HIGH';}).length;
+  var standard = data.rows.filter(function(r){return r.priority==='STANDARD';}).length;
+  document.getElementById('t02_criticalCount').textContent = critical;
+  document.getElementById('t02_highCount').textContent = high;
+  document.getElementById('t02_standardCount').textContent = standard;
+  document.getElementById('t02_empCount').textContent = data.empCount;
+
+  var pBadge = {CRITICAL:'badge-critical', HIGH:'badge-high', STANDARD:'badge-continuous'};
+  var pLabel = {CRITICAL:'حاسمة CRITICAL', HIGH:'عالية HIGH', STANDARD:'قياسية STANDARD'};
+  document.getElementById('t02_tableBody').innerHTML = data.rows.map(function(r,idx){
+    return '<tr><td>'+(idx+1)+'</td><td class="font-bold">'+r.name+'</td>'+
+      '<td><span class="badge '+CATEGORY_BADGE[r.category]+'">'+CATEGORY_LABEL[r.category]+'</span></td>'+
+      '<td>'+r.targetAvg.toFixed(1)+'</td><td>'+r.actualAvg.toFixed(1)+'</td><td>'+r.gap.toFixed(1)+'</td>'+
+      '<td>'+r.deficit.toFixed(1)+'%</td><td><span class="badge '+pBadge[r.priority]+'">'+pLabel[r.priority]+'</span></td></tr>';
+  }).join('');
+
+  // Charts
+  if(typeof Chart !== 'undefined'){
+    var barCtx = document.getElementById('t02_barChart').getContext('2d');
+    if(t02_charts.bar) t02_charts.bar.destroy();
+    t02_charts.bar = new Chart(barCtx, {
+      type:'bar',
+      data:{ labels:data.rows.map(function(r){return r.name;}),
+        datasets:[{label:'نسبة العجز %', data:data.rows.map(function(r){return r.deficit.toFixed(1);}),
+        backgroundColor:data.rows.map(function(r){ return r.priority==='CRITICAL' ? '#ef4444' : (r.priority==='HIGH' ? '#f59e0b' : '#10b981'); })}]},
+      options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true}} }
+    });
+    var radarCtx = document.getElementById('t02_radarChart').getContext('2d');
+    if(t02_charts.radar) t02_charts.radar.destroy();
+    t02_charts.radar = new Chart(radarCtx, {
+      type:'radar',
+      data:{ labels:data.rows.map(function(r){return r.name;}),
+        datasets:[
+          {label:'المستهدف', data:data.rows.map(function(r){return r.targetAvg;}), borderColor:'#0f172a', backgroundColor:'rgba(15,23,42,.15)'},
+          {label:'الفعلي', data:data.rows.map(function(r){return r.actualAvg;}), borderColor:'#d97706', backgroundColor:'rgba(217,119,6,.25)'}
+        ]},
+      options:{ scales:{ r:{ min:0, max:5 } } }
+    });
+  }
+  renderBudgetSplit();
+}
+
+function renderBudgetSplit(){
+  var total = parseFloat(document.getElementById('t02_totalBudget').value) || 0;
+  var critical = total * 0.45, high = total * 0.30, cont = total * 0.25;
+  document.getElementById('t02_budgetSplit').innerHTML =
+    '<div class="p-4 rounded-xl bg-slate-800 border border-red-500/30"><div class="text-xs text-slate-400">أولويات حاسمة (45%)</div><div class="text-lg font-bold text-red-400">'+fmtNum(critical)+' EGP</div></div>'+
+    '<div class="p-4 rounded-xl bg-slate-800 border border-amber-500/30"><div class="text-xs text-slate-400">أولويات عالية (30%)</div><div class="text-lg font-bold text-amber-400">'+fmtNum(high)+' EGP</div></div>'+
+    '<div class="p-4 rounded-xl bg-slate-800 border border-emerald-500/30"><div class="text-xs text-slate-400">تطوير مستمر (25%)</div><div class="text-lg font-bold text-emerald-400">'+fmtNum(cont)+' EGP</div></div>';
+}
+
+/* =========================================================
+   تبويب 3: T-03 تقييم الأثر (Kirkpatrick)
+   ========================================================= */
+function updateT03Improvement(){
+  var pre = parseFloat(document.getElementById('t03_pre').value) || 0;
+  var post = parseFloat(document.getElementById('t03_post').value) || 0;
+  var imp = post - pre;
+  var elm = document.getElementById('t03_improvement');
+  elm.textContent = (imp>=0?'+':'') + imp.toFixed(0) + '%';
+  elm.className = imp >= 0 ? 'text-emerald-600' : 'text-red-600';
+}
+
+function saveT03(){
+  var prog = document.getElementById('t03_prog').value.trim();
+  var trainee = document.getElementById('t03_trainee').value.trim();
+  if(!prog || !trainee){ alert('يرجى إدخال اسم البرنامج واسم المتدرب.'); return; }
+  var pre = parseFloat(document.getElementById('t03_pre').value)||0;
+  var post = parseFloat(document.getElementById('t03_post').value)||0;
+  var record = {
+    id:0, prog:prog, trainee:trainee, dept:document.getElementById('t03_dept').value.trim(),
+    date: document.getElementById('t03_date').value || todayStr(),
+    relevance: document.getElementById('t03_relevance').value,
+    satisfaction: document.getElementById('t03_satisfaction').value,
+    pre:pre, post:post, improvement: post-pre,
+    behavior: document.getElementById('t03_behavior').value,
+    leadership: document.getElementById('t03_leadership').value,
+    barriers: document.getElementById('t03_barriers').value.trim(),
+    value: parseFloat(document.getElementById('t03_value').value)||0,
+    results: document.getElementById('t03_results').value.trim()
+  };
+  var arr = loadStore('evaluations');
+  record.id = nextId(arr);
+  arr.push(record);
+  saveStore('evaluations', arr);
+  document.getElementById('t03_saveMsg').textContent = '✅ تم حفظ تقييم أثر تدريب '+trainee;
+  setTimeout(function(){ document.getElementById('t03_saveMsg').textContent=''; }, 3000);
+  renderT03Records();
+}
+
+function renderT03Records(){
+  var arr = loadStore('evaluations');
+  var body = document.getElementById('t03_recordsBody');
+  if(!body) return;
+  if(!arr.length){ body.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-6">لا توجد تقييمات محفوظة بعد.</td></tr>'; return; }
+  body.innerHTML = arr.slice().reverse().map(function(r){
+    return '<tr><td class="font-bold">'+r.prog+'</td><td>'+r.trainee+'</td><td>'+(r.improvement>=0?'+':'')+r.improvement.toFixed(0)+'%</td><td>'+r.behavior+'</td><td>'+fmtNum(r.value)+' EGP</td>'+
+      '<td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'evaluations\','+r.id+')">حذف</button></td></tr>';
+  }).join('');
+}
+
+/* =========================================================
+   تبويب 4: T-04 العائد على الاستثمار (ROI)
+   ========================================================= */
+var t04_chart = null;
+
+function calcT04Live(){
+  var cost = parseFloat(document.getElementById('t04_cost').value)||0;
+  var delay = parseFloat(document.getElementById('t04_delay').value)||0;
+  var rework = parseFloat(document.getElementById('t04_rework').value)||0;
+  var ai = parseFloat(document.getElementById('t04_ai').value)||0;
+  var totalB = delay+rework+ai;
+  var net = totalB - cost;
+  var roi = cost>0 ? (net/cost*100) : 0;
+  document.getElementById('t04_totalBenefits').textContent = fmtNum(totalB);
+  document.getElementById('t04_netBenefit').textContent = fmtNum(net);
+  document.getElementById('t04_roiPct').textContent = roi.toFixed(1)+'%';
+  return {cost:cost, totalB:totalB, net:net, roi:roi};
+}
+
+function saveT04(){
+  var prog = document.getElementById('t04_prog').value.trim();
+  if(!prog){ alert('يرجى إدخال اسم البرنامج التدريبي.'); return; }
+  var calc = calcT04Live();
+  var record = {
+    id:0, prog:prog, participants: parseInt(document.getElementById('t04_participants').value)||1,
+    currency: document.getElementById('t04_currency').value, cost: calc.cost,
+    totalBenefits: calc.totalB, netBenefit: calc.net, roiPct: calc.roi,
+    intangibles: document.getElementById('t04_intangible').value.trim(), date: todayStr()
+  };
+  var arr = loadStore('roi');
+  record.id = nextId(arr);
+  arr.push(record);
+  saveStore('roi', arr);
+  document.getElementById('t04_saveMsg').textContent = '✅ تم توثيق تقرير ROI بنجاح';
+  setTimeout(function(){ document.getElementById('t04_saveMsg').textContent=''; }, 3000);
+  renderT04Records();
+}
+
+function runSimulator(){
+  var cost = parseFloat(document.getElementById('sim_cost').value)||0;
+  var pct = parseFloat(document.getElementById('sim_pct').value)||0;
+  var base = parseFloat(document.getElementById('sim_base').value)||0;
+  var benefit = base * (pct/100);
+  var roi = cost>0 ? ((benefit-cost)/cost*100) : 0;
+  document.getElementById('sim_result').textContent = roi.toFixed(1)+'% (بافتراض وفر تقديري '+fmtNum(benefit)+')';
+}
+
+function renderT04Records(){
+  var arr = loadStore('roi');
+  var body = document.getElementById('t04_recordsBody');
+  if(!body) return;
+  if(!arr.length){ body.innerHTML = '<tr><td colspan="4" class="text-center text-slate-400 py-6">لا توجد تقارير محفوظة بعد.</td></tr>'; }
+  else{
+    body.innerHTML = arr.slice().reverse().map(function(r){
+      return '<tr><td class="font-bold">'+r.prog+'</td><td>'+fmtNum(r.cost)+'</td><td>'+fmtNum(r.totalBenefits)+'</td><td>'+r.roiPct.toFixed(1)+'%</td>'+
+        '<td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'roi\','+r.id+')">حذف</button></td></tr>';
+    }).join('');
+  }
+  if(typeof Chart !== 'undefined' && document.getElementById('t04_trendChart')){
+    var ctx = document.getElementById('t04_trendChart').getContext('2d');
+    if(t04_chart) t04_chart.destroy();
+    t04_chart = new Chart(ctx, {
+      type:'line',
+      data:{ labels: arr.map(function(r){return r.prog;}), datasets:[{label:'ROI %', data:arr.map(function(r){return r.roiPct.toFixed(1);}), borderColor:'#d97706', backgroundColor:'rgba(217,119,6,.2)', fill:true, tension:.3}] },
+      options:{ plugins:{legend:{display:false}} }
+    });
+  }
+}
+
+/* =========================================================
+   تبويب 5: الخطة السنوية والميزانية + الحضور
+   ========================================================= */
+function renderPlanTable(){
+  var body = document.getElementById('plan_tableBody');
+  if(!body) return;
+  body.innerHTML = ANNUAL_PLAN.map(function(p,idx){
+    return '<tr><td class="font-bold">'+p.q+'</td><td>'+p.course+'</td><td>'+p.comp+'</td><td>'+p.provider+'</td><td>'+p.mode+'</td><td>'+p.budget+'</td>'+
+      '<td><span class="badge '+PRIORITY_BADGE[p.priority]+'">'+p.priority+'</span></td>'+
+      '<td><select data-plan-idx="'+idx+'" class="plan-status" style="width:120px;">'+
+        ['مجدول','قيد التنفيذ','مكتمل','مؤجل'].map(function(s){return '<option '+(s==='مجدول'?'selected':'')+'>'+s+'</option>';}).join('')+
+      '</select></td></tr>';
+  }).join('');
+}
+
+function renderPlanBudget(){
+  var total = parseFloat(document.getElementById('plan_totalBudget').value) || 0;
+  var critical = total * 0.45, high = total * 0.30, cont = total * 0.25;
+  document.getElementById('plan_budgetSplit').innerHTML =
+    '<div class="p-4 rounded-xl bg-slate-800 border border-red-500/30"><div class="text-xs text-slate-400">أولويات حاسمة (45%) — FIDIC / AI</div><div class="text-lg font-bold text-red-400">'+fmtNum(critical)+' EGP</div></div>'+
+    '<div class="p-4 rounded-xl bg-slate-800 border border-amber-500/30"><div class="text-xs text-slate-400">أولويات عالية (30%) — PMP / لغة تعاقدية</div><div class="text-lg font-bold text-amber-400">'+fmtNum(high)+' EGP</div></div>'+
+    '<div class="p-4 rounded-xl bg-slate-800 border border-emerald-500/30"><div class="text-xs text-slate-400">تطوير مستمر (25%) — BIM / مهارات شخصية</div><div class="text-lg font-bold text-emerald-400">'+fmtNum(cont)+' EGP</div></div>';
+}
+
+function addAttendance(){
+  var name = document.getElementById('att_name').value.trim();
+  var prog = document.getElementById('att_prog').value.trim();
+  var total = parseFloat(document.getElementById('att_total').value)||0;
+  var attended = parseFloat(document.getElementById('att_attended').value)||0;
+  if(!name || !prog || !total){ alert('يرجى إدخال بيانات الحضور كاملة.'); return; }
+  var pct = (attended/total*100);
+  var arr = loadStore('attendance');
+  arr.push({id:nextId(arr), name:name, prog:prog, total:total, attended:attended, pct:pct});
+  saveStore('attendance', arr);
+  document.getElementById('att_name').value=''; document.getElementById('att_prog').value='';
+  renderAttendance();
+}
+
+function renderAttendance(){
+  var arr = loadStore('attendance');
+  var body = document.getElementById('att_tableBody');
+  if(!body) return;
+  if(!arr.length){ body.innerHTML = '<tr><td colspan="5" class="text-center text-slate-400 py-6">لا توجد سجلات حضور بعد.</td></tr>'; return; }
+  body.innerHTML = arr.slice().reverse().map(function(r){
+    var ok = r.pct >= 90;
+    return '<tr><td class="font-bold">'+r.name+'</td><td>'+r.prog+'</td><td>'+r.pct.toFixed(0)+'%</td>'+
+      '<td><span class="badge '+(ok?'badge-green':'badge-red')+'">'+(ok?'ملتزم':'أقل من 90%')+'</span></td>'+
+      '<td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'attendance\','+r.id+')">حذف</button></td></tr>';
+  }).join('');
+}
+
+/* =========================================================
+   تبويب 7: جواز الكفاءات الرقمي
+   ========================================================= */
+function renderPassportSelect(){
+  var assessments = loadStore('assessments');
+  var names = Array.from(new Set(assessments.map(function(a){return a.empName;})));
+  var sel = document.getElementById('passport_select');
+  var current = sel.value;
+  sel.innerHTML = '<option value="">-- اختر موظفاً --</option>' + names.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  if(names.indexOf(current) !== -1) sel.value = current;
+  renderPassport();
+}
+
+function renderPassport(){
+  var name = document.getElementById('passport_select').value;
+  var content = document.getElementById('passport_content');
+  if(!name){ content.classList.add('hidden'); return; }
+  content.classList.remove('hidden');
+  var assessments = loadStore('assessments').filter(function(a){ return a.empName===name; });
+  var evals = loadStore('evaluations').filter(function(e){ return e.trainee===name; });
+  var latest = assessments[assessments.length-1];
+  var avgActual = latest ? (latest.scores.reduce(function(s,x){return s+x.actual;},0)/latest.scores.length) : 0;
+
+  document.getElementById('pp_avgActual').textContent = avgActual.toFixed(1);
+  document.getElementById('pp_assessCount').textContent = assessments.length;
+
+  // Badges: مقارنة أول وآخر تقييم لكل كفاءة
+  var badges = [];
+  if(assessments.length >= 2){
+    var first = assessments[0], last = assessments[assessments.length-1];
+    last.scores.forEach(function(s){
+      var prev = first.scores.find(function(x){return x.id===s.id;});
+      if(prev && s.actual > prev.actual) badges.push('🏅 تطور في '+s.name);
+    });
+  }
+  if(latest){
+    latest.scores.forEach(function(s){ if(s.actual >= 5) badges.push('🌟 إتقان كامل في '+s.name); });
+  }
+  document.getElementById('pp_badgeCount').textContent = badges.length;
+  document.getElementById('pp_badges').innerHTML = badges.length ?
+    badges.map(function(b){ return '<span class="badge badge-amber">'+b+'</span>'; }).join('') :
+    '<span class="text-slate-400 text-xs">لا توجد شارات مكتسبة بعد — تُمنح عند تكرار التقييم أو بلوغ مستوى الإتقان الكامل.</span>';
+
+  document.getElementById('pp_scoresBody').innerHTML = latest ? latest.scores.map(function(s){
+    return '<tr><td class="font-bold">'+s.name+'</td><td>'+s.target+'</td><td>'+s.actual+'</td><td>'+s.gap+'</td></tr>';
+  }).join('') : '<tr><td colspan="4" class="text-center text-slate-400 py-4">لا يوجد تقييم بعد</td></tr>';
+
+  document.getElementById('pp_evalsBody').innerHTML = evals.length ? evals.map(function(e){
+    return '<tr><td class="font-bold">'+e.prog+'</td><td>'+e.date+'</td><td>'+e.behavior+'</td><td>'+e.leadership+'</td></tr>';
+  }).join('') : '<tr><td colspan="4" class="text-center text-slate-400 py-4">لا توجد برامج مقيَّمة الأثر بعد</td></tr>';
+}
+
+/* =========================================================
+   تبويب 8: الامتثال والالتزامات
+   ========================================================= */
+function daysBetween(d1, d2){ return Math.round((new Date(d2) - new Date(d1)) / (1000*60*60*24)); }
+
+function addKnowledge(){
+  var name = document.getElementById('kn_name').value.trim();
+  var prog = document.getElementById('kn_prog').value.trim();
+  var end = document.getElementById('kn_end').value;
+  if(!name || !prog || !end){ alert('يرجى إدخال الاسم والبرنامج وتاريخ انتهاء التدريب.'); return; }
+  var submit = document.getElementById('kn_submit').value || null;
+  var arr = loadStore('knowledge');
+  arr.push({id:nextId(arr), name:name, prog:prog, end:end, submit:submit});
+  saveStore('knowledge', arr);
+  document.getElementById('kn_name').value=''; document.getElementById('kn_prog').value=''; document.getElementById('kn_submit').value='';
+  renderCompliance();
+}
+
+function addRetention(){
+  var name = document.getElementById('rt_name').value.trim();
+  var prog = document.getElementById('rt_prog').value.trim();
+  var end = document.getElementById('rt_end').value;
+  var months = parseInt(document.getElementById('rt_months').value)||12;
+  if(!name || !prog || !end){ alert('يرجى إدخال بيانات الاتفاقية كاملة.'); return; }
+  var d = new Date(end); d.setMonth(d.getMonth()+months);
+  var arr = loadStore('retention');
+  arr.push({id:nextId(arr), name:name, prog:prog, end:end, months:months, commitEnd:d.toISOString().slice(0,10)});
+  saveStore('retention', arr);
+  document.getElementById('rt_name').value=''; document.getElementById('rt_prog').value='';
+  renderCompliance();
+}
+
+function renderCompliance(){
+  var att = loadStore('attendance');
+  var kn = loadStore('knowledge');
+  var rt = loadStore('retention');
+  var avgAtt = att.length ? (att.reduce(function(s,r){return s+r.pct;},0)/att.length) : 0;
+  var overdueKn = kn.filter(function(k){ return !k.submit && daysBetween(k.end, todayStr()) > 14; }).length;
+  var activeRt = rt.filter(function(r){ return new Date(r.commitEnd) > new Date(); }).length;
+
+  document.getElementById('compliance_kpis').innerHTML =
+    '<div class="kpi '+(avgAtt>=90?'':'red')+'"><b>'+avgAtt.toFixed(0)+'%</b><span class="text-slate-400 text-xs">متوسط نسبة الحضور العام</span></div>'+
+    '<div class="kpi '+(overdueKn>0?'red':'')+'"><b>'+overdueKn+'</b><span class="text-slate-400 text-xs">تقارير نقل معرفة متأخرة</span></div>'+
+    '<div class="kpi amber"><b>'+activeRt+'</b><span class="text-slate-400 text-xs">اتفاقيات التزام سارية</span></div>';
+
+  var knBody = document.getElementById('kn_tableBody');
+  if(knBody){
+    if(!kn.length){ knBody.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-6">لا توجد سجلات بعد.</td></tr>'; }
+    else{
+      knBody.innerHTML = kn.slice().reverse().map(function(k){
+        var deadline = new Date(k.end); deadline.setDate(deadline.getDate()+14);
+        var deadlineStr = deadline.toISOString().slice(0,10);
+        var status, badge;
+        if(k.submit){ status='تم التسليم'; badge='badge-green'; }
+        else if(daysBetween(todayStr(), deadlineStr) < 0){ status='متأخر'; badge='badge-red'; }
+        else{ status='قيد الانتظار'; badge='badge-amber'; }
+        return '<tr><td class="font-bold">'+k.name+'</td><td>'+k.prog+'</td><td>'+deadlineStr+'</td><td>'+(k.submit||'-')+'</td>'+
+          '<td><span class="badge '+badge+'">'+status+'</span></td>'+
+          '<td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'knowledge\','+k.id+')">حذف</button></td></tr>';
+      }).join('');
+    }
+  }
+
+  var rtBody = document.getElementById('rt_tableBody');
+  if(rtBody){
+    if(!rt.length){ rtBody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-400 py-6">لا توجد اتفاقيات بعد.</td></tr>'; }
+    else{
+      rtBody.innerHTML = rt.slice().reverse().map(function(r){
+        var active = new Date(r.commitEnd) > new Date();
+        return '<tr><td class="font-bold">'+r.name+'</td><td>'+r.prog+'</td><td>'+r.commitEnd+'</td>'+
+          '<td><span class="badge '+(active?'badge-amber':'badge-green')+'">'+(active?'سارية':'منتهية')+'</span></td>'+
+          '<td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'retention\','+r.id+')">حذف</button></td></tr>';
+      }).join('');
+    }
+  }
+
+  // Audit readiness score
+  var checks = [
+    {label:'وجود تقييمات T-01 موثقة', ok: loadStore('assessments').length>0},
+    {label:'وجود تقييمات أثر T-03 موثقة', ok: loadStore('evaluations').length>0},
+    {label:'وجود تقارير عائد استثمار T-04 موثقة', ok: loadStore('roi').length>0},
+    {label:'متوسط الحضور 90% فأكثر', ok: avgAtt>=90 && att.length>0},
+    {label:'عدم وجود تقارير نقل معرفة متأخرة', ok: overdueKn===0}
+  ];
+  var passCount = checks.filter(function(c){return c.ok;}).length;
+  var pct = Math.round(passCount/checks.length*100);
+  var gauge = document.getElementById('audit_gauge');
+  if(gauge){ gauge.style.setProperty('--p', pct); document.getElementById('audit_gaugeText').textContent = pct+'%'; }
+  var list = document.getElementById('audit_checklist');
+  if(list){ list.innerHTML = checks.map(function(c){ return '<li>'+(c.ok?'✅':'⭕')+' '+c.label+'</li>'; }).join(''); }
+}
+
+/* =========================================================
+   تبويب 9: التوصية الذكية والمساعد
+   ========================================================= */
+function renderRecommender(){
+  var data = computeAggregateGaps();
+  var empty = document.getElementById('reco_empty');
+  var table = document.getElementById('reco_table');
+  if(!data){ empty.classList.remove('hidden'); table.classList.add('hidden'); return; }
+  var gaps = data.rows.filter(function(r){ return r.deficit >= 20; });
+  if(!gaps.length){ empty.classList.remove('hidden'); empty.textContent='لا توجد فجوات تستدعي ترشيح دورات حالياً (كل الكفاءات ضمن الحد المقبول).'; table.classList.add('hidden'); return; }
+  empty.classList.add('hidden'); table.classList.remove('hidden');
+  document.getElementById('reco_tableBody').innerHTML = gaps.map(function(r){
+    var comp = COMPETENCIES.find(function(c){return c.id===r.id;});
+    return '<tr><td class="font-bold">'+r.name+'</td><td>'+r.deficit.toFixed(1)+'%</td><td>'+(comp?comp.course:'-')+'</td><td>'+(comp?comp.mode:'-')+'</td></tr>';
+  }).join('');
+}
+
+function askAssistant(){
+  var q = document.getElementById('assistant_q').value.trim();
+  if(!q){ return; }
+  var qLower = q.toLowerCase();
+  var found = ASSISTANT_FAQ.find(function(item){
+    return item.keys.some(function(k){ return qLower.indexOf(k.toLowerCase()) !== -1 || q.indexOf(k) !== -1; });
+  });
+  var box = document.getElementById('assistant_answer');
+  box.innerHTML = found ? found.a : 'لم أجد إجابة مباشرة لهذا السؤال ضمن بنود الدليل المحمّلة حالياً. برجاء مراجعة الدليل التشغيلي الكامل أو التواصل مع مدير المبادرة (م. وائل علي عويس محمود).';
+}
+function quickAsk(q){ document.getElementById('assistant_q').value = q; askAssistant(); }
+
+/* =========================================================
+   تبويب 10: الأرشيف
+   ========================================================= */
+function renderArchive(){
+  var q = (document.getElementById('archive_search') ? document.getElementById('archive_search').value.trim().toLowerCase() : '');
+  var matches = function(str){ return !q || (str||'').toLowerCase().indexOf(q) !== -1; };
+
+  var t01 = loadStore('assessments').filter(function(r){ return matches(r.empName) || matches(r.jobTitle); });
+  var t01Body = document.getElementById('arch_t01Body');
+  if(t01Body) t01Body.innerHTML = t01.length ? t01.slice().reverse().map(function(r){
+    return '<tr><td class="font-bold">'+r.empName+'</td><td>'+r.jobTitle+'</td><td>'+r.date+'</td><td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'assessments\','+r.id+')">حذف</button></td></tr>';
+  }).join('') : '<tr><td colspan="4" class="text-center text-slate-400 py-4">لا توجد نتائج</td></tr>';
+
+  var t03 = loadStore('evaluations').filter(function(r){ return matches(r.prog) || matches(r.trainee); });
+  var t03Body = document.getElementById('arch_t03Body');
+  if(t03Body) t03Body.innerHTML = t03.length ? t03.slice().reverse().map(function(r){
+    return '<tr><td class="font-bold">'+r.prog+'</td><td>'+r.trainee+'</td><td>'+r.date+'</td><td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'evaluations\','+r.id+')">حذف</button></td></tr>';
+  }).join('') : '<tr><td colspan="4" class="text-center text-slate-400 py-4">لا توجد نتائج</td></tr>';
+
+  var t04 = loadStore('roi').filter(function(r){ return matches(r.prog); });
+  var t04Body = document.getElementById('arch_t04Body');
+  if(t04Body) t04Body.innerHTML = t04.length ? t04.slice().reverse().map(function(r){
+    return '<tr><td class="font-bold">'+r.prog+'</td><td>'+r.roiPct.toFixed(1)+'%</td><td>'+r.date+'</td><td class="no-print"><button class="btn-danger" onclick="deleteRecord(\'roi\','+r.id+')">حذف</button></td></tr>';
+  }).join('') : '<tr><td colspan="4" class="text-center text-slate-400 py-4">لا توجد نتائج</td></tr>';
+}
+
+function exportAllJson(){
+  var all = {};
+  Object.keys(STORE_KEYS).forEach(function(k){ all[k] = loadStore(k); });
+  all.exportedAt = new Date().toISOString();
+  var blob = new Blob([JSON.stringify(all, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'IQAN_Backup_'+todayStr()+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importAllJson(evt){
+  var file = evt.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      var data = JSON.parse(e.target.result);
+      Object.keys(STORE_KEYS).forEach(function(k){ if(Array.isArray(data[k])) saveStore(k, data[k]); });
+      alert('✅ تم استيراد النسخة الاحتياطية بنجاح.');
+      renderArchive(); renderOverview();
+    }catch(err){ alert('⚠️ ملف غير صالح.'); }
+  };
+  reader.readAsText(file);
+}
+
+/* =========================================================
+   تبويب 11: لوحة القيادة التنفيذية
+   ========================================================= */
+var exec_charts = {roi:null, budget:null};
+
+function renderExecutiveDashboard(){
+  var assessments = loadStore('assessments');
+  var rois = loadStore('roi');
+  var data = computeAggregateGaps();
+  var criticalCount = data ? data.rows.filter(function(r){return r.priority==='CRITICAL';}).length : 0;
+  var avgRoi = rois.length ? (rois.reduce(function(s,r){return s+r.roiPct;},0)/rois.length) : 0;
+
+  document.getElementById('exec_kpis').innerHTML =
+    '<div class="kpi"><b>'+assessments.length+'</b><span class="text-slate-400 text-xs">إجمالي الموظفين المقيَّمين</span></div>'+
+    '<div class="kpi red"><b>'+criticalCount+'</b><span class="text-slate-400 text-xs">كفاءات ذات عجز حاسم</span></div>'+
+    '<div class="kpi amber"><b>'+avgRoi.toFixed(1)+'%</b><span class="text-slate-400 text-xs">متوسط العائد المالي ROI</span></div>'+
+    '<div class="kpi"><b>45%</b><span class="text-slate-400 text-xs">حصة الأولويات الحاسمة من الميزانية</span></div>';
+
+  // Leaderboard: متوسط أعلى تقييم فعلي لكل موظف (آخر تقييم)
+  var byEmp = {};
+  assessments.forEach(function(a){ byEmp[a.empName] = a; });
+  var leaders = Object.keys(byEmp).map(function(name){
+    var a = byEmp[name];
+    var avg = a.scores.reduce(function(s,x){return s+x.actual;},0)/a.scores.length;
+    return {name:name, avg:avg};
+  }).sort(function(a,b){ return b.avg - a.avg; }).slice(0,5);
+  document.getElementById('exec_leaderboard').innerHTML = leaders.length ? leaders.map(function(l,idx){
+    return '<div class="flex items-center justify-between p-2 rounded-lg bg-slate-50"><span class="text-xs font-bold">#'+(idx+1)+' '+l.name+'</span><span class="badge badge-continuous">'+l.avg.toFixed(1)+' / 5</span></div>';
+  }).join('') : '<p class="text-slate-400 text-xs">لا توجد بيانات كافية بعد.</p>';
+
+  if(typeof Chart !== 'undefined'){
+    var roiCtx = document.getElementById('exec_roiChart').getContext('2d');
+    if(exec_charts.roi) exec_charts.roi.destroy();
+    exec_charts.roi = new Chart(roiCtx, { type:'line', data:{ labels:rois.map(function(r){return r.prog;}), datasets:[{label:'ROI%', data:rois.map(function(r){return r.roiPct.toFixed(1);}), borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.2)', fill:true, tension:.3}] }, options:{plugins:{legend:{display:false}}} });
+
+    var budgetCtx = document.getElementById('exec_budgetChart').getContext('2d');
+    if(exec_charts.budget) exec_charts.budget.destroy();
+    exec_charts.budget = new Chart(budgetCtx, { type:'doughnut', data:{ labels:['حاسمة 45%','عالية 30%','تطوير مستمر 25%'], datasets:[{data:[45,30,25], backgroundColor:['#ef4444','#f59e0b','#10b981']}] }, options:{} });
+  }
+}
+
+/* =========================================================
+   تبويب 12: السجل النهائي الشامل
+   ========================================================= */
+function generateFinalReport(){
+  document.getElementById('finalReportDate').textContent = new Date().toLocaleString('ar-EG');
+  var assessments = loadStore('assessments');
+  var evals = loadStore('evaluations');
+  var rois = loadStore('roi');
+  var att = loadStore('attendance');
+  var data = computeAggregateGaps();
+
+  var html = '';
+
+  html += '<div class="card p-6 mb-2"><h2 class="section-title">1. ملخص عام</h2>'+
+    '<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">'+
+    '<div class="kpi"><b>'+assessments.length+'</b><span class="text-slate-400 text-xs">تقييمات T-01</span></div>'+
+    '<div class="kpi"><b>'+evals.length+'</b><span class="text-slate-400 text-xs">تقييمات T-03</span></div>'+
+    '<div class="kpi"><b>'+rois.length+'</b><span class="text-slate-400 text-xs">تقارير T-04</span></div>'+
+    '<div class="kpi amber"><b>'+(rois.length ? (rois.reduce(function(s,r){return s+r.roiPct;},0)/rois.length).toFixed(1) : 0)+'%</b><span class="text-slate-400 text-xs">متوسط ROI</span></div>'+
+    '</div></div>';
+
+  if(data){
+    html += '<div class="card p-6 mb-2"><h2 class="section-title">2. مصفوفة تحليل الفجوات المجمعة (T-02)</h2>'+
+      '<table class="iqan-table"><thead><tr><th>الكفاءة</th><th>الفئة</th><th>المستهدف</th><th>الفعلي</th><th>العجز%</th><th>الأولوية</th></tr></thead><tbody>'+
+      data.rows.map(function(r){
+        var pBadge = {CRITICAL:'badge-critical', HIGH:'badge-high', STANDARD:'badge-continuous'};
+        return '<tr><td class="font-bold">'+r.name+'</td><td><span class="badge '+CATEGORY_BADGE[r.category]+'">'+CATEGORY_LABEL[r.category]+'</span></td><td>'+r.targetAvg.toFixed(1)+'</td><td>'+r.actualAvg.toFixed(1)+'</td><td>'+r.deficit.toFixed(1)+'%</td><td><span class="badge '+pBadge[r.priority]+'">'+r.priority+'</span></td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+
+  html += '<div class="card p-6 mb-2"><h2 class="section-title">3. تقييمات أثر التدريب (T-03)</h2>'+
+    (evals.length ? '<table class="iqan-table"><thead><tr><th>البرنامج</th><th>المتدرب</th><th>تحسن المعرفة</th><th>السلوك الميداني</th><th>القيمة المضافة</th></tr></thead><tbody>'+
+      evals.map(function(e){ return '<tr><td class="font-bold">'+e.prog+'</td><td>'+e.trainee+'</td><td>'+(e.improvement>=0?'+':'')+e.improvement.toFixed(0)+'%</td><td>'+e.behavior+'</td><td>'+fmtNum(e.value)+' EGP</td></tr>'; }).join('')+
+      '</tbody></table>' : '<p class="text-slate-400 text-sm">لا توجد سجلات بعد.</p>') + '</div>';
+
+  html += '<div class="card p-6 mb-2"><h2 class="section-title">4. تقارير العائد على الاستثمار (T-04)</h2>'+
+    (rois.length ? '<table class="iqan-table"><thead><tr><th>البرنامج</th><th>التكلفة</th><th>الفوائد</th><th>صافي الفائدة</th><th>ROI%</th></tr></thead><tbody>'+
+      rois.map(function(r){ return '<tr><td class="font-bold">'+r.prog+'</td><td>'+fmtNum(r.cost)+'</td><td>'+fmtNum(r.totalBenefits)+'</td><td>'+fmtNum(r.netBenefit)+'</td><td>'+r.roiPct.toFixed(1)+'%</td></tr>'; }).join('')+
+      '</tbody></table>' : '<p class="text-slate-400 text-sm">لا توجد سجلات بعد.</p>') + '</div>';
+
+  var avgAtt = att.length ? (att.reduce(function(s,r){return s+r.pct;},0)/att.length) : 0;
+  var kn = loadStore('knowledge');
+  var overdueKn = kn.filter(function(k){ return !k.submit && daysBetween(k.end, todayStr()) > 14; }).length;
+  html += '<div class="card p-6 mb-2"><h2 class="section-title">5. ملخص الامتثال والالتزامات</h2>'+
+    '<div class="grid grid-cols-1 md:grid-cols-3 gap-3">'+
+    '<div class="kpi '+(avgAtt>=90?'':'red')+'"><b>'+avgAtt.toFixed(0)+'%</b><span class="text-slate-400 text-xs">متوسط الحضور</span></div>'+
+    '<div class="kpi '+(overdueKn>0?'red':'')+'"><b>'+overdueKn+'</b><span class="text-slate-400 text-xs">تقارير معرفة متأخرة</span></div>'+
+    '<div class="kpi amber"><b>'+loadStore('retention').length+'</b><span class="text-slate-400 text-xs">اتفاقيات التزام مسجّلة</span></div>'+
+    '</div></div>';
+
+  html += '<div class="card-dark p-6"><h2 class="font-bold text-white mb-2">6. توزيع الميزانية المعتمد</h2>'+
+    '<p class="text-slate-300 text-sm">45% أولويات حاسمة (FIDIC / AI-QAI) — 30% أولويات عالية (PMP / لغة تعاقدية) — 25% تطوير مستمر (BIM / مهارات شخصية)</p></div>';
+
+  document.getElementById('finalReportBody').innerHTML = html;
+}
+
+/* =========================================================
+   التهيئة عند تحميل الصفحة
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('t01_date').value = todayStr();
+  document.getElementById('t03_date').value = todayStr();
+  renderT01Competencies();
+  renderOverview();
+  applyRoleView();
+});
+</script>
+</body>
+</html>
