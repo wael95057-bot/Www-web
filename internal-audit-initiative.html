@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internal Audit Initiative 2026 | منظومة المراجعة الداخلية والتميز المؤسسي - BENA Black Box</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --navy:#0f172a; --navy2:#1e293b; --amber:#d97706; --amber2:#f59e0b; --slate-bg:#f5f6f8; }
+  *{ box-sizing:border-box; }
+  body{ font-family:'Cairo','Segoe UI',Tahoma,sans-serif; background:var(--slate-bg); margin:0; color:#1e293b; }
+
+  .top{ background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%); color:#e2e8f0; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; border-bottom:3px solid var(--amber2); }
+  .top .brand{ display:flex; align-items:center; gap:10px; }
+  .top .brand .logo{ width:38px; height:38px; border-radius:10px; background:var(--amber2); color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; }
+  .top .brand h1{ font-size:14.5px; margin:0; color:#fbbf24; font-weight:800; }
+  .top .brand p{ font-size:10.5px; margin:0; color:#94a3b8; }
+
+  .nav{ position:sticky; top:0; z-index:200; background:#111827; padding:8px 10px; display:flex; gap:6px; overflow-x:auto; white-space:nowrap; border-bottom:1px solid #1e293b; }
+  .nav::-webkit-scrollbar{ height:4px; }
+  .tbtn{ flex:none; background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:999px; padding:7px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .tbtn.active{ background:var(--amber2); color:#0f172a; border-color:var(--amber2); }
+  .tab.hidden{ display:none !important; }
+
+  .print-toolbar{ display:flex; gap:8px; padding:10px 14px; background:#fff; border-bottom:1px solid #e2e8f0; }
+  .print-toolbar button{ font-size:12px; font-weight:700; padding:7px 14px; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#f8fafc; color:#0f172a; font-family:inherit; }
+  .print-toolbar button.pdf-btn{ background:#0f172a; color:#fff; border-color:#0f172a; }
+  @media print{
+    .nav, .print-toolbar, .top, .no-print{ display:none !important; }
+    body.printing-one *{ visibility:hidden !important; }
+    body.printing-one .print-active, body.printing-one .print-active *{ visibility:visible !important; }
+    body.printing-one .print-active{ position:absolute; top:0; left:0; width:100%; padding:10px; }
+    .page-break{ page-break-after:always; break-after:page; }
+  }
+
+  .card{ background:#fff; border:1px solid #e2e8f0; border-radius:16px; }
+  .card-dark{ background:var(--navy); border:1px solid #1e293b; border-radius:16px; color:#e2e8f0; }
+  .badge{ display:inline-block; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; }
+  .badge-red{ background:#fee2e2; color:#991b1b; }
+  .badge-amber{ background:#fef3c7; color:#92400e; }
+  .badge-green{ background:#d1fae5; color:#065f46; }
+  .badge-blue{ background:#dbeafe; color:#1e40af; }
+  .badge-slate{ background:#e2e8f0; color:#334155; }
+
+  .kpi{ background:var(--navy); border-radius:14px; padding:16px; text-align:center; color:#e2e8f0; }
+  .kpi b{ display:block; font-size:26px; color:#34d399; }
+  .kpi.amber b{ color:#fbbf24; }
+  .kpi.red b{ color:#f87171; }
+
+  table.tbl{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.tbl th{ background:#0f172a; color:#e2e8f0; padding:9px 8px; text-align:right; }
+  table.tbl td{ padding:8px; border-bottom:1px solid #e2e8f0; vertical-align:top; }
+  table.tbl tr:hover td{ background:#f8fafc; }
+
+  input[type=text], input[type=number], input[type=date], input[type=time], select, textarea{
+    width:100%; padding:9px 10px; border:1px solid #cbd5e1; border-radius:9px; font-family:inherit; font-size:13px; background:#fff;
+  }
+  input:focus, select:focus, textarea:focus{ outline:2px solid var(--amber2); outline-offset:1px; border-color:var(--amber2); }
+  label.f-label{ display:block; font-size:12px; color:#64748b; margin-bottom:4px; font-weight:700; }
+  .btn-amber{ background:var(--amber2); color:#0f172a; font-weight:800; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-family:inherit; font-size:13px; }
+  .btn-amber:hover{ background:#ea9a1f; }
+  .btn-dark{ background:#0f172a; color:#fbbf24; font-weight:800; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-family:inherit; font-size:13px; }
+  .btn-ghost{ background:#fff; color:#0f172a; font-weight:700; padding:8px 14px; border-radius:9px; border:1px solid #cbd5e1; cursor:pointer; font-family:inherit; font-size:12px; }
+  .btn-danger{ background:#fee2e2; color:#991b1b; font-weight:700; padding:6px 12px; border-radius:8px; border:1px solid #fecaca; cursor:pointer; font-family:inherit; font-size:11px; }
+
+  .section-title{ font-size:17px; font-weight:800; color:#0f172a; margin:0 0 4px; }
+  .section-sub{ font-size:12px; color:#64748b; margin:0 0 16px; }
+  .doc-tag{ font-size:10.5px; background:rgba(217,119,6,.15); color:#fbbf24; border:1px solid rgba(217,119,6,.35); padding:3px 10px; border-radius:999px; font-family:monospace; }
+
+  .chk-item{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:10px; border-bottom:1px dashed #e2e8f0; flex-wrap:wrap; }
+  .chk-item:last-child{ border-bottom:none; }
+  .chk-q{ flex:1; min-width:220px; font-size:12.5px; color:#334155; }
+  .chk-controls{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .seg{ display:flex; border:1px solid #cbd5e1; border-radius:8px; overflow:hidden; }
+  .seg button{ border:none; background:#fff; padding:5px 10px; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; color:#64748b; }
+  .seg button.sel-compliant.active{ background:#10b981; color:#fff; }
+  .seg button.sel-nonconformant.active{ background:#ef4444; color:#fff; }
+  .seg button.sel-na.active{ background:#94a3b8; color:#fff; }
+  .ev-btn{ font-size:10.5px; padding:5px 8px; border-radius:6px; border:1px dashed #cbd5e1; background:#f8fafc; cursor:pointer; color:#64748b; font-family:inherit; }
+  .ev-btn.attached{ border-color:#10b981; background:#d1fae5; color:#065f46; }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:8px; }
+
+  [contenteditable="true"]{ border-radius:4px; transition:background .15s, outline .15s; cursor:text; color:#0f172a !important; font-weight:600; -webkit-text-fill-color:#0f172a; }
+  [contenteditable="true"]:hover{ outline:1px dashed #d97706; }
+  [contenteditable="true"]:focus{ outline:1px dashed #d97706; background:#fffbeb; }
+  td[contenteditable="true"], th[contenteditable="true"]{ min-width:60px; }
+  input[type=text], input[type=number], input[type=date], input[type=time], textarea{ color:#0f172a; font-weight:500; }
+  input::placeholder, textarea::placeholder{ color:#94a3b8; font-weight:400; }
+  .row-del{ background:#fee2e2; color:#991b1b; border:none; border-radius:6px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .row-add{ background:#f0fdf4; color:#166534; border:1px dashed #86efac; border-radius:8px; padding:6px 12px; font-size:11.5px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .tbl-dark td{ color:#e2e8f0; border-bottom:1px solid #334155; }
+  .tbl-dark tr:hover td{ background:#1e293b; }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <div class="logo">IA</div>
+    <div>
+      <h1>INTERNAL AUDIT INITIATIVE 2026 | مبادرة المراجعة الداخلية</h1>
+      <p>Institutional Excellence Initiative — Digital Black Box | 13 Departments Audit Framework</p>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#94a3b8;">م. وائل علي | مدير مشاريع أول ومهندس مدني | www.bena-blackbox.com</div>
+</div>
+
+<nav class="nav" id="mainNav">
+<button class="tbtn active" data-tab="0" onclick="switchTab(0)">📊 لوحة القيادة</button>
+<button class="tbtn" data-tab="1" onclick="switchTab(1)">✉️ خطابات الإخطار</button>
+<button class="tbtn" data-tab="2" onclick="switchTab(2)">📅 الجدول الزمني (3 أسابيع)</button>
+<button class="tbtn" data-tab="3" onclick="switchTab(3)">✅ قوائم التحقق الميدانية</button>
+<button class="tbtn" data-tab="4" onclick="switchTab(4)">📈 مصفوفة التقييم والدرجات</button>
+<button class="tbtn" data-tab="5" onclick="switchTab(5)">🛠️ متابعة الإجراءات التصحيحية</button>
+<button class="tbtn" data-tab="6" onclick="switchTab(6)">🧭 مصفوفة توزيع الفريق</button>
+<button class="tbtn" data-tab="7" onclick="switchTab(7)">🎙️ نصوص الافتتاح والختام</button>
+<button class="tbtn" data-tab="8" onclick="switchTab(8)">📁 سجل المشاريع</button>
+<button class="tbtn" data-tab="9" onclick="switchTab(9)">💡 الدروس المستفادة</button>
+<button class="tbtn" data-tab="10" onclick="switchTab(10)" style="background:#166534;">📋 التقرير النهائي الشامل</button>
+</nav>
+
+<main id="mainArea">
+
+<section id="tab-0" class="tab">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-0')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-0','Audit_Dashboard.pdf')">📄 حفظ PDF</button></div>
+
+<div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 60%,#0f172a 100%); color:#fff; padding:40px 24px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <span class="doc-tag">Institutional Excellence Initiative — 2026</span>
+    <h1 style="font-size:28px;font-weight:900;margin:14px 0 8px;color:#fff;">من المراجعة الورقية إلى <span style="color:#fbbf24;">الصندوق الأسود الرقمي</span></h1>
+    <p style="color:#94a3b8;font-size:13.5px;max-width:680px;line-height:1.9;">إطار مراجعة داخلية شامل يغطي 13 إدارة عبر 3 أسابيع، بقوائم تحقق تفاعلية، تقييم آلي، ومتابعة إجراءات تصحيحية فورية — يوفّر للإدارة العليا بيانات دقيقة لاتخاذ القرار في الوقت الفعلي.</p>
+    <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+      <button class="btn-amber" onclick="switchTab(3)">ابدأ مراجعة قسم</button>
+      <button class="btn-ghost" style="background:transparent;color:#e2e8f0;border-color:#334155;" onclick="switchTab(10)">التقرير النهائي</button>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1100px;margin:-26px auto 0;padding:0 20px;">
+  <div id="dashKpis" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+</div>
+
+<div style="max-width:1100px;margin:28px auto;padding:0 20px;" class="space-y-6">
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="card p-5"><h3 class="font-bold text-sm text-slate-800 mb-3">📊 أداء الإدارات الـ13 (من 15)</h3><canvas id="deptBarChart" height="230"></canvas></div>
+    <div class="card p-5"><h3 class="font-bold text-sm text-slate-800 mb-3">🎯 مصفوفة المخاطر حسب الإدارة</h3><canvas id="deptRadarChart" height="230"></canvas></div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="card p-5">
+      <h3 class="font-bold text-sm text-slate-800 mb-3">🏆 لوحة صدارة الإدارات (Gamification)</h3>
+      <div id="leaderboard" class="space-y-2"></div>
+    </div>
+    <div class="card p-5">
+      <h3 class="font-bold text-sm text-slate-800 mb-3">⏰ تنبيهات التصعيد (SLA Engine)</h3>
+      <div id="escalations" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <div class="card-dark p-6">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <h2 class="font-bold text-white mb-1">💰 مؤشر العائد على الاستثمار في الجودة (Cost of Poor Quality)</h2>
+        <p class="text-slate-400 text-xs">قدّر تكلفة عدم المطابقة المتوقعة والوفر الناتج عن اكتشاف الأخطاء مبكراً</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+      <div><label class="f-label" style="color:#94a3b8;">عدد حالات عدم المطابقة (NCR) المستخدَم بالحساب</label><input type="number" id="copq_ncrCount" value="10" min="0" oninput="this.dataset.userEdited='1'; renderCOPQ()"></div>
+      <div><label class="f-label" style="color:#94a3b8;">متوسط تكلفة إعادة العمل لكل NCR (EGP)</label><input type="number" id="copq_perNcr" value="15000" oninput="renderCOPQ()"></div>
+      <div><label class="f-label" style="color:#94a3b8;">نسبة تقليل الأخطاء المتوقعة بعد المراجعة</label><input type="number" id="copq_reduction" value="30" oninput="renderCOPQ()">%</div>
+      <div class="kpi amber"><b id="copq_result">0 EGP</b><span class="text-slate-400 text-xs">الوفر التقديري المتوقع</span></div>
+    </div>
+    <p class="text-[11px] text-slate-500 mt-2 no-print">* يُعبّأ عدد الحالات تلقائياً بعدد الإجراءات التصحيحية المفتوحة حالياً، ويمكنك تعديله يدوياً لأي سيناريو تقديري.</p>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">🧩 الركائز الاستراتيجية للمبادرة</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-xl border border-slate-200"><div class="font-bold text-sm mb-1">🛡️ تخفيف المخاطر</div><p class="text-xs text-slate-500">اكتشاف الفجوات التعاقدية والمالية والفنية قبل تفاقمها إلى خسائر.</p></div>
+      <div class="p-4 rounded-xl border border-slate-200"><div class="font-bold text-sm mb-1">⚙️ الكفاءة التشغيلية</div><p class="text-xs text-slate-500">تحسين دورة تداول المستندات بين المواقع والمكتب الرئيسي.</p></div>
+      <div class="p-4 rounded-xl border border-slate-200"><div class="font-bold text-sm mb-1">🤖 الجاهزية الرقمية</div><p class="text-xs text-slate-500">تجهيز الإدارات فنياً لدمج أدوات الذكاء الاصطناعي (QAI) في الجودة والمخاطر.</p></div>
+    </div>
+  </div>
+
+  <div class="card-dark p-6">
+    <div class="flex items-center justify-between flex-wrap gap-3 border-b border-slate-700 pb-3 mb-3">
+      <h2 class="font-bold text-white">قائد فريق المراجعة</h2>
+      <span class="doc-tag">Digital Black Box Initiative</span>
+    </div>
+    <p class="text-sm text-slate-200 font-bold">م. وائل علي</p>
+    <p class="text-xs text-slate-400 mt-1 leading-relaxed">مدير مشاريع أول ومهندس مدني بخبرة تتجاوز 16 عاماً في الإنشاءات والبنية التحتية البحرية ومراكز البيانات بمصر والإمارات، حاصل على PMP، ويدرس ماجستير بجامعة Salford بالمملكة المتحدة.</p>
+    <p class="text-[11px] text-slate-500 mt-3">www.bena-blackbox.com</p>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-1" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('letterPrintArea')">🖨️ طباعة الخطاب</button><button class="pdf-btn" onclick="downloadPdf('letterPrintArea','Audit_Notification_Letter.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-4xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">PART I — Audit Notification Letters</span>
+    <h1 class="text-xl font-bold mt-2 text-white">✉️ خطابات إخطار المراجعة (14 إدارة)</h1>
+    <p class="text-slate-400 text-xs mt-1">اختر الإدارة، حدد الموعد والمدة، ثم اطبع أو صدّر الخطاب الرسمي مباشرة.</p>
+  </div>
+
+  <div class="card p-6 no-print">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div class="md:col-span-2"><label class="f-label">الإدارة المستهدفة</label><select id="letter_dept" onchange="renderLetter()"></select></div>
+      <div><label class="f-label">تاريخ المراجعة</label><input type="date" id="letter_date" onchange="renderLetter()"></div>
+      <div><label class="f-label">وقت المراجعة</label><input type="time" id="letter_time" value="09:00" onchange="renderLetter()"></div>
+      <div><label class="f-label">المدة (أيام عمل)</label><input type="number" id="letter_duration" value="1" min="1" onchange="renderLetter()"></div>
+      <div class="md:col-span-3"><label class="f-label">اسم رئيس الإدارة (اختياري)</label><input type="text" id="letter_head" placeholder="مثال: أ. محمد سعيد" oninput="renderLetter()"></div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between no-print">
+    <p class="text-[11px] text-amber-700 font-bold">✏️ يمكنك الضغط داخل أي فقرة من الخطاب أدناه وتعديل نصها مباشرة قبل الطباعة أو التصدير.</p>
+    <button class="btn-ghost" onclick="renderLetter()">↺ استرجاع النص الأصلي</button>
+  </div>
+
+  <div id="letterPrintArea" class="card p-8">
+    <div class="flex justify-between items-start border-b border-slate-200 pb-4 mb-5">
+      <div>
+        <div class="text-xs font-bold text-amber-600">BENA BLACK BOX — INTERNAL AUDIT 2026</div>
+        <h2 class="text-lg font-bold text-slate-900 mt-1" id="lt_title" contenteditable="true">خطاب إخطار مراجعة داخلية</h2>
+      </div>
+      <div class="text-left text-[11px] text-slate-500">
+        <p>www.bena-blackbox.com</p>
+        <p id="lt_dateNow"></p>
+      </div>
+    </div>
+    <div class="text-sm leading-relaxed text-slate-700 space-y-3">
+      <p><b>إلى:</b> <span id="lt_to" contenteditable="true"></span></p>
+      <p><b>من:</b> <span id="lt_from" contenteditable="true">لجنة المراجعة الداخلية / إدارة الجودة</span></p>
+      <p><b>الموضوع:</b> إخطار ببدء مراجعة داخلية — <span id="lt_deptName"></span></p>
+      <p id="lt_intro" contenteditable="true"></p>
+      <p class="font-bold mt-4">نطاق المراجعة:</p>
+      <ul class="list-disc pr-5 space-y-1" id="lt_scope" contenteditable="true"></ul>
+      <div class="grid grid-cols-2 gap-4 mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs">
+        <p><b>موعد المراجعة:</b> <span id="lt_dateOut"></span> — الساعة <span id="lt_timeOut"></span></p>
+        <p><b>المدة المتوقعة:</b> <span id="lt_durOut"></span> يوم عمل</p>
+      </div>
+      <p class="mt-3" id="lt_coord" contenteditable="true"><b>التنسيق:</b> يرجى تعيين نقطة اتصال (Focal Point) لتسهيل مهمة فريق المراجعة وتوفير المستندات المطلوبة.</p>
+      <div class="mt-8 pt-4 border-t border-slate-200">
+        <p>مع خالص التقدير،</p>
+        <p class="font-bold mt-2" id="lt_signName" contenteditable="true">م. وائل علي</p>
+        <p class="text-xs text-slate-500" id="lt_signTitle" contenteditable="true">رئيس فريق المراجعة الداخلية | مدير مشاريع أول ومهندس مدني</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-5 flex items-center justify-between flex-wrap gap-3 no-print">
+    <div>
+      <h2 class="section-title" style="margin:0;">إرسال جماعي لكل الخطابات الـ14</h2>
+      <p class="section-sub" style="margin:0;">توليد نسخة PDF واحدة تضم كل خطابات الإخطار دفعة واحدة</p>
+    </div>
+    <button class="btn-dark" onclick="downloadAllLettersPdf()">📚 تصدير كل الخطابات PDF</button>
+  </div>
+  <div id="allLettersArea" style="display:none;"></div>
+
+</div>
+</section>
+
+<section id="tab-2" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-2')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-2','Audit_Schedule.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">PART III — 3-Week Audit Schedule</span>
+    <h1 class="text-xl font-bold mt-2 text-white">📅 الجدول الزمني للمراجعة (3 أسابيع)</h1>
+    <p class="text-slate-400 text-xs mt-1">توزيع مراجعة 13 إدارة على 3 أسابيع لضمان فحص شامل دون تعطيل العمليات اليومية.</p>
+  </div>
+
+  <div class="flex items-center justify-between no-print">
+    <p class="text-[11px] text-amber-700 font-bold">✏️ اضغط داخل أي خلية لتعديل نصها، أو احذف/أضف جلسات لكل أسبوع.</p>
+    <button class="btn-ghost" onclick="resetScheduleData()">↺ استرجاع الجدول الأصلي</button>
+  </div>
+  <div id="scheduleWeeks"></div>
+
+  <div class="card p-6">
+    <h2 class="section-title">📌 توصيات رئيسية لنجاح المراجعة</h2>
+    <ul class="text-xs text-slate-600 space-y-2 list-disc pr-4">
+      <li>إرسال خطابات الإخطار الرسمية قبل 48 ساعة على الأقل من موعد كل إدارة.</li>
+      <li>التأكيد في الجلسة الافتتاحية أن الهدف هو التحسين وليس تصيّد الأخطاء.</li>
+      <li>عدم قبول أي بند كمكتمل دون دليل ملموس (مستند، صورة، أو لقطة شاشة من النظام).</li>
+      <li>رئيس فريق المراجعة (م. وائل علي) يشرف على كل الجلسات ويفصل في أي خلاف بين الإدارات.</li>
+    </ul>
+  </div>
+
+  <div class="card-dark p-6">
+    <h2 class="font-bold text-white mb-1">🚨 وحدة المراجعات الطارئة (Flash Audits)</h2>
+    <p class="text-slate-400 text-xs mb-4">لحالات عدم المطابقة الحرجة التي تستدعي مراجعة فورية خارج الجدول المعتمد</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+      <select id="flash_dept"></select>
+      <input type="text" id="flash_reason" placeholder="سبب المراجعة الطارئة">
+      <input type="date" id="flash_date">
+      <button class="btn-amber" onclick="addFlashAudit()">🚨 تسجيل مراجعة طارئة</button>
+    </div>
+    <div id="flashList" class="space-y-2"></div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-3" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('checklistPrintArea')">🖨️ طباعة قائمة القسم</button><button class="pdf-btn" onclick="downloadPdf('checklistPrintArea','Audit_Checklist.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">PART II — Audit Checklists (13 Departments)</span>
+    <h1 class="text-xl font-bold mt-2 text-white">✅ قوائم التحقق الرقمية والتنفيذ الميداني</h1>
+    <p class="text-slate-400 text-xs mt-1">لكل بند: ممتثل / غير ممتثل / غير مطبق + إرفاق دليل + ملاحظة. الدرجة تُحسب تلقائياً من 15.</p>
+  </div>
+
+  <div class="card p-5 no-print">
+    <label class="f-label">اختر الإدارة لبدء المراجعة الميدانية</label>
+    <select id="checklist_dept" onchange="renderChecklist()"></select>
+  </div>
+
+  <input type="file" id="ev_file_input" style="display:none" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx" onchange="handleEvidenceFile(this)">
+
+  <div id="checklistPrintArea">
+    <div class="card p-6" id="chk_header">
+      <div class="flex justify-between items-center flex-wrap gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900" id="chk_deptName">—</h2>
+          <p class="text-xs text-slate-500 mt-1">المراجع المسؤول: <span id="chk_auditor">م. وائل علي</span></p>
+        </div>
+        <div class="kpi" style="padding:10px 18px;"><b id="chk_score">0 / 15</b><span class="text-slate-400 text-[10px]">الدرجة الحالية</span></div>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-2 mt-4"><div id="chk_progressBar" class="h-2 rounded-full bg-amber-500" style="width:0%;"></div></div>
+    </div>
+
+    <div id="chk_categories" class="space-y-5 mt-5"></div>
+
+    <div class="card p-5 mt-5 no-print">
+      <label class="f-label">💡 نصيحة المراجع لهذا القسم</label>
+      <p class="text-xs text-slate-500" id="chk_tip"></p>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between no-print">
+    <button class="btn-amber" onclick="saveChecklist()">💾 حفظ نتيجة مراجعة هذا القسم</button>
+    <span id="chk_saveMsg" class="text-emerald-600 text-xs font-bold"></span>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-4" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-4')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-4','Audit_Scoring_Matrix.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Automated Scoring Matrix</span>
+    <h1 class="text-xl font-bold mt-2 text-white">📈 مصفوفة التقييم والدرجات التلقائية</h1>
+    <p class="text-slate-400 text-xs mt-1">تُحسب تلقائياً من نتائج قوائم التحقق المحفوظة لكل إدارة — تصنيف المخاطر: منخفض / متوسط / مرتفع.</p>
+  </div>
+
+  <div id="scoring_empty" class="card p-10 text-center text-slate-400 text-sm">لم تُحفظ أي نتائج مراجعة بعد. ابدأ من تبويب "قوائم التحقق الميدانية".</div>
+
+  <div id="scoring_content" class="space-y-6 hidden">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="scoring_kpis"></div>
+    <div class="card p-6">
+      <h2 class="section-title">جدول درجات الإدارات (Scoring Matrix out of 15)</h2>
+      <div class="overflow-x-auto"><table class="tbl">
+        <thead><tr><th>الإدارة</th><th>الدرجة</th><th>نسبة الالتزام</th><th>التقييم التشغيلي</th><th>مستوى الخطورة</th></tr></thead>
+        <tbody id="scoring_tableBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-5" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-5')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-5','Audit_CAP_Tracker.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">CAP / NCR Tracker</span>
+    <h1 class="text-xl font-bold mt-2 text-white">🛠️ متابعة الإجراءات التصحيحية (CAP) وعدم المطابقة (NCR)</h1>
+    <p class="text-slate-400 text-xs mt-1">تتحول كل ملاحظة "غير ممتثل" في قوائم التحقق تلقائياً إلى تذكرة متابعة هنا.</p>
+  </div>
+
+  <div id="cap_kpis" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
+
+  <div class="card p-6 no-print">
+    <h2 class="section-title">إضافة إجراء تصحيحي يدوياً</h2>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+      <select id="cap_dept"></select>
+      <input type="text" id="cap_issue" placeholder="وصف المشكلة / الملاحظة" class="md:col-span-2">
+      <select id="cap_risk"><option>مرتفع</option><option selected>متوسط</option><option>منخفض</option></select>
+      <input type="date" id="cap_deadline">
+    </div>
+    <button class="btn-ghost mt-3" onclick="addCapManual()">+ إضافة تذكرة</button>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">جدول متابعة الإجراءات التصحيحية</h2>
+    <div class="overflow-x-auto"><table class="tbl">
+      <thead><tr><th>الإدارة</th><th>المشكلة / الملاحظة</th><th>مستوى الخطر</th><th>المسؤول</th><th>الموعد النهائي</th><th>الحالة</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="cap_tableBody"></tbody>
+    </table></div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-6" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-6')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-6','Audit_Allocation_Matrix.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-6xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">PART VI — Audit Team Allocation Matrix</span>
+    <h1 class="text-xl font-bold mt-2 text-white">🧭 مصفوفة توزيع فريق المراجعة (8 مراجعين)</h1>
+    <p class="text-slate-400 text-xs mt-1">لا يجوز لأي مراجع مراجعة إدارته الخاصة — ضماناً للحياد والاستقلالية.</p>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-3 no-print">
+      <p class="text-[11px] text-amber-700 font-bold">✏️ اضغط داخل أي خلية لتعديلها مباشرة.</p>
+      <div class="flex gap-2">
+        <button class="row-add" onclick="addAllocRow()">+ إضافة صف</button>
+        <button class="btn-ghost" onclick="resetAllocationData()">↺ استرجاع الأصلي</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto"><table class="tbl">
+      <thead><tr><th>#</th><th>الإدارة المستهدفة</th><th>المراجع المُكلَّف</th><th>الصفة الوظيفية</th><th>ملاحظات إضافية</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="alloc_tableBody"></tbody>
+    </table></div>
+  </div>
+
+  <div class="card p-6">
+    <h2 class="section-title">🧷 قواعد تشكيل الفريق</h2>
+    <ul class="text-xs text-slate-600 space-y-2 list-disc pr-4">
+      <li><b>الاستقلالية:</b> لا يجوز لأي مراجع مراجعة إدارته الخاصة، لضمان الحياد والمصداقية.</li>
+      <li><b>الكفاءة الفنية:</b> يُطابق تخصص المراجع مع طبيعة الإدارة (محاسب للمالية، مهندس للمواقع).</li>
+      <li><b>سلطة رئيس الفريق:</b> م. وائل علي يملك السلطة النهائية للفصل في أي خلاف واعتماد النتائج.</li>
+      <li><b>السرية:</b> نتائج المراجعة سرّية تماماً ولا تُشارك إلا مع الإدارة العليا المعنية.</li>
+      <li><b>النهج البنّاء:</b> كل ملاحظة يجب أن تُرفق بإجراء تصحيحي مقترح — وليس مجرد رصد للمشكلة.</li>
+    </ul>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-7" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-7')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-7','Audit_Statements.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-4xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">PART V — Opening &amp; Closing Statements</span>
+    <h1 class="text-xl font-bold mt-2 text-white">🎙️ نصوص الجلسة الافتتاحية والختامية</h1>
+    <p class="text-slate-400 text-xs mt-1">تُقرأ بواسطة رئيس فريق المراجعة في بداية ونهاية كل جلسة مراجعة قسم.</p>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="section-title" style="margin:0;">📖 النص الافتتاحي (Opening Statement)</h2>
+      <div class="flex gap-2 no-print">
+        <button class="btn-ghost" onclick="copyText('opening_text')">📋 نسخ النص</button>
+        <button class="btn-ghost" onclick="resetStatement('opening')">↺ استرجاع الأصلي</button>
+      </div>
+    </div>
+    <p class="text-[11px] text-amber-700 font-bold mb-2 no-print">✏️ اضغط داخل الصندوق أدناه وعدّل النص كما تريد — يُحفظ تعديلك تلقائياً.</p>
+    <div id="opening_text" contenteditable="true" onblur="saveStatement('opening', this)" class="text-sm leading-loose text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200">
+      صباح / مساء الخير للجميع.<br><br>
+      يسعدني تواجدي معكم اليوم في انطلاق مبادرة المراجعة الداخلية 2026. قبل أن نبدأ، أود أن أؤكد أن وجودنا هنا ليس لتقييم الأفراد أو تصيّد الأخطاء، بل نحن هنا كفريق واحد لتقييم وتطوير نظام التشغيل الخاص بنا.
+      هدفنا المشترك هو التأكد من توافق إجراءاتنا مع الرؤية الاحترافية للشركة ومعايير الجودة الدولية. نتائج هذه المراجعة ستكون خارطة طريق لتحسين الأداء، وتخفيف المخاطر قبل وقوعها، وحماية مصالح الشركة في جميع المشاريع.
+      أتقدم لكم بالشكر مسبقاً على تعاونكم وشفافيتكم. نحن هنا لدعمكم والاستماع لأي مقترحات لتحسين سير العمل في قسمكم.
+      لنبدأ الآن.
+    </div>
+    <p class="text-[11px] text-amber-700 mt-3 font-bold no-print">💡 نصيحة قيادية: يُلقى هذا النص بنبرة هادئة وواثقة. عبارات مثل "نحن هنا لدعمكم" و"فريق واحد" تقلل من قلق الموظفين وتشجعهم على مشاركة المستندات والمعلومات بصراحة أكبر.</p>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="section-title" style="margin:0;">📘 النص الختامي (Closing Statement)</h2>
+      <div class="flex gap-2 no-print">
+        <button class="btn-ghost" onclick="copyText('closing_text')">📋 نسخ النص</button>
+        <button class="btn-ghost" onclick="resetStatement('closing')">↺ استرجاع الأصلي</button>
+      </div>
+    </div>
+    <p class="text-[11px] text-amber-700 font-bold mb-2 no-print">✏️ اضغط داخل الصندوق أدناه وعدّل النص كما تريد — يُحفظ تعديلك تلقائياً.</p>
+    <div id="closing_text" contenteditable="true" onblur="saveStatement('closing', this)" class="text-sm leading-loose text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200">
+      في ختام جلسة المراجعة اليوم في هذا القسم...
+      أود أن أعبّر عن خالص تقديري وامتناني لكل الفريق على الشفافية والتعاون البنّاء الذي شهدناه. كانت جلسة بنّاءة للغاية، وقد رصدنا نقاط قوة واضحة يحق لنا جميعاً الفخر بها.
+      لاحظنا بعض الملاحظات التي سنعمل عليها معاً كفرص للتحسين، وليست كأخطاء. هدفنا هو سدّ أي فجوة قد تؤثر على الكفاءة التشغيلية أو جودة المخرجات. ستُرسل مسودة أولية من التقرير إلى رئيس القسم للمراجعة والتعليق قبل الاعتماد النهائي، لضمان دقة كل النتائج.
+      شكراً مرة أخرى على وقتكم وجهدكم. نحن واثقون أن هذا القسم سيظل ركيزة أساسية في نجاح الشركة خلال 2026.
+      سيصلكم التقرير خلال 48 ساعة. أتمنى لكم التوفيق.
+    </div>
+    <p class="text-[11px] text-amber-700 mt-3 font-bold no-print">💡 نصيحة قيادية: لا تذكر أسماء أفراد أبداً في النص الختامي. اجعل كل الملاحظات على مستوى "الإجراءات" و"العمليات" وليس الأشخاص، واختم دائماً بتحديد موعد وصول التقرير.</p>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-8" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-8')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-8','Audit_Projects_Register.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Audit Scope Register</span>
+    <h1 class="text-xl font-bold mt-2 text-white">📁 سجل المشاريع الخاضعة للمراجعة</h1>
+    <p class="text-slate-400 text-xs mt-1">قائمة المشاريع النشطة المشمولة بنطاق المراجعة الداخلية الحالية.</p>
+  </div>
+
+  <div class="card p-6 no-print">
+    <h2 class="section-title">إضافة مشروع جديد للسجل</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <input type="text" id="proj_name" placeholder="اسم المشروع">
+      <input type="text" id="proj_dept" placeholder="الإدارة / القطاع">
+      <input type="text" id="proj_auditor" placeholder="المراجع المسؤول" value="م. وائل علي">
+      <button class="btn-amber" onclick="addProject()">+ إضافة المشروع</button>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="section-title" style="margin:0;">قائمة المشاريع</h2>
+      <span id="proj_count" class="badge badge-blue">0 مشاريع</span>
+    </div>
+    <div class="overflow-x-auto"><table class="tbl">
+      <thead><tr><th>#</th><th>اسم المشروع</th><th>الإدارة</th><th>المراجع المسؤول</th><th>الحالة</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="proj_tableBody"></tbody>
+    </table></div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-9" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('tab-9')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('tab-9','Audit_Lessons_Learned.pdf')">📄 حفظ PDF</button></div>
+<div class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6">
+    <span class="doc-tag">Corporate Lessons Learned Archive</span>
+    <h1 class="text-xl font-bold mt-2 text-white">💡 سجل الدروس المستفادة والمعرفة المؤسسية</h1>
+    <p class="text-slate-400 text-xs mt-1">أرشفة الأخطاء والملاحظات المتكررة كقاعدة معرفية يستفيد منها فريق المشاريع الجديد.</p>
+  </div>
+
+  <div class="card p-6 no-print">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <select id="ll_dept"></select>
+      <input type="text" id="ll_lesson" placeholder="وصف الدرس المستفاد" class="md:col-span-2">
+      <select id="ll_category"><option>تعاقدي/FIDIC</option><option>فني/جودة</option><option>مالي</option><option>إداري</option><option>سلامة HSE</option></select>
+    </div>
+    <button class="btn-ghost mt-3" onclick="addLesson()">+ إضافة درس مستفاد</button>
+  </div>
+
+  <div class="card p-6">
+    <input type="text" id="ll_search" placeholder="🔍 بحث ذكي في الدروس المستفادة..." class="mb-4 no-print" oninput="renderLessons()">
+    <div class="overflow-x-auto"><table class="tbl">
+      <thead><tr><th>الإدارة</th><th>التصنيف</th><th>الدرس المستفاد</th><th class="no-print">إجراء</th></tr></thead>
+      <tbody id="ll_tableBody"></tbody>
+    </table></div>
+  </div>
+
+</div>
+</section>
+
+<section id="tab-10" class="tab hidden">
+<div class="print-toolbar no-print"><button onclick="printSection('finalReportArea')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadPdf('finalReportArea','Audit_Final_Comprehensive_Report.pdf')">📄 حفظ PDF شامل</button></div>
+
+<div id="finalReportArea" class="max-w-5xl mx-auto p-5 space-y-6">
+
+  <div class="card-dark p-6 flex justify-between items-center flex-wrap gap-4">
+    <div>
+      <span class="doc-tag">AUD-2026-FULL — FINAL RECORD</span>
+      <h1 class="text-xl font-bold mt-2 text-white">📋 التقرير النهائي الشامل للمراجعة الداخلية 2026</h1>
+      <p class="text-slate-400 text-xs mt-1">تجميع تلقائي لكل نتائج المراجعة عبر 13 إدارة، جاهز للطباعة أو الحفظ كملف PDF واحد.</p>
+    </div>
+    <button class="btn-amber no-print" onclick="generateFinalReport()">🧾 توليد / تحديث التقرير</button>
+  </div>
+
+  <div class="card p-6 text-center text-xs text-slate-400">
+    <p><strong>INSTITUTIONAL EXCELLENCE INITIATIVE — INTERNAL AUDIT 2026</strong></p>
+    <p>رئيس فريق المراجعة: م. وائل علي | مدير مشاريع أول ومهندس مدني</p>
+    <p>www.bena-blackbox.com | Digital Black Box Initiative © 2026</p>
+    <p class="mt-2">تاريخ توليد التقرير: <span id="finalReportDate">—</span></p>
+  </div>
+
+  <div id="finalReportBody"><p class="text-center text-slate-400 py-10">اضغط "توليد / تحديث التقرير" أعلاه لتجميع أحدث نتائج المراجعة.</p></div>
+
+</div>
+</section>
+
+</main>
+
+<script>
+/* =========================================================
+   بيانات ثابتة: خطابات الإخطار (14 إدارة)
+   ========================================================= */
+const LETTERS = [
+  {id:"hr", name:"إدارة الموارد البشرية (HR)", to:"مدير الموارد البشرية", scope:["مراجعة ملفات الموظفين والعقود والمستندات القانونية الإلزامية.","تقييم نظام تقييم الأداء ومعايير الترقية والإحلال الوظيفي.","مراجعة برامج التدريب وتتبع الشهادات والعائد منها.","التحقق من سجلات الرواتب والبدلات والتأمينات الاجتماعية.","التأكد من التزام كل العمليات بأحدث لوائح الشركة ومعايير الأيزو."]},
+  {id:"marketing", name:"إدارة التسويق", to:"مدير التسويق", scope:["مراجعة اتساق الهوية المؤسسية عبر كل المنصات واللافتات والبروشورات.","تقييم فعالية الحملات التسويقية والعائد على الاستثمار (ROI) لتوليد العملاء.","مراجعة إدارة الموقع الإلكتروني ومنصات التواصل والأرشيف الرقمي.","مراجعة عقود وكالات الدعاية ودور الطباعة واستشاريي الإعلام.","التحقق من أنظمة رصد اتجاهات السوق وتحليل المنافسين وملاحظات العملاء."]},
+  {id:"finance", name:"الإدارة المالية", to:"المدير المالي (CFO)", scope:["مراجعة إجراءات التدفق النقدي والتحصيل ومطابقات البنوك.","تحليل التقارير المالية للمشاريع الجارية ومقارنة الفعلي بالموازنة.","التأكد من صرف مستحقات الموردين والمقاولين وفق عقود الفيديك وتقدم العمل.","مراجعة إقرارات ضريبة القيمة المضافة والالتزامات الضريبية الأخرى.","تدقيق سجلات الأصول الثابتة وتسويات العهدة المستديمة بالمواقع."]},
+  {id:"technical", name:"المكتب الفني", to:"مدير المكتب الفني / كبير المهندسين", scope:["مراجعة دورات اعتماد المخططات التنفيذية ودقة مخططات As-Built.","تدقيق شهادات الدفعات (IPC) مقابل تقدم العمل الفعلي بالموقع.","التحقق من دقة حصر الكميات (BOQ) مقابل مستندات العقد.","مراجعة أوامر التغيير ومدد التمديد الزمني (EOT) وفق معايير الفيديك.","تقييم تقارير الأداء الفني وسلامة البيانات المُصدرة."]},
+  {id:"procurement", name:"إدارة المشتريات", to:"مدير المشتريات / سلسلة التوريد", scope:["مراجعة دورة أوامر الشراء (PO) والتحقق من التوافق مع الموازنة.","تقييم قائمة الموردين المعتمدين (AVL) ومعايير التقييم الدوري.","التحقق من تطبيق قاعدة العروض الثلاثة ومراجعة تقارير المقارنة الفنية والتجارية.","التأكد من مطابقة المواد المشتراة للمواصفات المعتمدة.","تدقيق الجدول الزمني للتوريد ومطابقته لجداول المشاريع."]},
+  {id:"operations", name:"إدارة العمليات والمواقع", to:"مدير العمليات / مديرو المشاريع ومسؤولو المواقع", scope:["مراجعة التقدم الفعلي مقابل الجدول الزمني المعتمد (Baseline).","التحقق من سجلات فحص المواد وإغلاق تقارير عدم المطابقة (NCR).","تقييم إنتاجية العمالة والمعدات وسجلات الإنتاج اليومية.","تدقيق بروتوكولات السلامة المهنية واستخدام معدات الحماية الشخصية.","فحص إدارة المخزون الميداني وضبط الهدر."]},
+  {id:"tqm", name:"إدارة الجودة الشاملة (TQM)", to:"مدير الجودة / مسؤول ضمان الجودة", scope:["مراجعة دليل الجودة والإجراءات القياسية ومواءمتها لأهداف 2026.","التحقق من خطة المراجعة الداخلية السنوية وإغلاق تقارير عدم المطابقة.","تقييم مؤشرات الأداء القياسية (KPIs) وآليات اتخاذ القرار المبني على البيانات.","مراجعة استبيانات رضا العملاء وسجلات الإجراءات التصحيحية.","التحقق من توثيق ومتابعة اجتماعات مراجعة الإدارة (MRM)."]},
+  {id:"it", name:"تكنولوجيا المعلومات والتحول الرقمي", to:"مدير تكنولوجيا المعلومات / مسؤول التحول الرقمي", scope:["مراجعة أداء الخوادم واستقرار الشبكة بالمواقع وجداول الصيانة.","تقييم بروتوكولات الأمن السيبراني وأنظمة النسخ الاحتياطي وخطط استعادة الكوارث.","التحقق من تراخيص البرمجيات الهندسية وفعالية الدعم الفني.","تقييم التكامل بين أدوات الذكاء الاصطناعي وإدارة الجودة والمخاطر.","تدقيق سجل أصول تكنولوجيا المعلومات وأجهزة الموظفين."]},
+  {id:"drawing", name:"إدارة المخططات والمستندات", to:"مدير إدارة المخططات / رئيس ضبط المستندات", scope:["مراجعة سجلات تسليم المخططات (Transmittal) من حيث الدقة والتوقيت.","التحقق من عزل المخططات الملغاة واستبدالها بأحدث نسخة معتمدة.","تقييم تنظيم الأرشيف الرقمي والورقي للمخططات.","تدقيق دورات الاعتماد وتوثيق ملاحظات الاستشاري (A/B/C).","التأكد من استخدام فرق الموقع لأحدث ختم اعتماد للتنفيذ (IFC)."]},
+  {id:"risk", name:"إدارة المخاطر", to:"مدير المخاطر / مسؤول تقييم المخاطر", scope:["مراجعة سجل المخاطر وتحديثه الدوري للمخاطر الفنية والمالية والتعاقدية.","تقييم تطبيق استراتيجيات الاستجابة للمخاطر (تجنب، تخفيف، نقل، قبول).","مراجعة التنسيق بين إدارة المخاطر والمكتب الفني بخصوص أوامر التغيير والتمديد الزمني.","تدقيق تقارير تحليل الحساسية وتأثيرها على التدفقات النقدية والجدول الزمني.","التحقق من كفاية التغطية التأمينية لكل المشاريع والمعدات والعاملين."]},
+  {id:"warehouse", name:"إدارة المخازن والمستودعات", to:"مدير المخازن / أمين المخزن الرئيسي", scope:["مراجعة سجلات حركة المخزون (إذونات الاستلام والصرف) مقابل الرصيد الفعلي.","التأكد من تخزين المواد وفق المواصفات الفنية المعتمدة.","التحقق من الجرد الدوري ومطابقته لسجلات نظام تخطيط الموارد.","تدقيق سجلات عهدة الأدوات والمعدات وحالتها الفنية.","فحص معايير السلامة بالمخازن (الحريق، الممرات، طرق الرفع الآمن)."]},
+  {id:"planning", name:"إدارة التخطيط والجدولة", to:"مدير التخطيط / مسؤول الجدولة", scope:["التحقق من وجود جدول زمني معتمد (Baseline) لكل مشروع نشط.","مراجعة التحديثات الدورية وتقارير الفعلي مقابل المخطط وتحليل الانحرافات.","تقييم متابعة المسار الحرج (Critical Path) وإدارة الفائض الزمني (Float).","تدقيق تقارير التنبؤ بموعد الإنجاز بناءً على معدلات الأداء الحالية.","التأكد من إصدار التقارير ولوحات المتابعة لأصحاب المصلحة في مواعيدها."]},
+  {id:"central", name:"الإدارة المركزية / المكتب الرئيسي", to:"المدير العام / مدير العمليات", scope:["التحقق من تحديد أهداف 2026 الاستراتيجية وتعميمها على كل الإدارات.","مراجعة اجتماعات متابعة الأداء الشهرية وأنظمة المراقبة المركزية للمشاريع.","تقييم توزيع الموارد المركزية (معدات وعمالة) حسب أولويات المشاريع.","التحقق من وجود خطة استبدال وصيانة طويلة الأمد لأصول الشركة الرئيسية.","مراجعة تقارير إغلاق المشاريع والالتزام بجدول المراجعات الداخلية والخارجية."]},
+  {id:"admin", name:"الإدارة العامة (Administration)", to:"مدير الإدارة العامة / السكرتير التنفيذي", scope:["مراجعة سجل المراسلات الرسمية (الوارد والصادر) وأنظمة الأرشفة.","التحقق من عقود صيانة المكاتب وإدارة قاعات الاجتماعات.","تدقيق سجلات حركة أسطول السيارات واستهلاك الوقود ومواعيد تجديد التراخيص.","مراجعة سجلات الزوار وسياسات التحكم بالدخول وجودة التعامل مع الاتصالات."]}
+];
+
+/* =========================================================
+   بيانات ثابتة: قوائم التحقق (13 إدارة × 5 محاور تقريباً)
+   ========================================================= */
+const CHECKLISTS = [
+ {id:"hr", name:"إدارة الموارد البشرية (HR)", tip:"عند مراجعة HR، اختر عينة عشوائية (5 مهندسين و10 عمال موقع) للتحقق من تطبيق كل البنود أعلاه على ملفاتهم الفعلية.", cats:[
+   {title:"1. الملفات الشخصية والالتزام القانوني", items:["هل يوجد ملف كامل (ورقي أو رقمي) لكل موظف؟","هل تحتوي الملفات على كل مستندات التعيين المطلوبة (المؤهلات، الموقف من التجنيد)؟","هل عقود العمل موقعة من الطرفين ومحدّثة بآخر ترقية أو تعديل راتب؟","هل صور الهوية/الجواز متاحة وسارية؟"]},
+   {title:"2. التوظيف والتهيئة", items:["هل توجد توصيفات وظيفية معتمدة لكل المسميات؟","هل توجد نماذج تقييم مقابلات توثّق أسباب اختيار الموظفين الحاليين؟","هل يوجد برنامج تهيئة موثّق للموظفين الجدد قبل توجههم للمواقع؟"]},
+   {title:"3. إدارة الأداء والتدريب", items:["هل تُستكمل نماذج تقييم الأداء السنوي/نصف السنوي لكل الموظفين؟","هل توجد خطة تدريب سنوية معتمدة؟","هل سجلات حضور التدريب (خاصة السلامة والجودة) موثّقة؟","هل شهادات الاعتماد المهني (PMP، FIDIC) محدّثة للكوادر الرئيسية؟"]},
+   {title:"4. الرواتب والمزايا", items:["هل تتطابق الرواتب مع العقود والزيادات المعتمدة رسمياً؟","هل ساعات العمل الإضافي موثّقة بناءً على كشوف حضور معتمدة من مدير المشروع؟","هل توجد تغطية تأمين طبي سارية للموظفين والعمالة؟"]},
+   {title:"5. الحضور والإجازات", items:["هل يتم رصد الحضور بدقة بالمواقع والمكاتب (بصمة أو كشوف)؟","هل أرصدة الإجازات مسوّاة وطلبات الإجازة معتمدة ومؤرشفة رسمياً؟"]}
+ ]},
+ {id:"finance", name:"الإدارة المالية", tip:"ركّز بشكل خاص على فواتير المقاولين من الباطن والعهدة المستديمة بالموقع — فهما أعلى المناطق المالية خطورة في عقود الإنشاءات.", cats:[
+   {title:"1. التوثيق والضوابط الداخلية", items:["هل كل القيود المحاسبية مدعومة بمستندات أصلية معتمدة (فواتير، عقود، أذون صرف)؟","هل يوجد فصل واضح للمهام (الاعتماد، التنفيذ، القيد، المراجعة)؟","هل تُجرى مطابقات بنكية شهرية لكل حسابات الشركة؟"]},
+   {title:"2. تكلفة المشاريع والموازنات", items:["هل تُوزَّع التكاليف (عمالة، مواد، معدات) بدقة على أكواد المشاريع بنظام ERP؟","هل تتم مقارنة دورية بين التكلفة الفعلية والموازنة التقديرية لكل مشروع؟","هل تُصدر تقارير الانحراف المالي وتُشارك مع مديري المشاريع؟"]},
+   {title:"3. الفواتير ومدفوعات المقاولين", items:["هل تصدر فواتير العميل (IPC) في مواعيدها وفق نسب الإنجاز المعتمدة؟","هل تُدقَّق فواتير المقاولين من الباطن مقابل الكميات المنفذة مع خصم الضمانات والدفعات المقدمة؟","هل توجد متابعة منتظمة للمستحقات المتأخرة؟"]},
+   {title:"4. إدارة النقدية والعهدة", items:["هل تُجرى جرود مفاجئة ودورية للعهدة المستديمة بالمكاتب والمواقع؟","هل توجد حدود إنفاق معتمدة لمعاملات العهدة؟","هل سجلات الشيكات الواردة والصادرة كاملة ومتسلسلة وآمنة؟"]},
+   {title:"5. الالتزام الضريبي والقانوني", items:["هل تُقدَّم إقرارات ضريبة القيمة المضافة خلال المواعيد القانونية؟","هل شهادات الضرائب سارية ومحدّثة؟","هل يتوافق إعداد القوائم المالية مع المعايير المحاسبية المعتمدة؟"]}
+ ]},
+ {id:"technical", name:"المكتب الفني", tip:"ركّز على سجلات أوامر التغيير ودورات الاعتماد — أي نقص في التوثيق قد يفقد الشركة حقوقها المالية عند التسوية النهائية للمشروع.", cats:[
+   {title:"1. إدارة المخططات والمستندات الفنية", items:["هل توجد سجلات تسليم محدّثة لكل المخططات التنفيذية والمستندات الفنية؟","هل يوجد اعتماد موثّق من الاستشاري لكل المواد قبل الشراء أو التركيب؟","هل توجد آلية تضمن وصول أحدث نسخة معتمدة لفريق التنفيذ بالموقع؟"]},
+   {title:"2. إدارة العقود والمطالبات", items:["هل سجل أوامر التغيير (VO) مُوثَّق ومدعوم باعتمادات رسمية؟","هل مطالبات التمديد الزمني (EOT) موثّقة وفق معايير الفيديك؟","هل تُراجع عقود الباطن لضمان توافقها مع شروط العقد الرئيسي (Back-to-Back)؟"]},
+   {title:"3. حصر الكميات وشهادات الدفعات (IPC)", items:["هل جداول حصر الكميات مطابقة للتنفيذ الفعلي بالموقع؟","هل تُقدَّم شهادات الدفعات المرحلية في مواعيدها التعاقدية؟","هل تُدقَّق فواتير المقاولين فنياً مقابل القياسات المعتمدة بالموقع؟"]},
+   {title:"4. التخطيط ومتابعة التقدم", items:["هل الجدول الزمني المرجعي (Baseline) معتمد ومحدَّث دورياً؟","هل يُجرى تحليل للمسار الحرج لمعالجة التأخيرات في التقارير الفنية؟","هل تعكس التقارير الأسبوعية والشهرية التقدم الفعلي والتحديات الفنية بدقة؟"]}
+ ]},
+ {id:"procurement", name:"إدارة المشتريات", tip:"راجع تقارير تحليل العروض للتأكد من أن اختيار المورد تم بناءً على معايير فنية ومالية عادلة، وليس تفضيلات شخصية.", cats:[
+   {title:"1. إدارة طلبات وأوامر الشراء", items:["هل كل أمر شراء (PO) مدعوم بطلب شراء (PR) معتمد من مدير المشروع؟","هل يتم التحقق من توفر الموازنة قبل إتمام عملية الشراء؟","هل مواعيد التسليم موثّقة في أوامر الشراء مع آلية متابعة؟"]},
+   {title:"2. تأهيل وتقييم الموردين", items:["هل توجد قائمة موردين معتمدين (AVL) محدّثة؟","هل تُطبَّق قاعدة العروض الثلاثة بصرامة في المشتريات الكبرى؟","هل تُجرى تقييمات دورية لأداء الموردين (جودة، التزام بالمواعيد، سعر)؟"]},
+   {title:"3. تحليل واختيار العروض", items:["هل يوجد تحليل فني وتجاري موثّق (Bid Tabulation) لكل الاختيارات الكبرى؟","هل تُطابق عروض الموردين المواصفات الفنية المعتمدة من المكتب الفني؟","هل تُفاوض شروط الدفع والضمانات بما يتوافق مع التدفق النقدي للشركة؟"]},
+   {title:"4. العقود واتفاقيات الإطار", items:["هل توجد اتفاقيات إطارية للمواد الأساسية (حديد، خرسانة) لتخفيف تقلبات الأسعار؟","هل تتضمن عقود التوريد بنود غرامات للتأخير أو عدم المطابقة؟"]},
+   {title:"5. التوثيق وتضارب المصالح", items:["هل تُؤرشف كل مراسلات الموردين (عروض، مفاوضات) بشكل منظم؟","هل تُطبَّق سياسة تضارب المصالح بصرامة أثناء اختيار الموردين؟"]}
+ ]},
+ {id:"operations", name:"إدارة العمليات والمواقع", tip:"أثناء الزيارات الميدانية، لا تعتمد فقط على الأوراق — قم بجولة ميدانية عشوائية للتحقق من تطابق ما هو مكتوب في RFI مع ما يُنفَّذ فعلياً على الأرض.", cats:[
+   {title:"1. متابعة التقدم والجدول الزمني", items:["هل يوجد جدول زمني مرجعي معتمد ومعروض بمكتب الموقع؟","هل يُحدَّث التقدم الفعلي أسبوعياً مقابل المستهدف؟","هل تُوثَّق أسباب أي تأخير في السجلات اليومية؟"]},
+   {title:"2. ضبط الجودة الميداني", items:["هل تُقدَّم طلبات الفحص (RFI) للاستشاري في مواعيدها قبل الصب أو الردم؟","هل سجلات فحص المواد (خرسانة، حديد، تربة) متوفرة من معامل معتمدة؟","هل أُغلقت كل تقارير عدم المطابقة (NCR) الصادرة للموقع رسمياً؟"]},
+   {title:"3. الصحة والسلامة والبيئة (HSE)", items:["هل يرتدي كل العاملين معدات الحماية الشخصية الكاملة؟","هل توجد لافتات تحذير وحواجز سلامة كافية بمناطق الخطر؟","هل تُعقَد وتُوثَّق جلسة توعية سلامة يومية (Toolbox Talk)؟","هل معدات الموقع (الأوناش، السقالات) معتمدة بشهادات فحص سارية؟"]},
+   {title:"4. إدارة الموارد (العمالة والمعدات)", items:["هل عدد العمالة والمقاولين من الباطن متوافق مع نطاق العمل المخطط؟","هل تُحفظ سجلات تشغيل المعدات لضمان الاستغلال الأمثل؟"]},
+   {title:"5. التوثيق الميداني والتواصل", items:["هل يمتلك مهندسو الموقع أحدث مخططات معتمدة للتنفيذ (IFC)؟","هل تُؤرشف تقارير التقدم اليومية (DPR) موقّعة من مدير المشروع؟"]}
+ ]},
+ {id:"tqm", name:"إدارة الجودة الشاملة (TQM)", tip:"إذا ادّعى القسم تحسّن الجودة، اطلب بيانات أو تقارير تُثبت انخفاضاً ملموساً في الأخطاء أو ارتفاعاً في رضا العميل مقارنةً بالعام السابق.", cats:[
+   {title:"1. نظام إدارة الجودة والتوثيق", items:["هل دليل الجودة محدَّث ومعتمد من الإدارة العليا؟","هل الإجراءات القياسية (SOPs) موزّعة ومفهومة لكل رؤساء الأقسام؟","هل تُراجع سياسات الشركة سنوياً لمواءمة أهداف 2026؟"]},
+   {title:"2. المراجعات الداخلية وعدم المطابقة", items:["هل توجد خطة مراجعة داخلية سنوية معتمدة؟","هل تُوثَّق تقارير عدم المطابقة وتُغلق خلال المواعيد المحددة؟","هل يُجرى تحليل السبب الجذري (RCA) لمنع تكرار الأخطاء؟"]},
+   {title:"3. قياس الأداء والتحسين المستمر", items:["هل توجد مؤشرات أداء رئيسية (KPIs) واضحة لكل قسم؟","هل تُجمَع وتُحلَّل البيانات لدعم القرارات المبنية على الحقائق؟","هل توجد سجلات لمبادرات تحسين (تقليل هدر، تحسين سير العمل)؟"]},
+   {title:"4. رضا العملاء وأصحاب المصلحة", items:["هل تُجرى استبيانات دورية لقياس رضا العميل والاستشاري؟","هل يوجد سجل رسمي لشكاوى العملاء ومتابعة الإجراءات التصحيحية؟"]},
+   {title:"5. اجتماعات مراجعة الإدارة", items:["هل تُعقَد اجتماعات مراجعة إدارية دورية مع القيادة العليا؟","هل تُوثَّق محاضر الاجتماعات وتُتابع نقاط العمل حتى الإغلاق؟"]}
+ ]},
+ {id:"it", name:"تكنولوجيا المعلومات والتحول الرقمي", tip:"ركّز على أمن البيانات: اطلب أحدث سجلات النسخ الاحتياطي وتحقق من تخزينها في موقع آمن خارجي أو سحابي لضمان استمرارية الأعمال في الطوارئ.", cats:[
+   {title:"1. البنية التحتية والشبكات", items:["هل توجد سجلات صيانة منتظمة للخوادم ومعدات الشبكة؟","هل سرعة الإنترنت وتغطية الشبكة بالمواقع كافية للعمليات الميدانية؟","هل يُراقَب أداء النظام (Uptime) لضمان عدم انقطاع العمل؟"]},
+   {title:"2. الأمن السيبراني والنسخ الاحتياطي", items:["هل تُجرى نسخ احتياطية دورية وآلية لكل بيانات الشركة والمشاريع؟","هل خطة استعادة الكوارث (DRP) تم اختبارها مؤخراً بنجاح؟","هل برامج مكافحة الفيروسات وجدران الحماية محدّثة على كل الأجهزة؟","هل توجد سياسة كلمات مرور صارمة وتحديث دوري لكل المستخدمين؟"]},
+   {title:"3. إدارة الأصول والبرمجيات", items:["هل يوجد جرد محدَّث لكل أصول تكنولوجيا المعلومات؟","هل تراخيص البرامج الهندسية (أوتوكاد، ريفيت، بريمافيرا) سارية؟","هل يُقدَّم الدعم الفني بكفاءة وتُحل تذاكر الدعم خلال المواعيد المتفق عليها؟"]},
+   {title:"4. التحول الرقمي ومبادرات الذكاء الاصطناعي", items:["هل يوجد تقدّم ملموس في رقمنة النماذج الورقية وسير العمل؟","هل تُدمَج تقنيات الذكاء الاصطناعي في إدارة الجودة أو التخطيط؟","هل يُدرَّب الموظفون على استخدام المنصات الرقمية الجديدة؟"]}
+ ]},
+ {id:"risk", name:"إدارة المخاطر", tip:"اطلب رؤية أعلى 5 مخاطر تؤثر حالياً على الشركة، واستفسر عن الإجراءات الملموسة المتخذة لتقليل أثرها. الإدارة الفعالة للمخاطر تظهر في التقارير قبل وقوع المشكلة.", cats:[
+   {title:"1. سجل المخاطر وتحديدها", items:["هل يوجد سجل مخاطر شامل ومحدَّث لكل مشروع نشط؟","هل تُصنَّف المخاطر إلى فنية، مالية، تعاقدية، قانونية، وبيئية؟","هل يشارك مديرو المشاريع والمكتب الفني في تحديد المخاطر دورياً؟"]},
+   {title:"2. تحليل المخاطر والتقييم الكيفي", items:["هل يُقيَّم كل خطر بناءً على الاحتمالية والتأثير؟","هل توجد مصفوفة مخاطر واضحة لترتيب أولويات التهديدات؟","هل يُحلَّل الأثر المالي والزمني المحتمل للمخاطر عالية الأولوية؟"]},
+   {title:"3. تخطيط الاستجابة والمتابعة", items:["هل توجد استراتيجيات استجابة واضحة (تجنب، تخفيف، نقل، قبول) لكل خطر؟","هل يوجد مالك محدد لكل خطر لضمان تنفيذ خطة الاستجابة؟","هل يُراجَع سجل المخاطر ويُحدَّث خلال اجتماعات متابعة المشروع الشهرية؟"]},
+   {title:"4. التأمين والتحوط المالي", items:["هل كل وثائق التأمين سارية ومتوافقة مع بنود العقد؟","هل تُحلَّل مخاطر تقلب أسعار المواد بخطط تخفيف مناسبة؟"]},
+   {title:"5. إدارة الأزمات والدروس المستفادة", items:["هل توجد خطة طوارئ للأزمات الكبرى؟","هل تُوثَّق الدروس المستفادة من المخاطر التي وقعت فعلياً لمنع تكرارها؟"]}
+ ]},
+ {id:"warehouse", name:"إدارة المخازن والمستودعات", tip:"أجرِ جرداً مفاجئاً لثلاثة أصناف عالية القيمة وقارن الكمية الفعلية بسجلات نظام ERP — هذا هو الاختبار الحقيقي لدقة إدارة المخزون.", cats:[
+   {title:"1. إجراءات الاستلام والصرف", items:["هل كل المواد المستلمة مدعومة بإذن استلام (GRN) مطابق لأمر الشراء؟","هل تُصرَف المواد فقط بموجب إذن صرف (SRN) معتمد من مدير المشروع أو مهندس الموقع؟","هل تُسجَّل حركة المخزون فوراً في نظام ERP؟"]},
+   {title:"2. ظروف التخزين والحفظ", items:["هل تُخزَّن المواد (أسمنت، حديد، كيماويات) بشكل صحيح يمنع التلف أو الصدأ؟","هل يُطبَّق مبدأ الوارد أولاً يصرف أولاً (FIFO) خاصة للمواد الحساسة؟","هل تُخزَّن المواد الخطرة (أسطوانات الغاز، الوقود) في مناطق آمنة معزولة؟"]},
+   {title:"3. الجرد والمطابقة", items:["هل يُجرى جرد دوري (شهري/ربع سنوي) ومطابقته لسجلات النظام؟","هل تُراجَع فروقات الجرد وتُعتمد من الإدارة المالية؟","هل يوجد سجل واضح للمخزون التالف أو الراكد مع خطة للتصرف فيه؟"]},
+   {title:"4. عهدة الأدوات والمعدات", items:["هل توجد سجلات عهدة فردية للأدوات والمعدات المُسلَّمة للعاملين؟","هل تُفحَص المعدات عند إعادتها للتأكد من حالتها الفنية؟"]},
+   {title:"5. سلامة وأمن المخازن", items:["هل طفايات الحريق متوفرة وسارية الصلاحية ويسهل الوصول إليها؟","هل الممرات خالية من العوائق لضمان مرور آمن؟","هل طرق الرفع والمناولة آمنة ومتوافقة مع معايير السلامة؟"]}
+ ]},
+ {id:"planning", name:"إدارة التخطيط والجدولة", tip:"اطلب تقرير تحليل التأخير لآخر شهر. إذا وُجد تأخير، يجب أن يوضح التقرير بجلاء 'من تسبب فيه؟' و'كيف سيُستعاد؟'. التخطيط الناجح يقدّم حلولاً واقعية وليس فقط أشرطة ملونة في بريمافيرا.", cats:[
+   {title:"1. إدارة الجدول الزمني المرجعي", items:["هل يوجد جدول زمني مرجعي معتمد (من العميل/الاستشاري) لكل مشروع نشط؟","هل يشمل الجدول كل المراحل (توريد، تصميم، تنفيذ، اعتمادات)؟","هل الموارد والتكاليف مُحمَّلة على الجدول لضمان دقة تتبع التدفق النقدي؟"]},
+   {title:"2. التحديثات الدورية ومتابعة التقدم", items:["هل يُحدَّث الجدول دورياً (أسبوعي/شهري) بناءً على التقدم الفعلي؟","هل تُحفَظ سجلات المخطط مقابل الفعلي بشكل موثّق؟","هل يُجرى تحليل انحراف وتُقترح خطط تصحيحية لأي تأخير؟"]},
+   {title:"3. المسار الحرج والتحليل الفني", items:["هل يُراقَب المسار الحرج بانتظام لضمان تاريخ الإنجاز؟","هل يُدار الفائض الزمني الكلي باحترافية لمنع تعطيل الأنشطة اللاحقة؟","هل تُصدَر تقارير توقع وقت الإنجاز بناءً على معدلات الأداء الحالية؟"]},
+   {title:"4. التقارير والتواصل", items:["هل تُصدَر وتُوزَّع تقارير التقدم دورياً على أصحاب المصلحة في مواعيدها؟","هل يوجد تنسيق مع المكتب الفني لتوثيق التأخيرات المستوجبة لمطالبة تمديد زمني؟","هل تتوفر لوحات متابعة (Dashboards) تمنح الإدارة العليا رؤية واضحة لصحة المشروع؟"]}
+ ]},
+ {id:"drawing", name:"إدارة المخططات والمستندات", tip:"اطلب فحصاً عشوائياً لثلاث مخططات نشطة قيد الاستخدام بالموقع. تحقق من وجود ختم الاعتماد للتنفيذ الصحيح ومطابقتها لآخر مراجعة في الأرشيف الرقمي — المخططات القديمة من أبرز أسباب إعادة العمل والمطالبات.", cats:[
+   {title:"1. سجلات التسليم", items:["هل توجد سجلات تسليم محدّثة لكل المخططات والمستندات الفنية؟","هل تُوثَّق المراسلات الواردة والصادرة فور حدوثها؟","هل توجد آلية لتتبع أي مراجعة مخطط هي النشطة حالياً بالموقع؟"]},
+   {title:"2. ضبط المراجعات", items:["هل تُعزَل المخططات الملغاة وتُميَّز بوضوح لمنع استخدامها بالموقع؟","هل توجد عملية موثّقة لاستبدال المخططات القديمة بأحدث نسخة معتمدة؟","هل يوجد دليل على استلام فرق الموقع للمراجعات المحدّثة؟"]},
+   {title:"3. أنظمة الأرشفة", items:["هل نظام إدارة المستندات الرقمي منظم بهيكل مجلدات واضح؟","هل الأرشيف الورقي مفهرس ومُخزَّن في موقع آمن؟","هل يمكن استرجاع أي مخطط من الأرشيف خلال زمن استجابة محدد؟"]},
+   {title:"4. دورات الاعتماد (A/B/C)", items:["هل تُوثَّق ملاحظات الاستشاري على المخططات المُقدَّمة رسمياً؟","هل تُعاد المواد المرفوضة (C) بالتصحيحات المطلوبة خلال الوقت المتفق عليه؟","هل يوجد سجل يتتبع زمن دورة اعتماد المخططات؟"]},
+   {title:"5. التوزيع الميداني — ختم IFC", items:["هل تحمل كل المخططات المستخدمة بالموقع ختم اعتماد للتنفيذ (IFC)؟","هل يوجد سجل توزيع رسمي يؤكد استلام فريق الموقع لكل نسخة IFC؟"]}
+ ]},
+ {id:"central", name:"الإدارة المركزية / المكتب الرئيسي", tip:"ركّز على 'كفاءة الدعم' — ما مدى سرعة استجابة المكتب الرئيسي لطلبات الموقع الخاصة باعتمادات الشراء أو الصرف المالي أو القرارات الفنية؟", cats:[
+   {title:"1. الحوكمة والسياسات الاستراتيجية", items:["هل أهداف 2026 الاستراتيجية محددة بوضوح وتم تعميمها على كل الإدارات؟","هل تُراجَع وتُعتمَد الموازنات السنوية لكل المشاريع والإدارات رسمياً؟","هل توجد مصفوفة صلاحيات واضحة تحدد حدود اتخاذ القرار؟"]},
+   {title:"2. الإشراف على المشاريع والتحكم", items:["هل تُعقَد اجتماعات مراجعة أداء شهرية مع مديري المشاريع؟","هل يوجد نظام مركزي (لوحات متابعة) لمراقبة تقدم المواقع لحظياً؟","هل تُقدّم الإدارة المركزية دعماً سريعاً لحل المشاكل المالية أو الفنية الحرجة بالموقع؟"]},
+   {title:"3. التوزيع المركزي للموارد", items:["هل تُوزَّع المعدات والعمالة على المشاريع بناءً على الأولويات الفعلية؟","هل توجد خطة طويلة الأمد لصيانة أو استبدال أصول الشركة الرئيسية (أوناش، مركبات، آليات)؟"]},
+   {title:"4. الالتزام والتقارير الختامية", items:["هل تُراجَع تقارير إغلاق المشاريع لاستخلاص الدروس المستفادة للمناقصات القادمة؟","هل تلتزم الإدارة المركزية بجدول المراجعات الداخلية والخارجية؟"]}
+ ]},
+ {id:"admin", name:"الإدارة العامة (Administration)", tip:"ركّز على سرعة دورة تداول المستندات — الإدارة العامة هي المحرك الذي يُسهِّل عمل كل الإدارات الأخرى، فتأكد أن لا ورقة تتأخر وأن أي مستند يمكن استرجاعه خلال ثوانٍ.", cats:[
+   {title:"1. إدارة المراسلات والأرشفة", items:["هل يوجد سجل رسمي (وارد/صادر) لكل الخطابات والمستندات؟","هل تُؤرشف العقود الأصلية والمستندات الحيوية بشكل آمن ومنظم؟","هل تُوزَّع التعميمات الإدارية على الأقسام المعنية فور استلامها؟"]},
+   {title:"2. إدارة المكاتب واللوجستيات", items:["هل يوجد إمداد كافٍ للقرطاسية والمعدات المكتبية دون هدر مفرط؟","هل تُتابَع عقود صيانة المكاتب (تنظيف، تكييف، مصاعد) دورياً؟","هل تُنظَّم جداول الاجتماعات وتُجهَّز قاعات الاجتماعات بشكل جيد؟"]},
+   {title:"3. إدارة الأسطول والخدمات", items:["هل توجد سجلات لحركة سيارات الشركة وساعات التشغيل واستهلاك الوقود؟","هل تراخيص وتأمينات المركبات مُجدَّدة وفق مواعيدها؟"]},
+   {title:"4. الأمن وإجراءات الاستقبال", items:["هل يوجد سجل رسمي للزوار يوثّق الدخول والخروج؟","هل تُطبَّق سياسة التحكم بالدخول بصرامة بما في ذلك التحقق من هوية الضيوف؟","هل تُدار المكالمات والاستفسارات العامة باحترافية وسرعة؟"]}
+ ]}
+];
+
+/* =========================================================
+   بيانات ثابتة: الجدول الزمني (3 أسابيع) ومصفوفة التوزيع
+   ========================================================= */
+const SCHEDULE = [
+  {week:"الأسبوع 1 — الأساس والدعم (الإداري والمالي)", goal:"التأكد من سلامة الأساس الإداري والمالي قبل الانتقال للمراجعات الفنية.", sessions:[
+    {day:"الأحد", dept:"الإدارة المركزية / المكتب الرئيسي", time:"09:00 – 13:00", focus:"السياسات الاستراتيجية ومصفوفة الصلاحيات"},
+    {day:"الاثنين", dept:"إدارة الموارد البشرية (HR)", time:"09:00 – 14:00", focus:"ملفات الموظفين وعينة فحص الالتزام"},
+    {day:"الثلاثاء", dept:"الإدارة العامة (Administration)", time:"10:00 – 12:00", focus:"الأرشفة ودورة تداول المستندات"},
+    {day:"الأربعاء", dept:"الإدارة المالية", time:"09:00 – 15:00", focus:"العهدة المستديمة والقيود المحاسبية وضريبة القيمة المضافة"},
+    {day:"الخميس", dept:"تكنولوجيا المعلومات والتحول الرقمي", time:"10:00 – 13:00", focus:"الخوادم والنسخ الاحتياطي والأمن السيبراني"}
+  ]},
+  {week:"الأسبوع 2 — العمليات الهندسية (الفني والمشتريات)", goal:"التحقق من الدقة الفنية في التخطيط والمشتريات وإدارة العقود قبل الزيارات الميدانية.", sessions:[
+    {day:"الأحد", dept:"المكتب الفني", time:"09:00 – 15:00", focus:"المخططات التنفيذية وحصر الكميات ومراجعة عقود الفيديك"},
+    {day:"الاثنين", dept:"إدارة التخطيط والجدولة", time:"09:00 – 13:00", focus:"الجدول المرجعي والمسار الحرج وتحليل الانحراف"},
+    {day:"الثلاثاء", dept:"إدارة المشتريات", time:"09:00 – 14:00", focus:"تحليل العروض وقائمة الموردين واعتماد أوامر الشراء"},
+    {day:"الأربعاء", dept:"إدارة المخاطر", time:"10:00 – 13:00", focus:"سجل المخاطر وتقييم خطط الاستجابة"},
+    {day:"الخميس", dept:"إدارة التسويق", time:"11:00 – 13:00", focus:"الهوية المؤسسية والعائد على حملات التسويق"}
+  ]},
+  {week:"الأسبوع 3 — الميدان واللوجستيات (المواقع والمخازن والجودة)", goal:"مطابقة السجلات الورقية بالواقع الميداني — الاختبار النهائي للانضباط المؤسسي.", sessions:[
+    {day:"الأحد", dept:"إدارة العمليات والمواقع", time:"08:00 – 16:00", focus:"زيارة ميدانية لكل مواقع المشاريع النشطة"},
+    {day:"الاثنين", dept:"إدارة المخازن والمستودعات", time:"09:00 – 14:00", focus:"جرد مفاجئ ومطابقة نظام تخطيط الموارد"},
+    {day:"الثلاثاء", dept:"إدارة الجودة الشاملة (TQM)", time:"09:00 – 13:00", focus:"إغلاق تقارير عدم المطابقة ومراجعة مؤشرات الأداء"},
+    {day:"الأربعاء", dept:"إدارة المخططات والمستندات", time:"09:00 – 12:00", focus:"التحقق من ختم الاعتماد للتنفيذ وضبط المراجعات"},
+    {day:"الأربعاء (مساءً)", dept:"تجميع النتائج", time:"13:00 – 15:00", focus:"تجميع ومراجعة كل ملاحظات المراجعين"},
+    {day:"الخميس", dept:"اجتماع الختام مع الإدارة العليا", time:"11:00 – 13:00", focus:"عرض النتائج الأولية والتوصيات"}
+  ]}
+];
+
+const ALLOCATION = [
+  {dept:"الإدارة المركزية / المكتب الرئيسي", auditor:"م. وائل علي", role:"رئيس فريق المراجعة", notes:"مراجعة السياسات الاستراتيجية والحوكمة"},
+  {dept:"إدارة الموارد البشرية (HR)", auditor:"[اسم المراجع]", role:"أخصائي مراجعة إدارية", notes:"عينة عشوائية من الملفات والامتثال"},
+  {dept:"الإدارة المالية والمحاسبة", auditor:"[اسم المراجع]", role:"مراجع مالي أول", notes:"الحسابات والعهدة وضريبة القيمة المضافة"},
+  {dept:"المكتب الفني والتخطيط", auditor:"[اسم المهندس]", role:"مهندس مكتب فني أول", notes:"المخططات وحصر الكميات والجدول الزمني"},
+  {dept:"العمليات وإدارة المواقع", auditor:"[اسم المهندس]", role:"مدير تنفيذ / ضبط جودة", notes:"التفتيش الميداني على المواقع"},
+  {dept:"إدارة المخاطر والجودة الشاملة", auditor:"[اسم المهندس]", role:"مسؤول جودة ومخاطر", notes:"سجلات عدم المطابقة وسجل المخاطر"},
+  {dept:"تكنولوجيا المعلومات والتحول الرقمي", auditor:"[اسم المسؤول]", role:"مسؤول نظم معلومات", notes:"مراجعة الخوادم والأمن السيبراني"},
+  {dept:"المخازن والإدارة العامة", auditor:"[اسم المسؤول]", role:"مراقب مخزون / إداري", notes:"الجرد الفعلي والأرشفة"}
+];
+
+/* =========================================================
+   طبقة التخزين المحلي
+   ========================================================= */
+const STORE_KEYS = {results:"audit_results", caps:"audit_caps", projects:"audit_projects", lessons:"audit_lessons", flash:"audit_flash"};
+function loadStore(key){ try{ return JSON.parse(localStorage.getItem(STORE_KEYS[key])) || []; }catch(e){ return []; } }
+function saveStore(key, arr){ try{ localStorage.setItem(STORE_KEYS[key], JSON.stringify(arr)); }catch(e){ console.error('save error', e); } }
+function nextId(arr){ return arr.length ? Math.max.apply(null, arr.map(function(x){return x.id||0;})) + 1 : 1; }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmtNum(n){ return Number(n||0).toLocaleString('en-US', {maximumFractionDigits:1}); }
+function daysBetween(d1, d2){ return Math.round((new Date(d2) - new Date(d1)) / (1000*60*60*24)); }
+
+/* =========================================================
+   التنقل بين التبويبات
+   ========================================================= */
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach(function(el){ el.classList.add('hidden'); });
+  var t = document.getElementById('tab-'+i);
+  if(t) t.classList.remove('hidden');
+  document.querySelectorAll('.tbtn').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === String(i));
+  });
+  refreshTabData(i);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function refreshTabData(i){
+  try{
+    if(i===0) renderDashboard();
+    if(i===1) renderLetter();
+    if(i===2) renderSchedule(), renderFlashList();
+    if(i===3) renderChecklist();
+    if(i===4) renderScoring();
+    if(i===5) renderCapTracker();
+    if(i===6) renderAllocation();
+    if(i===8) renderProjects();
+    if(i===9) renderLessons();
+  }catch(e){ console.error('refreshTabData error', i, e); }
+}
+
+/* =========================================================
+   الطباعة وتصدير PDF
+   ========================================================= */
+function printSection(id){
+  document.body.classList.add('printing-one');
+  document.querySelectorAll('.tab').forEach(function(el){ el.classList.remove('print-active'); });
+  var el = document.getElementById(id);
+  if(el) el.classList.add('print-active');
+  window.print();
+  setTimeout(function(){ document.body.classList.remove('printing-one'); }, 500);
+}
+
+function downloadPdf(id, filename){
+  var el = document.getElementById(id);
+  if(!el){ alert('تعذر العثور على القسم المطلوب تصديره'); return; }
+  var btns = el.querySelectorAll('.no-print');
+  btns.forEach(function(b){ b.dataset._disp = b.style.display; b.style.display='none'; });
+  html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'}).then(function(canvas){
+    btns.forEach(function(b){ b.style.display = b.dataset._disp || ''; });
+    var imgData = canvas.toDataURL('image/jpeg', 0.92);
+    var pdf = new jspdf.jsPDF('p','mm','a4');
+    var pageW = pdf.internal.pageSize.getWidth();
+    var pageH = pdf.internal.pageSize.getHeight();
+    var imgW = pageW;
+    var imgH = canvas.height * imgW / canvas.width;
+    var heightLeft = imgH;
+    var position = 0;
+    pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+    heightLeft -= pageH;
+    while(heightLeft > 0){
+      position = heightLeft - imgH;
+      pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+      heightLeft -= pageH;
+    }
+    pdf.save(filename || 'Audit_Report.pdf');
+  }).catch(function(err){
+    btns.forEach(function(b){ b.style.display = b.dataset._disp || ''; });
+    console.error(err);
+    alert('حدث خطأ أثناء توليد PDF. تأكد من اتصال الإنترنت وأعد المحاولة.');
+  });
+}
+
+function saveStatement(key, el){
+  localStorage.setItem('audit_statement_'+key, el.innerHTML);
+}
+function loadSavedStatements(){
+  ['opening','closing'].forEach(function(key){
+    var saved = localStorage.getItem('audit_statement_'+key);
+    if(saved){ var el = document.getElementById(key+'_text'); if(el) el.innerHTML = saved; }
+  });
+}
+function resetStatement(key){
+  if(!confirm('استرجاع النص الأصلي وإلغاء تعديلاتك؟')) return;
+  localStorage.removeItem('audit_statement_'+key);
+  location.reload();
+}
+
+function copyText(id){
+  var el = document.getElementById(id);
+  var text = el.innerText;
+  navigator.clipboard.writeText(text).then(function(){
+    alert('✅ تم نسخ النص للحافظة');
+  }).catch(function(){ alert('تعذر النسخ التلقائي — يرجى التحديد اليدوي.'); });
+}
+
+/* =========================================================
+   المساعدات العامة لحساب الدرجات
+   ========================================================= */
+function computeDeptScore(result){
+  var total=0, compliant=0;
+  result.categories.forEach(function(cat){
+    cat.items.forEach(function(it){
+      if(it.status === 'compliant' || it.status === 'nonconformant'){
+        total++;
+        if(it.status === 'compliant') compliant++;
+      }
+    });
+  });
+  var score15 = total ? (compliant/total*15) : 0;
+  return {score:score15, pct: total ? (compliant/total*100) : 0, total:total, compliant:compliant};
+}
+function riskLevel(score15){
+  if(score15 >= 12) return {label:'منخفض', badge:'badge-green'};
+  if(score15 >= 9) return {label:'متوسط', badge:'badge-amber'};
+  return {label:'مرتفع', badge:'badge-red'};
+}
+function ratingLabel(score15){
+  if(score15 >= 13) return 'ممتاز';
+  if(score15 >= 10) return 'جيد جداً';
+  if(score15 >= 7) return 'جيد';
+  return 'يحتاج تحسين عاجل';
+}
+
+/* =========================================================
+   تبويب 0: لوحة القيادة
+   ========================================================= */
+var dashCharts = {bar:null, radar:null};
+
+function renderDashboard(){
+  var results = loadStore('results');
+  var caps = loadStore('caps');
+  var totalDepts = CHECKLISTS.length;
+  var completedAudits = results.length;
+  var avgScore = results.length ? (results.reduce(function(s,r){return s+computeDeptScore(r).score;},0)/results.length) : 0;
+  var openCaps = caps.filter(function(c){ return c.status !== 'مغلق'; }).length;
+
+  document.getElementById('dashKpis').innerHTML =
+    '<div class="kpi"><b>'+Math.round(completedAudits/totalDepts*100)+'%</b><span class="text-slate-400 text-xs">نسبة اكتمال المراجعات ('+completedAudits+'/'+totalDepts+')</span></div>'+
+    '<div class="kpi amber"><b>'+avgScore.toFixed(1)+' / 15</b><span class="text-slate-400 text-xs">متوسط تقييم الشركة</span></div>'+
+    '<div class="kpi '+(openCaps>0?'red':'')+'"><b>'+openCaps+'</b><span class="text-slate-400 text-xs">إجراءات تصحيحية مفتوحة</span></div>'+
+    '<div class="kpi"><b>'+totalDepts+'</b><span class="text-slate-400 text-xs">إدارة خاضعة للمراجعة</span></div>';
+
+  if(typeof Chart !== 'undefined' && results.length){
+    var labels = results.map(function(r){return r.deptName;});
+    var scores = results.map(function(r){return computeDeptScore(r).score.toFixed(1);});
+    var barCtx = document.getElementById('deptBarChart').getContext('2d');
+    if(dashCharts.bar) dashCharts.bar.destroy();
+    dashCharts.bar = new Chart(barCtx, { type:'bar', data:{ labels:labels, datasets:[{label:'الدرجة /15', data:scores,
+      backgroundColor:scores.map(function(s){ s=parseFloat(s); return s>=12?'#10b981':(s>=9?'#f59e0b':'#ef4444'); }) }] },
+      options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true, max:15}} } });
+
+    var radarCtx = document.getElementById('deptRadarChart').getContext('2d');
+    if(dashCharts.radar) dashCharts.radar.destroy();
+    dashCharts.radar = new Chart(radarCtx, { type:'radar', data:{ labels:labels, datasets:[{label:'الدرجة', data:scores, borderColor:'#d97706', backgroundColor:'rgba(217,119,6,.25)'}] }, options:{ scales:{ r:{ min:0, max:15 } } } });
+  }
+
+  // Leaderboard
+  var sorted = results.slice().sort(function(a,b){ return computeDeptScore(b).score - computeDeptScore(a).score; });
+  document.getElementById('leaderboard').innerHTML = sorted.length ? sorted.slice(0,6).map(function(r,idx){
+    var s = computeDeptScore(r).score;
+    return '<div class="flex items-center justify-between p-2 rounded-lg bg-slate-50"><span class="text-xs font-bold">#'+(idx+1)+' '+r.deptName+'</span><span class="badge '+riskLevel(s).badge+'">'+s.toFixed(1)+' / 15</span></div>';
+  }).join('') : '<p class="text-slate-400 text-xs">لا توجد نتائج محفوظة بعد.</p>';
+
+  // Escalations: open CAPs overdue
+  var overdue = caps.filter(function(c){ return c.status !== 'مغلق' && daysBetween(todayStr(), c.deadline) < 0; });
+  document.getElementById('escalations').innerHTML = overdue.length ? overdue.map(function(c){
+    return '<div class="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-200"><span class="text-xs font-bold text-red-800">'+c.dept+': '+c.issue+'</span><span class="badge badge-red">متأخر '+Math.abs(daysBetween(todayStr(), c.deadline))+' يوم</span></div>';
+  }).join('') : '<p class="text-slate-400 text-xs">لا توجد إجراءات متأخرة حالياً. ✅</p>';
+
+  // تعبئة عدد الحالات تلقائياً بعدد الإجراءات المفتوحة (مرة واحدة فقط ما لم يُعدِّله المستخدم يدوياً)
+  var ncrInput = document.getElementById('copq_ncrCount');
+  if(ncrInput && !ncrInput.dataset.userEdited){
+    var openCount = caps.filter(function(c){ return c.status !== 'مغلق'; }).length;
+    ncrInput.value = openCount;
+  }
+  renderCOPQ();
+}
+
+function renderCOPQ(){
+  var ncrInput = document.getElementById('copq_ncrCount');
+  if(!ncrInput) return;
+  var ncrCount = parseFloat(ncrInput.value)||0;
+  var perNcr = parseFloat(document.getElementById('copq_perNcr').value)||0;
+  var reduction = parseFloat(document.getElementById('copq_reduction').value)||0;
+  var estimated = ncrCount * perNcr * (reduction/100);
+  document.getElementById('copq_result').textContent = fmtNum(estimated) + ' EGP';
+}
+
+/* =========================================================
+   تبويب 1: خطابات الإخطار
+   ========================================================= */
+function initLetterSelect(){
+  var sel = document.getElementById('letter_dept');
+  sel.innerHTML = LETTERS.map(function(l){ return '<option value="'+l.id+'">'+l.name+'</option>'; }).join('');
+  document.getElementById('letter_date').value = todayStr();
+}
+
+function buildLetterHtml(l, date, time, duration, head){
+  return {
+    to: head ? (head+' — '+l.to) : l.to,
+    deptName: l.name,
+    intro: 'تماشياً مع مبادرة التميز المؤسسي، نُخطركم رسمياً ببدء مراجعة داخلية لـ'+l.name+'، بهدف تقييم كفاءة الإجراءات والتأكد من الالتزام بسياسات الشركة والمعايير المعتمدة، وتحديد فرص التحسين التشغيلي.',
+    scope: l.scope,
+    date: date, time: time, duration: duration
+  };
+}
+
+function renderLetter(){
+  var l = LETTERS.find(function(x){ return x.id === document.getElementById('letter_dept').value; });
+  if(!l) l = LETTERS[0];
+  var date = document.getElementById('letter_date').value || todayStr();
+  var time = document.getElementById('letter_time').value || '09:00';
+  var duration = document.getElementById('letter_duration').value || '1';
+  var head = document.getElementById('letter_head').value.trim();
+  var data = buildLetterHtml(l, date, time, duration, head);
+
+  document.getElementById('lt_dateNow').textContent = 'تاريخ الإصدار: ' + todayStr();
+  document.getElementById('lt_to').textContent = data.to;
+  document.getElementById('lt_deptName').textContent = data.deptName;
+  document.getElementById('lt_intro').textContent = data.intro;
+  document.getElementById('lt_scope').innerHTML = data.scope.map(function(s){ return '<li>'+s+'</li>'; }).join('');
+  document.getElementById('lt_dateOut').textContent = data.date;
+  document.getElementById('lt_timeOut').textContent = data.time;
+  document.getElementById('lt_durOut').textContent = data.duration;
+}
+
+function downloadAllLettersPdf(){
+  var area = document.getElementById('allLettersArea');
+  var date = document.getElementById('letter_date').value || todayStr();
+  area.innerHTML = LETTERS.map(function(l, idx){
+    var data = buildLetterHtml(l, date, '09:00', '1', '');
+    return '<div class="card p-8 page-break">'+
+      '<div class="flex justify-between items-start border-b border-slate-200 pb-4 mb-5">'+
+        '<div><div class="text-xs font-bold text-amber-600">BENA BLACK BOX — INTERNAL AUDIT 2026</div><h2 class="text-lg font-bold text-slate-900 mt-1">خطاب إخطار مراجعة داخلية</h2></div>'+
+        '<div class="text-left text-[11px] text-slate-500"><p>www.bena-blackbox.com</p><p>تاريخ الإصدار: '+todayStr()+'</p></div>'+
+      '</div>'+
+      '<div class="text-sm leading-relaxed text-slate-700 space-y-3">'+
+        '<p><b>إلى:</b> '+data.to+'</p>'+
+        '<p><b>من:</b> لجنة المراجعة الداخلية / إدارة الجودة</p>'+
+        '<p><b>الموضوع:</b> إخطار ببدء مراجعة داخلية — '+data.deptName+'</p>'+
+        '<p>'+data.intro+'</p>'+
+        '<p class="font-bold mt-4">نطاق المراجعة:</p>'+
+        '<ul class="list-disc pr-5 space-y-1">'+data.scope.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul>'+
+        '<div class="grid grid-cols-2 gap-4 mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs">'+
+          '<p><b>موعد المراجعة:</b> '+data.date+' — الساعة '+data.time+'</p><p><b>المدة المتوقعة:</b> '+data.duration+' يوم عمل</p>'+
+        '</div>'+
+        '<div class="mt-8 pt-4 border-t border-slate-200"><p>مع خالص التقدير،</p><p class="font-bold mt-2">م. وائل علي</p><p class="text-xs text-slate-500">رئيس فريق المراجعة الداخلية</p></div>'+
+      '</div></div>';
+  }).join('');
+  area.style.display = 'block';
+  setTimeout(function(){
+    downloadPdfCallback(area, 'All_Audit_Notification_Letters.pdf', function(){ area.style.display='none'; area.innerHTML=''; });
+  }, 200);
+}
+
+function downloadPdfCallback(el, filename, cb){
+  html2canvas(el, {scale:2, useCORS:true, backgroundColor:'#ffffff'}).then(function(canvas){
+    var imgData = canvas.toDataURL('image/jpeg', 0.92);
+    var pdf = new jspdf.jsPDF('p','mm','a4');
+    var pageW = pdf.internal.pageSize.getWidth();
+    var pageH = pdf.internal.pageSize.getHeight();
+    var imgW = pageW;
+    var imgH = canvas.height * imgW / canvas.width;
+    var heightLeft = imgH, position = 0;
+    pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+    heightLeft -= pageH;
+    while(heightLeft > 0){ position = heightLeft - imgH; pdf.addPage(); pdf.addImage(imgData,'JPEG',0,position,imgW,imgH); heightLeft -= pageH; }
+    pdf.save(filename);
+    if(cb) cb();
+  }).catch(function(err){ console.error(err); alert('حدث خطأ أثناء توليد PDF.'); if(cb) cb(); });
+}
+
+/* =========================================================
+   تبويب 2: الجدول الزمني والمراجعات الطارئة
+   ========================================================= */
+function loadScheduleData(){
+  var raw = localStorage.getItem('audit_schedule_v1');
+  if(raw){ try{ return JSON.parse(raw); }catch(e){} }
+  var seed = JSON.parse(JSON.stringify(SCHEDULE));
+  localStorage.setItem('audit_schedule_v1', JSON.stringify(seed));
+  return seed;
+}
+function saveScheduleData(data){ localStorage.setItem('audit_schedule_v1', JSON.stringify(data)); }
+
+function renderSchedule(){
+  var data = loadScheduleData();
+  var container = document.getElementById('scheduleWeeks');
+  container.innerHTML = data.map(function(w, wi){
+    return '<div class="card p-6 mb-4">'+
+      '<h2 class="section-title" contenteditable="true" data-w="'+wi+'" data-f="week" onblur="onScheduleFieldEdit(this)">'+w.week+'</h2>'+
+      '<p class="section-sub" contenteditable="true" data-w="'+wi+'" data-f="goal" onblur="onScheduleFieldEdit(this)">'+w.goal+'</p>'+
+      '<div class="overflow-x-auto"><table class="tbl"><thead><tr><th>اليوم</th><th>الإدارة المستهدفة</th><th>التوقيت</th><th>محور التركيز</th><th class="no-print">إجراء</th></tr></thead><tbody>'+
+      w.sessions.map(function(s, si){
+        return '<tr>'+
+          '<td class="font-bold" contenteditable="true" data-w="'+wi+'" data-s="'+si+'" data-f="day" onblur="onScheduleCellEdit(this)">'+s.day+'</td>'+
+          '<td contenteditable="true" data-w="'+wi+'" data-s="'+si+'" data-f="dept" onblur="onScheduleCellEdit(this)">'+s.dept+'</td>'+
+          '<td contenteditable="true" data-w="'+wi+'" data-s="'+si+'" data-f="time" onblur="onScheduleCellEdit(this)">'+s.time+'</td>'+
+          '<td contenteditable="true" data-w="'+wi+'" data-s="'+si+'" data-f="focus" onblur="onScheduleCellEdit(this)">'+s.focus+'</td>'+
+          '<td class="no-print"><button class="row-del" onclick="deleteScheduleRow('+wi+','+si+')">حذف</button></td>'+
+        '</tr>';
+      }).join('')+
+      '</tbody></table></div>'+
+      '<button class="row-add mt-3 no-print" onclick="addScheduleRow('+wi+')">+ إضافة جلسة لهذا الأسبوع</button>'+
+      '</div>';
+  }).join('');
+
+  var flashSel = document.getElementById('flash_dept');
+  if(flashSel && !flashSel.dataset.filled){ flashSel.innerHTML = CHECKLISTS.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>';}).join(''); flashSel.dataset.filled='1'; }
+}
+
+function onScheduleFieldEdit(el){
+  var data = loadScheduleData();
+  var wi = parseInt(el.dataset.w,10), field = el.dataset.f;
+  data[wi][field] = el.textContent.trim();
+  saveScheduleData(data);
+}
+function onScheduleCellEdit(el){
+  var data = loadScheduleData();
+  var wi = parseInt(el.dataset.w,10), si = parseInt(el.dataset.s,10), field = el.dataset.f;
+  data[wi].sessions[si][field] = el.textContent.trim();
+  saveScheduleData(data);
+}
+function deleteScheduleRow(wi, si){
+  if(!confirm('حذف هذه الجلسة من الجدول؟')) return;
+  var data = loadScheduleData();
+  data[wi].sessions.splice(si, 1);
+  saveScheduleData(data);
+  renderSchedule();
+}
+function addScheduleRow(wi){
+  var data = loadScheduleData();
+  data[wi].sessions.push({day:'يوم جديد', dept:'إدارة جديدة', time:'09:00 – 11:00', focus:'محور تركيز...'});
+  saveScheduleData(data);
+  renderSchedule();
+}
+function resetScheduleData(){
+  if(!confirm('استرجاع الجدول الزمني الأصلي وإلغاء كل التعديلات؟')) return;
+  localStorage.removeItem('audit_schedule_v1');
+  renderSchedule();
+}
+
+/* ===== وحدات المراجعة الطارئة (Flash Audits) — جدول تفاعلي ===== */
+function addFlashAudit(){
+  var deptId = document.getElementById('flash_dept').value;
+  var dept = CHECKLISTS.find(function(c){return c.id===deptId;});
+  var reason = document.getElementById('flash_reason').value.trim();
+  var date = document.getElementById('flash_date').value || todayStr();
+  if(!reason){ alert('يرجى كتابة سبب المراجعة الطارئة.'); return; }
+  var arr = loadStore('flash');
+  arr.push({id:nextId(arr), dept: dept?dept.name:deptId, reason:reason, date:date, status:'مجدولة'});
+  saveStore('flash', arr);
+  document.getElementById('flash_reason').value='';
+  renderFlashList();
+}
+function updateFlashStatus(id, status){
+  var arr = loadStore('flash');
+  var f = arr.find(function(x){return x.id===id;});
+  if(f) f.status = status;
+  saveStore('flash', arr);
+  renderFlashList();
+}
+function deleteFlash(id){
+  if(!confirm('حذف وحدة المراجعة الطارئة هذه؟')) return;
+  saveStore('flash', loadStore('flash').filter(function(f){return f.id!==id;}));
+  renderFlashList();
+}
+function renderFlashList(){
+  var arr = loadStore('flash');
+  var el = document.getElementById('flashList');
+  if(!el) return;
+  if(!arr.length){ el.innerHTML = '<p class="text-slate-400 text-xs">لا توجد وحدات مراجعة طارئة مسجّلة.</p>'; return; }
+  el.innerHTML = '<div class="overflow-x-auto"><table class="tbl tbl-dark">'+
+    '<thead><tr><th>الإدارة</th><th>سبب المراجعة الطارئة</th><th>التاريخ</th><th>الحالة</th><th class="no-print">إجراء</th></tr></thead><tbody>'+
+    arr.slice().reverse().map(function(f){
+      return '<tr><td class="font-bold">'+f.dept+'</td><td>'+f.reason+'</td><td>'+f.date+'</td>'+
+        '<td><select onchange="updateFlashStatus('+f.id+',this.value)" style="width:120px;">'+
+          ['مجدولة','جارية','مغلقة'].map(function(s){return '<option '+(s===(f.status||'مجدولة')?'selected':'')+'>'+s+'</option>';}).join('')+
+        '</select></td>'+
+        '<td class="no-print"><button class="btn-danger" onclick="deleteFlash('+f.id+')">حذف</button></td></tr>';
+    }).join('')+
+    '</tbody></table></div>';
+}
+
+/* =========================================================
+   تبويب 3: قوائم التحقق الميدانية (الوحدة الأساسية)
+   ========================================================= */
+var activeChecklistState = null; // {deptId, categories:[{title, items:[{q,status,note,evidence}]}]}
+
+function freshStateFor(dept){
+  return {
+    deptId: dept.id, deptName: dept.name,
+    categories: dept.cats.map(function(cat){
+      return { title: cat.title, items: cat.items.map(function(q){ return {q:q, status:null, note:'', evidence:null}; }) };
+    })
+  };
+}
+
+function loadStateFor(deptId){
+  var dept = CHECKLISTS.find(function(c){ return c.id === deptId; });
+  var results = loadStore('results');
+  var saved = results.find(function(r){ return r.deptId === deptId; });
+  if(saved){
+    // دمج مع أحدث نسخة من الأسئلة (تحسباً لأي تحديث بالبيانات) مع الحفاظ على إجابات المستخدم القديمة
+    var fresh = freshStateFor(dept);
+    fresh.categories.forEach(function(cat, ci){
+      cat.items.forEach(function(it, ii){
+        var savedCat = saved.categories[ci];
+        var savedItem = savedCat ? savedCat.items[ii] : null;
+        if(savedItem && savedItem.q === it.q){
+          it.status = savedItem.status; it.note = savedItem.note; it.evidence = savedItem.evidence;
+        }
+      });
+    });
+    return fresh;
+  }
+  return freshStateFor(dept);
+}
+
+function initChecklistSelect(){
+  var sel = document.getElementById('checklist_dept');
+  sel.innerHTML = CHECKLISTS.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('');
+}
+
+function renderChecklist(){
+  var deptId = document.getElementById('checklist_dept').value || CHECKLISTS[0].id;
+  var dept = CHECKLISTS.find(function(c){ return c.id === deptId; });
+  activeChecklistState = loadStateFor(deptId);
+  document.getElementById('chk_deptName').textContent = dept.name;
+  document.getElementById('chk_tip').textContent = dept.tip;
+  renderChecklist_softRefresh();
+}
+
+function setItemStatus(ci, ii, status){
+  var it = activeChecklistState.categories[ci].items[ii];
+  it.status = (it.status === status) ? null : status;
+  renderChecklist_softRefresh();
+}
+function triggerEvidenceUpload(ci, ii){
+  var input = document.getElementById('ev_file_input');
+  input.dataset.ci = ci; input.dataset.ii = ii;
+  input.click();
+}
+function handleEvidenceFile(inputEl){
+  var ci = parseInt(inputEl.dataset.ci,10), ii = parseInt(inputEl.dataset.ii,10);
+  var file = inputEl.files[0];
+  if(!file) return;
+  var maxSize = 2*1024*1024; // 2MB لكل ملف لتفادي امتلاء التخزين المحلي
+  if(file.size > maxSize){
+    activeChecklistState.categories[ci].items[ii].evidence = {name:file.name, type:file.type, dataUrl:null, oversized:true};
+    renderChecklist_softRefresh();
+    alert('⚠️ الملف أكبر من 2MB — تم حفظ اسم الملف فقط دون محتواه لتفادي امتلاء التخزين المحلي للمتصفح.');
+    inputEl.value=''; return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    activeChecklistState.categories[ci].items[ii].evidence = {name:file.name, type:file.type, dataUrl:e.target.result, oversized:false};
+    renderChecklist_softRefresh();
+  };
+  reader.readAsDataURL(file);
+  inputEl.value='';
+}
+function removeEvidence(ci, ii){
+  activeChecklistState.categories[ci].items[ii].evidence = null;
+  renderChecklist_softRefresh();
+}
+function updateNote(ci, ii, val){ activeChecklistState.categories[ci].items[ii].note = val; }
+
+function renderChecklist_softRefresh(){
+  // إعادة رسم كاملة أبسط وأكثر أماناً من التزامن مع DOM جزئياً
+  var deptId = activeChecklistState.deptId;
+  var savedState = activeChecklistState;
+  document.getElementById('checklist_dept').value = deptId;
+  var dept = CHECKLISTS.find(function(c){ return c.id === deptId; });
+  document.getElementById('chk_categories').innerHTML = savedState.categories.map(function(cat, ci){
+    return '<div class="card p-5"><h3 class="font-bold text-sm text-slate-800 mb-2">'+cat.title+'</h3>'+
+      cat.items.map(function(it, ii){
+        return '<div class="chk-item">'+
+          '<div class="chk-q">'+it.q+'</div>'+
+          '<div class="chk-controls">'+
+            '<div class="seg">'+
+              '<button class="sel-compliant '+(it.status==='compliant'?'active':'')+'" onclick="setItemStatus('+ci+','+ii+',\'compliant\')">✅ ممتثل</button>'+
+              '<button class="sel-nonconformant '+(it.status==='nonconformant'?'active':'')+'" onclick="setItemStatus('+ci+','+ii+',\'nonconformant\')">❌ غير ممتثل</button>'+
+              '<button class="sel-na '+(it.status==='na'?'active':'')+'" onclick="setItemStatus('+ci+','+ii+',\'na\')">➖ غير مطبق</button>'+
+            '</div>'+
+            (it.evidence ?
+              ('<a href="'+(it.evidence.dataUrl||'#')+'" target="_blank" rel="noopener" class="ev-btn attached" title="'+(it.evidence.dataUrl?'اضغط لعرض/تحميل الملف: ':'الملف كبير، لم يُحفظ محتواه: ')+it.evidence.name+'" style="text-decoration:none;display:inline-block;'+(it.evidence.dataUrl?'':'pointer-events:none;opacity:.6;')+'">'+(it.evidence.dataUrl?'👁️ ':'📎 ')+(it.evidence.name.length>16?it.evidence.name.slice(0,16)+'…':it.evidence.name)+'</a>'+
+               '<button class="row-del" style="padding:4px 8px;" onclick="removeEvidence('+ci+','+ii+')">✕</button>')
+              : '<button class="ev-btn" onclick="triggerEvidenceUpload('+ci+','+ii+')">📎 رفع دليل</button>')+
+          '</div>'+
+          (it.evidence && it.evidence.dataUrl && it.evidence.type && it.evidence.type.indexOf('image')===0 ? '<a href="'+it.evidence.dataUrl+'" target="_blank" rel="noopener"><img src="'+it.evidence.dataUrl+'" style="max-height:80px;border-radius:6px;margin-top:6px;border:1px solid #e2e8f0;cursor:zoom-in;" title="اضغط لعرض الصورة بالحجم الكامل"></a>' : '')+
+          (it.evidence && it.evidence.dataUrl && it.evidence.type === 'application/pdf' ? '<p class="text-[10px] text-blue-600 mt-1">📄 ملف PDF — اضغط على اسم الملف أعلاه لفتحه في تبويب جديد</p>' : '')+
+          (it.evidence && it.evidence.oversized ? '<p class="text-[10px] text-amber-600 mt-1">تم حفظ اسم الملف فقط دون محتواه (الحجم أكبر من 2MB)</p>' : '')+
+          (it.status==='nonconformant' ? '<input type="text" placeholder="ملاحظة تفصيلية عن سبب عدم المطابقة..." value="'+(it.note||'').replace(/"/g,'&quot;')+'" oninput="updateNote('+ci+','+ii+',this.value)" style="width:100%;margin-top:6px;">' : '')+
+        '</div>';
+      }).join('')+
+    '</div>';
+  }).join('');
+  updateChecklistScoreDisplay();
+}
+
+function updateChecklistScoreDisplay(){
+  var res = computeDeptScore(activeChecklistState);
+  document.getElementById('chk_score').textContent = res.score.toFixed(1) + ' / 15';
+  document.getElementById('chk_progressBar').style.width = Math.min(100, res.pct) + '%';
+}
+
+function saveChecklist(){
+  var arr = loadStore('results');
+  var idx = arr.findIndex(function(r){ return r.deptId === activeChecklistState.deptId; });
+  var record = JSON.parse(JSON.stringify(activeChecklistState));
+  record.savedAt = todayStr();
+  if(idx >= 0) arr[idx] = record; else arr.push(record);
+  saveStore('results', arr);
+
+  // توليد تذاكر CAP تلقائياً من كل بند "غير ممتثل"
+  var caps = loadStore('caps').filter(function(c){ return !(c.source==='auto' && c.deptId===record.deptId); });
+  record.categories.forEach(function(cat){
+    cat.items.forEach(function(it){
+      if(it.status === 'nonconformant'){
+        var deadline = new Date(); deadline.setDate(deadline.getDate()+14);
+        caps.push({ id:nextId(caps), source:'auto', deptId:record.deptId, dept:record.deptName,
+          issue: it.note ? it.note : it.q, risk:'متوسط', responsible:'رئيس '+record.deptName,
+          deadline: deadline.toISOString().slice(0,10), status:'مفتوح' });
+      }
+    });
+  });
+  saveStore('caps', caps);
+
+  document.getElementById('chk_saveMsg').textContent = '✅ تم حفظ نتيجة مراجعة '+record.deptName+' — الدرجة: '+computeDeptScore(record).score.toFixed(1)+' / 15';
+  setTimeout(function(){ document.getElementById('chk_saveMsg').textContent=''; }, 4000);
+}
+
+/* =========================================================
+   تبويب 4: مصفوفة التقييم والدرجات
+   ========================================================= */
+function renderScoring(){
+  var results = loadStore('results');
+  var empty = document.getElementById('scoring_empty');
+  var content = document.getElementById('scoring_content');
+  if(!results.length){ empty.classList.remove('hidden'); content.classList.add('hidden'); return; }
+  empty.classList.add('hidden'); content.classList.remove('hidden');
+
+  var scored = results.map(function(r){ var s = computeDeptScore(r); return {name:r.deptName, score:s.score, pct:s.pct}; }).sort(function(a,b){return b.score-a.score;});
+  var avg = scored.reduce(function(s,r){return s+r.score;},0)/scored.length;
+  var high = scored.filter(function(r){return riskLevel(r.score).label==='مرتفع';}).length;
+  var low = scored.filter(function(r){return riskLevel(r.score).label==='منخفض';}).length;
+
+  document.getElementById('scoring_kpis').innerHTML =
+    '<div class="kpi amber"><b>'+avg.toFixed(1)+'</b><span class="text-slate-400 text-xs">متوسط الدرجة العام /15</span></div>'+
+    '<div class="kpi red"><b>'+high+'</b><span class="text-slate-400 text-xs">إدارات عالية الخطورة</span></div>'+
+    '<div class="kpi"><b>'+low+'</b><span class="text-slate-400 text-xs">إدارات منخفضة الخطورة</span></div>'+
+    '<div class="kpi"><b>'+results.length+'</b><span class="text-slate-400 text-xs">إدارات تمت مراجعتها</span></div>';
+
+  document.getElementById('scoring_tableBody').innerHTML = scored.map(function(r){
+    var risk = riskLevel(r.score);
+    return '<tr><td class="font-bold">'+r.name+'</td><td>'+r.score.toFixed(1)+' / 15</td><td>'+r.pct.toFixed(0)+'%</td><td>'+ratingLabel(r.score)+'</td><td><span class="badge '+risk.badge+'">'+risk.label+'</span></td></tr>';
+  }).join('');
+}
+
+/* =========================================================
+   تبويب 5: متابعة الإجراءات التصحيحية (CAP)
+   ========================================================= */
+function initCapDeptSelect(){
+  var sel = document.getElementById('cap_dept');
+  if(sel) sel.innerHTML = CHECKLISTS.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>';}).join('');
+}
+
+function addCapManual(){
+  var deptId = document.getElementById('cap_dept').value;
+  var dept = CHECKLISTS.find(function(c){return c.id===deptId;});
+  var issue = document.getElementById('cap_issue').value.trim();
+  var risk = document.getElementById('cap_risk').value;
+  var deadline = document.getElementById('cap_deadline').value;
+  if(!issue || !deadline){ alert('يرجى إدخال وصف المشكلة والموعد النهائي.'); return; }
+  var arr = loadStore('caps');
+  arr.push({id:nextId(arr), source:'manual', deptId:deptId, dept:dept?dept.name:deptId, issue:issue, risk:risk, responsible:'رئيس '+(dept?dept.name:''), deadline:deadline, status:'مفتوح'});
+  saveStore('caps', arr);
+  document.getElementById('cap_issue').value='';
+  renderCapTracker();
+}
+
+function updateCapStatus(id, status){
+  var arr = loadStore('caps');
+  var item = arr.find(function(c){return c.id===id;});
+  if(item) item.status = status;
+  saveStore('caps', arr);
+  renderCapTracker();
+}
+
+function deleteCap(id){
+  if(!confirm('حذف هذه التذكرة؟')) return;
+  saveStore('caps', loadStore('caps').filter(function(c){return c.id!==id;}));
+  renderCapTracker();
+}
+
+function renderCapTracker(){
+  var arr = loadStore('caps');
+  var open = arr.filter(function(c){return c.status==='مفتوح';}).length;
+  var progress = arr.filter(function(c){return c.status==='قيد المراجعة';}).length;
+  var closed = arr.filter(function(c){return c.status==='مغلق';}).length;
+  var overdue = arr.filter(function(c){ return c.status!=='مغلق' && daysBetween(todayStr(), c.deadline) < 0; }).length;
+
+  document.getElementById('cap_kpis').innerHTML =
+    '<div class="kpi red"><b>'+open+'</b><span class="text-slate-400 text-xs">مفتوحة</span></div>'+
+    '<div class="kpi amber"><b>'+progress+'</b><span class="text-slate-400 text-xs">قيد المراجعة</span></div>'+
+    '<div class="kpi"><b>'+closed+'</b><span class="text-slate-400 text-xs">مغلقة</span></div>'+
+    '<div class="kpi '+(overdue>0?'red':'')+'"><b>'+overdue+'</b><span class="text-slate-400 text-xs">متأخرة عن الموعد النهائي</span></div>';
+
+  var statusBadge = {'مفتوح':'badge-red','قيد المراجعة':'badge-amber','مغلق':'badge-green'};
+  document.getElementById('cap_tableBody').innerHTML = arr.length ? arr.slice().reverse().map(function(c){
+    var lateTag = (c.status!=='مغلق' && daysBetween(todayStr(), c.deadline) < 0) ? ' ⚠️' : '';
+    return '<tr><td class="font-bold">'+c.dept+'</td><td>'+c.issue+'</td>'+
+      '<td><span class="badge '+(c.risk==='مرتفع'?'badge-red':(c.risk==='متوسط'?'badge-amber':'badge-green'))+'">'+c.risk+'</span></td>'+
+      '<td>'+c.responsible+'</td><td>'+c.deadline+lateTag+'</td>'+
+      '<td><select onchange="updateCapStatus('+c.id+',this.value)" style="width:130px;">'+
+        ['مفتوح','قيد المراجعة','مغلق'].map(function(s){return '<option '+(s===c.status?'selected':'')+'>'+s+'</option>';}).join('')+
+      '</select></td>'+
+      '<td class="no-print"><button class="btn-danger" onclick="deleteCap('+c.id+')">حذف</button></td></tr>';
+  }).join('') : '<tr><td colspan="7" class="text-center text-slate-400 py-6">لا توجد إجراءات تصحيحية مسجّلة بعد.</td></tr>';
+}
+
+/* =========================================================
+   تبويب 6: مصفوفة توزيع الفريق
+   ========================================================= */
+function loadAllocationData(){
+  var raw = localStorage.getItem('audit_allocation_v1');
+  if(raw){ try{ return JSON.parse(raw); }catch(e){} }
+  var seed = JSON.parse(JSON.stringify(ALLOCATION));
+  localStorage.setItem('audit_allocation_v1', JSON.stringify(seed));
+  return seed;
+}
+function saveAllocationData(data){ localStorage.setItem('audit_allocation_v1', JSON.stringify(data)); }
+
+function renderAllocation(){
+  var data = loadAllocationData();
+  document.getElementById('alloc_tableBody').innerHTML = data.map(function(a, idx){
+    return '<tr><td>'+(idx+1)+'</td>'+
+      '<td class="font-bold" contenteditable="true" data-i="'+idx+'" data-f="dept" onblur="onAllocEdit(this)">'+a.dept+'</td>'+
+      '<td contenteditable="true" data-i="'+idx+'" data-f="auditor" onblur="onAllocEdit(this)">'+a.auditor+'</td>'+
+      '<td contenteditable="true" data-i="'+idx+'" data-f="role" onblur="onAllocEdit(this)">'+a.role+'</td>'+
+      '<td class="text-slate-500 text-xs" contenteditable="true" data-i="'+idx+'" data-f="notes" onblur="onAllocEdit(this)">'+a.notes+'</td>'+
+      '<td class="no-print"><button class="row-del" onclick="deleteAllocRow('+idx+')">حذف</button></td></tr>';
+  }).join('');
+}
+function onAllocEdit(el){
+  var data = loadAllocationData();
+  var i = parseInt(el.dataset.i,10), field = el.dataset.f;
+  data[i][field] = el.textContent.trim();
+  saveAllocationData(data);
+}
+function deleteAllocRow(i){
+  if(!confirm('حذف هذا الصف من مصفوفة التوزيع؟')) return;
+  var data = loadAllocationData();
+  data.splice(i,1);
+  saveAllocationData(data);
+  renderAllocation();
+}
+function addAllocRow(){
+  var data = loadAllocationData();
+  data.push({dept:'إدارة جديدة', auditor:'[اسم المراجع]', role:'[الصفة الوظيفية]', notes:'—'});
+  saveAllocationData(data);
+  renderAllocation();
+}
+function resetAllocationData(){
+  if(!confirm('استرجاع مصفوفة التوزيع الأصلية وإلغاء كل التعديلات؟')) return;
+  localStorage.removeItem('audit_allocation_v1');
+  renderAllocation();
+}
+
+/* =========================================================
+   تبويب 8: سجل المشاريع
+   ========================================================= */
+function addProject(){
+  var name = document.getElementById('proj_name').value.trim();
+  var dept = document.getElementById('proj_dept').value.trim();
+  var auditor = document.getElementById('proj_auditor').value.trim();
+  if(!name || !dept){ alert('يرجى إدخال اسم المشروع والإدارة.'); return; }
+  var arr = loadStore('projects');
+  arr.push({id:nextId(arr), name:name, dept:dept, auditor:auditor||'-', status:'مجدول'});
+  saveStore('projects', arr);
+  document.getElementById('proj_name').value=''; document.getElementById('proj_dept').value='';
+  renderProjects();
+}
+function updateProjectStatus(id, status){
+  var arr = loadStore('projects');
+  var p = arr.find(function(x){return x.id===id;});
+  if(p) p.status = status;
+  saveStore('projects', arr);
+  renderProjects();
+}
+function deleteProject(id){
+  if(!confirm('حذف هذا المشروع من السجل؟')) return;
+  saveStore('projects', loadStore('projects').filter(function(p){return p.id!==id;}));
+  renderProjects();
+}
+function renderProjects(){
+  var arr = loadStore('projects');
+  document.getElementById('proj_count').textContent = arr.length + ' مشاريع';
+  document.getElementById('proj_tableBody').innerHTML = arr.length ? arr.map(function(p, idx){
+    return '<tr><td>'+(idx+1)+'</td><td class="font-bold">'+p.name+'</td><td>'+p.dept+'</td><td>'+p.auditor+'</td>'+
+      '<td><select onchange="updateProjectStatus('+p.id+',this.value)" style="width:120px;">'+
+        ['مجدول','قيد المراجعة','مكتمل'].map(function(s){return '<option '+(s===p.status?'selected':'')+'>'+s+'</option>';}).join('')+
+      '</select></td>'+
+      '<td class="no-print"><button class="btn-danger" onclick="deleteProject('+p.id+')">حذف</button></td></tr>';
+  }).join('') : '<tr><td colspan="6" class="text-center text-slate-400 py-6">لا توجد مشاريع مسجّلة بعد.</td></tr>';
+}
+
+/* =========================================================
+   تبويب 9: الدروس المستفادة
+   ========================================================= */
+function initLessonsDeptSelect(){
+  var sel = document.getElementById('ll_dept');
+  if(sel) sel.innerHTML = CHECKLISTS.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>';}).join('');
+}
+function addLesson(){
+  var deptId = document.getElementById('ll_dept').value;
+  var dept = CHECKLISTS.find(function(c){return c.id===deptId;});
+  var lesson = document.getElementById('ll_lesson').value.trim();
+  var cat = document.getElementById('ll_category').value;
+  if(!lesson){ alert('يرجى كتابة الدرس المستفاد.'); return; }
+  var arr = loadStore('lessons');
+  arr.push({id:nextId(arr), dept: dept?dept.name:deptId, category:cat, lesson:lesson, date:todayStr()});
+  saveStore('lessons', arr);
+  document.getElementById('ll_lesson').value='';
+  renderLessons();
+}
+function deleteLesson(id){
+  if(!confirm('حذف هذا الدرس المستفاد؟')) return;
+  saveStore('lessons', loadStore('lessons').filter(function(l){return l.id!==id;}));
+  renderLessons();
+}
+function renderLessons(){
+  var q = (document.getElementById('ll_search').value||'').trim().toLowerCase();
+  var arr = loadStore('lessons').filter(function(l){ return !q || l.lesson.toLowerCase().indexOf(q)!==-1 || l.dept.toLowerCase().indexOf(q)!==-1; });
+  document.getElementById('ll_tableBody').innerHTML = arr.length ? arr.slice().reverse().map(function(l){
+    return '<tr><td class="font-bold">'+l.dept+'</td><td><span class="badge badge-blue">'+l.category+'</span></td><td>'+l.lesson+'</td>'+
+      '<td class="no-print"><button class="btn-danger" onclick="deleteLesson('+l.id+')">حذف</button></td></tr>';
+  }).join('') : '<tr><td colspan="4" class="text-center text-slate-400 py-6">لا توجد دروس مسجّلة بعد.</td></tr>';
+}
+
+/* =========================================================
+   تبويب 10: التقرير النهائي الشامل
+   ========================================================= */
+function generateFinalReport(){
+  document.getElementById('finalReportDate').textContent = new Date().toLocaleString('ar-EG');
+  var results = loadStore('results');
+  var caps = loadStore('caps');
+  var projects = loadStore('projects');
+  var lessons = loadStore('lessons');
+  var html = '';
+
+  var avg = results.length ? (results.reduce(function(s,r){return s+computeDeptScore(r).score;},0)/results.length) : 0;
+  html += '<div class="card p-6 mb-2"><h2 class="section-title">1. الملخص التنفيذي</h2>'+
+    '<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">'+
+    '<div class="kpi"><b>'+results.length+' / '+CHECKLISTS.length+'</b><span class="text-slate-400 text-xs">إدارات تمت مراجعتها</span></div>'+
+    '<div class="kpi amber"><b>'+avg.toFixed(1)+'</b><span class="text-slate-400 text-xs">متوسط الدرجة /15</span></div>'+
+    '<div class="kpi red"><b>'+caps.filter(function(c){return c.status!=='مغلق';}).length+'</b><span class="text-slate-400 text-xs">إجراءات تصحيحية مفتوحة</span></div>'+
+    '<div class="kpi"><b>'+projects.length+'</b><span class="text-slate-400 text-xs">مشاريع بنطاق المراجعة</span></div>'+
+    '</div></div>';
+
+  if(results.length){
+    html += '<div class="card p-6 mb-2"><h2 class="section-title">2. مصفوفة التقييم والدرجات</h2>'+
+      '<table class="tbl"><thead><tr><th>الإدارة</th><th>الدرجة /15</th><th>التقييم</th><th>مستوى الخطورة</th></tr></thead><tbody>'+
+      results.slice().sort(function(a,b){return computeDeptScore(b).score-computeDeptScore(a).score;}).map(function(r){
+        var s = computeDeptScore(r); var risk = riskLevel(s.score);
+        return '<tr><td class="font-bold">'+r.deptName+'</td><td>'+s.score.toFixed(1)+'</td><td>'+ratingLabel(s.score)+'</td><td><span class="badge '+risk.badge+'">'+risk.label+'</span></td></tr>';
+      }).join('') + '</tbody></table></div>';
+
+    html += '<div class="card p-6 mb-2"><h2 class="section-title">3. أبرز الملاحظات (بنود غير ممتثلة)</h2>';
+    var anyObs = false;
+    results.forEach(function(r){
+      var obs = [];
+      r.categories.forEach(function(cat){ cat.items.forEach(function(it){ if(it.status==='nonconformant') obs.push(it.note||it.q); }); });
+      if(obs.length){ anyObs = true; html += '<p class="font-bold text-sm mt-3">'+r.deptName+'</p><ul class="list-disc pr-5 text-xs text-slate-600 space-y-1">'+obs.map(function(o){return '<li>'+o+'</li>';}).join('')+'</ul>'; }
+    });
+    if(!anyObs) html += '<p class="text-slate-400 text-sm">لا توجد ملاحظات عدم مطابقة مسجّلة.</p>';
+    html += '</div>';
+  }
+
+  html += '<div class="card p-6 mb-2"><h2 class="section-title">4. متابعة الإجراءات التصحيحية (CAP)</h2>'+
+    (caps.length ? '<table class="tbl"><thead><tr><th>الإدارة</th><th>الملاحظة</th><th>الخطر</th><th>الموعد النهائي</th><th>الحالة</th></tr></thead><tbody>'+
+      caps.map(function(c){ return '<tr><td class="font-bold">'+c.dept+'</td><td>'+c.issue+'</td><td>'+c.risk+'</td><td>'+c.deadline+'</td><td>'+c.status+'</td></tr>'; }).join('')+
+      '</tbody></table>' : '<p class="text-slate-400 text-sm">لا توجد إجراءات تصحيحية مسجّلة.</p>') + '</div>';
+
+  html += '<div class="card p-6 mb-2"><h2 class="section-title">5. الدروس المستفادة</h2>'+
+    (lessons.length ? '<ul class="list-disc pr-5 text-xs text-slate-600 space-y-1">'+lessons.map(function(l){return '<li><b>'+l.dept+'</b> ('+l.category+'): '+l.lesson+'</li>';}).join('')+'</ul>' : '<p class="text-slate-400 text-sm">لا توجد دروس مسجّلة بعد.</p>') + '</div>';
+
+  html += '<div class="card-dark p-6"><h2 class="font-bold text-white mb-2">6. التوقيعات</h2>'+
+    '<div class="grid grid-cols-2 gap-4 text-center text-sm mt-4"><div><p class="text-slate-400 text-xs">رئيس فريق المراجعة</p><p class="text-slate-500 mt-4">...........................</p></div><div><p class="text-slate-400 text-xs">اعتماد الإدارة العليا</p><p class="text-slate-500 mt-4">...........................</p></div></div></div>';
+
+  document.getElementById('finalReportBody').innerHTML = html;
+}
+
+/* =========================================================
+   التهيئة عند تحميل الصفحة
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', function(){
+  initLetterSelect();
+  initChecklistSelect();
+  initCapDeptSelect();
+  initLessonsDeptSelect();
+  document.getElementById('cap_deadline').value = todayStr();
+  loadSavedStatements();
+  renderDashboard();
+  renderChecklist();
+});
+</script>
+</body>
+</html>

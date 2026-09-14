@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDAI Governance Hub</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --primary: #0284c7;
+    --dark: #0f172a;
+    --border: #cbd5e1;
+    --bg: #f8fafc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    margin: 0;
+    background: #eef2f6;
+    color: var(--dark);
+    padding-bottom: 40px;
+  }
+  header {
+    background: var(--dark);
+    color: white;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  header .title-block h1 { font-size: 17px; margin: 0; }
+  header .title-block p { font-size: 11px; margin: 2px 0 0; color: #94a3b8; }
+  header .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  header button, header select {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  header button.secondary-btn { background: #475569; }
+  .layout { display: flex; min-height: calc(100vh - 60px); }
+  aside {
+    width: 260px;
+    background: white;
+    border-left: 1px solid var(--border);
+    padding: 12px;
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+  }
+  aside .group-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #64748b;
+    margin: 14px 4px 6px;
+    text-transform: uppercase;
+  }
+  aside button.matrix-btn {
+    display: block;
+    width: 100%;
+    text-align: right;
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #334155;
+    margin-bottom: 2px;
+  }
+  aside button.matrix-btn:hover { background: #f1f5f9; }
+  aside button.matrix-btn.active { background: var(--primary); color: white; }
+  main { flex: 1; padding: 20px; overflow-x: auto; }
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .card-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .card h2 { margin: 0; font-size: 18px; color: var(--primary); }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; }
+  table.data-table th, table.data-table td {
+    border: 1px solid var(--border); padding: 8px; text-align: right; vertical-align: top;
+  }
+  table.data-table th { background: var(--bg); font-size: 12px; }
+  table.data-table td.actions { white-space: nowrap; width: 1%; }
+  table.data-table td.actions button { margin-inline-start: 4px; }
+  .btn-small {
+    background: #64748b; color: white; border: none; padding: 4px 10px;
+    border-radius: 4px; cursor: pointer; font-size: 12px;
+  }
+  .btn-small.danger { background: #dc2626; }
+  .btn-small.edit { background: var(--primary); }
+  .btn-small.print-btn { background: #16a34a; }
+  form.row-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  form.row-form label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+  form.row-form input, form.row-form select, form.row-form textarea {
+    width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 5px; font-family: inherit; font-size: 13px;
+  }
+  form.row-form textarea { min-height: 60px; resize: vertical; }
+  form.row-form .form-actions { grid-column: 1 / -1; margin-top: 6px; }
+  button.primary {
+    background: var(--primary); color: white; border: none; padding: 8px 18px;
+    border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  button.secondary {
+    background: #94a3b8; color: white; border: none; padding: 8px 18px;
+    border-radius: 6px; cursor: pointer; font-size: 13px; margin-inline-start: 6px;
+  }
+  .msg { padding: 10px; border-radius: 6px; margin: 10px 0; font-size: 13px; }
+  .msg.success { background: #dcfce7; color: #166534; }
+  .msg.error { background: #fee2e2; color: #991b1b; }
+  .msg.info { background: #dbeafe; color: #1e40af; }
+  .tabs-auth { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tabs-auth button { flex: 1; padding: 10px; border: 1px solid var(--border); background: white; cursor: pointer; border-radius: 6px; }
+  .tabs-auth button.active { background: var(--primary); color: white; }
+  #auth-login, #auth-register { display: none; }
+  #auth-login.active, #auth-register.active { display: block; }
+  .search-box { margin-bottom: 10px; }
+  .search-box input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 5px; }
+  .empty-note { color: #94a3b8; text-align: center; padding: 20px; }
+  footer.app-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--dark); color: #94a3b8; text-align: center;
+    font-size: 11px; padding: 8px; z-index: 100;
+  }
+  footer.app-footer b { color: #38bdf8; }
+  @media (max-width: 800px) {
+    .layout { flex-direction: column; }
+    aside { width: 100%; max-height: 260px; }
+  }  .ai-panel { max-width: 900px; }
+  .ai-panel textarea.ai-key-input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-family: monospace; }
+  .ai-report-box {
+    margin-top: 16px; padding: 18px; background: #faf5ff; border: 1px solid #d8b4fe;
+    border-radius: 8px; font-size: 14px; line-height: 1.9;
+  }
+  .ai-report-box h2, .ai-report-box h3, .ai-report-box h4 { color: #7c3aed; margin: 14px 0 6px; }
+  .ai-loading { display: flex; align-items: center; gap: 8px; color: #7c3aed; font-size: 13px; }
+  .spinner {
+    width: 16px; height: 16px; border: 3px solid #e9d5ff; border-top-color: #7c3aed;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="auth-screen" style="max-width:480px; margin:60px auto; padding:0 16px;">
+  <div class="card">
+    <h2 id="auth-title">🧠 EDAI Governance Hub</h2>
+    <p id="auth-subtitle" style="font-size:13px;color:#64748b;"></p>
+    <div class="tabs-auth">
+      <button id="tab-login-btn" class="active" onclick="switchAuthTab('login')" data-i18n="tab_login"></button>
+      <button id="tab-register-btn" onclick="switchAuthTab('register')" data-i18n="tab_register"></button>
+    </div>
+
+    <div id="auth-login" class="active">
+      <label style="display:block;font-size:13px;font-weight:bold;margin:8px 0 4px;" data-i18n="email_label"></label>
+      <input type="email" id="login-email" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:5px;">
+      <label style="display:block;font-size:13px;font-weight:bold;margin:8px 0 4px;" data-i18n="password_label"></label>
+      <input type="password" id="login-password" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:5px;">
+      <button class="primary" style="margin-top:12px;" onclick="handleLogin()" data-i18n="login_btn"></button>
+      <div id="login-msg"></div>
+    </div>
+
+    <div id="auth-register">
+      <label style="display:block;font-size:13px;font-weight:bold;margin:8px 0 4px;" data-i18n="company_name_label"></label>
+      <input type="text" id="register-company-name" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:5px;">
+      <label style="display:block;font-size:13px;font-weight:bold;margin:8px 0 4px;" data-i18n="email_label"></label>
+      <input type="email" id="register-email" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:5px;">
+      <label style="display:block;font-size:13px;font-weight:bold;margin:8px 0 4px;" data-i18n="password_label"></label>
+      <input type="password" id="register-password" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:5px;">
+      <label style="display:block;font-size:13px;font-weight:bold;margin:8px 0 4px;" data-i18n="confirm_password_label"></label>
+      <input type="password" id="register-confirm" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:5px;">
+      <button class="primary" style="margin-top:12px;" onclick="handleRegister()" data-i18n="register_btn"></button>
+      <div id="register-msg"></div>
+    </div>
+  </div>
+</div>
+
+<div id="main-screen" style="display:none;">
+  <header>
+    <div class="title-block">
+      <h1>🧠 EDAI Governance Hub</h1>
+      <p id="founder-line"></p>
+    </div>
+    <div class="actions">
+      <button class="secondary-btn" onclick="toggleLang()" id="lang-toggle-btn">English 🌐</button>
+      <button class="secondary-btn" onclick="openMasterReport()" id="master-report-btn"></button>
+      <button class="secondary-btn" onclick="openAIPage()" id="ai-page-btn" style="background:#7c3aed;"></button>
+      <span id="company-name-display" style="font-size:12px;"></span>
+      <button onclick="handleLogout()" id="logout-btn"></button>
+    </div>
+  </header>
+  <div class="layout">
+    <aside id="matrix-nav"></aside>
+    <main>
+      <div class="card">
+        <div class="card-header-row">
+          <h2 id="current-matrix-title"></h2>
+          <button class="btn-small print-btn" id="print-current-btn" style="display:none;" onclick="printCurrentMatrix()"></button>
+        </div>
+        <div id="msg-area"></div>
+        <div class="search-box" id="search-box" style="display:none;">
+          <input type="text" id="search-input" oninput="renderCurrentTable()">
+        </div>
+        <div id="table-container"></div>
+        <div id="form-container"></div>
+      </div>
+    </main>
+  </div>
+  <footer class="app-footer" id="app-footer"></footer>
+</div>
+
+<script>
+const MATRIX_DATA = {
+  "groups": [
+    {
+      "key": "strategy",
+      "name_ar": "🎯 الاستراتيجية",
+      "name_en": "🎯 Strategy"
+    },
+    {
+      "key": "governance",
+      "name_ar": "⚖️ الحوكمة",
+      "name_en": "⚖️ Governance"
+    },
+    {
+      "key": "hr",
+      "name_ar": "👥 الموارد البشرية",
+      "name_en": "👥 Human Resources"
+    },
+    {
+      "key": "finance",
+      "name_ar": "💰 المالية",
+      "name_en": "💰 Finance"
+    },
+    {
+      "key": "quality_risk",
+      "name_ar": "⚠️ الجودة والمخاطر",
+      "name_en": "⚠️ Quality & Risk"
+    },
+    {
+      "key": "tech",
+      "name_ar": "🤖 التقنية والذكاء الاصطناعي",
+      "name_en": "🤖 Technology & AI"
+    }
+  ],
+  "matrices": [
+    {
+      "key": "swot",
+      "group": "strategy",
+      "name_ar": "تحليل SWOT",
+      "name_en": "SWOT Analysis Matrix",
+      "columns": [
+        {
+          "key": "category",
+          "label_ar": "الفئة",
+          "label_en": "Category",
+          "type": "select",
+          "options": [
+            {
+              "ar": "قوة",
+              "en": "Strength"
+            },
+            {
+              "ar": "ضعف",
+              "en": "Weakness"
+            },
+            {
+              "ar": "فرصة",
+              "en": "Opportunity"
+            },
+            {
+              "ar": "تهديد",
+              "en": "Threat"
+            }
+          ]
+        },
+        {
+          "key": "item",
+          "label_ar": "البند",
+          "label_en": "Item",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "smart_goals",
+      "group": "strategy",
+      "name_ar": "الأهداف الذكية SMART",
+      "name_en": "SMART Goals Matrix",
+      "columns": [
+        {
+          "key": "goal",
+          "label_ar": "الهدف الاستراتيجي",
+          "label_en": "Strategic Goal",
+          "type": "textarea"
+        },
+        {
+          "key": "kpi",
+          "label_ar": "مؤشر القياس",
+          "label_en": "Measurable KPI",
+          "type": "text"
+        },
+        {
+          "key": "achievability",
+          "label_ar": "قابلية التحقيق",
+          "label_en": "Achievability",
+          "type": "text"
+        },
+        {
+          "key": "timebound",
+          "label_ar": "الإطار الزمني",
+          "label_en": "Time-Bound",
+          "type": "text"
+        },
+        {
+          "key": "owner",
+          "label_ar": "المسؤول",
+          "label_en": "Owner",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "track_record",
+      "group": "strategy",
+      "name_ar": "سجل أعمال المشاريع السابقة",
+      "name_en": "Project Track Record Matrix",
+      "columns": [
+        {
+          "key": "category",
+          "label_ar": "فئة المشروع",
+          "label_en": "Project Category",
+          "type": "text"
+        },
+        {
+          "key": "scope",
+          "label_ar": "الخبرة والنطاق",
+          "label_en": "Core Expertise / Scope",
+          "type": "textarea"
+        },
+        {
+          "key": "value_add",
+          "label_ar": "القيمة المضافة / التقنية",
+          "label_en": "Value Add / Tech Used",
+          "type": "text"
+        },
+        {
+          "key": "status",
+          "label_ar": "الحالة",
+          "label_en": "Status",
+          "type": "select",
+          "options": [
+            {
+              "ar": "مكتمل",
+              "en": "Completed"
+            },
+            {
+              "ar": "جاري",
+              "en": "In Progress"
+            },
+            {
+              "ar": "متوقف",
+              "en": "On Hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "org_vision",
+      "group": "strategy",
+      "name_ar": "الرؤية المؤسسية",
+      "name_en": "Organizational Vision Matrix",
+      "columns": [
+        {
+          "key": "element",
+          "label_ar": "العنصر",
+          "label_en": "Element",
+          "type": "text"
+        },
+        {
+          "key": "description",
+          "label_ar": "الوصف التفصيلي",
+          "label_en": "Detailed Description",
+          "type": "textarea"
+        },
+        {
+          "key": "goal",
+          "label_ar": "الهدف الاستراتيجي",
+          "label_en": "Strategic Goal",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "core_values",
+      "group": "strategy",
+      "name_ar": "القيم الجوهرية",
+      "name_en": "Core Values Matrix",
+      "columns": [
+        {
+          "key": "value",
+          "label_ar": "القيمة",
+          "label_en": "Value",
+          "type": "text"
+        },
+        {
+          "key": "concept",
+          "label_ar": "المفهوم التشغيلي",
+          "label_en": "Operational Concept",
+          "type": "textarea"
+        },
+        {
+          "key": "behavior",
+          "label_ar": "السلوك المتوقع",
+          "label_en": "Expected Behavior",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "key": "org_structure",
+      "group": "governance",
+      "name_ar": "الهيكل التنظيمي",
+      "name_en": "Organizational Structure Matrix",
+      "columns": [
+        {
+          "key": "level",
+          "label_ar": "المستوى الإداري",
+          "label_en": "Management Level",
+          "type": "text"
+        },
+        {
+          "key": "position",
+          "label_ar": "الوظيفة",
+          "label_en": "Position",
+          "type": "text"
+        },
+        {
+          "key": "responsibilities",
+          "label_ar": "المسؤوليات الأساسية",
+          "label_en": "Key Responsibilities",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "key": "sop",
+      "group": "governance",
+      "name_ar": "إجراءات التشغيل القياسية SOP",
+      "name_en": "Standard Operating Procedures (SOP)",
+      "columns": [
+        {
+          "key": "dept",
+          "label_ar": "القسم",
+          "label_en": "Department",
+          "type": "text"
+        },
+        {
+          "key": "code",
+          "label_ar": "كود الإجراء",
+          "label_en": "SOP Code",
+          "type": "text"
+        },
+        {
+          "key": "process_name",
+          "label_ar": "اسم العملية",
+          "label_en": "Process Name",
+          "type": "text"
+        },
+        {
+          "key": "goal",
+          "label_ar": "الهدف التشغيلي",
+          "label_en": "Operational Goal",
+          "type": "textarea"
+        },
+        {
+          "key": "deliverable",
+          "label_ar": "المخرج الرئيسي",
+          "label_en": "Key Deliverable",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "raci",
+      "group": "governance",
+      "name_ar": "مصفوفة المسؤوليات RACI",
+      "name_en": "RACI Matrix",
+      "columns": [
+        {
+          "key": "process",
+          "label_ar": "العملية",
+          "label_en": "Process",
+          "type": "text"
+        },
+        {
+          "key": "gm",
+          "label_ar": "المدير العام",
+          "label_en": "GM",
+          "type": "select",
+          "options": [
+            {
+              "ar": "R",
+              "en": "R"
+            },
+            {
+              "ar": "A",
+              "en": "A"
+            },
+            {
+              "ar": "C",
+              "en": "C"
+            },
+            {
+              "ar": "I",
+              "en": "I"
+            },
+            {
+              "ar": "-",
+              "en": "-"
+            }
+          ]
+        },
+        {
+          "key": "pmo",
+          "label_ar": "PMO",
+          "label_en": "PMO",
+          "type": "select",
+          "options": [
+            {
+              "ar": "R",
+              "en": "R"
+            },
+            {
+              "ar": "A",
+              "en": "A"
+            },
+            {
+              "ar": "C",
+              "en": "C"
+            },
+            {
+              "ar": "I",
+              "en": "I"
+            },
+            {
+              "ar": "-",
+              "en": "-"
+            }
+          ]
+        },
+        {
+          "key": "tech_office",
+          "label_ar": "المكتب الفني",
+          "label_en": "Tech Office",
+          "type": "select",
+          "options": [
+            {
+              "ar": "R",
+              "en": "R"
+            },
+            {
+              "ar": "A",
+              "en": "A"
+            },
+            {
+              "ar": "C",
+              "en": "C"
+            },
+            {
+              "ar": "I",
+              "en": "I"
+            },
+            {
+              "ar": "-",
+              "en": "-"
+            }
+          ]
+        },
+        {
+          "key": "site",
+          "label_ar": "الموقع",
+          "label_en": "Site",
+          "type": "select",
+          "options": [
+            {
+              "ar": "R",
+              "en": "R"
+            },
+            {
+              "ar": "A",
+              "en": "A"
+            },
+            {
+              "ar": "C",
+              "en": "C"
+            },
+            {
+              "ar": "I",
+              "en": "I"
+            },
+            {
+              "ar": "-",
+              "en": "-"
+            }
+          ]
+        },
+        {
+          "key": "qaqc_hse",
+          "label_ar": "الجودة والسلامة",
+          "label_en": "QA/QC/HSE",
+          "type": "select",
+          "options": [
+            {
+              "ar": "R",
+              "en": "R"
+            },
+            {
+              "ar": "A",
+              "en": "A"
+            },
+            {
+              "ar": "C",
+              "en": "C"
+            },
+            {
+              "ar": "I",
+              "en": "I"
+            },
+            {
+              "ar": "-",
+              "en": "-"
+            }
+          ]
+        },
+        {
+          "key": "procurement",
+          "label_ar": "المشتريات",
+          "label_en": "Procurement",
+          "type": "select",
+          "options": [
+            {
+              "ar": "R",
+              "en": "R"
+            },
+            {
+              "ar": "A",
+              "en": "A"
+            },
+            {
+              "ar": "C",
+              "en": "C"
+            },
+            {
+              "ar": "I",
+              "en": "I"
+            },
+            {
+              "ar": "-",
+              "en": "-"
+            }
+          ]
+        },
+        {
+          "key": "hr",
+          "label_ar": "الموارد البشرية",
+          "label_en": "HR",
+          "type": "select",
+          "options": [
+            {
+              "ar": "R",
+              "en": "R"
+            },
+            {
+              "ar": "A",
+              "en": "A"
+            },
+            {
+              "ar": "C",
+              "en": "C"
+            },
+            {
+              "ar": "I",
+              "en": "I"
+            },
+            {
+              "ar": "-",
+              "en": "-"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "doa",
+      "group": "governance",
+      "name_ar": "تفويض الصلاحيات DoA",
+      "name_en": "Delegation of Authority (DoA) Matrix",
+      "columns": [
+        {
+          "key": "decision",
+          "label_ar": "القرار / العملية",
+          "label_en": "Process / Decision",
+          "type": "text"
+        },
+        {
+          "key": "gm",
+          "label_ar": "المدير العام",
+          "label_en": "GM",
+          "type": "text"
+        },
+        {
+          "key": "pmo_manager",
+          "label_ar": "مدير PMO",
+          "label_en": "PMO Manager",
+          "type": "text"
+        },
+        {
+          "key": "tech_office_mgr",
+          "label_ar": "مدير المكتب الفني",
+          "label_en": "Tech Office Mgr",
+          "type": "text"
+        },
+        {
+          "key": "pm",
+          "label_ar": "مدير المشروع",
+          "label_en": "PM",
+          "type": "text"
+        },
+        {
+          "key": "hr_director",
+          "label_ar": "مدير الموارد البشرية",
+          "label_en": "HR Director",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "statutory",
+      "group": "governance",
+      "name_ar": "الالتزامات القانونية والتنظيمية",
+      "name_en": "Statutory & Compliance Matrix",
+      "columns": [
+        {
+          "key": "obligation",
+          "label_ar": "الالتزام",
+          "label_en": "Obligation",
+          "type": "text"
+        },
+        {
+          "key": "authority",
+          "label_ar": "الجهة المصدرة",
+          "label_en": "Issuing Authority",
+          "type": "text"
+        },
+        {
+          "key": "rate",
+          "label_ar": "القيمة / النسبة",
+          "label_en": "Rate / Value",
+          "type": "text"
+        },
+        {
+          "key": "deadline",
+          "label_ar": "الموعد النهائي",
+          "label_en": "Deadline",
+          "type": "text"
+        },
+        {
+          "key": "owner",
+          "label_ar": "المسؤول",
+          "label_en": "Owner",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "hr_strategy",
+      "group": "hr",
+      "name_ar": "عناصر استراتيجية الموارد البشرية",
+      "name_en": "HR Strategy Elements",
+      "columns": [
+        {
+          "key": "element",
+          "label_ar": "العنصر",
+          "label_en": "Element",
+          "type": "text"
+        },
+        {
+          "key": "action",
+          "label_ar": "الإجراء المتخذ",
+          "label_en": "Action Taken",
+          "type": "textarea"
+        },
+        {
+          "key": "why",
+          "label_ar": "الأهمية",
+          "label_en": "Why It Matters",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "key": "manpower",
+      "group": "hr",
+      "name_ar": "توزيع القوى العاملة",
+      "name_en": "Manpower Allocation Matrix",
+      "columns": [
+        {
+          "key": "role",
+          "label_ar": "الوظيفة",
+          "label_en": "Role / Position",
+          "type": "text"
+        },
+        {
+          "key": "qty",
+          "label_ar": "العدد",
+          "label_en": "Qty",
+          "type": "number"
+        },
+        {
+          "key": "metric",
+          "label_ar": "معيار التوزيع",
+          "label_en": "Allocation Metric",
+          "type": "text"
+        },
+        {
+          "key": "skill",
+          "label_ar": "المهارة الحرجة",
+          "label_en": "Critical Skill",
+          "type": "text"
+        },
+        {
+          "key": "contract_type",
+          "label_ar": "نوع التعاقد",
+          "label_en": "Contract Type",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "recruitment",
+      "group": "hr",
+      "name_ar": "التوظيف والاختيار",
+      "name_en": "Recruitment & Selection Matrix",
+      "columns": [
+        {
+          "key": "stage",
+          "label_ar": "المرحلة",
+          "label_en": "Stage",
+          "type": "text"
+        },
+        {
+          "key": "action",
+          "label_ar": "الإجراء",
+          "label_en": "Action / Step",
+          "type": "textarea"
+        },
+        {
+          "key": "tool",
+          "label_ar": "أداة التقييم",
+          "label_en": "Assessment Tool",
+          "type": "text"
+        },
+        {
+          "key": "decision_maker",
+          "label_ar": "صاحب القرار",
+          "label_en": "Decision Maker",
+          "type": "text"
+        },
+        {
+          "key": "success_criteria",
+          "label_ar": "معيار النجاح",
+          "label_en": "Success Criteria",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "job_descriptions",
+      "group": "hr",
+      "name_ar": "التوصيف الوظيفي",
+      "name_en": "Job Descriptions Matrix",
+      "columns": [
+        {
+          "key": "title",
+          "label_ar": "المسمى الوظيفي",
+          "label_en": "Job Title",
+          "type": "text"
+        },
+        {
+          "key": "purpose",
+          "label_ar": "الغرض من الوظيفة",
+          "label_en": "Job Purpose",
+          "type": "textarea"
+        },
+        {
+          "key": "tasks",
+          "label_ar": "المهام الفنية الرئيسية",
+          "label_en": "Key Technical Tasks",
+          "type": "textarea"
+        },
+        {
+          "key": "digital_skills",
+          "label_ar": "المهارات الرقمية",
+          "label_en": "HPTG / Digital Skills",
+          "type": "text"
+        },
+        {
+          "key": "kpi",
+          "label_ar": "مؤشر الأداء",
+          "label_en": "KPI",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "kpi_performance",
+      "group": "hr",
+      "name_ar": "مؤشرات الأداء KPI",
+      "name_en": "KPI Performance Matrix",
+      "columns": [
+        {
+          "key": "role",
+          "label_ar": "الوظيفة",
+          "label_en": "Role",
+          "type": "text"
+        },
+        {
+          "key": "kpi_name",
+          "label_ar": "المؤشر",
+          "label_en": "KPI",
+          "type": "text"
+        },
+        {
+          "key": "calculation",
+          "label_ar": "طريقة الحساب",
+          "label_en": "Calculation Method",
+          "type": "text"
+        },
+        {
+          "key": "target",
+          "label_ar": "الهدف المستهدف",
+          "label_en": "Target",
+          "type": "text"
+        },
+        {
+          "key": "weight",
+          "label_ar": "الوزن %",
+          "label_en": "Weight %",
+          "type": "number"
+        },
+        {
+          "key": "actual",
+          "label_ar": "القيمة الفعلية",
+          "label_en": "Actual Value",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "training_idp",
+      "group": "hr",
+      "name_ar": "التدريب والتطوير IDP",
+      "name_en": "Training & Development (IDP) Matrix",
+      "columns": [
+        {
+          "key": "target_group",
+          "label_ar": "الفئة المستهدفة",
+          "label_en": "Target Group",
+          "type": "text"
+        },
+        {
+          "key": "skill_gap",
+          "label_ar": "الفجوة المهارية",
+          "label_en": "Skill Gap",
+          "type": "text"
+        },
+        {
+          "key": "program",
+          "label_ar": "برنامج التدريب",
+          "label_en": "Training Program",
+          "type": "text"
+        },
+        {
+          "key": "objective",
+          "label_ar": "الهدف التشغيلي",
+          "label_en": "Operational Objective",
+          "type": "textarea"
+        },
+        {
+          "key": "priority",
+          "label_ar": "الأولوية",
+          "label_en": "Priority",
+          "type": "select",
+          "options": [
+            {
+              "ar": "عالية جداً",
+              "en": "Immediate"
+            },
+            {
+              "ar": "عالية",
+              "en": "High"
+            },
+            {
+              "ar": "متوسطة",
+              "en": "Medium"
+            },
+            {
+              "ar": "منخفضة",
+              "en": "Low"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "compensation",
+      "group": "hr",
+      "name_ar": "الأجور والمزايا",
+      "name_en": "Compensation & Benefits Matrix",
+      "columns": [
+        {
+          "key": "grade",
+          "label_ar": "الدرجة الوظيفية",
+          "label_en": "Grade / Level",
+          "type": "text"
+        },
+        {
+          "key": "base_salary",
+          "label_ar": "الراتب الأساسي",
+          "label_en": "Base Salary",
+          "type": "text"
+        },
+        {
+          "key": "allowances",
+          "label_ar": "البدلات",
+          "label_en": "Allowances",
+          "type": "text"
+        },
+        {
+          "key": "bonus",
+          "label_ar": "مكافأة الأداء",
+          "label_en": "Performance Bonus",
+          "type": "text"
+        },
+        {
+          "key": "benefits",
+          "label_ar": "مزايا إضافية",
+          "label_en": "Extra Benefits",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "cash_flow",
+      "group": "finance",
+      "name_ar": "إدارة التدفقات النقدية",
+      "name_en": "Project Cash Flow Management",
+      "columns": [
+        {
+          "key": "item",
+          "label_ar": "البند المالي",
+          "label_en": "Financial Item",
+          "type": "text"
+        },
+        {
+          "key": "direction",
+          "label_ar": "وارد / صادر",
+          "label_en": "In / Out",
+          "type": "select",
+          "options": [
+            {
+              "ar": "وارد (+)",
+              "en": "Inflow (+)"
+            },
+            {
+              "ar": "صادر (-)",
+              "en": "Outflow (-)"
+            }
+          ]
+        },
+        {
+          "key": "prepared_by",
+          "label_ar": "مُعدّ بواسطة",
+          "label_en": "Prepared By",
+          "type": "text"
+        },
+        {
+          "key": "approval",
+          "label_ar": "جهة الاعتماد",
+          "label_en": "Approval Authority",
+          "type": "text"
+        },
+        {
+          "key": "timing",
+          "label_ar": "التوقيت",
+          "label_en": "Timing",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "cost_control_evm",
+      "group": "finance",
+      "name_ar": "التحكم بالتكلفة EVM",
+      "name_en": "Cost Control Matrix (EVM)",
+      "columns": [
+        {
+          "key": "wbs_item",
+          "label_ar": "بند WBS",
+          "label_en": "WBS Item",
+          "type": "text"
+        },
+        {
+          "key": "bac",
+          "label_ar": "الميزانية عند الإتمام BAC",
+          "label_en": "Budget at Completion (BAC)",
+          "type": "number"
+        },
+        {
+          "key": "ac",
+          "label_ar": "التكلفة الفعلية AC",
+          "label_en": "Actual Cost (AC)",
+          "type": "number"
+        },
+        {
+          "key": "ev",
+          "label_ar": "القيمة المكتسبة EV",
+          "label_en": "Earned Value (EV)",
+          "type": "number"
+        },
+        {
+          "key": "notes",
+          "label_ar": "ملاحظات",
+          "label_en": "Notes",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "vendor_procurement",
+      "group": "finance",
+      "name_ar": "الموردين والمشتريات",
+      "name_en": "Vendor & Procurement Matrix",
+      "columns": [
+        {
+          "key": "category",
+          "label_ar": "الفئة",
+          "label_en": "Category",
+          "type": "text"
+        },
+        {
+          "key": "supply_type",
+          "label_ar": "نوع التوريد / الخدمة",
+          "label_en": "Supply / Service Type",
+          "type": "text"
+        },
+        {
+          "key": "payment_terms",
+          "label_ar": "شروط الدفع",
+          "label_en": "Payment Terms",
+          "type": "text"
+        },
+        {
+          "key": "criteria",
+          "label_ar": "معيار الاختيار",
+          "label_en": "Selection Criteria",
+          "type": "text"
+        },
+        {
+          "key": "rating",
+          "label_ar": "معامل تقييم المورد",
+          "label_en": "Vendor Rating Factor",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "estimation_tendering",
+      "group": "finance",
+      "name_ar": "التسعير والمناقصات",
+      "name_en": "Estimation & Tendering Matrix",
+      "columns": [
+        {
+          "key": "component",
+          "label_ar": "بند التكلفة",
+          "label_en": "Cost Component",
+          "type": "text"
+        },
+        {
+          "key": "description",
+          "label_ar": "الوصف",
+          "label_en": "Description",
+          "type": "textarea"
+        },
+        {
+          "key": "basis",
+          "label_ar": "أساس الحساب",
+          "label_en": "Calculation Basis",
+          "type": "text"
+        },
+        {
+          "key": "weight",
+          "label_ar": "الوزن %",
+          "label_en": "Weight %",
+          "type": "number"
+        },
+        {
+          "key": "owner",
+          "label_ar": "المسؤول",
+          "label_en": "Owner",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "risk_register",
+      "group": "quality_risk",
+      "name_ar": "سجل المخاطر",
+      "name_en": "Risk Register Matrix",
+      "columns": [
+        {
+          "key": "project_name",
+          "label_ar": "المشروع",
+          "label_en": "Project",
+          "type": "text"
+        },
+        {
+          "key": "category",
+          "label_ar": "فئة الخطر",
+          "label_en": "Risk Category",
+          "type": "text"
+        },
+        {
+          "key": "description",
+          "label_ar": "وصف الخطر",
+          "label_en": "Risk Description",
+          "type": "textarea"
+        },
+        {
+          "key": "probability",
+          "label_ar": "الاحتمالية (1-5)",
+          "label_en": "Probability (1-5)",
+          "type": "number"
+        },
+        {
+          "key": "impact",
+          "label_ar": "الأثر (1-5)",
+          "label_en": "Impact (1-5)",
+          "type": "number"
+        },
+        {
+          "key": "mitigation",
+          "label_ar": "خطة المعالجة",
+          "label_en": "Mitigation Plan",
+          "type": "textarea"
+        },
+        {
+          "key": "owner",
+          "label_ar": "المسؤول",
+          "label_en": "Owner",
+          "type": "text"
+        },
+        {
+          "key": "status",
+          "label_ar": "الحالة",
+          "label_en": "Status",
+          "type": "select",
+          "options": [
+            {
+              "ar": "مفتوح",
+              "en": "Open"
+            },
+            {
+              "ar": "تحت المعالجة",
+              "en": "In Progress"
+            },
+            {
+              "ar": "مغلق",
+              "en": "Closed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "eot_claims",
+      "group": "quality_risk",
+      "name_ar": "مطالبات التمديد الزمني EOT",
+      "name_en": "EOT & Claims Matrix",
+      "columns": [
+        {
+          "key": "event_type",
+          "label_ar": "نوع الحدث",
+          "label_en": "Event Type",
+          "type": "text"
+        },
+        {
+          "key": "cause",
+          "label_ar": "السبب",
+          "label_en": "Cause",
+          "type": "textarea"
+        },
+        {
+          "key": "documents",
+          "label_ar": "المستندات المطلوبة",
+          "label_en": "Required Documents",
+          "type": "text"
+        },
+        {
+          "key": "impact",
+          "label_ar": "الأثر",
+          "label_en": "Impact",
+          "type": "text"
+        },
+        {
+          "key": "action",
+          "label_ar": "الإجراء التعاقدي",
+          "label_en": "Contractual Action",
+          "type": "textarea"
+        },
+        {
+          "key": "owner",
+          "label_ar": "المسؤول",
+          "label_en": "Owner",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "tqm",
+      "group": "quality_risk",
+      "name_ar": "إدارة الجودة الشاملة TQM",
+      "name_en": "TQM Implementation Matrix",
+      "columns": [
+        {
+          "key": "pillar",
+          "label_ar": "الركيزة",
+          "label_en": "TQM Pillar",
+          "type": "text"
+        },
+        {
+          "key": "action",
+          "label_ar": "الإجراء المتخذ",
+          "label_en": "Action Taken",
+          "type": "textarea"
+        },
+        {
+          "key": "tool",
+          "label_ar": "الأداة / الطريقة",
+          "label_en": "Tool / Method",
+          "type": "text"
+        },
+        {
+          "key": "objective",
+          "label_ar": "الهدف",
+          "label_en": "Objective",
+          "type": "text"
+        },
+        {
+          "key": "owner",
+          "label_ar": "المسؤول",
+          "label_en": "Owner",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "itp",
+      "group": "quality_risk",
+      "name_ar": "خطة الفحص والاختبار ITP",
+      "name_en": "Inspection & Test Plan (ITP)",
+      "columns": [
+        {
+          "key": "activity",
+          "label_ar": "النشاط",
+          "label_en": "Activity",
+          "type": "text"
+        },
+        {
+          "key": "inspection_type",
+          "label_ar": "نوع الفحص",
+          "label_en": "Inspection Type",
+          "type": "text"
+        },
+        {
+          "key": "standard",
+          "label_ar": "المرجع القياسي",
+          "label_en": "Reference Standard",
+          "type": "text"
+        },
+        {
+          "key": "responsibility",
+          "label_ar": "المسؤولية",
+          "label_en": "Responsibility",
+          "type": "text"
+        },
+        {
+          "key": "control_point",
+          "label_ar": "نقطة التحكم",
+          "label_en": "Control Point",
+          "type": "select",
+          "options": [
+            {
+              "ar": "Hold Point",
+              "en": "Hold Point"
+            },
+            {
+              "ar": "Witness Point",
+              "en": "Witness Point"
+            },
+            {
+              "ar": "Surveillance",
+              "en": "Surveillance"
+            }
+          ]
+        },
+        {
+          "key": "record",
+          "label_ar": "السجل الناتج",
+          "label_en": "Record",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "ncr_log",
+      "group": "quality_risk",
+      "name_ar": "سجل عدم المطابقة NCR",
+      "name_en": "NCR Tracking Matrix",
+      "columns": [
+        {
+          "key": "ncr_number",
+          "label_ar": "رقم NCR",
+          "label_en": "NCR No.",
+          "type": "text"
+        },
+        {
+          "key": "activity",
+          "label_ar": "النشاط",
+          "label_en": "Activity",
+          "type": "text"
+        },
+        {
+          "key": "description",
+          "label_ar": "وصف عدم المطابقة",
+          "label_en": "Non-Conformance Description",
+          "type": "textarea"
+        },
+        {
+          "key": "root_cause",
+          "label_ar": "السبب الجذري",
+          "label_en": "Root Cause",
+          "type": "textarea"
+        },
+        {
+          "key": "corrective_action",
+          "label_ar": "الإجراء التصحيحي",
+          "label_en": "Corrective Action",
+          "type": "textarea"
+        },
+        {
+          "key": "status",
+          "label_ar": "الحالة",
+          "label_en": "Status",
+          "type": "select",
+          "options": [
+            {
+              "ar": "مفتوح",
+              "en": "Open"
+            },
+            {
+              "ar": "تحت المراجعة",
+              "en": "Under Review"
+            },
+            {
+              "ar": "مغلق",
+              "en": "Closed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lessons_learned",
+      "group": "quality_risk",
+      "name_ar": "الدروس المستفادة",
+      "name_en": "Lessons Learned Matrix",
+      "columns": [
+        {
+          "key": "category",
+          "label_ar": "الفئة",
+          "label_en": "Category",
+          "type": "text"
+        },
+        {
+          "key": "event",
+          "label_ar": "الحدث",
+          "label_en": "Event / Incident",
+          "type": "text"
+        },
+        {
+          "key": "what_happened",
+          "label_ar": "ماذا حدث",
+          "label_en": "What Happened",
+          "type": "textarea"
+        },
+        {
+          "key": "lesson",
+          "label_ar": "الدرس المستفاد",
+          "label_en": "Lesson Learned",
+          "type": "textarea"
+        },
+        {
+          "key": "action_plan",
+          "label_ar": "خطة العمل",
+          "label_en": "Action Plan",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "key": "preventive_maintenance",
+      "group": "quality_risk",
+      "name_ar": "الصيانة الوقائية للمعدات",
+      "name_en": "Preventive Maintenance Matrix",
+      "columns": [
+        {
+          "key": "asset_type",
+          "label_ar": "نوع الأصل",
+          "label_en": "Asset Type",
+          "type": "text"
+        },
+        {
+          "key": "checklist",
+          "label_ar": "بنود الفحص",
+          "label_en": "Checklist Items",
+          "type": "textarea"
+        },
+        {
+          "key": "frequency",
+          "label_ar": "التكرار",
+          "label_en": "Frequency",
+          "type": "text"
+        },
+        {
+          "key": "condition_criteria",
+          "label_ar": "معيار الحالة",
+          "label_en": "Condition Criteria",
+          "type": "text"
+        },
+        {
+          "key": "accountable",
+          "label_ar": "المسؤول",
+          "label_en": "Accountable",
+          "type": "text"
+        },
+        {
+          "key": "criticality",
+          "label_ar": "درجة الحرجية",
+          "label_en": "Criticality",
+          "type": "select",
+          "options": [
+            {
+              "ar": "حرجة",
+              "en": "Critical"
+            },
+            {
+              "ar": "عالية",
+              "en": "High"
+            },
+            {
+              "ar": "متوسطة",
+              "en": "Medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "technical_capabilities",
+      "group": "tech",
+      "name_ar": "القدرات التقنية",
+      "name_en": "Technical Capabilities Matrix",
+      "columns": [
+        {
+          "key": "tool",
+          "label_ar": "الأداة / البرنامج",
+          "label_en": "Tool / Software",
+          "type": "text"
+        },
+        {
+          "key": "value_added",
+          "label_ar": "القيمة المضافة",
+          "label_en": "Value Added",
+          "type": "textarea"
+        },
+        {
+          "key": "advantage",
+          "label_ar": "الميزة التنافسية",
+          "label_en": "Competitive Advantage",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "key": "digitalization",
+      "group": "tech",
+      "name_ar": "الرقمنة والتقنية",
+      "name_en": "Digitalization & Technology Matrix",
+      "columns": [
+        {
+          "key": "layer",
+          "label_ar": "الطبقة",
+          "label_en": "Layer",
+          "type": "text"
+        },
+        {
+          "key": "tool",
+          "label_ar": "الأداة التقنية",
+          "label_en": "Tech Tool",
+          "type": "text"
+        },
+        {
+          "key": "function",
+          "label_ar": "الوظيفة الأساسية",
+          "label_en": "Core Function",
+          "type": "textarea"
+        },
+        {
+          "key": "integration",
+          "label_ar": "الربط مع",
+          "label_en": "Integration",
+          "type": "text"
+        },
+        {
+          "key": "value_added",
+          "label_ar": "القيمة المضافة",
+          "label_en": "Value Added",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "data_flow",
+      "group": "tech",
+      "name_ar": "تدفق البيانات الرقمي",
+      "name_en": "Digital Data Flow Matrix",
+      "columns": [
+        {
+          "key": "process",
+          "label_ar": "العملية",
+          "label_en": "Process",
+          "type": "text"
+        },
+        {
+          "key": "source",
+          "label_ar": "مصدر البيانات",
+          "label_en": "Data Source",
+          "type": "text"
+        },
+        {
+          "key": "medium",
+          "label_ar": "الوسيط الرقمي",
+          "label_en": "Digital Medium",
+          "type": "text"
+        },
+        {
+          "key": "frequency",
+          "label_ar": "التكرار",
+          "label_en": "Frequency",
+          "type": "text"
+        },
+        {
+          "key": "recipient",
+          "label_ar": "المستلم",
+          "label_en": "Recipient",
+          "type": "text"
+        },
+        {
+          "key": "automated_action",
+          "label_ar": "الإجراء الآلي",
+          "label_en": "Automated Action",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "key": "qai_analytics",
+      "group": "tech",
+      "name_ar": "تحليلات الذكاء الاصطناعي QAI",
+      "name_en": "QAI Analytics Matrix",
+      "columns": [
+        {
+          "key": "data_input",
+          "label_ar": "مُدخل البيانات",
+          "label_en": "Data Input",
+          "type": "text"
+        },
+        {
+          "key": "method",
+          "label_ar": "طريقة التحليل",
+          "label_en": "AI Analytics Method",
+          "type": "text"
+        },
+        {
+          "key": "output",
+          "label_ar": "المخرج التنبؤي",
+          "label_en": "Predictive Output",
+          "type": "textarea"
+        },
+        {
+          "key": "proactive_action",
+          "label_ar": "الإجراء الاستباقي",
+          "label_en": "Proactive Action",
+          "type": "textarea"
+        },
+        {
+          "key": "kpi",
+          "label_ar": "مؤشر النجاح",
+          "label_en": "KPI",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "tech_stack_roi",
+      "group": "tech",
+      "name_ar": "أداء الحزمة التقنية ROI",
+      "name_en": "Tech Stack Performance Matrix (ROI)",
+      "columns": [
+        {
+          "key": "tool",
+          "label_ar": "الأداة التقنية",
+          "label_en": "Tech Tool",
+          "type": "text"
+        },
+        {
+          "key": "adoption_rate",
+          "label_ar": "معدل التبني المستهدف",
+          "label_en": "Adoption Rate Target",
+          "type": "text"
+        },
+        {
+          "key": "efficiency_gain",
+          "label_ar": "الكفاءة التشغيلية المكتسبة",
+          "label_en": "Operational Efficiency Gain",
+          "type": "textarea"
+        },
+        {
+          "key": "roi_factor",
+          "label_ar": "عامل العائد ROI",
+          "label_en": "ROI Factor",
+          "type": "text"
+        },
+        {
+          "key": "barriers",
+          "label_ar": "العوائق الفنية",
+          "label_en": "Technical Barriers",
+          "type": "text"
+        },
+        {
+          "key": "optimization",
+          "label_ar": "إجراء التحسين",
+          "label_en": "Optimization Action",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+};
+</script>
+<script>
+// ============================================================
+// ⚠️ بيانات الاتصال بمشروع Supabase
+// ============================================================
+const SUPABASE_URL = "https://wkiwerqfcqlsutgrowvp.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Jc_E4NoFGEfMFnTyh-rAxQ_8sfJvpBj";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const FOUNDER_NAME_AR = "م. وائل علي عويس محمود";
+const FOUNDER_NAME_EN = "Eng. Wael Ali Ewis Mahmoud";
+
+let currentUser = null;
+let currentCompanyName = "";
+let currentMatrixKey = null;
+let currentView = 'none'; // 'none' | 'matrix' | 'ai'
+let currentRows = [];
+let editingRowId = null;
+let currentLang = 'ar'; // 'ar' أو 'en'
+
+// ============================================================
+// قاموس نصوص الواجهة (UI Strings)
+// ============================================================
+const UI = {
+  ar: {
+    tab_login: "تسجيل الدخول",
+    tab_register: "إنشاء حساب شركة",
+    email_label: "البريد الإلكتروني",
+    password_label: "كلمة السر",
+    confirm_password_label: "تأكيد كلمة السر",
+    company_name_label: "اسم الشركة",
+    login_btn: "دخول",
+    register_btn: "إنشاء الحساب",
+    auth_subtitle: "منصة حوكمة المشروعات الذكية — كل شركة بمساحة بيانات مستقلة بكلمة سر خاصة بيها.",
+    logout_btn: "🚪 خروج",
+    master_report_btn: "📊 التقرير الشامل",
+    print_btn: "🖨️ طباعة / PDF",
+    select_matrix_placeholder: "اختر مصفوفة من القائمة",
+    search_placeholder: "بحث...",
+    empty_note: "لا توجد بيانات بعد. أضف صفاً جديداً من النموذج تحت.",
+    add_row_title: "➕ إضافة صف جديد",
+    edit_row_title: "✏️ تعديل الصف",
+    save_btn: "💾 حفظ التعديل",
+    add_btn: "💾 إضافة",
+    cancel_btn: "إلغاء",
+    edit_action: "تعديل",
+    delete_action: "حذف",
+    actions_col: "إجراءات",
+    delete_confirm: "متأكد من حذف الصف ده؟",
+    row_added: "تم إضافة الصف بنجاح",
+    row_updated: "تم تعديل الصف بنجاح",
+    row_deleted: "تم الحذف",
+    select_option: "-- اختر --",
+    footer_text: "منصة EDAI لحوكمة المشروعات — مبنية على الإطار الاستراتيجي لـ",
+    all_rights: "جميع الحقوق محفوظة ©",
+    report_title: "التقرير الشامل لحوكمة المشروع",
+    report_generated_on: "تاريخ الإصدار",
+    report_prepared_for: "مُعد لصالح",
+    report_no_data: "لا توجد بيانات مسجلة في هذه المصفوفة بعد",
+    ai_page_btn: "🤖 التحليل الذكي",
+    ai_page_title: "🤖 التحليل الذكي بالذكاء الاصطناعي",
+    ai_page_desc: "يقوم الذكاء الاصطناعي بقراءة بيانات كل الـ 33 مصفوفة المسجلة، وتوليد تقرير إداري شامل بأربعة محاور: إدارة وصفية، تحليل بيانات، إدارة تنبؤية، وإدارة استباقية.",
+    ai_key_label: "مفتاح Gemini API (مرة واحدة فقط، يُحفظ في متصفحك)",
+    ai_key_save: "💾 حفظ المفتاح",
+    ai_key_missing: "من فضلك أدخل مفتاح Gemini API أولاً",
+    ai_generate_btn: "🚀 توليد التقرير الذكي",
+    ai_generating: "جاري تحليل الـ 33 مصفوفة وتوليد التقرير... قد يستغرق دقيقة",
+    ai_error: "حدث خطأ أثناء الاتصال بالذكاء الاصطناعي",
+    ai_no_data_at_all: "لا توجد أي بيانات مسجلة في أي مصفوفة بعد. أضف بيانات أولاً قبل توليد التقرير الذكي.",
+    ai_report_title: "التقرير الإداري الذكي — تحليل الذكاء الاصطناعي",
+  },
+  en: {
+    tab_login: "Sign In",
+    tab_register: "Create Company Account",
+    email_label: "Email Address",
+    password_label: "Password",
+    confirm_password_label: "Confirm Password",
+    company_name_label: "Company Name",
+    login_btn: "Sign In",
+    register_btn: "Create Account",
+    auth_subtitle: "Smart Project Governance Platform — each company has fully isolated data with its own password.",
+    logout_btn: "🚪 Logout",
+    master_report_btn: "📊 Master Report",
+    print_btn: "🖨️ Print / PDF",
+    select_matrix_placeholder: "Select a matrix from the menu",
+    search_placeholder: "Search...",
+    empty_note: "No data yet. Add a new row using the form below.",
+    add_row_title: "➕ Add New Row",
+    edit_row_title: "✏️ Edit Row",
+    save_btn: "💾 Save Changes",
+    add_btn: "💾 Add",
+    cancel_btn: "Cancel",
+    edit_action: "Edit",
+    delete_action: "Delete",
+    actions_col: "Actions",
+    delete_confirm: "Are you sure you want to delete this row?",
+    row_added: "Row added successfully",
+    row_updated: "Row updated successfully",
+    row_deleted: "Row deleted",
+    select_option: "-- Select --",
+    footer_text: "EDAI Governance Platform — Built on the Strategic Framework by",
+    all_rights: "All Rights Reserved ©",
+    report_title: "Comprehensive Project Governance Report",
+    report_generated_on: "Generated on",
+    report_prepared_for: "Prepared for",
+    report_no_data: "No data recorded in this matrix yet",
+    ai_page_btn: "🤖 AI Insights",
+    ai_page_title: "🤖 AI-Powered Governance Analysis",
+    ai_page_desc: "The AI reads all data recorded across the 33 matrices and generates a comprehensive management report across four dimensions: descriptive management, data analysis, predictive management, and proactive management.",
+    ai_key_label: "Gemini API Key (one-time, saved in your browser)",
+    ai_key_save: "💾 Save Key",
+    ai_key_missing: "Please enter your Gemini API key first",
+    ai_generate_btn: "🚀 Generate AI Report",
+    ai_generating: "Analyzing all 33 matrices and generating the report... this may take a minute",
+    ai_error: "An error occurred while contacting the AI service",
+    ai_no_data_at_all: "No data has been recorded in any matrix yet. Add some data first before generating the AI report.",
+    ai_report_title: "AI-Powered Management Report",
+  }
+};
+
+function t(key) { return UI[currentLang][key] || key; }
+
+function toggleLang() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  applyLanguage();
+}
+
+function applyLanguage() {
+  const html = document.getElementById('html-root');
+  html.lang = currentLang;
+  html.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+
+  document.getElementById('lang-toggle-btn').textContent = currentLang === 'ar' ? 'English 🌐' : 'عربي 🌐';
+  document.getElementById('auth-subtitle').textContent = t('auth_subtitle');
+  document.getElementById('master-report-btn').textContent = t('master_report_btn');
+  document.getElementById('ai-page-btn').textContent = t('ai_page_btn');
+  document.getElementById('logout-btn').textContent = t('logout_btn');
+  document.getElementById('search-input').placeholder = t('search_placeholder');
+  document.getElementById('print-current-btn').textContent = t('print_btn');
+
+  const founderLine = document.getElementById('founder-line');
+  if (founderLine) {
+    founderLine.textContent = (currentLang === 'ar' ? 'إشراف وتطوير: ' : 'Developed by: ') +
+      (currentLang === 'ar' ? FOUNDER_NAME_AR : FOUNDER_NAME_EN);
+  }
+  const footer = document.getElementById('app-footer');
+  if (footer) {
+    footer.innerHTML = `${t('footer_text')} <b>${currentLang === 'ar' ? FOUNDER_NAME_AR : FOUNDER_NAME_EN}</b> | ${t('all_rights')}`;
+  }
+
+  if (document.getElementById('main-screen').style.display !== 'none') {
+    renderNav();
+    if (currentView === 'ai') {
+      openAIPage();
+    } else if (currentMatrixKey) {
+      const def = getMatrixDef(currentMatrixKey);
+      document.getElementById('current-matrix-title').textContent = matrixName(def);
+      renderCurrentTable();
+      renderForm(editingRowId ? currentRows.find(r => r.id === editingRowId) : null);
+    } else {
+      document.getElementById('current-matrix-title').textContent = t('select_matrix_placeholder');
+    }
+  }
+}
+
+function matrixName(def) { return currentLang === 'ar' ? def.name_ar : def.name_en; }
+function groupName(g) { return currentLang === 'ar' ? g.name_ar : g.name_en; }
+function colLabel(col) { return currentLang === 'ar' ? col.label_ar : col.label_en; }
+function optLabel(opt) { return currentLang === 'ar' ? opt.ar : opt.en; }
+
+// ============================================================
+// المصادقة (Auth)
+// ============================================================
+function switchAuthTab(tab) {
+  document.getElementById('tab-login-btn').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register-btn').classList.toggle('active', tab === 'register');
+  document.getElementById('auth-login').classList.toggle('active', tab === 'login');
+  document.getElementById('auth-register').classList.toggle('active', tab === 'register');
+}
+
+function showMsg(elId, text, type) {
+  const el = document.getElementById(elId);
+  if (el) el.innerHTML = `<div class="msg ${type}">${text}</div>`;
+}
+
+async function handleRegister() {
+  const companyName = document.getElementById('register-company-name').value.trim();
+  const email = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value;
+  const confirm = document.getElementById('register-confirm').value;
+
+  if (!companyName || !email || !password) {
+    showMsg('register-msg', currentLang === 'ar' ? 'من فضلك املأ كل الحقول' : 'Please fill all fields', 'error'); return;
+  }
+  if (password !== confirm) {
+    showMsg('register-msg', currentLang === 'ar' ? 'كلمة السر وتأكيدها غير متطابقين' : 'Passwords do not match', 'error'); return;
+  }
+
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error) { showMsg('register-msg', 'Error: ' + error.message, 'error'); return; }
+
+  if (!data.session) {
+    showMsg('register-msg', currentLang === 'ar'
+      ? 'تم إنشاء الحساب. لو مطلوب تأكيد بريد، افتحه ثم سجّل الدخول.'
+      : 'Account created. If email confirmation is required, confirm it then sign in.', 'info');
+    return;
+  }
+
+  const { error: insertErr } = await sb.from('companies').insert({
+    id: data.user.id, company_name: companyName
+  });
+  if (insertErr) {
+    showMsg('register-msg', 'Error saving company: ' + insertErr.message, 'error');
+    return;
+  }
+
+  showMsg('register-msg', currentLang === 'ar' ? 'تم إنشاء الحساب بنجاح! جاري الدخول...' : 'Account created! Logging in...', 'success');
+  await afterLogin(data.user, companyName);
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { showMsg('login-msg', 'Error: ' + error.message, 'error'); return; }
+
+  const { data: companyRow, error: companyErr } = await sb.from('companies')
+    .select('company_name').eq('id', data.user.id).single();
+
+  if (companyErr) {
+    showMsg('login-msg', currentLang === 'ar' ? 'تم الدخول لكن مفيش بيانات شركة مرتبطة بالحساب ده' : 'Logged in but no company data linked to this account', 'error');
+    return;
+  }
+
+  await afterLogin(data.user, companyRow.company_name);
+}
+
+async function afterLogin(user, companyName) {
+  currentUser = user;
+  currentCompanyName = companyName;
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'block';
+  document.getElementById('company-name-display').textContent = '🏢 ' + companyName;
+  applyLanguage();
+  renderNav();
+}
+
+async function handleLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  currentMatrixKey = null;
+  currentRows = [];
+  document.getElementById('main-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'block';
+}
+
+async function checkExistingSession() {
+  const { data } = await sb.auth.getSession();
+  if (data.session) {
+    const { data: companyRow, error } = await sb.from('companies')
+      .select('company_name').eq('id', data.session.user.id).single();
+    if (!error) {
+      await afterLogin(data.session.user, companyRow.company_name);
+    }
+  } else {
+    applyLanguage();
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+</script>
+<script>
+// ============================================================
+// القائمة الجانبية
+// ============================================================
+function renderNav() {
+  const nav = document.getElementById('matrix-nav');
+  let html = '';
+  MATRIX_DATA.groups.forEach(group => {
+    html += `<div class="group-title">${escapeHtml(groupName(group))}</div>`;
+    const groupMatrices = MATRIX_DATA.matrices.filter(m => m.group === group.key);
+    groupMatrices.forEach(m => {
+      const active = currentMatrixKey === m.key ? 'active' : '';
+      html += `<button class="matrix-btn ${active}" id="nav-${m.key}" onclick="openMatrix('${m.key}')">${escapeHtml(matrixName(m))}</button>`;
+    });
+  });
+  nav.innerHTML = html;
+}
+
+function getMatrixDef(key) {
+  return MATRIX_DATA.matrices.find(m => m.key === key);
+}
+
+async function openMatrix(key) {
+  currentMatrixKey = key;
+  currentView = 'matrix';
+  editingRowId = null;
+  document.querySelectorAll('.matrix-btn').forEach(b => b.classList.remove('active'));
+  const navBtn = document.getElementById('nav-' + key);
+  if (navBtn) navBtn.classList.add('active');
+
+  const def = getMatrixDef(key);
+  document.getElementById('current-matrix-title').textContent = matrixName(def);
+  document.getElementById('search-box').style.display = 'block';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-input').placeholder = t('search_placeholder');
+  document.getElementById('print-current-btn').style.display = 'inline-block';
+  document.getElementById('print-current-btn').textContent = t('print_btn');
+  document.getElementById('msg-area').innerHTML = '';
+
+  await loadRows(key);
+  renderCurrentTable();
+  renderForm(null);
+}
+
+async function fetchRowsForMatrix(key) {
+  const { data, error } = await sb.from('matrix_rows')
+    .select('*')
+    .eq('company_id', currentUser.id)
+    .eq('matrix_key', key)
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data || [];
+}
+
+async function loadRows(key) {
+  currentRows = await fetchRowsForMatrix(key);
+}
+
+// ============================================================
+// عرض الجدول
+// ============================================================
+function renderCurrentTable() {
+  const def = getMatrixDef(currentMatrixKey);
+  const container = document.getElementById('table-container');
+  if (!def) { container.innerHTML = ''; return; }
+
+  const searchTerm = (document.getElementById('search-input').value || '').toLowerCase();
+  const filteredRows = currentRows.filter(r => {
+    if (!searchTerm) return true;
+    return Object.values(r.row_data || {}).some(v => String(v).toLowerCase().includes(searchTerm));
+  });
+
+  if (filteredRows.length === 0) {
+    container.innerHTML = `<p class="empty-note">${t('empty_note')}</p>`;
+    return;
+  }
+
+  let html = '<table class="data-table"><thead><tr>';
+  def.columns.forEach(col => html += `<th>${escapeHtml(colLabel(col))}</th>`);
+  html += `<th>${t('actions_col')}</th></tr></thead><tbody>`;
+
+  filteredRows.forEach(row => {
+    html += '<tr>';
+    def.columns.forEach(col => {
+      html += `<td>${escapeHtml(row.row_data[col.key] || '')}</td>`;
+    });
+    html += `<td class="actions">
+      <button class="btn-small edit" onclick="startEditRow('${row.id}')">${t('edit_action')}</button>
+      <button class="btn-small danger" onclick="deleteRow('${row.id}')">${t('delete_action')}</button>
+    </td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// ============================================================
+// نموذج الإضافة / التعديل
+// ============================================================
+function renderForm(existingRow) {
+  const def = getMatrixDef(currentMatrixKey);
+  const container = document.getElementById('form-container');
+  if (!def) { container.innerHTML = ''; return; }
+
+  const data = existingRow ? existingRow.row_data : {};
+  editingRowId = existingRow ? existingRow.id : null;
+
+  let html = `<h3 style="font-size:14px;margin-top:20px;">${editingRowId ? t('edit_row_title') : t('add_row_title')}</h3>`;
+  html += '<form class="row-form" onsubmit="return false;">';
+
+  def.columns.forEach(col => {
+    const val = data[col.key] || '';
+    html += `<div><label>${escapeHtml(colLabel(col))}</label>`;
+    if (col.type === 'textarea') {
+      html += `<textarea id="field-${col.key}">${escapeHtml(val)}</textarea>`;
+    } else if (col.type === 'select') {
+      html += `<select id="field-${col.key}">`;
+      html += `<option value="">${t('select_option')}</option>`;
+      col.options.forEach(opt => {
+        const optVal = opt.ar; // القيمة المخزنة دايماً بالعربي كمرجع ثابت (key)، والعرض بيتغير باللغة
+        html += `<option value="${escapeHtml(optVal)}" ${val === optVal ? 'selected' : ''}>${escapeHtml(optLabel(opt))}</option>`;
+      });
+      html += `</select>`;
+    } else if (col.type === 'number') {
+      html += `<input type="number" id="field-${col.key}" value="${escapeHtml(val)}">`;
+    } else {
+      html += `<input type="text" id="field-${col.key}" value="${escapeHtml(val)}">`;
+    }
+    html += '</div>';
+  });
+
+  html += `<div class="form-actions">
+    <button class="primary" onclick="saveRow()">${editingRowId ? t('save_btn') : t('add_btn')}</button>
+    ${editingRowId ? `<button class="secondary" onclick="cancelEdit()">${t('cancel_btn')}</button>` : ''}
+  </div>`;
+  html += '</form>';
+  container.innerHTML = html;
+}
+
+function startEditRow(rowId) {
+  const row = currentRows.find(r => r.id === rowId);
+  if (!row) return;
+  renderForm(row);
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function cancelEdit() {
+  renderForm(null);
+}
+
+async function saveRow() {
+  const def = getMatrixDef(currentMatrixKey);
+  const rowData = {};
+  def.columns.forEach(col => {
+    const el = document.getElementById('field-' + col.key);
+    rowData[col.key] = el ? el.value : '';
+  });
+
+  if (editingRowId) {
+    const { error } = await sb.from('matrix_rows')
+      .update({ row_data: rowData, updated_at: new Date().toISOString() })
+      .eq('id', editingRowId);
+    if (error) { showMsg('msg-area', 'Error: ' + error.message, 'error'); return; }
+    showMsg('msg-area', t('row_updated'), 'success');
+  } else {
+    const { error } = await sb.from('matrix_rows').insert({
+      company_id: currentUser.id,
+      matrix_key: currentMatrixKey,
+      row_data: rowData
+    });
+    if (error) { showMsg('msg-area', 'Error: ' + error.message, 'error'); return; }
+    showMsg('msg-area', t('row_added'), 'success');
+  }
+
+  await loadRows(currentMatrixKey);
+  renderCurrentTable();
+  renderForm(null);
+}
+
+async function deleteRow(rowId) {
+  if (!confirm(t('delete_confirm'))) return;
+  const { error } = await sb.from('matrix_rows').delete().eq('id', rowId);
+  if (error) { showMsg('msg-area', 'Error: ' + error.message, 'error'); return; }
+  showMsg('msg-area', t('row_deleted'), 'success');
+  await loadRows(currentMatrixKey);
+  renderCurrentTable();
+}
+</script>
+<script>
+// ============================================================
+// بناء تقرير قابل للطباعة (لمصفوفة واحدة أو لكل الـ 33)
+// ============================================================
+function buildReportSectionHtml(def, rows) {
+  let headersHtml = '';
+  def.columns.forEach(col => headersHtml += `<th>${escapeHtml(colLabel(col))}</th>`);
+
+  let rowsHtml = '';
+  if (rows.length === 0) {
+    rowsHtml = `<tr><td colspan="${def.columns.length}" style="text-align:center;color:#94a3b8;padding:12px;">${t('report_no_data')}</td></tr>`;
+  } else {
+    rows.forEach(row => {
+      rowsHtml += '<tr>';
+      def.columns.forEach(col => {
+        rowsHtml += `<td>${escapeHtml(row.row_data[col.key] || '')}</td>`;
+      });
+      rowsHtml += '</tr>';
+    });
+  }
+
+  return `
+    <div class="report-section">
+      <h2>${escapeHtml(matrixName(def))}</h2>
+      <table>
+        <thead><tr>${headersHtml}</tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function buildReportShell(bodyHtml, reportTitle) {
+  const dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  const founderName = currentLang === 'ar' ? FOUNDER_NAME_AR : FOUNDER_NAME_EN;
+  const now = new Date().toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+
+  return `
+    <!DOCTYPE html>
+    <html lang="${currentLang}" dir="${dir}">
+    <head>
+      <meta charset="UTF-8">
+      <title>${escapeHtml(reportTitle)}</title>
+      <style>
+        @page { size: A4 ${dir === 'rtl' ? 'portrait' : 'portrait'}; margin: 12mm; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; color: #0f172a; font-size: 10pt; margin: 0; }
+        .report-header {
+          display: flex; justify-content: space-between; align-items: center;
+          border-bottom: 3px solid #0284c7; padding-bottom: 10px; margin-bottom: 16px;
+        }
+        .report-header h1 { font-size: 16pt; color: #0f172a; margin: 0 0 4px; }
+        .report-header .meta { font-size: 9pt; color: #64748b; }
+        .report-section { margin-bottom: 22px; page-break-inside: avoid; }
+        .report-section h2 { font-size: 12pt; color: #0284c7; background: #f1f5f9; padding: 6px 10px; border-radius: 4px; border-right: 4px solid #0284c7; }
+        table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 8.5pt; }
+        th, td { border: 1px solid #cbd5e1; padding: 5px; text-align: ${dir === 'rtl' ? 'right' : 'left'}; }
+        th { background: #e2e8f0; }
+        .report-footer {
+          margin-top: 24px; padding-top: 8px; border-top: 1px solid #e2e8f0;
+          text-align: center; font-size: 8pt; color: #94a3b8;
+        }
+        .print-bar {
+          position: fixed; top: 10px; ${dir === 'rtl' ? 'left' : 'right'}: 10px;
+          background: #0284c7; color: white; padding: 10px 20px; border: none;
+          border-radius: 6px; cursor: pointer; font-size: 13px; z-index: 999;
+        }
+        @media print { .print-bar { display: none; } }
+      </style>
+    </head>
+    <body>
+      <button class="print-bar" onclick="window.print()">🖨️ ${t('print_btn')}</button>
+      <div class="report-header">
+        <div>
+          <h1>${escapeHtml(reportTitle)}</h1>
+          <div class="meta">${t('report_prepared_for')}: ${escapeHtml(currentCompanyName)}</div>
+        </div>
+        <div class="meta">${t('report_generated_on')}: ${now}</div>
+      </div>
+      ${bodyHtml}
+      <div class="report-footer">
+        EDAI Governance Hub — ${founderName} | ${t('all_rights')}
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// طباعة المصفوفة الحالية بس
+function printCurrentMatrix() {
+  if (!currentMatrixKey) return;
+  const def = getMatrixDef(currentMatrixKey);
+  const bodyHtml = buildReportSectionHtml(def, currentRows);
+  const fullHtml = buildReportShell(bodyHtml, matrixName(def));
+  const win = window.open('', '_blank');
+  win.document.write(fullHtml);
+  win.document.close();
+}
+
+// التقرير الشامل: يجمع كل الـ 33 مصفوفة في تقرير واحد
+async function openMasterReport() {
+  if (!currentUser) return;
+  const btn = document.getElementById('master-report-btn');
+  const originalText = btn.textContent;
+  btn.textContent = '⏳...';
+  btn.disabled = true;
+
+  try {
+    let bodyHtml = '';
+    for (const group of MATRIX_DATA.groups) {
+      const groupMatrices = MATRIX_DATA.matrices.filter(m => m.group === group.key);
+      bodyHtml += `<h1 style="font-size:14pt;color:#0f172a;margin-top:26px;border-bottom:2px solid #0f172a;padding-bottom:6px;">${escapeHtml(groupName(group))}</h1>`;
+      for (const def of groupMatrices) {
+        const rows = await fetchRowsForMatrix(def.key);
+        bodyHtml += buildReportSectionHtml(def, rows);
+      }
+    }
+    const fullHtml = buildReportShell(bodyHtml, t('report_title'));
+    const win = window.open('', '_blank');
+    win.document.write(fullHtml);
+    win.document.close();
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+</script>
+<script>
+// ============================================================
+// صفحة التحليل الذكي بالذكاء الاصطناعي (Gemini API)
+// ============================================================
+const GEMINI_MODEL = "gemini-2.5-flash"; // لو ظهر خطأ 404 جرّب "gemini-2.0-flash" بدلها
+let lastAIReportText = "";
+
+function getSavedAIKey() {
+  return localStorage.getItem('edai_gemini_key') || '';
+}
+
+function openAIPage() {
+  currentView = 'ai';
+  currentMatrixKey = null;
+  editingRowId = null;
+  document.querySelectorAll('.matrix-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('current-matrix-title').textContent = t('ai_page_title');
+  document.getElementById('search-box').style.display = 'none';
+  document.getElementById('print-current-btn').style.display = 'none';
+  document.getElementById('msg-area').innerHTML = '';
+  document.getElementById('form-container').innerHTML = '';
+
+  const savedKey = getSavedAIKey();
+  let html = `<div class="ai-panel">
+    <p style="color:#64748b;font-size:14px;">${t('ai_page_desc')}</p>`;
+
+  if (!savedKey) {
+    html += `
+      <label style="display:block;font-size:13px;font-weight:bold;margin:10px 0 4px;">${t('ai_key_label')}</label>
+      <textarea id="ai-key-input" class="ai-key-input" rows="2" placeholder="AIza..."></textarea>
+      <button class="primary" style="margin-top:8px;" onclick="saveAIKey()">${t('ai_key_save')}</button>
+    `;
+  } else {
+    html += `
+      <div class="msg info" style="font-size:12px;">
+        🔑 ${currentLang === 'ar' ? 'المفتاح محفوظ في متصفحك.' : 'Key is saved in your browser.'}
+        <a href="#" onclick="clearAIKey();return false;" style="color:#0284c7;">${currentLang === 'ar' ? 'تغيير المفتاح' : 'Change key'}</a>
+      </div>
+      <button class="primary" onclick="generateAIReport()">${t('ai_generate_btn')}</button>
+    `;
+  }
+
+  html += `<div id="ai-status"></div><div id="ai-result"></div></div>`;
+  document.getElementById('table-container').innerHTML = html;
+}
+
+function saveAIKey() {
+  const key = document.getElementById('ai-key-input').value.trim();
+  if (!key) return;
+  localStorage.setItem('edai_gemini_key', key);
+  openAIPage();
+}
+
+function clearAIKey() {
+  localStorage.removeItem('edai_gemini_key');
+  openAIPage();
+}
+
+// ============================================================
+// تجميع بيانات الـ 33 مصفوفة في نص واحد مختصر لإرساله للـ AI
+// ============================================================
+async function buildDataSummaryText() {
+  let text = '';
+  let totalRows = 0;
+
+  for (const group of MATRIX_DATA.groups) {
+    const groupMatrices = MATRIX_DATA.matrices.filter(m => m.group === group.key);
+    let groupText = `\n## ${groupName(group)}\n`;
+    let groupHasData = false;
+
+    for (const def of groupMatrices) {
+      const rows = await fetchRowsForMatrix(def.key);
+      if (rows.length === 0) continue;
+      groupHasData = true;
+      totalRows += rows.length;
+      groupText += `\n### ${matrixName(def)}\n`;
+      rows.forEach((row, idx) => {
+        const parts = def.columns.map(col => `${colLabel(col)}: ${row.row_data[col.key] || '-'}`);
+        groupText += `${idx + 1}. ${parts.join(' | ')}\n`;
+      });
+    }
+    if (groupHasData) text += groupText;
+  }
+
+  return { text, totalRows };
+}
+
+// ============================================================
+// تحويل نص Markdown بسيط إلى HTML (آمن، بعد تهريب الأحرف)
+// ============================================================
+function renderMarkdownLite(text) {
+  let html = escapeHtml(text);
+  html = html.replace(/^#### (.*)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^### (.*)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^## (.*)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^# (.*)$/gm, '<h2>$1</h2>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+  html = html.replace(/^[-*] (.*)$/gm, '• $1');
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
+
+// ============================================================
+// بناء الطلب واستدعاء Gemini API
+// ============================================================
+function buildAIPrompt(dataSummary) {
+  if (currentLang === 'ar') {
+    return `أنت مستشار حوكمة مشروعات هندسية خبير (PMO Advisor) بخبرة 16 سنة في التشييد والبنية التحتية.
+هحطلك تحت كل البيانات المسجلة فعلياً في منصة حوكمة مشروعات (33 مصفوفة: استراتيجية، حوكمة، موارد بشرية، مالية، جودة ومخاطر، تقنية).
+
+اقرأ البيانات دي كويس، واكتب تقرير إداري مقسم لأربعة أقسام بالضبط بالعناوين دي:
+
+## 📊 الإدارة الوصفية
+وصف واقعي ودقيق لموقف المشروع/الشركة الحالي بناءً على البيانات الموجودة فعلياً بس (متخترعش أرقام مش موجودة).
+
+## 🔍 تحليل البيانات
+تحليل كمي ونوعي: أنماط متكررة، تركّز المخاطر في فئة معينة، فجوات في البيانات (مصفوفات فاضية أو ناقصة)، أرقام لافتة.
+
+## 🔮 الإدارة التنبؤية
+بناءً على الأنماط الحالية، توقعات منطقية لاتجاه الأداء والمخاطر خلال الفترة الجاية لو استمر الوضع كما هو.
+
+## ⚡ الإدارة الاستباقية
+توصيات عملية ومحددة (مش عامة) لازم تُتخذ دلوقتي لمنع مشاكل متوقعة، مرتبة حسب الأولوية.
+
+مهم جداً: لو مفيش بيانات كافية في قسم معين، قول كده بوضوح بدل ما تختلق معلومات. اكتب بالعربية الفصحى المهنية.
+
+--- البيانات المسجلة ---
+${dataSummary}`;
+  } else {
+    return `You are a senior project governance consultant (PMO Advisor) with 16 years of experience in construction and infrastructure.
+Below is the data actually recorded in a project governance platform (33 matrices: strategy, governance, HR, finance, quality & risk, technology).
+
+Read the data carefully and write a management report divided into exactly these four sections with these exact headings:
+
+## 📊 Descriptive Management
+A factual, accurate description of the current project/company status based only on the data actually present (do not invent numbers not present).
+
+## 🔍 Data Analysis
+Quantitative and qualitative analysis: recurring patterns, risk concentration in specific categories, data gaps (empty or incomplete matrices), notable figures.
+
+## 🔮 Predictive Management
+Based on current patterns, reasonable forecasts for performance and risk trends over the coming period if the current situation continues.
+
+## ⚡ Proactive Management
+Specific, actionable (not generic) recommendations that should be taken now to prevent anticipated problems, ordered by priority.
+
+Important: if there isn't enough data for a section, say so clearly instead of fabricating information. Write in professional English.
+
+--- Recorded Data ---
+${dataSummary}`;
+  }
+}
+
+async function generateAIReport() {
+  const apiKey = getSavedAIKey();
+  if (!apiKey) {
+    showMsg('ai-status', t('ai_key_missing'), 'error');
+    return;
+  }
+
+  document.getElementById('ai-status').innerHTML = `<div class="ai-loading"><div class="spinner"></div> ${t('ai_generating')}</div>`;
+  document.getElementById('ai-result').innerHTML = '';
+
+  try {
+    const { text: dataSummary, totalRows } = await buildDataSummaryText();
+
+    if (totalRows === 0) {
+      document.getElementById('ai-status').innerHTML = `<div class="msg info">${t('ai_no_data_at_all')}</div>`;
+      return;
+    }
+
+    const prompt = buildAIPrompt(dataSummary);
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errMsg = (data.error && data.error.message) ? data.error.message : response.statusText;
+      document.getElementById('ai-status').innerHTML = `<div class="msg error">${t('ai_error')}: ${escapeHtml(errMsg)}</div>`;
+      return;
+    }
+
+    const resultText = data.candidates && data.candidates[0] && data.candidates[0].content
+      ? data.candidates[0].content.parts.map(p => p.text).join('\n')
+      : '';
+
+    if (!resultText) {
+      document.getElementById('ai-status').innerHTML = `<div class="msg error">${t('ai_error')}: empty response</div>`;
+      return;
+    }
+
+    lastAIReportText = resultText;
+    document.getElementById('ai-status').innerHTML = '';
+    document.getElementById('ai-result').innerHTML = `
+      <div class="ai-report-box">${renderMarkdownLite(resultText)}</div>
+      <button class="btn-small print-btn" style="margin-top:12px;" onclick="printAIReport()">${t('print_btn')}</button>
+    `;
+  } catch (err) {
+    document.getElementById('ai-status').innerHTML = `<div class="msg error">${t('ai_error')}: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function printAIReport() {
+  if (!lastAIReportText) return;
+  const bodyHtml = `<div class="report-section">${renderMarkdownLite(lastAIReportText)}</div>`;
+  const fullHtml = buildReportShell(bodyHtml, t('ai_report_title'));
+  const win = window.open('', '_blank');
+  win.document.write(fullHtml);
+  win.document.close();
+}
+
+// بدء التطبيق
+checkExistingSession();
+</script>
+</body>
+</html>
