@@ -1721,4 +1721,22 @@
         });
     </script>
 </body>
-</html>
+</html>/* إعدادات الشاشات الصغيرة (الموبايل) */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%; /* إخفاء القائمة خارج الشاشة */
+    width: 280px;
+    height: 100%;
+    transition: right 0.3s ease;
+    z-index: 1000;
+  }
+
+  /* كلاس يتم إضافته بـ JavaScript عند الضغط على الزر */
+  .sidebar.active {
+    right: 0; /* إظهار القائمة */
+  }
+}
+
+
