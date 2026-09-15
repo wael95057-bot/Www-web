@@ -8,98 +8,98 @@
 <style>
   :root {
     --primary: #0284c7;
-    --dark: #0f172a;
-    --border: #cbd5e1;
-    --bg: #f8fafc;
+    - - الظلام : # 0f172a ;
+    - - b o r r : # cbd5e1 ;
+    - - b g : #f8fafc;
   }
-  * { box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    margin: 0;
-    background: #eef2f6;
-    color: var(--dark);
+  * { b o x - s i z i n g : border-box; }  
+  جسم {​​​ 
+    f o n t - fami l y : ' Segoe UI' ، Tahoma ، sans-serif؛
+    هامش : 0 ؛​​​
+    الخلفية : # eef2f6 ؛​​​​​​
+    اللون : متغير (--dark ) ؛
   }
-  header {
-    background: var(--dark);
-    color: white;
-    padding: 14px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  رأس الصفحة {​​​​ 
+    الخلفية : متغير ( --dark ) ؛​​​​
+    اللون : أبيض ؛​​
+    padding : 14px 24px ;​​​
+    العرض : مرن ؛​​​​
+    تبرير المحتوى : مسافة بين ؛​​​​​​​​​​
+    a l i g n - i t e m s : center;
   }
-  header h1 { font-size: 18px; margin: 0; }
-  header .company-badge { font-size: 14px; }
-  header button {
-    background: var(--primary);
-    border: none;
-    color: white;
-    padding: 6px 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 8px;
+  header h1 { حجم الخط : 18 بكسل ؛ الهامش : 0 ؛ }​​​​​   
+  header.company - badge { font - size : 14px ; }​​​​​​​​​​​​​​​​​​​​   
+  زر العنوان {​​​​​​​​​​  
+    الخلفية : متغير ( --الأساسي ) ؛​​​​
+    الحدود : لا يوجد ؛​​
+    اللون : أبيض ؛​​
+    padding : 6px 14px ;​​​
+    b o d e r - radius : 5px ;​​​​
+    c u s o r : مؤشر ؛
+    هامش يمين : 8 بكسل ؛​​​​​​​
   }
-  nav {
-    display: flex;
-    gap: 6px;
-    background: white;
-    padding: 8px 16px;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
+  ناف {​​ 
+    العرض : مرن ؛​​​​
+    g a p : 6px;
+    الخلفية : بيضاء ؛​​​​​​​
+    padding : 8px 16px ;​​​
+    b o r d e r - b t t o m : 1px solid var(--border);
+    flex - wrap : wrap ;​​​​
   }
-  nav button {
-    background: none;
-    border: 1px solid var(--border);
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
+  زر التنقل {​​​​​​​  
+    الخلفية : لا شيء ؛​​​​​​
+    b o r d e r : 1px solid var(--border);
+    padding : 8px 16px ;​​​
+    b o d e r - radius : 6px ;​​​​
+    c u s o r : مؤشر ؛
+    حجم الخط : 14 بكسل ؛​​​​
   }
-  nav button.active { background: var(--primary); color: white; border-color: var(--primary); }
-  .container { max-width: 960px; margin: 20px auto; padding: 0 16px; }
-  .card {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 16px;
+  navbutton.active { background : var ( -- primary ) ; color : white ; border - color : var ( -- primary ) ; }​​​   
+  .container { max - width : 960px ; margin : 20px auto ; padding : 0 16px ; }​​  
+  . بطاقة {​​​ 
+    الخلفية : بيضاء ؛​​​​​​​
+    b o r d e r : 1px solid var(--border);
+    b o d e r - radius : 8px ;​​​​
+    padding : 20px ;​​​​
+    هامش - أسفل : 16 بكسل ؛​​​​​​​
   }
-  .card h2 { margin-top: 0; font-size: 18px; color: var(--primary); }
-  label { display: block; margin: 10px 0 4px; font-size: 14px; font-weight: bold; }
-  input, select, textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    font-family: inherit;
-    font-size: 14px;
+  .c a rd h 2 { m a rg i n - t o p : 0; font-size: 18px; color: var(--primary) ; }   
+  label { display : block ; margin: 10px 0 4px ; font - size: 14px; font - weight : bold ; }  
+  إدخال ، تحديد ، منطقة نصية {​​​​​​​​​​​​​​​   
+    العرض : 100 % ؛​
+    padding : 8px ;​​​​
+    b o r d e r : 1px solid var(--border);
+    b o d e r - radius : 5px ;​​​​
+    عائلة الخطوط : موروثة ؛​​​​​​​
+    حجم الخط : 14 بكسل ؛​​​​
   }
-  textarea { min-height: 140px; resize: vertical; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  button.primary {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 12px;
+  t e x t a r e a { m i n - he i g h t : 140px ; resize: vertical; }  
+  .grid - 2 { display : grid ; grid-template - columns : 1fr 1fr; gap : 16px ; }  
+  زر . أساسي {​​​​​​​​​​​ 
+    الخلفية : متغير ( --الأساسي ) ؛​​​​
+    اللون : أبيض ؛​​
+    الحدود : لا يوجد ؛​​
+    padding : 10px 20px ;​​​
+    b o d e r - radius : 6px ;​​​​
+    c u s o r : مؤشر ؛
+    حجم الخط : 14 بكسل ؛​​​​
+    هامش علوي : 12 بكسل ؛​​​​​
   }
-  button.secondary {
-    background: #64748b;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 12px;
-    margin-right: 8px;
+  زر . ثانوي {​​​​​​​​​​​​​ 
+    الخلفية : # 64748b ؛​​​​​​
+    اللون : أبيض ؛​​
+    الحدود : لا يوجد ؛​​
+    padding : 10px 20px ;​​​
+    b o d e r - radius : 6px ;​​​​
+    c u s o r : مؤشر ؛
+    حجم الخط : 14 بكسل ؛​​​​
+    هامش علوي : 12 بكسل ؛​​​​​
+    هامش يمين : 8 بكسل ؛​​​​​​​
   }
-  .msg { padding: 10px; border-radius: 6px; margin: 10px 0; font-size: 14px; }
-  .msg.success { background: #dcfce7; color: #166534; }
-  .msg.error { background: #fee2e2; color: #991b1b; }
-  .msg.info { background: #dbeafe; color: #1e40af; }
+  .msg { padding : 10px ; borderradius : 6px; margin: 10px 0; fontsize : 14px ; }  
+  .msg.success { الخلفية : # dcfce7 ؛ اللون : # 166534 ؛ }​​​​​​​​​​​  
+  .msg.error { background : # fee2e2 ; color : # 991b1b ; }​​​​​​​​​  
+  .msg.info { background : #dbeafe ; color : # 1e40af ; }​​​​​​​​​  
   table.project-list { width: 100%; border-collapse: collapse; margin-top: 10px; }
   table.project-list th, table.project-list td {
     border: 1px solid var(--border); padding: 8px; text-align: right; font-size: 13px;
