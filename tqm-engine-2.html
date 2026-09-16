@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرك وثائق الجودة الشاملة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFF1EC; --surface:#FFFFFF; --sunken:#E5E8E1; --line:#D7DBD1; --line-strong:#BFC5B8;
+  --ink-900:#10192B; --ink-700:#2B3A52; --ink-500:#5A6A82; --ink-300:#8E9BAA;
+  --blue:#1E3A5F; --blue-strong:#12233F; --blue-soft:#E4EAF1;
+  --gold:#9C7A3C; --gold-soft:#EFE4CC;
+  --ok:#2F6F4E; --ok-soft:#E1EEE5;
+  --warn:#B4772A; --warn-soft:#F5E7D4;
+  --danger:#9C3B34; --danger-soft:#F3E1DF;
+  --archive:#5A6A82; --archive-soft:#E6E9EE;
+  --font-display:'Cairo','Tahoma',sans-serif;
+  --font-body:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;
+  --font-mono:'IBM Plex Mono','Consolas',monospace;
+  --radius:3px;
+  --shadow:0 1px 2px rgba(16,25,43,.06);
+  color-scheme: light;
+}
+:root:not([data-theme="light"]) { }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1622; --surface:#161F2E; --sunken:#111926; --line:#28334A; --line-strong:#37456357;
+    --line-strong:#3A4A66; --ink-900:#EEF1F6; --ink-700:#C6CEDC; --ink-500:#93A0B7; --ink-300:#606E88;
+    --blue:#6E93C2; --blue-strong:#9BB6DD; --blue-soft:#1A2740;
+    --gold:#D4B675; --gold-soft:#2E2818;
+    --ok:#6FBE93; --ok-soft:#16281F;
+    --warn:#E0A85C; --warn-soft:#2E2313;
+    --danger:#E0847C; --danger-soft:#2E1917;
+    --archive:#93A0B7; --archive-soft:#1B2432;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1622; --surface:#161F2E; --sunken:#111926; --line:#28334A; --line-strong:#3A4A66;
+  --ink-900:#EEF1F6; --ink-700:#C6CEDC; --ink-500:#93A0B7; --ink-300:#606E88;
+  --blue:#6E93C2; --blue-strong:#9BB6DD; --blue-soft:#1A2740;
+  --gold:#D4B675; --gold-soft:#2E2818;
+  --ok:#6FBE93; --ok-soft:#16281F;
+  --warn:#E0A85C; --warn-soft:#2E2313;
+  --danger:#E0847C; --danger-soft:#2E1917;
+  --archive:#93A0B7; --archive-soft:#1B2432;
+  color-scheme: dark;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0/100% 28px,
+    var(--bg);
+  color:var(--ink-900);
+  font-family:var(--font-body);
+  font-size:14.5px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+[dir="ltr"] body{font-family:var(--font-body);}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;font-weight:700;color:var(--ink-900);}
+button{font-family:inherit;}
+::selection{background:var(--gold-soft);}
+a{color:var(--blue);}
+.mono{font-family:var(--font-mono);}
+.hidden{display:none !important;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+/* ---------- layout ---------- */
+#app{min-height:100vh;display:flex;flex-direction:column;}
+.topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:10px 18px;background:var(--surface);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:40;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:16px;}
+.brand .mark{
+  width:30px;height:30px;border:1.5px solid var(--blue);border-radius:2px;
+  display:flex;align-items:center;justify-content:center;color:var(--blue);flex:none;
+  font-family:var(--font-mono);font-size:11px;font-weight:600;
+}
+.brand small{display:block;font-family:var(--font-body);font-weight:500;font-size:11px;color:var(--ink-500);}
+.topbar .spacer{flex:1;}
+.searchbox{position:relative;width:min(260px,32vw);}
+.searchbox input{width:100%;}
+.search-results{
+  position:absolute;inset-inline-start:0;top:calc(100% + 6px);width:min(340px,80vw);
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);
+  box-shadow:0 8px 24px rgba(16,25,43,.16);z-index:60;max-height:320px;overflow:auto;
+}
+.search-results .sr-item{padding:9px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;}
+.search-results .sr-item:last-child{border-bottom:none;}
+.search-results .sr-item:hover{background:var(--sunken);}
+.search-results .sr-item .code{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-500);}
+.iconbtn{
+  width:34px;height:34px;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-700);flex:none;
+}
+.iconbtn:hover{border-color:var(--line-strong);background:var(--sunken);}
+.hamburger{display:none;}
+
+.shell{display:flex;flex:1;min-height:0;}
+.sidebar{
+  width:250px;flex:none;background:var(--surface);border-inline-end:1px solid var(--line);
+  padding:14px 10px;display:flex;flex-direction:column;gap:2px;
+}
+.sidebar .proj-pill{
+  margin:2px 4px 12px;padding:10px 10px;background:var(--sunken);border:1px solid var(--line);border-radius:var(--radius);
+}
+.sidebar .proj-pill .lbl{font-size:10.5px;color:var(--ink-500);}
+.sidebar .proj-pill select{width:100%;margin-top:4px;}
+.navitem{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius);
+  color:var(--ink-700);cursor:pointer;font-size:13.5px;font-weight:500;border:1px solid transparent;
+}
+.navitem svg{flex:none;width:17px;height:17px;}
+.navitem:hover{background:var(--sunken);}
+.navitem.active{background:var(--blue-soft);color:var(--blue-strong);border-color:var(--blue-soft);font-weight:700;}
+.nav-badge{
+  margin-inline-start:auto;font-size:10.5px;font-family:var(--font-mono);color:var(--ink-500);
+  background:var(--sunken);border:1px solid var(--line);border-radius:20px;padding:1px 7px;
+}
+.sidebar .group-label{font-size:10.5px;color:var(--ink-300);text-transform:uppercase;letter-spacing:.04em;margin:14px 12px 4px;}
+
+.content{flex:1;min-width:0;padding:20px 22px 60px;overflow-x:hidden;}
+.content-inner{max-width:1180px;margin:0 auto;}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.page-head h2{font-size:21px;}
+.page-head p{margin:3px 0 0;color:var(--ink-500);font-size:13px;max-width:60ch;}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ---------- controls ---------- */
+button.btn{
+  padding:9px 16px;border-radius:var(--radius);border:1px solid var(--line-strong);
+  background:var(--surface);color:var(--ink-900);font-size:13.5px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;
+}
+button.btn svg{width:15px;height:15px;}
+button.btn:hover{background:var(--sunken);}
+button.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+button.btn.primary:hover{background:var(--blue-strong);border-color:var(--blue-strong);}
+button.btn.ghost{border-color:transparent;background:transparent;}
+button.btn.ghost:hover{background:var(--sunken);}
+button.btn.danger{color:var(--danger);border-color:var(--danger-soft);}
+button.btn.danger:hover{background:var(--danger-soft);}
+button.btn.sm{padding:6px 11px;font-size:12.5px;}
+button.btn:disabled{opacity:.45;cursor:not-allowed;}
+
+input[type=text],input[type=search],input[type=date],input[type=number],textarea,select{
+  width:100%;padding:9px 11px;border:1px solid var(--line-strong);border-radius:var(--radius);
+  background:var(--surface);color:var(--ink-900);font-family:inherit;font-size:13.5px;
+}
+textarea{resize:vertical;min-height:72px;line-height:1.65;}
+input:focus,textarea:focus,select:focus,button:focus-visible,.navitem:focus-visible{
+  outline:2px solid var(--blue);outline-offset:1px;
+}
+label.field-label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-700);margin-bottom:5px;}
+.field{margin-bottom:16px;}
+.field .hint{font-size:11.5px;color:var(--ink-500);margin-top:4px;}
+
+/* ---------- cards / grids ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;}
+.grid{display:grid;gap:14px;}
+.grid.cols-2{grid-template-columns:repeat(2,1fr);}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}}
+
+.stat{border-inline-start:3px solid var(--blue);}
+.stat .num{font-family:var(--font-display);font-size:28px;font-weight:800;line-height:1;}
+.stat .lbl{margin-top:6px;font-size:12px;color:var(--ink-500);}
+.stat.ok{border-color:var(--ok);} .stat.warn{border-color:var(--warn);} .stat.danger{border-color:var(--danger);}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.pill.draft{background:var(--sunken);color:var(--ink-500);}
+.pill.review{background:var(--warn-soft);color:var(--warn);}
+.pill.approved{background:var(--ok-soft);color:var(--ok);}
+.pill.archived{background:var(--archive-soft);color:var(--archive);}
+.pill.open{background:var(--danger-soft);color:var(--danger);}
+.pill.closed{background:var(--ok-soft);color:var(--ok);}
+.pill.inprogress{background:var(--warn-soft);color:var(--warn);}
+.pill.verified{background:var(--blue-soft);color:var(--blue-strong);}
+.pill.minor{background:var(--sunken);color:var(--ink-500);}
+.pill.major{background:var(--warn-soft);color:var(--warn);}
+.pill.critical{background:var(--danger-soft);color:var(--danger);}
+
+/* ---------- accordion / doc list ---------- */
+.docs-layout{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start;}
+@media(max-width:900px){.docs-layout{grid-template-columns:1fr;}}
+.doc-group{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:8px;background:var(--surface);overflow:hidden;}
+.doc-group summary{
+  list-style:none;cursor:pointer;padding:10px 12px;display:flex;align-items:center;gap:8px;
+  font-weight:700;font-size:13px;background:var(--sunken);
+}
+.doc-group summary::-webkit-details-marker{display:none;}
+.doc-group summary svg{transition:transform .15s;flex:none;}
+.doc-group[open] summary svg{transform:rotate(90deg);}
+.doc-row{
+  display:flex;align-items:center;gap:8px;padding:8px 12px 8px 30px;border-top:1px solid var(--line);
+  cursor:pointer;font-size:12.8px;
+}
+[dir=rtl] .doc-row{padding:8px 30px 8px 12px;}
+.doc-row:hover{background:var(--sunken);}
+.doc-row.active{background:var(--blue-soft);color:var(--blue-strong);font-weight:700;}
+.doc-row .dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--ink-300);}
+.doc-row .dot.review{background:var(--warn);} .doc-row .dot.approved{background:var(--ok);} .doc-row .dot.archived{background:var(--archive);}
+.doc-row .code{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);}
+.doc-row .ttl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.editor-head{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px;}
+.editor-head .code{font-family:var(--font-mono);font-size:11.5px;color:var(--gold);font-weight:600;}
+.editor-head h3{font-size:19px;margin-top:3px;}
+.editor-head .purpose{color:var(--ink-500);font-size:13px;margin-top:6px;max-width:70ch;}
+.editor-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink-500);}
+.editor-meta b{color:var(--ink-900);}
+.editor-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+
+/* ---------- tables (in-app) ---------- */
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);}
+table.dyn{width:100%;border-collapse:collapse;min-width:560px;}
+table.dyn th{
+  background:var(--sunken);text-align:start;font-size:11.5px;color:var(--ink-500);
+  padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-weight:700;
+}
+table.dyn td{padding:5px;border-bottom:1px solid var(--line);vertical-align:top;}
+table.dyn td input,table.dyn td textarea{border:1px solid transparent;background:transparent;padding:6px 7px;min-height:36px;}
+table.dyn td input:hover,table.dyn td textarea:hover{border-color:var(--line);}
+table.dyn td input:focus,table.dyn td textarea:focus{background:var(--surface);border-color:var(--blue);}
+table.dyn td.locked{color:var(--ink-700);font-weight:700;background:var(--sunken);font-size:12.5px;padding:9px 10px;}
+table.dyn td.rmcell{width:34px;text-align:center;}
+table.dyn tfoot td{padding:8px;}
+
+/* matrix (RACI) */
+.matrix select{padding:5px 4px;font-size:12px;text-align:center;font-weight:700;}
+.matrix select.v-R{color:#fff;background:var(--blue);border-color:var(--blue);}
+.matrix select.v-A{color:#fff;background:var(--ok);border-color:var(--ok);}
+.matrix select.v-C{color:#111;background:var(--gold-soft);border-color:var(--gold);}
+.matrix select.v-I{color:var(--ink-500);background:var(--sunken);}
+
+/* ---------- toast / modal ---------- */
+#toast-root{position:fixed;bottom:18px;inset-inline:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:200;pointer-events:none;}
+.toast{
+  background:var(--ink-900);color:var(--bg);padding:10px 18px;border-radius:var(--radius);font-size:13px;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);max-width:min(520px,90vw);text-align:center;line-height:1.5;
+}
+.modal-backdrop{position:fixed;inset:0;background:rgba(16,25,43,.5);display:flex;align-items:center;justify-content:center;z-index:150;padding:16px;}
+.modal{background:var(--surface);border-radius:6px;padding:20px;max-width:420px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+.modal h3{font-size:16px;margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--ink-700);margin:0 0 16px;}
+.modal .row{display:flex;gap:8px;justify-content:flex-end;}
+
+/* ---------- onboarding ---------- */
+.onboard-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.onboard{max-width:460px;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:28px 26px;}
+.onboard .mark{width:44px;height:44px;border:2px solid var(--blue);border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--blue);font-family:var(--font-mono);font-weight:700;margin-bottom:14px;}
+.onboard h2{font-size:20px;} .onboard p.sub{color:var(--ink-500);font-size:13px;margin:6px 0 20px;}
+
+/* ---------- gauge / bars ---------- */
+.gauge-wrap{display:flex;align-items:center;gap:18px;}
+.gauge-num{font-family:var(--font-display);font-size:30px;font-weight:800;}
+.statusbar{display:flex;height:10px;border-radius:20px;overflow:hidden;background:var(--sunken);}
+.statusbar span{height:100%;}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--ink-500);}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-inline-end:5px;vertical-align:-1px;}
+
+.activity-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.8px;}
+.activity-item:last-child{border-bottom:none;}
+.activity-item .t{color:var(--ink-500);font-size:11px;white-space:nowrap;}
+
+.empty{border:1px dashed var(--line-strong);border-radius:var(--radius);padding:34px 20px;text-align:center;color:var(--ink-500);font-size:13px;}
+.empty b{display:block;color:var(--ink-900);font-size:14.5px;margin-bottom:6px;font-family:var(--font-display);}
+
+.reg-table td,.reg-table th{font-size:12.6px;}
+.reg-table td.title{max-width:260px;}
+
+/* ---------- print ---------- */
+#print-area{display:none;}
+@media print{
+  body{background:#fff !important;}
+  #app{display:none !important;}
+  #print-area{display:block !important;font-family:var(--font-body);color:#111;}
+  .p-letterhead{display:flex;justify-content:space-between;border-bottom:2px solid #12233F;padding-bottom:10px;margin-bottom:16px;}
+  .p-letterhead .org{font-weight:800;font-size:16px;}
+  .p-letterhead .meta{font-size:11px;text-align:end;color:#333;}
+  .p-title{font-size:18px;font-weight:800;margin-bottom:2px;}
+  .p-code{font-family:var(--font-mono);color:#9C7A3C;font-size:12px;margin-bottom:14px;}
+  .p-info{display:flex;gap:24px;font-size:12px;margin-bottom:14px;flex-wrap:wrap;}
+  .p-section{margin-bottom:14px;}
+  .p-section h4{font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:#555;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:6px;}
+  .p-section .val{font-size:13px;white-space:pre-wrap;}
+  .p-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  .p-table th,.p-table td{border:1px solid #999;padding:5px 7px;text-align:start;}
+  .p-table th{background:#eee;}
+  .p-sign{margin-top:40px;display:flex;justify-content:flex-end;text-align:center;}
+  .p-sign .box{width:220px;border-top:1px solid #333;padding-top:6px;font-size:11.5px;}
+  .p-footer{margin-top:30px;font-size:10px;color:#888;border-top:1px solid #ccc;padding-top:6px;}
+}
+
+@media(max-width:880px){
+  .sidebar{position:fixed;inset-inline-start:0;top:0;bottom:0;z-index:80;transform:translateX(-100%);transition:transform .18s;box-shadow:0 0 30px rgba(0,0,0,.2);}
+  [dir=rtl] .sidebar{transform:translateX(100%);}
+  .sidebar.open{transform:translateX(0);}
+  .hamburger{display:flex;}
+  .searchbox{width:auto;flex:1;}
+  .brand small{display:none;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast-root"></div>
+<div id="print-area"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================= ICONS ============================= */
+const ICO = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>',
+  folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>',
+  file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h3"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>',
+  print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="8" rx="1.5"/><path d="M6 17v4h12v-4"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>',
+  globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 7 7 0 0 0 20 14.5z"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  menu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+  ncr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+  capa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>',
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="m7 13 5-5 5 5"/><path d="M5 3h14"/></svg>',
+};
+function ic(name,cls){return `<span class="ic ${cls||''}">${ICO[name]||''}</span>`;}
+
+/* ============================= I18N ============================= */
+const T = {
+ar:{
+  appName:'محرك وثائق الجودة الشاملة', appSub:'TQM Document Engine',
+  nav_dashboard:'لوحة المؤشرات', nav_projects:'سجل المشاريع', nav_documents:'وثائق النظام (35 بند)',
+  nav_ncr:'سجل عدم المطابقة', nav_capa:'الإجراءات التصحيحية', nav_export:'الطباعة والتصدير', nav_settings:'الإعدادات',
+  search_ph:'ابحث عن وثيقة أو مشروع…',
+  onboard_title:'إعداد النظام لأول مرة', onboard_sub:'أدخل بياناتك لتظهر كمعتمد رسمي في ترويسة الوثائق والتقارير المُصدّرة.',
+  name:'الاسم الكامل', title_job:'المسمى الوظيفي', org:'اسم المنشأة / الجهة', start:'بدء استخدام النظام',
+  no_project:'لا يوجد مشروع نشط', pick_project:'اختر مشروعاً', create_project_first:'أضف مشروعاً أولاً من سجل المشاريع للبدء بتوثيق الجودة.',
+  dash_title:'لوحة المؤشرات التنفيذية', dash_sub:'نظرة شاملة على جاهزية نظام الجودة للمشروع النشط.',
+  readiness:'مؤشر جاهزية النظام', of40:'من أصل 40 وثيقة ونموذج',
+  approved:'معتمدة', review:'قيد المراجعة', draft:'مسودة', archived:'مؤرشفة',
+  ncr_open:'حالات مفتوحة', ncr_critical:'حرجة مفتوحة', capa_open:'إجراءات مفتوحة', capa_verified:'تم التحقق منها',
+  recent:'آخر التحديثات', no_activity:'لا يوجد نشاط مسجّل بعد.',
+  projects_title:'سجل المشاريع', projects_sub:'المشاريع المسجّلة والمرتبط بها نظام الجودة الخاص بكل منها.',
+  add_project:'إضافة مشروع', project_code:'كود المشروع', project_name:'اسم المشروع', project_client:'العميل / الجهة المالكة',
+  save:'حفظ', cancel:'إلغاء', edit:'تعديل', delete:'حذف', select:'اختيار', active:'نشط',
+  no_projects:'لا توجد مشاريع بعد', no_projects_hint:'أضف أول مشروع لبدء تنظيم وثائق الجودة الخاصة به.',
+  docs_title:'وثائق نظام الجودة', docs_sub:'40 وثيقة ونموذجاً مبنية وفق ISO 9001:2015 ونظم TQM — مقسّمة إلى 8 مجموعات.',
+  pick_doc:'اختر وثيقة من القائمة لبدء التحرير أو المراجعة.',
+  status:'الحالة', version:'الإصدار', updated:'آخر تحديث', never:'لم يُحفظ بعد',
+  save_doc:'حفظ الوثيقة', print_doc:'طباعة / تصدير PDF', history:'سجل المراجعات',
+  add_row:'إضافة صف', remove:'حذف', add_role:'إضافة دور', add_decision:'إضافة قرار / عملية',
+  ncr_title:'سجل عدم المطابقة (NCR)', ncr_sub:'تسجيل ومتابعة حالات عدم المطابقة واتخاذ الإجراءات الفورية.',
+  add_ncr:'تسجيل حالة جديدة', ncr_no:'الرقم المرجعي', ncr_date:'تاريخ الاكتشاف', ncr_desc:'وصف الانحراف',
+  ncr_severity:'درجة الخطورة', ncr_immediate:'الإجراء الفوري', ncr_disposal:'القرار / التصرف',
+  ncr_cost:'التكلفة التقديرية', ncr_status:'الحالة', no_ncr:'لا توجد حالات مسجّلة', no_ncr_hint:'سجّل أول حالة عدم مطابقة لمتابعتها حتى الإغلاق.',
+  sev_minor:'بسيطة', sev_major:'كبيرة', sev_critical:'حرجة',
+  disp_isolate:'عزل', disp_rework:'إعادة تشغيل', disp_accept:'قبول بشرط', disp_scrap:'إتلاف',
+  st_open:'مفتوحة', st_closed:'مغلقة',
+  capa_title:'الإجراءات التصحيحية (CAPA)', capa_sub:'معالجة الأسباب الجذرية لحالات عدم المطابقة ومنع تكرارها.',
+  add_capa:'إضافة إجراء تصحيحي', capa_link:'مرتبط بحالة NCR', none:'بدون ربط',
+  capa_rc:'تحليل السبب الجذر', capa_plan:'خطة الإجراء التصحيحي', capa_owner:'المسؤول عن التنفيذ',
+  capa_due:'تاريخ الاستحقاق', capa_verify:'طريقة التحقق من الفعالية', capa_status:'الحالة',
+  no_capa:'لا توجد إجراءات تصحيحية مسجّلة', no_capa_hint:'أضف إجراءً تصحيحياً لمعالجة سبب جذري لحالة عدم مطابقة.',
+  cap_open:'مفتوح', cap_prog:'قيد التنفيذ', cap_verified:'تم التحقق', cap_closed:'مغلق',
+  export_title:'الطباعة والتصدير', export_sub:'إصدار تقارير رسمية جاهزة للطباعة أو الحفظ كملف PDF عبر نافذة الطباعة.',
+  print_register:'طباعة السجل الرئيسي للوثائق', print_ncr_reg:'طباعة سجل عدم المطابقة', print_capa_reg:'طباعة سجل الإجراءات التصحيحية',
+  saved_docs:'الوثائق المحفوظة', backup_title:'نسخ احتياطي للبيانات', backup_sub:'تصدير جميع بيانات النظام كملف JSON أو استيرادها لاحقاً.',
+  export_json:'تصدير البيانات (JSON)', import_json:'استيراد البيانات (JSON)', reset_data:'إعادة تعيين كامل البيانات',
+  settings_title:'الإعدادات', settings_sub:'بيانات المعتمد المستخدمة في ترويسة وتوقيع التقارير المُصدّرة.',
+  language:'اللغة', theme:'المظهر', light:'فاتح', dark:'داكن', system:'تلقائي (حسب الجهاز)',
+  confirm_delete_title:'تأكيد الحذف', confirm_delete_project:'سيؤدي هذا إلى حذف المشروع وجميع الوثائق وحالات NCR وCAPA المرتبطة به نهائياً. هل تريد المتابعة؟',
+  confirm_delete_generic:'لا يمكن التراجع عن هذا الإجراء. هل تريد المتابعة؟',
+  confirm_reset:'سيتم حذف جميع البيانات المخزّنة في هذا المتصفح نهائياً بما فيها المشاريع والوثائق. هل أنت متأكد؟',
+  yes_delete:'حذف نهائياً', yes_reset:'إعادة التعيين',
+  saved_ok:'تم الحفظ بنجاح', deleted_ok:'تم الحذف', project_added:'تمت إضافة المشروع',
+  need_active_project:'يرجى اختيار مشروع نشط أولاً من الشريط الجانبي.',
+  master_register:'السجل الرئيسي لوثائق النظام', doc_col:'كود الوثيقة', title_col:'العنوان',
+  clause:'بند', additional:'نموذج إضافي', purpose:'الهدف من الوثيقة',
+  org_letterhead:'نظام إدارة الجودة الشاملة', signature:'التوقيع المعتمد',
+  export_full:'تصدير التقرير', field_optional:'اختياري', close:'إغلاق',
+  data_imported:'تم استيراد البيانات بنجاح', data_import_error:'تعذّر استيراد الملف — تأكد من أنه ملف نسخة احتياطية صالح.',
+  profile_name_req:'يرجى إدخال الاسم الكامل للمتابعة.',
+  history_empty:'لا يوجد سجل مراجعات بعد.', action_created:'إنشاء الوثيقة', action_updated:'تحديث المحتوى', action_status:'تغيير الحالة إلى',
+  print_project_hdr:'مشروع', print_generated:'صدر بتاريخ', downloads_unavailable:'خاصية التنزيل غير متاحة في هذا العرض.',
+  ai_assist_title:'مساعد الإعداد بالذكاء الاصطناعي (Gemini)',
+  ai_assist_sub:'جهّز طلباً جاهزاً، الصقه في Gemini، ثم أعد لصق الرد هنا ليُملأ في الحقول تلقائياً.',
+  ai_include_context:'تضمين المحتوى الحالي في الطلب (لتحسينه بدل كتابته من الصفر)',
+  ai_prompt_label:'الطلب الجاهز للنسخ', copy_prompt:'نسخ الطلب', open_gemini:'فتح Gemini',
+  ai_paste_label:'الصق رد Gemini هنا', apply_response:'تطبيق الرد على الحقول',
+  copied_ok:'تم نسخ الطلب', copy_failed:'تعذّر النسخ التلقائي — حدد النص وانسخه يدوياً (Ctrl+C).',
+  ai_applied_ok:'تم تطبيق رد الذكاء الاصطناعي على الحقول', ai_no_markers:'لم يتم العثور على محتوى منسّق في الرد الملصق — تأكد من لصق رد Gemini كاملاً دون تعديل.',
+  ai_apply_confirm:'سيتم استبدال محتوى الحقول المطابقة بما ورد في رد Gemini. هل تريد المتابعة؟',
+  ai_matrix_note:'ملاحظة: مصفوفة RACI لا تُملأ تلقائياً بالذكاء الاصطناعي — تُعبّأ يدوياً.',
+  ai_empty_prompt:'لا يوجد طلب — افتح وثيقة أولاً.',
+},
+en:{
+  appName:'Smart TQM Document Engine', appSub:'Total Quality Management System',
+  nav_dashboard:'Dashboard', nav_projects:'Projects Registry', nav_documents:'System Documents (35 Clauses)',
+  nav_ncr:'Nonconformance Register', nav_capa:'Corrective Actions', nav_export:'Print & Export', nav_settings:'Settings',
+  search_ph:'Search a document or project…',
+  onboard_title:'First-time Setup', onboard_sub:'Enter your details to appear as the authorized approver on exported document letterheads.',
+  name:'Full name', title_job:'Job title', org:'Organization', start:'Start using the system',
+  no_project:'No active project', pick_project:'Select a project', create_project_first:'Add a project first from the Projects Registry to begin documenting quality.',
+  dash_title:'Executive Control Panel', dash_sub:'A full overview of the active project\'s quality-system readiness.',
+  readiness:'System Readiness Score', of40:'of 40 documents & forms',
+  approved:'Approved', review:'In review', draft:'Draft', archived:'Archived',
+  ncr_open:'Open cases', ncr_critical:'Critical open', capa_open:'Open actions', capa_verified:'Verified',
+  recent:'Recent updates', no_activity:'No activity recorded yet.',
+  projects_title:'Projects Registry', projects_sub:'Registered projects, each with its own quality-system documentation.',
+  add_project:'Add project', project_code:'Project code', project_name:'Project name', project_client:'Client / owner',
+  save:'Save', cancel:'Cancel', edit:'Edit', delete:'Delete', select:'Select', active:'Active',
+  no_projects:'No projects yet', no_projects_hint:'Add your first project to start organizing its quality documentation.',
+  docs_title:'Quality System Documents', docs_sub:'40 documents and forms built on ISO 9001:2015 and TQM practice — organized into 8 groups.',
+  pick_doc:'Select a document from the list to start editing or reviewing.',
+  status:'Status', version:'Version', updated:'Last updated', never:'Not saved yet',
+  save_doc:'Save document', print_doc:'Print / Export PDF', history:'Revision history',
+  add_row:'Add row', remove:'Remove', add_role:'Add role', add_decision:'Add decision / process',
+  ncr_title:'Nonconformance Register (NCR)', ncr_sub:'Log and track nonconformances and the immediate actions taken.',
+  add_ncr:'Log new case', ncr_no:'Reference no.', ncr_date:'Date detected', ncr_desc:'Description of deviation',
+  ncr_severity:'Severity', ncr_immediate:'Immediate action', ncr_disposal:'Disposition',
+  ncr_cost:'Estimated cost', ncr_status:'Status', no_ncr:'No cases logged', no_ncr_hint:'Log your first nonconformance to track it through to closure.',
+  sev_minor:'Minor', sev_major:'Major', sev_critical:'Critical',
+  disp_isolate:'Isolate', disp_rework:'Rework', disp_accept:'Accept w/ concession', disp_scrap:'Scrap',
+  st_open:'Open', st_closed:'Closed',
+  capa_title:'Corrective Actions (CAPA)', capa_sub:'Address root causes of nonconformances to prevent recurrence.',
+  add_capa:'Add corrective action', capa_link:'Linked NCR', none:'Not linked',
+  capa_rc:'Root cause analysis', capa_plan:'Corrective action plan', capa_owner:'Action owner',
+  capa_due:'Due date', capa_verify:'Effectiveness verification method', capa_status:'Status',
+  no_capa:'No corrective actions logged', no_capa_hint:'Add a corrective action to address a nonconformance root cause.',
+  cap_open:'Open', cap_prog:'In progress', cap_verified:'Verified', cap_closed:'Closed',
+  export_title:'Print & Export', export_sub:'Generate official reports ready to print or save as PDF via the print dialog.',
+  print_register:'Print master document register', print_ncr_reg:'Print NCR register', print_capa_reg:'Print CAPA register',
+  saved_docs:'Saved documents', backup_title:'Data backup', backup_sub:'Export all system data as JSON, or import it later.',
+  export_json:'Export data (JSON)', import_json:'Import data (JSON)', reset_data:'Reset all data',
+  settings_title:'Settings', settings_sub:'Approver details used on the letterhead and signature of exported reports.',
+  language:'Language', theme:'Theme', light:'Light', dark:'Dark', system:'System default',
+  confirm_delete_title:'Confirm deletion', confirm_delete_project:'This permanently deletes the project and every document, NCR and CAPA linked to it. Continue?',
+  confirm_delete_generic:'This action cannot be undone. Continue?',
+  confirm_reset:'This permanently deletes all data stored in this browser, including every project and document. Are you sure?',
+  yes_delete:'Delete permanently', yes_reset:'Reset data',
+  saved_ok:'Saved successfully', deleted_ok:'Deleted', project_added:'Project added',
+  need_active_project:'Please select an active project from the sidebar first.',
+  master_register:'Master Document Register', doc_col:'Code', title_col:'Title',
+  clause:'Clause', additional:'Additional form', purpose:'Document purpose',
+  org_letterhead:'Total Quality Management System', signature:'Authorized signature',
+  export_full:'Export report', field_optional:'optional', close:'Close',
+  data_imported:'Data imported successfully', data_import_error:'Could not import the file — make sure it is a valid backup file.',
+  profile_name_req:'Please enter your full name to continue.',
+  history_empty:'No revisions yet.', action_created:'Document created', action_updated:'Content updated', action_status:'Status changed to',
+  print_project_hdr:'Project', print_generated:'Generated on', downloads_unavailable:'Download is unavailable in this view.',
+  ai_assist_title:'AI Drafting Assistant (Gemini)',
+  ai_assist_sub:'Build a ready-made prompt, paste it into Gemini, then paste the reply back here to auto-fill the fields.',
+  ai_include_context:'Include current content in the prompt (refine instead of writing from scratch)',
+  ai_prompt_label:'Ready-to-copy prompt', copy_prompt:'Copy prompt', open_gemini:'Open Gemini',
+  ai_paste_label:"Paste Gemini's reply here", apply_response:'Apply reply to fields',
+  copied_ok:'Prompt copied', copy_failed:'Could not copy automatically — select the text and copy manually (Ctrl+C).',
+  ai_applied_ok:'AI reply applied to the fields', ai_no_markers:'No formatted content found in the pasted reply — make sure you pasted the full, unedited Gemini reply.',
+  ai_apply_confirm:"This will replace the matching fields' content with what Gemini returned. Continue?",
+  ai_matrix_note:'Note: the RACI matrix is not AI-filled — fill it manually.',
+  ai_empty_prompt:'No prompt yet — open a document first.',
+}
+};
+function tr(k){ return (T[state.lang]&&T[state.lang][k]) || T.ar[k] || k; }
+
+/* ============================= DOC CATALOG ============================= */
+const GROUPS = [
+ {id:'g1', ar:'التأسيس والسياق', en:'Context & Foundation'},
+ {id:'g2', ar:'الهيكلة والمسؤوليات والتواصل', en:'Structure & Communication'},
+ {id:'g3', ar:'التخطيط والعمليات والموارد', en:'Planning, Operations & Resources'},
+ {id:'g4', ar:'ضبط التصميم والتطوير', en:'Design & Development Control'},
+ {id:'g5', ar:'التوريد والتتبع والإفراج', en:'Supply, Traceability & Release'},
+ {id:'g6', ar:'ضبط الجودة وإدارة الوثائق', en:'Quality Control & Documentation'},
+ {id:'g7', ar:'التقييم والتحسين المستمر', en:'Evaluation & Continual Improvement'},
+ {id:'g8', ar:'نماذج ميدانية إضافية', en:'Additional Field Modules'},
+];
+
+function T_(key,ar,en,ph_ar,ph_en,rows){return {type:'text',key,ar,en,ph_ar:ph_ar||'',ph_en:ph_en||'',rows:rows||4};}
+function TB_(key,ar,en,columns,presetRows){return {type:'table',key,ar,en,columns,presetRows:presetRows||null};}
+function MX_(key,ar,en){return {type:'matrix',key,ar,en};}
+
+const DOCS = [
+{no:1,code:'TQM-CTX-01',group:'g1',ar:'نطاق نظام إدارة الجودة',en:'QMS Scope',
+ par:'تحديد الحدود والتطبيقات لنظام الجودة بالمنشأة.',pen:"Defines the boundaries and applicability of the organization's QMS.",
+ fields:[T_('scope','نطاق النظام (المنشأة، الفروع، المنتجات والخدمات المشمولة)','System scope (organization, sites, covered products/services)'),
+         T_('exclusions','الاستثناءات ومبرراتها','Exclusions and their justification'),
+         T_('stakeholders','الأطراف المهتمة (عملاء، موردون، جهات حكومية، شركاء)','Interested parties (customers, suppliers, authorities, partners)')]},
+{no:2,code:'TQM-CTX-02',group:'g1',ar:'المراجع المعيارية',en:'Normative References',
+ par:'توثيق المواصفات والقوانين التي يستند إليها النظام.',pen:'Documents the standards and regulations the system relies on.',
+ fields:[TB_('refs','جدول المراجع والمواصفات','References & standards table',
+   [{key:'ref',ar:'اسم المرجع / المواصفة',en:'Reference / standard'},{key:'ver',ar:'رقم الإصدار',en:'Version'},{key:'issuer',ar:'الجهة المصدرة',en:'Issuer'},{key:'scope',ar:'نطاق التطبيق',en:'Applicability'}])]},
+{no:3,code:'TQM-CTX-03',group:'g1',ar:'المصطلحات والتعاريف',en:'Terms & Definitions',
+ par:'توحيد المفاهيم المصطلحية لضمان الفهم المشترك.',pen:'Standardizes terminology to ensure shared understanding.',
+ fields:[TB_('terms','قائمة المصطلحات','Glossary',[{key:'term',ar:'المصطلح',en:'Term'},{key:'def',ar:'التعريف الإجرائي',en:'Definition'},{key:'ref',ar:'المرجع',en:'Reference'}])]},
+{no:4,code:'TQM-CTX-04',group:'g1',ar:'سياق المنظمة وسجل المخاطر',en:'Organization Context & Risk Register',
+ par:'حصر العوامل الداخلية والخارجية وسجل المخاطر المؤسسية.',pen:'Captures internal/external issues and the organizational risk register.',
+ fields:[T_('internal','القضايا الداخلية (الثقافة، الكفاءات، البنية التحتية)','Internal issues (culture, competencies, infrastructure)'),
+         T_('external','القضايا الخارجية (السوق، المنافسة، القوانين، التكنولوجيا)','External issues (market, competition, regulation, technology)'),
+         TB_('risks','سجل المخاطر والفرص','Risk & opportunity register',[{key:'item',ar:'الخطر / الفرصة',en:'Risk / opportunity'},{key:'prob',ar:'الاحتمالية (1-5)',en:'Probability (1-5)'},{key:'impact',ar:'الأثر (1-5)',en:'Impact (1-5)'},{key:'level',ar:'مستوى الخطر',en:'Risk level'},{key:'plan',ar:'خطة الاستجابة',en:'Response plan'},{key:'owner',ar:'المسند إليه',en:'Owner'}])]},
+{no:5,code:'TQM-LDR-01',group:'g1',ar:'التزام القيادة والحوكمة',en:'Leadership Commitment & Governance',
+ par:'إثبات التزام الإدارة العليا بتوفير الموارد ومتابعة فعالية النظام.',pen:"Evidences top management's commitment to resourcing and overseeing the QMS.",
+ fields:[T_('commitment','ميثاق التزام الإدارة العليا','Top-management commitment statement'),T_('delegation','جدول توزيع الصلاحيات القيادية والتفويضات','Authority delegation & governance structure')]},
+{no:6,code:'TQM-LDR-02',group:'g1',ar:'مصفوفة الأطراف المهتمة',en:'Interested Parties Matrix',
+ par:'تحديد الأطراف ذات الصلة ومتطلباتها وآلية متابعتها.',pen:'Identifies relevant parties, their requirements and how they are monitored.',
+ fields:[TB_('parties','مصفوفة الأطراف المهتمة','Interested parties matrix',[{key:'party',ar:'الطرف المهتم',en:'Interested party'},{key:'req',ar:'المتطلبات والتوقعات',en:'Requirements/expectations'},{key:'importance',ar:'الأهمية والتأثير',en:'Importance/impact'},{key:'method',ar:'طريقة المتابعة',en:'Monitoring method'},{key:'freq',ar:'التكرار',en:'Frequency'}])]},
+{no:7,code:'TQM-PLN-01',group:'g1',ar:'خطة إدارة التغيير التنظيمي',en:'Organizational Change Management Plan',
+ par:'ضمان تقييم وتنفيذ التغييرات دون أثر سلبي على الجودة.',pen:'Ensures changes are assessed and implemented without adverse impact on quality.',
+ fields:[T_('desc','وصف التغيير المطلوب ومبرراته','Description and justification of the change'),T_('impact','تقييم الأثر والمخاطر المترتبة','Impact and risk assessment'),
+   TB_('schedule','جدول التنفيذ','Implementation schedule',[{key:'step',ar:'الخطوة',en:'Step'},{key:'owner',ar:'المسؤول',en:'Responsible'},{key:'due',ar:'الموعد',en:'Due date'},{key:'status',ar:'الحالة',en:'Status'}])]},
+{no:8,code:'TQM-DOC-08',group:'g1',ar:'المقدمة الشاملة لنظام الجودة',en:'Comprehensive Introduction',
+ par:'تقديم لمحة عامة عن تاريخ المنشأة وفلسفة إدارة الجودة الشاملة.',pen:"An overview of the organization's history and TQM philosophy.",
+ fields:[T_('history','نبذة تاريخية عن المنشأة','Brief organizational history'),T_('philosophy','فلسفة الجودة الشاملة المتبعة','Adopted TQM philosophy'),T_('structure','الهيكل العام للوثائق وأدلة التشغيل','Overall structure of documents & operating manuals')]},
+{no:9,code:'TQM-DOC-09',group:'g1',ar:'ثقافة المنظمة وقيم الجودة',en:'Organization Culture',
+ par:'تحديد الرؤية والرسالة والقيم الجوهرية للجودة.',pen:'Defines the vision, mission and core quality values.',
+ fields:[T_('vision','الرؤية','Vision',null,null,2),T_('mission','الرسالة','Mission',null,null,2),T_('values','القيم الجوهرية (الشفافية، التحسين المستمر، التركيز على العميل...)','Core values (transparency, continual improvement, customer focus...)'),T_('culturePlan','خطة ترسيخ ثقافة الجودة بين العاملين','Plan to embed the quality culture among staff')]},
+{no:10,code:'TQM-DOC-10',group:'g1',ar:'سياسة الجودة',en:'Quality Policy',
+ par:'إعلان رسمي معتمد من الإدارة العليا ومتوافق مع ISO 9001.',pen:'A formal, top-management approved statement aligned with ISO 9001.',
+ fields:[T_('policy','نص سياسة الجودة المعتمدة','Approved quality policy statement',null,null,5),T_('publish','آلية نشر السياسة وإتاحتها للأطراف المهتمة','Method of publishing the policy to interested parties'),T_('review','جدول المراجعة والتحديث الدوري','Periodic review & update schedule')]},
+{no:11,code:'TQM-DOC-11',group:'g1',ar:'أهداف الجودة ومؤشرات الأداء',en:'Quality Objectives & KPIs',
+ par:'تحديد أهداف الجودة الذكية (SMART) على مستوى الإدارات.',pen:'Defines SMART quality objectives at the departmental level.',
+ fields:[TB_('objectives','أهداف الجودة ومؤشرات الأداء','Objectives & KPIs',[{key:'goal',ar:'الهدف الاستراتيجي',en:'Strategic objective'},{key:'dept',ar:'الإدارة المسؤولة',en:'Responsible dept.'},{key:'kpi',ar:'مؤشر الأداء',en:'KPI'},{key:'target',ar:'المستهدف',en:'Target'},{key:'plan',ar:'خطة العمل والمدى الزمني',en:'Action plan & timeline'}])]},
+{no:12,code:'TQM-DOC-12',group:'g1',ar:'تحليل SWOT',en:'SWOT Analysis',
+ par:'التحليل الاستراتيجي لسياق عمل المنشأة.',pen:"Strategic analysis of the organization's operating context.",
+ fields:[T_('strengths','نقاط القوة','Strengths'),T_('weaknesses','نقاط الضعف','Weaknesses'),T_('opportunities','الفرص','Opportunities'),T_('threats','التهديدات','Threats'),T_('strategy','مصفوفة المواءمة الاستراتيجية','Strategic alignment / strategies')]},
+{no:13,code:'TQM-DOC-13',group:'g2',ar:'البطاقات الوظيفية',en:'Job Descriptions',
+ par:'توثيق مهام ومتطلبات كل وظيفة داخل المنشأة.',pen:'Documents the duties and requirements of each role.',
+ fields:[T_('titleReporting','المسمى الوظيفي والتبعية الإدارية','Job title & reporting line'),T_('purpose','الهدف العام من الوظيفة','Overall job purpose'),T_('duties','المهام والمسؤوليات الرئيسية','Key duties & responsibilities'),T_('quals','شروط الكفاءة والمؤهلات','Competency & qualification requirements')]},
+{no:14,code:'TQM-DOC-14',group:'g2',ar:'جدول الصلاحيات (RACI)',en:'Authority Matrix (RACI)',
+ par:'تحديد مصفوفة اتخاذ القرار ومنع تضارب الصلاحيات.',pen:'Defines the decision matrix and prevents authority conflicts.',
+ fields:[MX_('raci','مصفوفة RACI (R منفذ / A مسؤول أول / C مستشار / I مطلع)','RACI matrix (R responsible / A accountable / C consulted / I informed)')]},
+{no:15,code:'TQM-DOC-15',group:'g2',ar:'سجل الامتثال التشريعي',en:'Compliance Register',
+ par:'حصر ومتابعة تطبيق التشريعات والمتطلبات التنظيمية.',pen:'Tracks compliance with legislation and regulatory requirements.',
+ fields:[TB_('compliance','سجل الامتثال','Compliance register',[{key:'law',ar:'القانون / التشريع',en:'Law/regulation'},{key:'regulator',ar:'الجهة التنظيمية',en:'Regulator'},{key:'req',ar:'متطلبات الامتثال',en:'Compliance requirements'},{key:'evidence',ar:'أدلة الامتثال',en:'Evidence'},{key:'gap',ar:'الفجوات',en:'Gaps'},{key:'next',ar:'المراجعة القادمة',en:'Next review'}])]},
+{no:16,code:'TQM-DOC-16',group:'g2',ar:'خطة التوعية والتثقيف',en:'Awareness Plan',
+ par:'التأكد من إلمام العاملين بسياسة الجودة وأهمية دورهم.',pen:'Ensures staff awareness of the quality policy and their role in it.',
+ fields:[TB_('awareness','خطة التوعية','Awareness plan',[{key:'topic',ar:'موضوع التوعية',en:'Topic'},{key:'audience',ar:'الفئة المستهدفة',en:'Target audience'},{key:'method',ar:'الوسيلة',en:'Method'},{key:'owner',ar:'المسؤول',en:'Responsible'},{key:'freq',ar:'التاريخ والتكرار',en:'Date / frequency'}])]},
+{no:17,code:'TQM-DOC-17',group:'g2',ar:'خطة التواصل',en:'Communication Plan',
+ par:'تنظيم عمليات الاتصال الداخلي والخارجي الخاصة بنظام الجودة.',pen:'Organizes internal and external communications related to the QMS.',
+ fields:[TB_('comms','خطة التواصل','Communication plan',[{key:'what',ar:'ماذا يتم التواصل به',en:'What'},{key:'when',ar:'متى',en:'When'},{key:'whom',ar:'مع من',en:'With whom'},{key:'how',ar:'كيف (القناة)',en:'How (channel)'},{key:'who',ar:'من المسؤول',en:'Who is responsible'}])]},
+{no:18,code:'TQM-DOC-18',group:'g3',ar:'الخطة التشغيلية',en:'Operational Plan',
+ par:'تحويل الأهداف إلى خطط تنفيذية تشغيلية محددة.',pen:'Translates objectives into concrete operational execution plans.',
+ fields:[T_('process','اسم العملية / المشروع','Process / project name',null,null,2),T_('io','مدخلات ومخرجات العملية','Process inputs & outputs'),T_('steps','خطوات التنفيذ وتسلسل معايير التحكم','Execution steps & control sequence'),T_('resources','الموارد المخصصة ونقاط الفحص والتحقق','Allocated resources & inspection/verification points')]},
+{no:19,code:'TQM-DOC-19',group:'g3',ar:'سجل متطلبات المنتجات والخدمات',en:'Product/Service Requirements Log',
+ par:'توثيق ومراجعة متطلبات العملاء قبل الالتزام بها.',pen:'Documents and reviews customer requirements before commitment.',
+ fields:[TB_('requirements','سجل المتطلبات','Requirements log',[{key:'client',ar:'العميل / المشروع',en:'Client / project'},{key:'explicit',ar:'المتطلبات الصريحة',en:'Explicit requirements'},{key:'implicit',ar:'المتطلبات الضمنية',en:'Implicit requirements'},{key:'regulatory',ar:'المتطلبات التنظيمية',en:'Regulatory requirements'},{key:'capability',ar:'قدرة المنشأة على التلبية',en:'Capability to meet'}])]},
+{no:20,code:'TQM-DOC-20',group:'g3',ar:'خطة التصميم والتطوير',en:'Design & Development Planning',
+ par:'وضع إطار زمني وتنفيذي لمراحل التصميم والتطوير.',pen:'Sets a timeline and execution framework for design & development stages.',
+ fields:[T_('scope','نطاق مشروع التصميم والتطوير','Design & development project scope'),T_('stages','مراحل التصميم والمخرجات المطلوبة','Design stages and required outputs'),T_('team','مسؤوليات أفراد فريق التصميم','Design team responsibilities'),T_('reviews','نقاط المراجعة والتحقق والصلاحية','Review, verification & validation checkpoints')]},
+{no:35,code:'TQM-DOC-35',group:'g3',ar:'مصفوفة إدارة الموارد التسعة (9Ms)',en:'9Ms Resource Management Matrix',
+ par:'تخطيط وإدارة وتوفير الموارد الكلية المحركة للجودة الشاملة.',pen:'Plans, manages and provisions the nine resource categories driving TQM.',
+ fields:[TB_('nineMs','مصفوفة الموارد التسعة','9Ms matrix',
+   [{key:'desc',ar:'الوصف والمتطلبات',en:'Description & requirements'},{key:'status',ar:'الوضع الحالي',en:'Current status'},{key:'gap',ar:'النقص / الفجوة',en:'Gap'},{key:'plan',ar:'خطة التوفير والتطوير',en:'Provisioning plan'}],
+   [{ar:'Manpower — الأفراد',en:'Manpower'},{ar:'Machinery — الآلات والمعدات',en:'Machinery'},{ar:'Materials — المواد الخام',en:'Materials'},{ar:'Methods — الطرق والأساليب',en:'Methods'},{ar:'Measurements — القياسات',en:'Measurements'},{ar:'Milestones — المراحل الزمنية',en:'Milestones'},{ar:'Mother Nature — البيئة',en:'Mother Nature'},{ar:'Money — السيولة المالية',en:'Money'},{ar:'Management — الإدارة',en:'Management'}])]},
+{no:21,code:'TQM-DOC-21',group:'g4',ar:'مدخلات التصميم والتطوير',en:'Design & Development Inputs',
+ par:'توثيق المدخلات الأساسية المطلوبة لعملية التصميم.',pen:'Documents the essential inputs required for the design process.',
+ fields:[T_('specs','المواصفات الوظيفية والأداء المطلوب','Functional specifications & required performance'),T_('legal','المتطلبات القانونية والتنظيمية','Legal & regulatory requirements'),T_('prior','معلومات مستمدة من تصاميم سابقة مشابهة','Information from similar previous designs'),T_('adequacy','اعتماد وكفاية مدخلات التصميم','Adequacy & sign-off of design inputs')]},
+{no:22,code:'TQM-DOC-22',group:'g4',ar:'مخرجات التصميم والتطوير',en:'Design & Development Outputs',
+ par:'توثيق نتائج التصميم والتأكد من تلبيتها للمدخلات.',pen:'Documents design results and confirms they meet the inputs.',
+ fields:[T_('drawings','الرسومات الفنية / المخططات / المواصفات','Technical drawings / plans / specifications'),T_('acceptance','معايير القبول والتصنيع / تقديم الخدمة','Acceptance criteria for manufacture / service delivery'),T_('instructions','تعليمات الاستخدام والتشغيل والأمان','Usage, operation & safety instructions'),
+   TB_('traceability','جدول مطابقة المخرجات مع المدخلات','Input–output traceability matrix',[{key:'input',ar:'المدخل',en:'Input'},{key:'output',ar:'المخرج المطابق',en:'Corresponding output'},{key:'verified',ar:'تم التحقق',en:'Verified'}])]},
+{no:23,code:'TQM-DOC-23',group:'g5',ar:'ضبط الموردين الخارجيين',en:'Control of External Providers',
+ par:'تقييم واختيار ومتابعة أداء الموردين والمقاولين.',pen:'Evaluates, selects and monitors the performance of suppliers/contractors.',
+ fields:[TB_('suppliers','سجل الموردين المعتمدين','Approved supplier list',[{key:'name',ar:'اسم المورد',en:'Supplier'},{key:'category',ar:'الفئة',en:'Category'},{key:'criteria',ar:'معايير التقييم',en:'Evaluation criteria'},{key:'rating',ar:'التقييم',en:'Rating'},{key:'status',ar:'الحالة',en:'Status'}]),
+   T_('notes','ملاحظات تقييم الأداء الدوري والإجراءات التصحيحية للموردين','Periodic performance notes & corrective actions for suppliers')]},
+{no:24,code:'TQM-DOC-24',group:'g5',ar:'ضبط تقديم الخدمة والإنتاج',en:'Production & Service Provision Control',
+ par:'ضبط ظروف التشغيل والإنتاج لضمان عدم وجود انحرافات.',pen:'Controls operating and production conditions to prevent deviations.',
+ fields:[T_('sops','توافر وثائق وتعليمات العمل القياسية (SOPs)','Availability of standard operating instructions (SOPs)'),T_('tools','توفير واستخدام أدوات ووسائل القياس المناسبة','Provision and use of suitable measuring equipment'),T_('inspection','تطبيق أنشطة التفتيش والاختبار في المراحل المختلفة','Application of inspection & testing activities across stages')]},
+{no:25,code:'TQM-DOC-25',group:'g5',ar:'التتبع والتمييز',en:'Traceability & Identification',
+ par:'تمييز المخرجات وتتبعها من المورد حتى التسليم النهائي.',pen:'Identifies and traces outputs from supplier through to final delivery.',
+ fields:[T_('coding','نظام التكويد وأرقام الدفعات (Batch/Lot)','Coding system & batch/lot numbering'),T_('log','سجل حركة المنتج / الخدمة خلال مراحل التشغيل','Product/service movement log across stages'),T_('means','وسائل التمييز (بطاقات، أكواد، باركود)','Identification means (tags, codes, barcodes)')]},
+{no:26,code:'TQM-DOC-26',group:'g5',ar:'الإفراج عن المنتجات والخدمات',en:'Release of Products & Services',
+ par:'التحقق من اكتمال الفحوصات قبل التسليم للعميل.',pen:'Verifies all checks are complete before delivery to the customer.',
+ fields:[T_('checklist','قائمة التحقق النهائية','Final inspection checklist'),T_('cert','شهادة مطابقة المخرجات','Certificate of conformance'),T_('signoff','توقيع واعتماد الشخص المخوّل بالإفراج','Sign-off by the authorized releaser')]},
+{no:27,code:'TQM-DOC-27',group:'g6',ar:'سياسة ضبط المخرجات غير المطابقة',en:'Control of Nonconforming Outputs — Policy',
+ par:'الإجراء العام للتعامل مع المخرجات المعيبة لمنع استخدامها سهواً. سجّل الحالات الفعلية من قسم «سجل عدم المطابقة».',
+ pen:'The general procedure for handling defective outputs. Log actual cases in the "Nonconformance Register" section.',
+ fields:[T_('policy','وصف سياسة التعامل مع عدم المطابقة','Description of the nonconformance-handling policy'),T_('actions','أنواع التصرفات الفورية (عزل، إعادة تشغيل، قبول بشرط، إتلاف)','Types of immediate action (isolate, rework, accept w/ concession, scrap)'),T_('authority','صلاحيات الاعتماد وتحديد التكلفة','Approval authority & cost determination')]},
+{no:28,code:'TQM-DOC-28',group:'g6',ar:'ضبط المعلومات الموثقة',en:'Control of Documented Information',
+ par:'الإجراء الحاكم لإنشاء ومراجعة وحفظ وتداول وثائق النظام.',pen:'Governs the creation, review, storage and circulation of system documents.',
+ fields:[T_('coding','هيكل ترميز وتكويد الوثائق','Document coding structure'),
+   TB_('masterList','قائمة الوثائق الرئيسية','Master document list',[{key:'code',ar:'كود الوثيقة',en:'Doc code'},{key:'retention',ar:'مدة الحفظ',en:'Retention period'},{key:'access',ar:'صلاحيات الاطلاع',en:'Access rights'},{key:'notes',ar:'ملاحظات',en:'Notes'}])]},
+{no:29,code:'TQM-DOC-29',group:'g6',ar:'القياس والمتابعة والمراقبة',en:'Measurement & Monitoring',
+ par:'تحديد ما يجب قياسه وأساليب القياس وأدوات المراقبة.',pen:'Defines what must be measured, methods and monitoring tools.',
+ fields:[TB_('monitoring','خطة المراقبة والقياس','Monitoring & measurement plan',[{key:'indicator',ar:'العملية / المؤشر',en:'Process / indicator'},{key:'method',ar:'طريقة القياس',en:'Measurement method'},{key:'tool',ar:'أداة القياس',en:'Measuring tool'},{key:'freq',ar:'التكرار',en:'Frequency'},{key:'criteria',ar:'معيار القبول',en:'Acceptance criteria'},{key:'owner',ar:'المسند إليه',en:'Owner'}])]},
+{no:30,code:'TQM-DOC-30',group:'g7',ar:'قياس رضا العملاء',en:'Customer Satisfaction',
+ par:'جمع وتحليل بيانات انطباعات العملاء ومدى تحقيق متطلباتهم.',pen:"Collects and analyzes customer feedback and requirement fulfillment.",
+ fields:[T_('survey','محاور استبيان تقييم رضا العملاء','Customer satisfaction survey themes'),
+   TB_('complaints','سجل الشكاوى والمقترحات','Complaints & suggestions register',[{key:'date',ar:'التاريخ',en:'Date'},{key:'customer',ar:'العميل',en:'Customer'},{key:'complaint',ar:'الشكوى',en:'Complaint'},{key:'status',ar:'الحالة',en:'Status'}]),
+   T_('trend','تحليل اتجاهات رضا العملاء','Customer satisfaction trend analysis')]},
+{no:31,code:'TQM-DOC-31',group:'g7',ar:'الفحوصات والتدقيق الداخلي الدوري',en:'Periodic Checks & Internal Audit',
+ par:'تخطيط وتنفيذ أعمال التدقيق الداخلي لضمان فاعلية النظام.',pen:'Plans and conducts internal audits to ensure system effectiveness.',
+ fields:[TB_('schedule','برنامج التدقيق السنوي','Annual audit schedule',[{key:'area',ar:'المجال / القسم',en:'Area / department'},{key:'auditor',ar:'المدقق',en:'Auditor'},{key:'date',ar:'الموعد المخطط',en:'Planned date'},{key:'status',ar:'الحالة',en:'Status'}]),
+   T_('notes','ملاحظات قائمة مراجعة التدقيق ونتائجه','Audit checklist notes & findings')]},
+{no:32,code:'TQM-DOC-32',group:'g7',ar:'مراجعة الإدارة',en:'Management Review',
+ par:'تقييم الإدارة العليا لمدى كفاية وفاعلية نظام الجودة الشاملة.',pen:"Top management's evaluation of the QMS's adequacy and effectiveness.",
+ fields:[T_('agenda','أجندة الاجتماع (مدخلات: نتائج التدقيق، الإجراءات التصحيحية، الأهداف، الموارد، التغييرات)','Meeting agenda (inputs: audit results, corrective actions, objectives, resources, changes)'),
+   T_('minutes','محضر الاجتماع (المخرجات والقرارات)','Meeting minutes (outputs & decisions)'),T_('log','سجل القرارات والتحسينات المعتمدة','Log of approved decisions & improvements')]},
+{no:33,code:'TQM-DOC-33',group:'g7',ar:'التحسين العام والتطوير',en:'General Improvement',
+ par:'تحديد وإصدار الفرص الاستراتيجية للتطوير والابتكار.',pen:'Identifies and formalizes strategic improvement and innovation opportunities.',
+ fields:[TB_('opportunities','سجل الفرص والمبادرات التحسينية','Improvement opportunities log',[{key:'idea',ar:'الفكرة / المبادرة',en:'Idea / initiative'},{key:'technique',ar:'التقنية المستخدمة',en:'Technique used'},{key:'owner',ar:'المسؤول',en:'Owner'},{key:'status',ar:'الحالة',en:'Status'}]),
+   T_('impact','تقرير قياس الأثر والوفر الناتج عن خطط التحسين','Impact & savings report from improvement plans')]},
+{no:34,code:'TQM-DOC-34',group:'g7',ar:'سياسة الإجراءات التصحيحية',en:'Corrective Action — Policy',
+ par:'المنهجية العامة لمعالجة أسباب الانحرافات. سجّل الإجراءات الفعلية من قسم «الإجراءات التصحيحية».',
+ pen:'The general methodology for addressing deviation causes. Log actual actions in the "Corrective Actions" section.',
+ fields:[T_('methodology','منهجية تحليل السبب الجذر المعتمدة (5 Whys / Fishbone)','Adopted root-cause methodology (5 Whys / Fishbone)'),T_('verification','عملية التحقق من فعالية الإجراء قبل الإغلاق','Effectiveness verification process before closure')]},
+{no:'A1',code:'TQM-ADD-01',group:'g8',ar:'تحليل أسباب وآثار الفشل (FMEA)',en:'Failure Mode & Effects Analysis (FMEA)',
+ par:'تحليل وتقييم المخاطر التشغيلية وتحديد إجراءات منع الوقوع.',pen:'Analyzes operational failure risks and defines prevention actions.',
+ fields:[TB_('fmea','مصفوفة FMEA','FMEA matrix',[{key:'item',ar:'العملية / العنصر',en:'Process / item'},{key:'mode',ar:'نمط الفشل',en:'Failure mode'},{key:'effect',ar:'الأثر',en:'Effect'},{key:'cause',ar:'السبب',en:'Cause'},{key:'sev',ar:'الخطورة (1-10)',en:'Severity (1-10)'},{key:'occ',ar:'التكرار (1-10)',en:'Occurrence (1-10)'},{key:'det',ar:'الاكتشاف (1-10)',en:'Detection (1-10)'},{key:'rpn',ar:'الرقم المرجعي RPN',en:'RPN'},{key:'action',ar:'إجراء المنع',en:'Prevention action'}])]},
+{no:'A2',code:'TQM-ADD-02',group:'g8',ar:'إجراءات التشغيل القياسية (SOPs)',en:'Standard Operating Procedures (SOPs)',
+ par:'صياغة خطوات العمل اليومية التفصيلية لكل إدارة.',pen:'Formalizes detailed day-to-day work steps for each department.',
+ fields:[T_('titleScope','عنوان الإجراء ونطاقه','Procedure title & scope'),T_('steps','الخطوات التفصيلية بالتسلسل','Detailed sequential steps',null,null,6),T_('roles','الأدوار والمسؤوليات المرتبطة','Associated roles & responsibilities')]},
+{no:'A3',code:'TQM-ADD-03',group:'g8',ar:'قوائم الفحص الميداني',en:'Site / Process Inspection Checklists',
+ par:'نماذج فحص سريعة لعمليات الاستلام والصيانة وضبط الجودة في الموقع.',pen:'Quick inspection forms for receiving, maintenance and on-site quality control.',
+ fields:[TB_('checklist','قائمة الفحص','Inspection checklist',[{key:'item',ar:'البند',en:'Item'},{key:'check',ar:'نقطة الفحص',en:'Check point'},{key:'criteria',ar:'معيار القبول',en:'Acceptance criteria'},{key:'result',ar:'النتيجة',en:'Result'},{key:'notes',ar:'ملاحظات',en:'Notes'}])]},
+{no:'A4',code:'TQM-ADD-04',group:'g8',ar:'سجل المقترحات والابتكار (Kaizen)',en:'Innovation & Suggestion Log (Kaizen)',
+ par:'استقبال وتتبع أفكار التحسين المستمر الصادرة من العاملين.',pen:'Captures and tracks continual-improvement ideas from staff.',
+ fields:[TB_('kaizen','سجل المقترحات','Suggestion log',[{key:'date',ar:'التاريخ',en:'Date'},{key:'employee',ar:'الموظف',en:'Employee'},{key:'suggestion',ar:'المقترح',en:'Suggestion'},{key:'dept',ar:'القسم',en:'Department'},{key:'status',ar:'الحالة',en:'Status'}])]},
+{no:'A5',code:'TQM-ADD-05',group:'g8',ar:'مصفوفة المهارات والتدريب',en:'Skills & Training Matrix',
+ par:'متابعة فجوات الكفاءات والتخطيط لدورات إعادة التأهيل.',pen:'Tracks competency gaps and plans training interventions.',
+ fields:[TB_('skills','مصفوفة المهارات','Skills matrix',[{key:'employee',ar:'الموظف',en:'Employee'},{key:'skill',ar:'المهارة المطلوبة',en:'Required skill'},{key:'level',ar:'المستوى الحالي (1-5)',en:'Current level (1-5)'},{key:'gap',ar:'الفجوة',en:'Gap'},{key:'training',ar:'خطة التدريب',en:'Training plan'}])]},
+];
+const DOC_BY_CODE = {}; DOCS.forEach(d=>DOC_BY_CODE[d.code]=d);
+
+/* ============================= STATE ============================= */
+const LS_KEY = 'tqm_engine_state_v1';
+let state = loadState();
+
+function defaultState(){
+  return {
+    lang:'ar', theme:'system',
+    profile:{name:'', title:'', org:''},
+    onboarded:false,
+    projects:[], activeProjectId:null,
+    documents:{}, ncrs:[], capas:[],
+    route:'dashboard', selectedDocCode:null,
+  };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  }catch(e){ return defaultState(); }
+}
+function saveState(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){ toast(state.lang==='ar'?'تعذّر حفظ البيانات محلياً':'Could not save data locally'); }
+}
+function uid(){ return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function nowStr(){ const d=new Date(); return d.toISOString().slice(0,16).replace('T',' '); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+function activeProject(){ return state.projects.find(p=>p.id===state.activeProjectId) || null; }
+function docKey(projectId, code){ return projectId+'::'+code; }
+function getDoc(code){
+  const p = activeProject(); if(!p) return null;
+  return state.documents[docKey(p.id,code)] || null;
+}
+function ensureDocEntry(code){
+  const p = activeProject(); if(!p) return null;
+  const k = docKey(p.id,code);
+  if(!state.documents[k]){
+    state.documents[k] = {code, projectId:p.id, status:'draft', version:0, content:{}, history:[], updatedAt:null};
+  }
+  return state.documents[k];
+}
+
+/* ============================= TOAST / MODAL ============================= */
+function toast(msg){
+  const root = document.getElementById('toast-root');
+  const el = document.createElement('div'); el.className='toast'; el.textContent=msg;
+  root.appendChild(el);
+  const dur = Math.min(6000, Math.max(2400, msg.length*45));
+  setTimeout(()=>{ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, dur);
+}
+function confirmModal(title, msg, okLabel, danger){
+  return new Promise(resolve=>{
+    const back = document.createElement('div'); back.className='modal-backdrop';
+    back.innerHTML = `<div class="modal">
+      <h3>${esc(title)}</h3><p>${esc(msg)}</p>
+      <div class="row">
+        <button class="btn ghost" data-x="0">${esc(tr('cancel'))}</button>
+        <button class="btn ${danger?'danger':'primary'}" data-x="1">${esc(okLabel)}</button>
+      </div></div>`;
+    document.body.appendChild(back);
+    back.addEventListener('click', e=>{
+      if(e.target===back){ back.remove(); resolve(false); return; }
+      const b = e.target.closest('[data-x]'); if(!b) return;
+      back.remove(); resolve(b.dataset.x==='1');
+    });
+  });
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ============================= HISTORY ============================= */
+function pushHistory(doc, action){
+  doc.history = doc.history || [];
+  doc.history.unshift({v:doc.version, at:nowStr(), action});
+  if(doc.history.length>12) doc.history.length = 12;
+}
+
+/* ============================= RENDER: SHELL ============================= */
+function applyTheme(){
+  const root = document.documentElement;
+  if(state.theme==='light') root.setAttribute('data-theme','light');
+  else if(state.theme==='dark') root.setAttribute('data-theme','dark');
+  else root.removeAttribute('data-theme');
+}
+function applyDir(){
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = state.lang==='ar' ? 'rtl' : 'ltr';
+}
+
+function render(){
+  applyDir(); applyTheme();
+  const app = document.getElementById('app');
+  if(!state.onboarded){ app.innerHTML = renderOnboarding(); return; }
+  app.innerHTML = renderShellHtml();
+  renderRoute();
+}
+
+function renderOnboarding(){
+  return `<div class="onboard-wrap"><div class="onboard">
+    <div class="mark">TQM</div>
+    <h2>${esc(tr('onboard_title'))}</h2>
+    <p class="sub">${esc(tr('onboard_sub'))}</p>
+    <div class="field"><label class="field-label">${esc(tr('name'))}</label><input type="text" id="ob-name" placeholder="${esc(tr('name'))}"></div>
+    <div class="field"><label class="field-label">${esc(tr('title_job'))} <span class="hint">(${esc(tr('field_optional'))})</span></label><input type="text" id="ob-title"></div>
+    <div class="field"><label class="field-label">${esc(tr('org'))} <span class="hint">(${esc(tr('field_optional'))})</span></label><input type="text" id="ob-org"></div>
+    <button class="btn primary" style="width:100%;justify-content:center" data-action="onboard-submit">${esc(tr('start'))}</button>
+  </div></div>`;
+}
+
+const NAV = [
+  {route:'dashboard', icon:'home', key:'nav_dashboard'},
+  {route:'projects', icon:'folder', key:'nav_projects'},
+  {route:'documents', icon:'file', key:'nav_documents'},
+  {route:'ncr', icon:'ncr', key:'nav_ncr'},
+  {route:'capa', icon:'capa', key:'nav_capa'},
+  {route:'export', icon:'print', key:'nav_export'},
+  {route:'settings', icon:'settings', key:'nav_settings'},
+];
+
+function renderShellHtml(){
+  const p = activeProject();
+  const navHtml = NAV.map(n=>{
+    let badge = '';
+    if(n.route==='documents' && p){ badge = `<span class="nav-badge">${docsSummary(p.id).approved}/40</span>`; }
+    if(n.route==='ncr' && p){ const c = state.ncrs.filter(x=>x.projectId===p.id && x.status==='open').length; if(c) badge = `<span class="nav-badge">${c}</span>`; }
+    if(n.route==='capa' && p){ const c = state.capas.filter(x=>x.projectId===p.id && x.status!=='closed').length; if(c) badge = `<span class="nav-badge">${c}</span>`; }
+    return `<div class="navitem ${state.route===n.route?'active':''}" data-action="nav" data-route="${n.route}" tabindex="0">${ic(n.icon)}<span>${esc(tr(n.key))}</span>${badge}</div>`;
+  }).join('');
+
+  const projOptions = state.projects.map(pr=>`<option value="${pr.id}" ${pr.id===state.activeProjectId?'selected':''}>${esc(pr.code)} — ${esc(pr.name)}</option>`).join('');
+
+  return `
+  <div class="topbar">
+    <button class="iconbtn hamburger" data-action="toggle-sidebar" aria-label="menu">${ic('menu')}</button>
+    <div class="brand"><div class="mark">TQM</div><div><div>${esc(tr('appName'))}</div><small>${esc(tr('appSub'))}</small></div></div>
+    <div class="spacer"></div>
+    <div class="searchbox">
+      <input type="search" id="global-search" placeholder="${esc(tr('search_ph'))}" autocomplete="off">
+      <div class="search-results hidden" id="search-results"></div>
+    </div>
+    <button class="iconbtn" data-action="toggle-lang" title="${esc(tr('language'))}">${ic('globe')}</button>
+    <button class="iconbtn" data-action="toggle-theme" title="${esc(tr('theme'))}">${ic(effectiveDark()?'sun':'moon')}</button>
+  </div>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="proj-pill">
+        <div class="lbl">${esc(tr('pick_project'))}</div>
+        ${state.projects.length? `<select id="active-project-select">${projOptions}</select>` : `<div class="hint" style="margin-top:6px;">${esc(tr('no_project'))}</div>`}
+      </div>
+      ${navHtml}
+    </aside>
+    <main class="content"><div class="content-inner" id="route-root"></div></main>
+  </div>`;
+}
+
+function effectiveDark(){
+  if(state.theme==='dark') return true;
+  if(state.theme==='light') return false;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function docsSummary(projectId){
+  let approved=0, review=0, draft=0, archived=0;
+  DOCS.forEach(d=>{
+    const doc = state.documents[docKey(projectId,d.code)];
+    const st = doc ? doc.status : 'draft';
+    if(!doc){ draft++; return; }
+    if(st==='approved') approved++; else if(st==='review') review++; else if(st==='archived') archived++; else draft++;
+  });
+  return {approved,review,draft,archived,total:40};
+}
+
+/* ============================= ROUTES ============================= */
+function renderRoute(){
+  const root = document.getElementById('route-root');
+  if(!root) return;
+  let html = '';
+  switch(state.route){
+    case 'dashboard': html = renderDashboard(); break;
+    case 'projects': html = renderProjects(); break;
+    case 'documents': html = renderDocuments(); break;
+    case 'ncr': html = renderNCR(); break;
+    case 'capa': html = renderCAPA(); break;
+    case 'export': html = renderExport(); break;
+    case 'settings': html = renderSettings(); break;
+    default: html = renderDashboard();
+  }
+  root.innerHTML = html;
+}
+
+/* ---------- Dashboard ---------- */
+function renderDashboard(){
+  const p = activeProject();
+  if(!p){
+    return `<div class="page-head"><div><h2>${esc(tr('dash_title'))}</h2><p>${esc(tr('dash_sub'))}</p></div></div>
+      <div class="empty"><b>${esc(tr('no_project'))}</b>${esc(tr('create_project_first'))}
+      <div style="margin-top:14px"><button class="btn primary" data-action="nav" data-route="projects">${ic('plus')}${esc(tr('add_project'))}</button></div></div>`;
+  }
+  const s = docsSummary(p.id);
+  const pct = Math.round((s.approved/40)*100);
+  const ncrsP = state.ncrs.filter(x=>x.projectId===p.id);
+  const capasP = state.capas.filter(x=>x.projectId===p.id);
+  const ncrOpen = ncrsP.filter(x=>x.status==='open').length;
+  const ncrCrit = ncrsP.filter(x=>x.status==='open'&&x.severity==='critical').length;
+  const capaOpen = capasP.filter(x=>x.status!=='closed').length;
+  const capaVerified = capasP.filter(x=>x.status==='verified').length;
+
+  const segs = [
+    {v:s.approved,color:'var(--ok)',lbl:tr('approved')},
+    {v:s.review,color:'var(--warn)',lbl:tr('review')},
+    {v:s.draft,color:'var(--ink-300)',lbl:tr('draft')},
+    {v:s.archived,color:'var(--archive)',lbl:tr('archived')},
+  ];
+  const bar = segs.map(s2=> s2.v? `<span style="width:${(s2.v/40*100)}%;background:${s2.color}"></span>`:'').join('');
+  const legend = segs.map(s2=>`<span><i style="background:${s2.color}"></i>${esc(s2.lbl)} (${s2.v})</span>`).join('');
+
+  const activity = buildActivity(p.id).slice(0,7);
+  const activityHtml = activity.length? activity.map(a=>`<div class="activity-item"><div class="t">${esc(a.at)}</div><div>${esc(a.text)}</div></div>`).join('')
+    : `<div class="hint">${esc(tr('no_activity'))}</div>`;
+
+  const r = 46, C = 2*Math.PI*r;
+  const dash = (pct/100)*C;
+
+  return `
+  <div class="page-head"><div><h2>${esc(tr('dash_title'))}</h2><p>${esc(tr('dash_sub'))} — ${esc(p.code)} · ${esc(p.name)}</p></div></div>
+  <div class="grid cols-2" style="align-items:stretch;margin-bottom:14px;">
+    <div class="card">
+      <div class="gauge-wrap">
+        <svg width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="${r}" fill="none" stroke="var(--sunken)" stroke-width="10"/>
+          <circle cx="55" cy="55" r="${r}" fill="none" stroke="var(--blue)" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="${dash} ${C}" transform="rotate(-90 55 55)"/>
+          <text x="55" y="61" text-anchor="middle" font-family="IBM Plex Mono" font-size="20" font-weight="700" fill="var(--ink-900)">${pct}%</text>
+        </svg>
+        <div>
+          <div style="font-weight:800;font-family:var(--font-display);font-size:15px;">${esc(tr('readiness'))}</div>
+          <div class="hint">${s.approved} / 40 ${esc(tr('of40'))}</div>
+        </div>
+      </div>
+      <div class="statusbar" style="margin-top:16px;">${bar}</div>
+      <div class="legend">${legend}</div>
+    </div>
+    <div class="grid cols-2">
+      <div class="card stat danger"><div class="num">${ncrOpen}</div><div class="lbl">${esc(tr('ncr_open'))}</div></div>
+      <div class="card stat danger"><div class="num">${ncrCrit}</div><div class="lbl">${esc(tr('ncr_critical'))}</div></div>
+      <div class="card stat warn"><div class="num">${capaOpen}</div><div class="lbl">${esc(tr('capa_open'))}</div></div>
+      <div class="card stat ok"><div class="num">${capaVerified}</div><div class="lbl">${esc(tr('capa_verified'))}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="font-size:15px;margin-bottom:10px;">${esc(tr('recent'))}</h3>
+    ${activityHtml}
+  </div>`;
+}
+
+function buildActivity(projectId){
+  const items = [];
+  Object.values(state.documents).forEach(d=>{
+    if(d.projectId!==projectId || !d.updatedAt) return;
+    const meta = DOC_BY_CODE[d.code];
+    items.push({at:d.updatedAt, text:(state.lang==='ar'?'وثيقة: ':'Doc: ')+(meta?(state.lang==='ar'?meta.ar:meta.en):d.code)+' — '+statusLabel(d.status)});
+  });
+  state.ncrs.filter(n=>n.projectId===projectId).forEach(n=>items.push({at:n.createdAt, text:(state.lang==='ar'?'NCR جديدة: ':'New NCR: ')+n.no}));
+  state.capas.filter(c=>c.projectId===projectId).forEach(c=>items.push({at:c.createdAt, text:(state.lang==='ar'?'إجراء تصحيحي جديد':'New corrective action')}));
+  items.sort((a,b)=> (b.at||'').localeCompare(a.at||''));
+  return items;
+}
+function statusLabel(st){ return tr(st==='review'?'review':st==='approved'?'approved':st==='archived'?'archived':'draft'); }
+
+/* ---------- Projects ---------- */
+function renderProjects(){
+  const rows = state.projects.map(p=>{
+    const s = docsSummary(p.id);
+    return `<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:180px;">
+        <div style="font-weight:700;font-family:var(--font-display);">${esc(p.name)} ${p.id===state.activeProjectId?`<span class="pill approved">${esc(tr('active'))}</span>`:''}</div>
+        <div class="hint mono">${esc(p.code)}${p.client? ' · '+esc(p.client):''}</div>
+      </div>
+      <div class="hint" style="min-width:110px;">${s.approved}/40 ${esc(tr('approved'))}</div>
+      <div class="btnrow">
+        <button class="btn sm" data-action="select-project" data-id="${p.id}">${ic('check')}${esc(tr('select'))}</button>
+        <button class="btn sm ghost" data-action="edit-project" data-id="${p.id}">${esc(tr('edit'))}</button>
+        <button class="btn sm danger" data-action="delete-project" data-id="${p.id}">${ic('trash')}${esc(tr('delete'))}</button>
+      </div>
+    </div>`;
+  }).join('') || `<div class="empty"><b>${esc(tr('no_projects'))}</b>${esc(tr('no_projects_hint'))}</div>`;
+
+  return `
+  <div class="page-head">
+    <div><h2>${esc(tr('projects_title'))}</h2><p>${esc(tr('projects_sub'))}</p></div>
+    <div class="btnrow"><button class="btn primary" data-action="open-project-form">${ic('plus')}${esc(tr('add_project'))}</button></div>
+  </div>
+  <div id="project-form-wrap"></div>
+  ${rows}`;
+}
+function projectFormHtml(editing){
+  const p = editing || {code:'',name:'',client:''};
+  return `<div class="card" style="margin-bottom:16px;">
+    <div class="grid cols-3">
+      <div class="field"><label class="field-label">${esc(tr('project_code'))}</label><input type="text" id="pf-code" value="${esc(p.code)}" placeholder="PRJ-2026-01"></div>
+      <div class="field"><label class="field-label">${esc(tr('project_name'))}</label><input type="text" id="pf-name" value="${esc(p.name)}"></div>
+      <div class="field"><label class="field-label">${esc(tr('project_client'))} <span class="hint">(${esc(tr('field_optional'))})</span></label><input type="text" id="pf-client" value="${esc(p.client||'')}"></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn primary" data-action="save-project" data-id="${editing?editing.id:''}">${esc(tr('save'))}</button>
+      <button class="btn ghost" data-action="close-project-form">${esc(tr('cancel'))}</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- Documents ---------- */
+function renderDocuments(){
+  const p = activeProject();
+  const head = `<div class="page-head"><div><h2>${esc(tr('docs_title'))}</h2><p>${esc(tr('docs_sub'))}</p></div></div>`;
+  if(!p){
+    return head + `<div class="empty"><b>${esc(tr('no_project'))}</b>${esc(tr('create_project_first'))}
+      <div style="margin-top:14px"><button class="btn primary" data-action="nav" data-route="projects">${ic('plus')}${esc(tr('add_project'))}</button></div></div>`;
+  }
+  const groupsHtml = GROUPS.map(g=>{
+    const docsIn = DOCS.filter(d=>d.group===g.id);
+    const rows = docsIn.map(d=>{
+      const doc = state.documents[docKey(p.id,d.code)];
+      const st = doc? doc.status : 'draft';
+      return `<div class="doc-row ${state.selectedDocCode===d.code?'active':''}" data-action="select-doc" data-code="${d.code}">
+        <span class="dot ${st}"></span>
+        <span class="ttl">${esc(state.lang==='ar'?d.ar:d.en)}</span>
+        <span class="code">${typeof d.no==='number'? d.no : d.no}</span>
+      </div>`;
+    }).join('');
+    const open = docsIn.some(d=>d.code===state.selectedDocCode);
+    return `<details class="doc-group" ${open?'open':''}>
+      <summary>${ic('chev')}<span>${esc(state.lang==='ar'?g.ar:g.en)}</span><span class="nav-badge">${docsIn.length}</span></summary>
+      ${rows}
+    </details>`;
+  }).join('');
+
+  const editor = state.selectedDocCode ? renderDocEditor(state.selectedDocCode) : `<div class="empty"><b>${esc(tr('pick_doc'))}</b></div>`;
+
+  return head + `<div class="docs-layout">
+    <div>${groupsHtml}</div>
+    <div>${editor}</div>
+  </div>`;
+}
+
+function fieldBlockHtml(doc, field, entry){
+  const lang = state.lang;
+  const label = lang==='ar'?field.ar:field.en;
+  if(field.type==='text'){
+    const val = entry.content[field.key]||'';
+    return `<div class="field">
+      <label class="field-label">${esc(label)}</label>
+      <textarea rows="${field.rows||4}" data-fkey="${field.key}" data-ftype="text" placeholder="${esc(lang==='ar'?field.ph_ar:field.ph_en)}">${esc(val)}</textarea>
+    </div>`;
+  }
+  if(field.type==='table'){
+    let rows = entry.content[field.key];
+    if(!rows){
+      rows = field.presetRows ? field.presetRows.map((pr,i)=>({id:uid(),presetIndex:i,cells:{}})) : [];
+      entry.content[field.key]=rows;
+    }
+    const ths = field.columns.map(c=>`<th>${esc(lang==='ar'?c.ar:c.en)}</th>`).join('');
+    const trs = rows.map(r=>{
+      const lockedCell = field.presetRows ? `<td class="locked">${esc(lang==='ar'?field.presetRows[r.presetIndex].ar:field.presetRows[r.presetIndex].en)}</td>` : '';
+      const cells = field.columns.map(c=>`<td><textarea rows="1" data-table="${field.key}" data-row="${r.id}" data-col="${c.key}">${esc(r.cells[c.key]||'')}</textarea></td>`).join('');
+      const rm = field.presetRows ? '' : `<td class="rmcell"><button class="iconbtn" style="width:26px;height:26px;" data-action="rm-row" data-table="${field.key}" data-row="${r.id}">${ic('x')}</button></td>`;
+      return `<tr>${lockedCell}${cells}${rm}</tr>`;
+    }).join('');
+    const addBtn = field.presetRows ? '' : `<div style="padding:8px;"><button class="btn sm ghost" data-action="add-row" data-table="${field.key}">${ic('plus')}${esc(tr('add_row'))}</button></div>`;
+    return `<div class="field"><label class="field-label">${esc(label)}</label>
+      <div class="table-scroll"><table class="dyn">
+        <thead><tr>${field.presetRows?`<th></th>`:''}${ths}${field.presetRows?'':'<th></th>'}</tr></thead>
+        <tbody>${trs}</tbody>
+      </table></div>${addBtn}
+    </div>`;
+  }
+  if(field.type==='matrix'){
+    let m = entry.content[field.key];
+    if(!m){ m = {roles:[], rows:[]}; entry.content[field.key]=m; }
+    const roleHeaders = m.roles.map(r=>`<th>${esc(r.label)}<button class="iconbtn" style="width:20px;height:20px;margin-inline-start:4px;" data-action="rm-role" data-matrix="${field.key}" data-role="${r.id}">${ic('x')}</button></th>`).join('');
+    const rowsHtml = m.rows.map(row=>{
+      const cells = m.roles.map(role=>{
+        const val = row.cells[role.id]||'';
+        return `<td><select class="v-${val}" data-action="matrix-cell" data-matrix="${field.key}" data-row="${row.id}" data-role="${role.id}">
+          <option value="">–</option><option value="R" ${val==='R'?'selected':''}>R</option><option value="A" ${val==='A'?'selected':''}>A</option><option value="C" ${val==='C'?'selected':''}>C</option><option value="I" ${val==='I'?'selected':''}>I</option>
+        </select></td>`;
+      }).join('');
+      return `<tr><td class="locked">${esc(row.label)} <button class="iconbtn" style="width:20px;height:20px;" data-action="rm-mrow" data-matrix="${field.key}" data-row="${row.id}">${ic('x')}</button></td>${cells}</tr>`;
+    }).join('');
+    return `<div class="field matrix"><label class="field-label">${esc(label)}</label>
+      <div class="table-scroll"><table class="dyn">
+        <thead><tr><th>${esc(lang==='ar'?'العملية / القرار':'Process / decision')}</th>${roleHeaders}</tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table></div>
+      <div class="btnrow" style="margin-top:8px;">
+        <button class="btn sm ghost" data-action="add-role" data-matrix="${field.key}">${ic('plus')}${esc(tr('add_role'))}</button>
+        <button class="btn sm ghost" data-action="add-mrow" data-matrix="${field.key}">${ic('plus')}${esc(tr('add_decision'))}</button>
+      </div>
+    </div>`;
+  }
+  return '';
+}
+
+/* ---------- AI (Gemini) drafting assist ---------- */
+function buildAIPrompt(meta, entry){
+  const lang = state.lang; const p = activeProject();
+  const title = lang==='ar'?meta.ar:meta.en;
+  const purpose = lang==='ar'?meta.par:meta.pen;
+  const lines = [];
+  if(lang==='ar'){
+    lines.push(`أنت استشاير خبير في إدارة الجودة الشاملة (TQM) ومواصفة ISO 9001:2015. اكتب محتوى احترافياً دقيقاً لوثيقة الجودة التالية ضمن مشروع "${p?p.name:''}"${p&&p.client?(' لصالح '+p.client):''}.`);
+    lines.push(`اسم الوثيقة: ${title} (${meta.code})`);
+    lines.push(`الهدف من الوثيقة: ${purpose}`);
+    lines.push('');
+    lines.push('مهم جداً: أجب حصراً بالتنسيق التالي، بنفس الرموز والعلامات حرفياً، بدون أي مقدمة أو شرح أو نص خارج العلامات:');
+  } else {
+    lines.push(`You are an expert TQM / ISO 9001:2015 consultant. Write precise, professional content for the following quality document, for the project "${p?p.name:''}"${p&&p.client?(' for '+p.client):''}.`);
+    lines.push(`Document: ${title} (${meta.code})`);
+    lines.push(`Purpose: ${purpose}`);
+    lines.push('');
+    lines.push('IMPORTANT: reply using EXACTLY this format, same markers verbatim, no intro, no explanation, nothing outside the markers:');
+  }
+  lines.push('');
+  let hasMatrix = false;
+  meta.fields.forEach(f=>{
+    if(f.type==='matrix'){ hasMatrix = true; return; }
+    const label = lang==='ar'?f.ar:f.en;
+    const existing = entry.content[f.key];
+    if(f.type==='text'){
+      lines.push(`[[FIELD:${f.key}]]`);
+      lines.push(lang==='ar'? `(${label} — اكتب المحتوى الكامل هنا)` : `(${label} — write the full content here)`);
+      lines.push('[[/FIELD]]');
+      if(existing && String(existing).trim()){ lines.push((lang==='ar'?'مسودة حالية لتحسينها بدل الكتابة من الصفر: ':'Existing draft to refine rather than start from scratch: ')+existing); }
+      lines.push('');
+    } else if(f.type==='table'){
+      const colNames = f.columns.map(c=> lang==='ar'?c.ar:c.en);
+      const placeholder = colNames.map(c=>`<${c}>`).join(' || ');
+      lines.push(`[[TABLE:${f.key}]]`);
+      lines.push(lang==='ar'?`(كل سطر = صف واحد، الأعمدة مفصولة بـ || بهذا الترتيب: ${colNames.join(' | ')})`:`(each line = one row, columns separated by || in this order: ${colNames.join(' | ')})`);
+      if(f.presetRows){
+        f.presetRows.forEach(pr=> lines.push(`${lang==='ar'?pr.ar:pr.en} || ${placeholder}`));
+      } else {
+        lines.push(placeholder);
+        lines.push(lang==='ar'?'(أضف من 3 إلى 8 أسطر/صفوف حسب المناسب)':'(add 3 to 8 lines/rows as relevant)');
+      }
+      lines.push('[[/TABLE]]');
+      lines.push('');
+    }
+  });
+  if(hasMatrix){ lines.push(lang==='ar'?'(تم تجاهل حقل مصفوفة RACI — يُعبّأ يدوياً في التطبيق)':'(RACI matrix field skipped — fill it manually in the app)'); }
+  return lines.join('\n');
+}
+function preprocessAIText(text){
+  // strip code fences and markdown emphasis right around our markers so slight
+  // reformatting by the model (```...```, **bold**, `code`) doesn't break parsing
+  let t = text.replace(/```[a-zA-Z]*\n?/g,'').replace(/```/g,'');
+  t = t.replace(/[*_`]+(\[\[)/g,'$1').replace(/(\]\])[*_`]+/g,'$1');
+  t = t.replace(/[*_`]+(\[\[\/)/g,'$1');
+  return t;
+}
+function splitRowLine(line){
+  let l = line.trim();
+  if(/^[-|\s:]+$/.test(l)) return null; // markdown table separator row, e.g. |---|---|
+  if(l.indexOf('||')>-1){
+    return l.split('||').map(s=>s.trim());
+  }
+  if(l.indexOf('|')>-1){
+    // markdown-style single-pipe row; drop leading/trailing empty cells from | ... |
+    let parts = l.split('|').map(s=>s.trim());
+    if(parts.length && parts[0]==='') parts.shift();
+    if(parts.length && parts[parts.length-1]==='') parts.pop();
+    return parts;
+  }
+  return null;
+}
+function parseAIResponse(meta, entry, rawText){
+  const text = preprocessAIText(rawText);
+  let applied = 0, missed = [];
+  meta.fields.forEach(f=>{
+    if(f.type==='matrix') return;
+    const label = state.lang==='ar'?f.ar:f.en;
+    if(f.type==='text'){
+      const re = new RegExp('\\[\\[FIELD:'+f.key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\]\\]([\\s\\S]*?)\\[\\[/FIELD\\]\\]','i');
+      const m = text.match(re);
+      if(m && m[1].trim()){ entry.content[f.key] = m[1].trim(); applied++; } else { missed.push(label); }
+    } else if(f.type==='table'){
+      const re = new RegExp('\\[\\[TABLE:'+f.key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\]\\]([\\s\\S]*?)\\[\\[/TABLE\\]\\]','i');
+      const m = text.match(re);
+      if(!m){ missed.push(label); return; }
+      const linesRaw = m[1].split('\n').map(s=>s.trim()).filter(s=>s && !/^\(.*\)$/.test(s))
+        .map(s=>splitRowLine(s)).filter(parts=>parts && parts.length>1);
+      if(!linesRaw.length){ missed.push(label); return; }
+      if(f.presetRows){
+        const rows = f.presetRows.map((pr,i)=>({id:uid(), presetIndex:i, cells:{}}));
+        linesRaw.forEach((parts,i)=>{
+          if(i>=rows.length) return;
+          const cellVals = parts.length > f.columns.length ? parts.slice(1) : parts;
+          f.columns.forEach((c,ci)=>{ if(cellVals[ci]!==undefined) rows[i].cells[c.key]=cellVals[ci]; });
+        });
+        entry.content[f.key] = rows; applied++;
+      } else {
+        const rows = linesRaw.map(parts=>{
+          const row = {id:uid(), cells:{}};
+          f.columns.forEach((c,ci)=>{ row.cells[c.key]=parts[ci]||''; });
+          return row;
+        });
+        entry.content[f.key] = rows; applied++;
+      }
+    }
+  });
+  return {applied, missed};
+}
+function aiAssistHtml(meta, entry){
+  const prompt = buildAIPrompt(meta, entry);
+  return `<div class="card" style="margin-bottom:16px;border-inline-start:3px solid var(--gold);">
+    <h3 style="font-size:14.5px;">${esc(tr('ai_assist_title'))}</h3>
+    <p class="hint" style="margin:4px 0 12px;">${esc(tr('ai_assist_sub'))}</p>
+    <div class="field">
+      <label class="field-label">${esc(tr('ai_prompt_label'))}</label>
+      <textarea id="ai-prompt-box" rows="6" readonly style="font-family:var(--font-mono);font-size:11.5px;">${esc(prompt)}</textarea>
+    </div>
+    <div class="btnrow" style="margin-bottom:14px;">
+      <button class="btn sm" data-action="copy-ai-prompt">${esc(tr('copy_prompt'))}</button>
+      <a class="btn sm" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">${esc(tr('open_gemini'))}</a>
+    </div>
+    <div class="field">
+      <label class="field-label">${esc(tr('ai_paste_label'))}</label>
+      <textarea id="ai-response-box" rows="6" placeholder="[[FIELD:...]] ... [[/FIELD]]"></textarea>
+    </div>
+    <button class="btn primary sm" data-action="apply-ai-response" data-code="${meta.code}">${ic('check')}${esc(tr('apply_response'))}</button>
+  </div>`;
+}
+
+function renderDocEditor(code){
+  const meta = DOC_BY_CODE[code]; if(!meta) return '';
+  const entry = ensureDocEntry(code);
+  const lang = state.lang;
+  const fieldsHtml = meta.fields.map(f=>fieldBlockHtml(meta,f,entry)).join('');
+  const histHtml = (entry.history&&entry.history.length)? entry.history.map(h=>`<div class="activity-item"><div class="t">${esc(h.at)}</div><div>v${h.v} — ${esc(h.action)}</div></div>`).join('')
+    : `<div class="hint">${esc(tr('history_empty'))}</div>`;
+  const badge = typeof meta.no==='number'? `${tr('clause')} ${meta.no}`: tr('additional');
+  return `
+  <div class="card">
+    <div class="editor-head">
+      <div class="code">${esc(meta.code)} · ${esc(badge)}</div>
+      <h3>${esc(lang==='ar'?meta.ar:meta.en)}</h3>
+      <div class="purpose">${esc(lang==='ar'?meta.par:meta.pen)}</div>
+      <div class="editor-meta">
+        <span>${esc(tr('version'))}: <b class="mono">v${entry.version}</b></span>
+        <span>${esc(tr('updated'))}: <b>${entry.updatedAt?esc(entry.updatedAt):esc(tr('never'))}</b></span>
+        <span style="display:flex;align-items:center;gap:6px;">${esc(tr('status'))}:
+          <select id="doc-status-select" style="width:auto;padding:4px 8px;font-size:12px;">
+            <option value="draft" ${entry.status==='draft'?'selected':''}>${esc(tr('draft'))}</option>
+            <option value="review" ${entry.status==='review'?'selected':''}>${esc(tr('review'))}</option>
+            <option value="approved" ${entry.status==='approved'?'selected':''}>${esc(tr('approved'))}</option>
+            <option value="archived" ${entry.status==='archived'?'selected':''}>${esc(tr('archived'))}</option>
+          </select>
+        </span>
+      </div>
+      <div class="editor-actions">
+        <button class="btn primary" data-action="save-doc" data-code="${code}">${ic('check')}${esc(tr('save_doc'))}</button>
+        <button class="btn" data-action="print-doc" data-code="${code}">${ic('print')}${esc(tr('print_doc'))}</button>
+      </div>
+    </div>
+    ${aiAssistHtml(meta, entry)}
+    ${fieldsHtml}
+    <details style="margin-top:8px;"><summary style="cursor:pointer;font-weight:700;font-size:12.5px;color:var(--ink-500);">${esc(tr('history'))}</summary>
+      <div style="margin-top:8px;">${histHtml}</div>
+    </details>
+  </div>`;
+}
+
+/* ---------- NCR ---------- */
+function renderNCR(){
+  const p = activeProject();
+  const head = `<div class="page-head"><div><h2>${esc(tr('ncr_title'))}</h2><p>${esc(tr('ncr_sub'))}</p></div>
+    <div class="btnrow">${p?`<button class="btn primary" data-action="add-ncr">${ic('plus')}${esc(tr('add_ncr'))}</button>`:''}</div></div>`;
+  if(!p) return head + `<div class="empty"><b>${esc(tr('no_project'))}</b>${esc(tr('create_project_first'))}</div>`;
+  const list = state.ncrs.filter(n=>n.projectId===p.id).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  if(!list.length) return head + `<div class="empty"><b>${esc(tr('no_ncr'))}</b>${esc(tr('no_ncr_hint'))}</div>`;
+  const rows = list.map(n=>`
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div>
+          <span class="mono" style="font-weight:700;">${esc(n.no)}</span>
+          <span class="pill ${n.severity}">${esc(tr('sev_'+n.severity))}</span>
+          <span class="pill ${n.status}">${esc(tr('st_'+n.status))}</span>
+        </div>
+        <div class="hint">${esc(n.date||'')}</div>
+      </div>
+      <p style="margin:8px 0 4px;font-size:13px;">${esc(n.desc)}</p>
+      ${n.immediate? `<div class="hint">${esc(tr('ncr_immediate'))}: ${esc(n.immediate)}</div>`:''}
+      <div class="btnrow" style="margin-top:10px;">
+        <button class="btn sm" data-action="edit-ncr" data-id="${n.id}">${esc(tr('edit'))}</button>
+        <button class="btn sm" data-action="print-ncr" data-id="${n.id}">${ic('print')}${esc(tr('print_doc'))}</button>
+        <button class="btn sm danger" data-action="delete-ncr" data-id="${n.id}">${ic('trash')}${esc(tr('delete'))}</button>
+      </div>
+    </div>`).join('');
+  return head + rows;
+}
+function ncrFormHtml(editing){
+  const n = editing || {no:'NCR-'+(state.ncrs.length+1).toString().padStart(3,'0'), date:todayStr(), desc:'', severity:'minor', immediate:'', disposal:'isolate', cost:'', status:'open'};
+  return `<div class="modal-backdrop" id="ncr-modal-backdrop"><div class="modal" style="max-width:560px;">
+    <h3>${esc(tr('add_ncr'))}</h3>
+    <div class="grid cols-2">
+      <div class="field"><label class="field-label">${esc(tr('ncr_no'))}</label><input type="text" id="nf-no" value="${esc(n.no)}"></div>
+      <div class="field"><label class="field-label">${esc(tr('ncr_date'))}</label><input type="date" id="nf-date" value="${esc(n.date)}"></div>
+    </div>
+    <div class="field"><label class="field-label">${esc(tr('ncr_desc'))}</label><textarea id="nf-desc" rows="3">${esc(n.desc)}</textarea></div>
+    <div class="grid cols-2">
+      <div class="field"><label class="field-label">${esc(tr('ncr_severity'))}</label><select id="nf-sev">
+        <option value="minor" ${n.severity==='minor'?'selected':''}>${esc(tr('sev_minor'))}</option>
+        <option value="major" ${n.severity==='major'?'selected':''}>${esc(tr('sev_major'))}</option>
+        <option value="critical" ${n.severity==='critical'?'selected':''}>${esc(tr('sev_critical'))}</option>
+      </select></div>
+      <div class="field"><label class="field-label">${esc(tr('ncr_disposal'))}</label><select id="nf-disp">
+        <option value="isolate" ${n.disposal==='isolate'?'selected':''}>${esc(tr('disp_isolate'))}</option>
+        <option value="rework" ${n.disposal==='rework'?'selected':''}>${esc(tr('disp_rework'))}</option>
+        <option value="accept" ${n.disposal==='accept'?'selected':''}>${esc(tr('disp_accept'))}</option>
+        <option value="scrap" ${n.disposal==='scrap'?'selected':''}>${esc(tr('disp_scrap'))}</option>
+      </select></div>
+    </div>
+    <div class="field"><label class="field-label">${esc(tr('ncr_immediate'))}</label><textarea id="nf-imm" rows="2">${esc(n.immediate)}</textarea></div>
+    <div class="grid cols-2">
+      <div class="field"><label class="field-label">${esc(tr('ncr_cost'))} <span class="hint">(${esc(tr('field_optional'))})</span></label><input type="text" id="nf-cost" value="${esc(n.cost||'')}"></div>
+      <div class="field"><label class="field-label">${esc(tr('ncr_status'))}</label><select id="nf-status">
+        <option value="open" ${n.status==='open'?'selected':''}>${esc(tr('st_open'))}</option>
+        <option value="closed" ${n.status==='closed'?'selected':''}>${esc(tr('st_closed'))}</option>
+      </select></div>
+    </div>
+    <div class="row" style="justify-content:flex-end;">
+      <button class="btn ghost" data-action="close-ncr-form">${esc(tr('cancel'))}</button>
+      <button class="btn primary" data-action="save-ncr" data-id="${editing?editing.id:''}">${esc(tr('save'))}</button>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- CAPA ---------- */
+function renderCAPA(){
+  const p = activeProject();
+  const head = `<div class="page-head"><div><h2>${esc(tr('capa_title'))}</h2><p>${esc(tr('capa_sub'))}</p></div>
+    <div class="btnrow">${p?`<button class="btn primary" data-action="add-capa">${ic('plus')}${esc(tr('add_capa'))}</button>`:''}</div></div>`;
+  if(!p) return head + `<div class="empty"><b>${esc(tr('no_project'))}</b>${esc(tr('create_project_first'))}</div>`;
+  const list = state.capas.filter(c=>c.projectId===p.id).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  if(!list.length) return head + `<div class="empty"><b>${esc(tr('no_capa'))}</b>${esc(tr('no_capa_hint'))}</div>`;
+  const statusKeyMap = {open:'cap_open',inProgress:'cap_prog',verified:'cap_verified',closed:'cap_closed'};
+  const rows = list.map(c=>{
+    const linked = state.ncrs.find(n=>n.id===c.ncrId);
+    return `<div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div><span class="pill ${c.status==='inProgress'?'inprogress':c.status}">${esc(tr(statusKeyMap[c.status]))}</span>
+        ${linked? `<span class="hint mono"> · ${esc(linked.no)}</span>`:''}</div>
+        <div class="hint">${esc(c.due||'')}</div>
+      </div>
+      <p style="margin:8px 0 4px;font-size:13px;">${esc(c.plan)}</p>
+      <div class="hint">${esc(tr('capa_owner'))}: ${esc(c.owner||'—')}</div>
+      <div class="btnrow" style="margin-top:10px;">
+        <button class="btn sm" data-action="edit-capa" data-id="${c.id}">${esc(tr('edit'))}</button>
+        <button class="btn sm" data-action="print-capa" data-id="${c.id}">${ic('print')}${esc(tr('print_doc'))}</button>
+        <button class="btn sm danger" data-action="delete-capa" data-id="${c.id}">${ic('trash')}${esc(tr('delete'))}</button>
+      </div>
+    </div>`;
+  }).join('');
+  return head + rows;
+}
+function capaFormHtml(editing){
+  const p = activeProject();
+  const c = editing || {ncrId:'', rc:'', plan:'', owner:'', due:'', verify:'', status:'open'};
+  const ncrOptions = state.ncrs.filter(n=>n.projectId===p.id).map(n=>`<option value="${n.id}" ${c.ncrId===n.id?'selected':''}>${esc(n.no)}</option>`).join('');
+  return `<div class="modal-backdrop" id="capa-modal-backdrop"><div class="modal" style="max-width:560px;">
+    <h3>${esc(tr('add_capa'))}</h3>
+    <div class="field"><label class="field-label">${esc(tr('capa_link'))}</label><select id="cf-ncr"><option value="">${esc(tr('none'))}</option>${ncrOptions}</select></div>
+    <div class="field"><label class="field-label">${esc(tr('capa_rc'))}</label><textarea id="cf-rc" rows="3">${esc(c.rc)}</textarea></div>
+    <div class="field"><label class="field-label">${esc(tr('capa_plan'))}</label><textarea id="cf-plan" rows="3">${esc(c.plan)}</textarea></div>
+    <div class="grid cols-2">
+      <div class="field"><label class="field-label">${esc(tr('capa_owner'))}</label><input type="text" id="cf-owner" value="${esc(c.owner)}"></div>
+      <div class="field"><label class="field-label">${esc(tr('capa_due'))}</label><input type="date" id="cf-due" value="${esc(c.due)}"></div>
+    </div>
+    <div class="field"><label class="field-label">${esc(tr('capa_verify'))}</label><textarea id="cf-verify" rows="2">${esc(c.verify)}</textarea></div>
+    <div class="field"><label class="field-label">${esc(tr('capa_status'))}</label><select id="cf-status">
+      <option value="open" ${c.status==='open'?'selected':''}>${esc(tr('cap_open'))}</option>
+      <option value="inProgress" ${c.status==='inProgress'?'selected':''}>${esc(tr('cap_prog'))}</option>
+      <option value="verified" ${c.status==='verified'?'selected':''}>${esc(tr('cap_verified'))}</option>
+      <option value="closed" ${c.status==='closed'?'selected':''}>${esc(tr('cap_closed'))}</option>
+    </select></div>
+    <div class="row" style="justify-content:flex-end;">
+      <button class="btn ghost" data-action="close-capa-form">${esc(tr('cancel'))}</button>
+      <button class="btn primary" data-action="save-capa" data-id="${editing?editing.id:''}">${esc(tr('save'))}</button>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- Export ---------- */
+function renderExport(){
+  const p = activeProject();
+  const head = `<div class="page-head"><div><h2>${esc(tr('export_title'))}</h2><p>${esc(tr('export_sub'))}</p></div></div>`;
+  let projSection = `<div class="empty"><b>${esc(tr('no_project'))}</b>${esc(tr('create_project_first'))}</div>`;
+  if(p){
+    const savedDocs = DOCS.filter(d=> state.documents[docKey(p.id,d.code)] && state.documents[docKey(p.id,d.code)].updatedAt );
+    const savedHtml = savedDocs.length ? savedDocs.map(d=>{
+      const doc = state.documents[docKey(p.id,d.code)];
+      return `<div class="doc-row" style="padding-inline-start:12px;cursor:default;">
+        <span class="dot ${doc.status}"></span><span class="ttl">${esc(state.lang==='ar'?d.ar:d.en)}</span>
+        <span class="pill ${doc.status}">${esc(statusLabel(doc.status))}</span>
+        <button class="iconbtn" style="width:28px;height:28px;" data-action="print-doc" data-code="${d.code}">${ic('print')}</button>
+      </div>`;
+    }).join('') : `<div class="hint">${esc(tr('never'))}</div>`;
+
+    projSection = `
+    <div class="grid cols-3" style="margin-bottom:14px;">
+      <button class="btn card" style="justify-content:flex-start;" data-action="print-register">${ic('print')}${esc(tr('print_register'))}</button>
+      <button class="btn card" style="justify-content:flex-start;" data-action="print-ncr-register">${ic('print')}${esc(tr('print_ncr_reg'))}</button>
+      <button class="btn card" style="justify-content:flex-start;" data-action="print-capa-register">${ic('print')}${esc(tr('print_capa_reg'))}</button>
+    </div>
+    <div class="card"><h3 style="font-size:15px;margin-bottom:8px;">${esc(tr('saved_docs'))}</h3>${savedHtml}</div>`;
+  }
+
+  return head + projSection + `
+  <div class="card" style="margin-top:16px;">
+    <h3 style="font-size:15px;">${esc(tr('backup_title'))}</h3>
+    <p class="hint" style="margin:4px 0 12px;">${esc(tr('backup_sub'))}</p>
+    <div class="btnrow">
+      <button class="btn" data-action="export-json">${ic('download')}${esc(tr('export_json'))}</button>
+      <button class="btn" data-action="import-json">${ic('upload')}${esc(tr('import_json'))}</button>
+      <button class="btn danger" data-action="reset-data">${ic('trash')}${esc(tr('reset_data'))}</button>
+    </div>
+    <input type="file" id="import-file-input" accept="application/json" class="hidden">
+  </div>`;
+}
+
+/* ---------- Settings ---------- */
+function renderSettings(){
+  return `<div class="page-head"><div><h2>${esc(tr('settings_title'))}</h2><p>${esc(tr('settings_sub'))}</p></div></div>
+  <div class="card" style="max-width:520px;">
+    <div class="field"><label class="field-label">${esc(tr('name'))}</label><input type="text" id="set-name" value="${esc(state.profile.name)}"></div>
+    <div class="field"><label class="field-label">${esc(tr('title_job'))}</label><input type="text" id="set-title" value="${esc(state.profile.title)}"></div>
+    <div class="field"><label class="field-label">${esc(tr('org'))}</label><input type="text" id="set-org" value="${esc(state.profile.org)}"></div>
+    <div class="grid cols-2">
+      <div class="field"><label class="field-label">${esc(tr('language'))}</label><select id="set-lang">
+        <option value="ar" ${state.lang==='ar'?'selected':''}>العربية</option>
+        <option value="en" ${state.lang==='en'?'selected':''}>English</option>
+      </select></div>
+      <div class="field"><label class="field-label">${esc(tr('theme'))}</label><select id="set-theme">
+        <option value="system" ${state.theme==='system'?'selected':''}>${esc(tr('system'))}</option>
+        <option value="light" ${state.theme==='light'?'selected':''}>${esc(tr('light'))}</option>
+        <option value="dark" ${state.theme==='dark'?'selected':''}>${esc(tr('dark'))}</option>
+      </select></div>
+    </div>
+    <button class="btn primary" data-action="save-settings">${esc(tr('save'))}</button>
+  </div>`;
+}
+
+/* ============================= PRINT ============================= */
+function letterhead(subtitle){
+  const prof = state.profile;
+  return `<div class="p-letterhead">
+    <div><div class="org">${esc(tr('org_letterhead'))}</div><div style="font-size:11px;color:#555;">${esc(subtitle||'')}</div></div>
+    <div class="meta">${esc(prof.org||'')}<br>${esc(tr('print_generated'))}: ${esc(todayStr())}</div>
+  </div>`;
+}
+function signatureBlock(){
+  const prof = state.profile;
+  return `<div class="p-sign"><div class="box"><div>${esc(prof.name||'')}</div><div style="color:#666;">${esc(prof.title||'')}</div><div style="margin-top:4px;">${esc(tr('signature'))}</div></div></div>`;
+}
+function footerBlock(){ return `<div class="p-footer">${esc(tr('appName'))} — ${esc(tr('org_letterhead'))}</div>`; }
+
+function doPrint(html){
+  const area = document.getElementById('print-area');
+  area.innerHTML = html;
+  area.setAttribute('dir', state.lang==='ar'?'rtl':'ltr');
+  document.body.style.display='';
+  window.print();
+}
+window.addEventListener('afterprint', ()=>{ const a=document.getElementById('print-area'); if(a) a.innerHTML=''; });
+
+function printDocument(code){
+  const p = activeProject(); if(!p) return;
+  const meta = DOC_BY_CODE[code]; const entry = state.documents[docKey(p.id,code)];
+  if(!meta || !entry){ toast(tr('need_active_project')); return; }
+  const lang = state.lang;
+  let body = '';
+  meta.fields.forEach(f=>{
+    const label = lang==='ar'?f.ar:f.en;
+    if(f.type==='text'){
+      const val = entry.content[f.key]||'';
+      if(!val) return;
+      body += `<div class="p-section"><h4>${esc(label)}</h4><div class="val">${esc(val)}</div></div>`;
+    } else if(f.type==='table'){
+      const rows = entry.content[f.key]||[];
+      if(!rows.length) return;
+      const ths = (f.presetRows?'<th></th>':'') + f.columns.map(c=>`<th>${esc(lang==='ar'?c.ar:c.en)}</th>`).join('');
+      const trs = rows.map(r=>{
+        const lockedCell = f.presetRows? `<td>${esc(lang==='ar'?f.presetRows[r.presetIndex].ar:f.presetRows[r.presetIndex].en)}</td>`:'';
+        return `<tr>${lockedCell}${f.columns.map(c=>`<td>${esc(r.cells[c.key]||'')}</td>`).join('')}</tr>`;
+      }).join('');
+      body += `<div class="p-section"><h4>${esc(label)}</h4><table class="p-table"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
+    } else if(f.type==='matrix'){
+      const m = entry.content[f.key]; if(!m || !m.rows.length) return;
+      const ths = '<th></th>'+m.roles.map(r=>`<th>${esc(r.label)}</th>`).join('');
+      const trs = m.rows.map(row=>`<tr><td>${esc(row.label)}</td>${m.roles.map(role=>`<td>${esc(row.cells[role.id]||'')}</td>`).join('')}</tr>`).join('');
+      body += `<div class="p-section"><h4>${esc(label)}</h4><table class="p-table"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
+    }
+  });
+  const html = `${letterhead(tr('print_project_hdr')+': '+p.code+' — '+p.name)}
+    <div class="p-code">${esc(meta.code)}</div>
+    <div class="p-title">${esc(lang==='ar'?meta.ar:meta.en)}</div>
+    <div class="p-info"><div><b>${esc(tr('status'))}:</b> ${esc(statusLabel(entry.status))}</div><div><b>${esc(tr('version'))}:</b> v${entry.version}</div><div><b>${esc(tr('updated'))}:</b> ${esc(entry.updatedAt||'')}</div></div>
+    <div class="p-section"><h4>${esc(tr('purpose'))}</h4><div class="val">${esc(lang==='ar'?meta.par:meta.pen)}</div></div>
+    ${body}
+    ${signatureBlock()}${footerBlock()}`;
+  doPrint(html);
+}
+
+function printRegister(){
+  const p = activeProject(); if(!p) return;
+  const lang = state.lang;
+  const rows = DOCS.map(d=>{
+    const doc = state.documents[docKey(p.id,d.code)];
+    return `<tr><td class="mono">${esc(d.code)}</td><td>${esc(lang==='ar'?d.ar:d.en)}</td><td>${esc(doc?statusLabel(doc.status):statusLabel('draft'))}</td><td>${doc?'v'+doc.version:'—'}</td><td>${doc&&doc.updatedAt?esc(doc.updatedAt):'—'}</td></tr>`;
+  }).join('');
+  const html = `${letterhead(tr('print_project_hdr')+': '+p.code+' — '+p.name)}
+    <div class="p-title">${esc(tr('master_register'))}</div>
+    <table class="p-table"><thead><tr><th>${esc(tr('doc_col'))}</th><th>${esc(tr('title_col'))}</th><th>${esc(tr('status'))}</th><th>${esc(tr('version'))}</th><th>${esc(tr('updated'))}</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    ${signatureBlock()}${footerBlock()}`;
+  doPrint(html);
+}
+function printNCRRegister(){
+  const p = activeProject(); if(!p) return;
+  const list = state.ncrs.filter(n=>n.projectId===p.id);
+  const rows = list.map(n=>`<tr><td class="mono">${esc(n.no)}</td><td>${esc(n.date||'')}</td><td>${esc(n.desc)}</td><td>${esc(tr('sev_'+n.severity))}</td><td>${esc(tr('st_'+n.status))}</td></tr>`).join('');
+  const html = `${letterhead(tr('print_project_hdr')+': '+p.code+' — '+p.name)}
+    <div class="p-title">${esc(tr('ncr_title'))}</div>
+    <table class="p-table"><thead><tr><th>${esc(tr('ncr_no'))}</th><th>${esc(tr('ncr_date'))}</th><th>${esc(tr('ncr_desc'))}</th><th>${esc(tr('ncr_severity'))}</th><th>${esc(tr('ncr_status'))}</th></tr></thead>
+    <tbody>${rows}</tbody></table>${signatureBlock()}${footerBlock()}`;
+  doPrint(html);
+}
+function printCAPARegister(){
+  const p = activeProject(); if(!p) return;
+  const list = state.capas.filter(c=>c.projectId===p.id);
+  const map={open:'cap_open',inProgress:'cap_prog',verified:'cap_verified',closed:'cap_closed'};
+  const rows = list.map(c=>`<tr><td>${esc(c.plan)}</td><td>${esc(c.owner||'')}</td><td>${esc(c.due||'')}</td><td>${esc(tr(map[c.status]))}</td></tr>`).join('');
+  const html = `${letterhead(tr('print_project_hdr')+': '+p.code+' — '+p.name)}
+    <div class="p-title">${esc(tr('capa_title'))}</div>
+    <table class="p-table"><thead><tr><th>${esc(tr('capa_plan'))}</th><th>${esc(tr('capa_owner'))}</th><th>${esc(tr('capa_due'))}</th><th>${esc(tr('capa_status'))}</th></tr></thead>
+    <tbody>${rows}</tbody></table>${signatureBlock()}${footerBlock()}`;
+  doPrint(html);
+}
+function printNCRSingle(id){
+  const n = state.ncrs.find(x=>x.id===id); const p = activeProject(); if(!n||!p) return;
+  const html = `${letterhead(tr('print_project_hdr')+': '+p.code+' — '+p.name)}
+    <div class="p-title">${esc(tr('ncr_title'))} — ${esc(n.no)}</div>
+    <div class="p-info"><div><b>${esc(tr('ncr_date'))}:</b> ${esc(n.date||'')}</div><div><b>${esc(tr('ncr_severity'))}:</b> ${esc(tr('sev_'+n.severity))}</div><div><b>${esc(tr('ncr_status'))}:</b> ${esc(tr('st_'+n.status))}</div></div>
+    <div class="p-section"><h4>${esc(tr('ncr_desc'))}</h4><div class="val">${esc(n.desc)}</div></div>
+    <div class="p-section"><h4>${esc(tr('ncr_immediate'))}</h4><div class="val">${esc(n.immediate||'')}</div></div>
+    <div class="p-section"><h4>${esc(tr('ncr_disposal'))}</h4><div class="val">${esc(tr('disp_'+n.disposal))}</div></div>
+    ${signatureBlock()}${footerBlock()}`;
+  doPrint(html);
+}
+function printCAPASingle(id){
+  const c = state.capas.find(x=>x.id===id); const p = activeProject(); if(!c||!p) return;
+  const map={open:'cap_open',inProgress:'cap_prog',verified:'cap_verified',closed:'cap_closed'};
+  const linked = state.ncrs.find(n=>n.id===c.ncrId);
+  const html = `${letterhead(tr('print_project_hdr')+': '+p.code+' — '+p.name)}
+    <div class="p-title">${esc(tr('capa_title'))}</div>
+    <div class="p-info"><div><b>${esc(tr('capa_link'))}:</b> ${esc(linked?linked.no:tr('none'))}</div><div><b>${esc(tr('capa_owner'))}:</b> ${esc(c.owner||'')}</div><div><b>${esc(tr('capa_due'))}:</b> ${esc(c.due||'')}</div><div><b>${esc(tr('status'))}:</b> ${esc(tr(map[c.status]))}</div></div>
+    <div class="p-section"><h4>${esc(tr('capa_rc'))}</h4><div class="val">${esc(c.rc||'')}</div></div>
+    <div class="p-section"><h4>${esc(tr('capa_plan'))}</h4><div class="val">${esc(c.plan||'')}</div></div>
+    <div class="p-section"><h4>${esc(tr('capa_verify'))}</h4><div class="val">${esc(c.verify||'')}</div></div>
+    ${signatureBlock()}${footerBlock()}`;
+  doPrint(html);
+}
+
+/* ============================= EVENT HANDLING ============================= */
+document.addEventListener('DOMContentLoaded', ()=>{ render(); wireGlobalEvents(); });
+
+function wireGlobalEvents(){
+  document.body.addEventListener('click', onClick);
+  document.body.addEventListener('change', onChange);
+  document.body.addEventListener('input', onInput);
+  document.body.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.classList.contains('navitem')) e.target.click(); });
+}
+
+async function onClick(e){
+  const t = e.target.closest('[data-action]');
+  if(t){
+    const act = t.dataset.action;
+    switch(act){
+      case 'onboard-submit': return handleOnboardSubmit();
+      case 'nav': state.route = t.dataset.route; state.selectedDocCode = state.route==='documents'?state.selectedDocCode:state.selectedDocCode; saveState(); render(); closeSidebarMobile(); return;
+      case 'toggle-sidebar': document.getElementById('sidebar').classList.toggle('open'); return;
+      case 'toggle-lang': state.lang = state.lang==='ar'?'en':'ar'; saveState(); render(); return;
+      case 'toggle-theme': state.theme = effectiveDark()?'light':'dark'; saveState(); render(); return;
+      case 'select-project': state.activeProjectId = t.dataset.id; saveState(); render(); return;
+      case 'open-project-form': openProjectForm(); return;
+      case 'close-project-form': document.getElementById('project-form-wrap').innerHTML=''; return;
+      case 'edit-project': { const pr = state.projects.find(x=>x.id===t.dataset.id); openProjectForm(pr); return; }
+      case 'save-project': return handleSaveProject(t.dataset.id);
+      case 'delete-project': return handleDeleteProject(t.dataset.id);
+      case 'select-doc': state.selectedDocCode = t.dataset.code; saveState(); renderRoute(); return;
+      case 'save-doc': return handleSaveDoc(t.dataset.code);
+      case 'print-doc': return printDocument(t.dataset.code);
+      case 'copy-ai-prompt': return handleCopyAIPrompt();
+      case 'apply-ai-response': return handleApplyAIResponse(t.dataset.code);
+      case 'add-row': return handleAddRow(t.dataset.table);
+      case 'rm-row': return handleRmRow(t.dataset.table, t.dataset.row);
+      case 'add-role': return handleAddRole(t.dataset.matrix);
+      case 'rm-role': return handleRmRole(t.dataset.matrix, t.dataset.role);
+      case 'add-mrow': return handleAddMRow(t.dataset.matrix);
+      case 'rm-mrow': return handleRmMRow(t.dataset.matrix, t.dataset.row);
+      case 'add-ncr': openNCRForm(); return;
+      case 'edit-ncr': { const n = state.ncrs.find(x=>x.id===t.dataset.id); openNCRForm(n); return; }
+      case 'close-ncr-form': closeModalById('ncr-modal-backdrop'); return;
+      case 'save-ncr': return handleSaveNCR(t.dataset.id);
+      case 'delete-ncr': return handleDeleteNCR(t.dataset.id);
+      case 'print-ncr': return printNCRSingle(t.dataset.id);
+      case 'add-capa': openCAPAForm(); return;
+      case 'edit-capa': { const c = state.capas.find(x=>x.id===t.dataset.id); openCAPAForm(c); return; }
+      case 'close-capa-form': closeModalById('capa-modal-backdrop'); return;
+      case 'save-capa': return handleSaveCAPA(t.dataset.id);
+      case 'delete-capa': return handleDeleteCAPA(t.dataset.id);
+      case 'print-capa': return printCAPASingle(t.dataset.id);
+      case 'print-register': return printRegister();
+      case 'print-ncr-register': return printNCRRegister();
+      case 'print-capa-register': return printCAPARegister();
+      case 'export-json': return handleExportJSON();
+      case 'import-json': document.getElementById('import-file-input').click(); return;
+      case 'reset-data': return handleResetData();
+      case 'save-settings': return handleSaveSettings();
+    }
+  }
+  if(!e.target.closest('.searchbox')){ const sr = document.getElementById('search-results'); if(sr) sr.classList.add('hidden'); }
+  if(!e.target.closest('.sidebar') && !e.target.closest('.hamburger')){ const sb = document.getElementById('sidebar'); if(sb && window.innerWidth<=880) sb.classList.remove('open'); }
+}
+
+function closeSidebarMobile(){ const sb=document.getElementById('sidebar'); if(sb) sb.classList.remove('open'); }
+function closeModalById(id){ const el = document.getElementById(id); if(el) el.remove(); }
+
+function onChange(e){
+  if(e.target.id==='active-project-select'){ state.activeProjectId = e.target.value; saveState(); render(); return; }
+  if(e.target.id==='doc-status-select'){
+    const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+    const newStatus = e.target.value;
+    if(newStatus!==entry.status){ entry.version++; entry.status=newStatus; entry.updatedAt=nowStr(); pushHistory(entry, tr('action_status')+' '+statusLabel(newStatus)); saveState(); renderRoute(); toast(tr('saved_ok')); }
+    return;
+  }
+  if(e.target.matches('[data-table]')){ return; } /* handled on input for live typing */
+  if(e.target.matches('[data-action="matrix-cell"]')){
+    const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+    const m = entry.content[e.target.dataset.matrix];
+    const row = m.rows.find(r=>r.id===e.target.dataset.row);
+    row.cells[e.target.dataset.role] = e.target.value;
+    e.target.className = e.target.value?('v-'+e.target.value):'';
+    saveState();
+    return;
+  }
+  if(e.target.id==='import-file-input'){ return handleImportFile(e.target.files[0]); }
+}
+
+function onInput(e){
+  if(e.target.id==='global-search') return handleSearch(e.target.value);
+  if(e.target.matches('textarea[data-fkey]')){
+    const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+    entry.content[e.target.dataset.fkey] = e.target.value;
+    return; /* saved on explicit Save button press */
+  }
+  if(e.target.matches('textarea[data-table]')){
+    const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+    const rows = entry.content[e.target.dataset.table];
+    const row = rows.find(r=>r.id===e.target.dataset.row);
+    if(row) row.cells[e.target.dataset.col] = e.target.value;
+    return;
+  }
+}
+
+/* ---------- handlers: onboarding / settings ---------- */
+function handleOnboardSubmit(){
+  const name = document.getElementById('ob-name').value.trim();
+  if(!name){ toast(tr('profile_name_req')); return; }
+  state.profile.name = name;
+  state.profile.title = document.getElementById('ob-title').value.trim();
+  state.profile.org = document.getElementById('ob-org').value.trim();
+  state.onboarded = true;
+  saveState(); render();
+}
+function handleSaveSettings(){
+  state.profile.name = document.getElementById('set-name').value.trim();
+  state.profile.title = document.getElementById('set-title').value.trim();
+  state.profile.org = document.getElementById('set-org').value.trim();
+  state.lang = document.getElementById('set-lang').value;
+  state.theme = document.getElementById('set-theme').value;
+  saveState(); render(); toast(tr('saved_ok'));
+}
+
+/* ---------- handlers: projects ---------- */
+function openProjectForm(editing){
+  document.getElementById('project-form-wrap').innerHTML = projectFormHtml(editing);
+}
+function handleSaveProject(id){
+  const code = document.getElementById('pf-code').value.trim();
+  const name = document.getElementById('pf-name').value.trim();
+  const client = document.getElementById('pf-client').value.trim();
+  if(!code || !name) { toast(tr('profile_name_req')); return; }
+  if(id){
+    const pr = state.projects.find(x=>x.id===id);
+    pr.code=code; pr.name=name; pr.client=client;
+  } else {
+    const np = {id:uid(), code, name, client, createdAt:nowStr()};
+    state.projects.push(np);
+    if(!state.activeProjectId) state.activeProjectId = np.id;
+    toast(tr('project_added'));
+  }
+  document.getElementById('project-form-wrap').innerHTML='';
+  saveState(); renderRoute();
+  const app = document.getElementById('app'); if(app) app.querySelector && render();
+}
+async function handleDeleteProject(id){
+  const ok = await confirmModal(tr('confirm_delete_title'), tr('confirm_delete_project'), tr('yes_delete'), true);
+  if(!ok) return;
+  state.projects = state.projects.filter(p=>p.id!==id);
+  Object.keys(state.documents).forEach(k=>{ if(state.documents[k].projectId===id) delete state.documents[k]; });
+  state.ncrs = state.ncrs.filter(n=>n.projectId!==id);
+  state.capas = state.capas.filter(c=>c.projectId!==id);
+  if(state.activeProjectId===id) state.activeProjectId = state.projects[0]? state.projects[0].id : null;
+  saveState(); render(); toast(tr('deleted_ok'));
+}
+
+/* ---------- handlers: documents ---------- */
+function handleSaveDoc(code){
+  const entry = ensureDocEntry(code);
+  entry.version++;
+  entry.updatedAt = nowStr();
+  pushHistory(entry, entry.version===1? tr('action_created') : tr('action_updated'));
+  saveState(); renderRoute(); toast(tr('saved_ok'));
+}
+function handleAddRow(tableKey){
+  const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+  const rows = entry.content[tableKey] || (entry.content[tableKey]=[]);
+  rows.push({id:uid(), cells:{}});
+  renderRoute();
+}
+function handleRmRow(tableKey,rowId){
+  const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+  entry.content[tableKey] = (entry.content[tableKey]||[]).filter(r=>r.id!==rowId);
+  renderRoute();
+}
+function handleAddRole(matrixKey){
+  const label = prompt(tr('add_role')); if(!label) return;
+  const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+  const m = entry.content[matrixKey] || (entry.content[matrixKey]={roles:[],rows:[]});
+  m.roles.push({id:uid(), label});
+  renderRoute();
+}
+function handleRmRole(matrixKey, roleId){
+  const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+  const m = entry.content[matrixKey];
+  m.roles = m.roles.filter(r=>r.id!==roleId);
+  m.rows.forEach(r=>{ delete r.cells[roleId]; });
+  renderRoute();
+}
+function handleAddMRow(matrixKey){
+  const label = prompt(tr('add_decision')); if(!label) return;
+  const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+  const m = entry.content[matrixKey] || (entry.content[matrixKey]={roles:[],rows:[]});
+  m.rows.push({id:uid(), label, cells:{}});
+  renderRoute();
+}
+function handleRmMRow(matrixKey, rowId){
+  const code = state.selectedDocCode; const entry = ensureDocEntry(code);
+  const m = entry.content[matrixKey];
+  m.rows = m.rows.filter(r=>r.id!==rowId);
+  renderRoute();
+}
+
+/* ---------- handlers: AI assist ---------- */
+async function handleCopyAIPrompt(){
+  const box = document.getElementById('ai-prompt-box');
+  if(!box || !box.value){ toast(tr('ai_empty_prompt')); return; }
+  try{
+    await navigator.clipboard.writeText(box.value);
+    toast(tr('copied_ok'));
+  }catch(err){
+    box.removeAttribute('readonly'); box.focus(); box.select();
+    try{ document.execCommand('copy'); toast(tr('copied_ok')); }
+    catch(err2){ toast(tr('copy_failed')); }
+    box.setAttribute('readonly','readonly');
+  }
+}
+function handleApplyAIResponse(code){
+  const box = document.getElementById('ai-response-box');
+  const text = box ? box.value.trim() : '';
+  if(!text || (text.indexOf('[[FIELD:')===-1 && text.indexOf('[[TABLE:')===-1)){ toast(tr('ai_no_markers')); return; }
+  const meta = DOC_BY_CODE[code]; const entry = ensureDocEntry(code);
+  const {applied, missed} = parseAIResponse(meta, entry, text);
+  if(!applied){ toast(tr('ai_no_markers')); return; }
+  saveState(); renderRoute();
+  const okMsg = state.lang==='ar' ? `تم ملء ${applied} حقل/جدول تلقائياً.` : `${applied} field(s)/table(s) filled automatically.`;
+  toast(missed.length ? okMsg + ' — ' + (state.lang==='ar'?'لم يُعثر على: ':'not found: ') + missed.join('، ') : okMsg);
+}
+
+/* ---------- handlers: NCR ---------- */
+function openNCRForm(editing){
+  const wrap = document.createElement('div'); wrap.innerHTML = ncrFormHtml(editing);
+  document.body.appendChild(wrap.firstElementChild);
+}
+function handleSaveNCR(id){
+  const data = {
+    no: val('nf-no'), date: val('nf-date'), desc: val('nf-desc'), severity: val('nf-sev'),
+    disposal: val('nf-disp'), immediate: val('nf-imm'), cost: val('nf-cost'), status: val('nf-status')
+  };
+  const p = activeProject(); if(!p){ toast(tr('need_active_project')); return; }
+  if(id){
+    Object.assign(state.ncrs.find(n=>n.id===id), data);
+  } else {
+    state.ncrs.push(Object.assign({id:uid(), projectId:p.id, createdAt:nowStr()}, data));
+  }
+  closeModalById('ncr-modal-backdrop');
+  saveState(); renderRoute(); toast(tr('saved_ok'));
+}
+async function handleDeleteNCR(id){
+  const ok = await confirmModal(tr('confirm_delete_title'), tr('confirm_delete_generic'), tr('yes_delete'), true);
+  if(!ok) return;
+  state.ncrs = state.ncrs.filter(n=>n.id!==id);
+  saveState(); renderRoute(); toast(tr('deleted_ok'));
+}
+function val(id){ const el = document.getElementById(id); return el? el.value : ''; }
+
+/* ---------- handlers: CAPA ---------- */
+function openCAPAForm(editing){
+  const wrap = document.createElement('div'); wrap.innerHTML = capaFormHtml(editing);
+  document.body.appendChild(wrap.firstElementChild);
+}
+function handleSaveCAPA(id){
+  const data = {
+    ncrId: val('cf-ncr')||null, rc: val('cf-rc'), plan: val('cf-plan'), owner: val('cf-owner'),
+    due: val('cf-due'), verify: val('cf-verify'), status: val('cf-status')
+  };
+  const p = activeProject(); if(!p){ toast(tr('need_active_project')); return; }
+  if(id){
+    Object.assign(state.capas.find(c=>c.id===id), data);
+  } else {
+    state.capas.push(Object.assign({id:uid(), projectId:p.id, createdAt:nowStr()}, data));
+  }
+  closeModalById('capa-modal-backdrop');
+  saveState(); renderRoute(); toast(tr('saved_ok'));
+}
+async function handleDeleteCAPA(id){
+  const ok = await confirmModal(tr('confirm_delete_title'), tr('confirm_delete_generic'), tr('yes_delete'), true);
+  if(!ok) return;
+  state.capas = state.capas.filter(c=>c.id!==id);
+  saveState(); renderRoute(); toast(tr('deleted_ok'));
+}
+
+/* ---------- handlers: backup / search ---------- */
+async function handleExportJSON(){
+  const data = JSON.stringify(state, null, 2);
+  const filename = 'tqm-backup-'+todayStr()+'.json';
+  try{
+    const downloads = (typeof claude!=='undefined') ? await claude.use('downloads') : null;
+    if(!downloads){ toast(tr('downloads_unavailable')); return; }
+    await downloads.save({filename, data});
+  }catch(err){
+    if(err && err.code==='declined') return;
+    toast(tr('downloads_unavailable'));
+  }
+}
+function handleImportFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!parsed || !Array.isArray(parsed.projects)) throw new Error('bad');
+      state = Object.assign(defaultState(), parsed);
+      saveState(); render(); toast(tr('data_imported'));
+    }catch(err){ toast(tr('data_import_error')); }
+  };
+  reader.readAsText(file);
+}
+async function handleResetData(){
+  const ok = await confirmModal(tr('confirm_delete_title'), tr('confirm_reset'), tr('yes_reset'), true);
+  if(!ok) return;
+  state = defaultState();
+  saveState(); render();
+}
+function handleSearch(q){
+  const box = document.getElementById('search-results');
+  q = q.trim();
+  if(!q){ box.classList.add('hidden'); box.innerHTML=''; return; }
+  const lang = state.lang; const lq = q.toLowerCase();
+  const docMatches = DOCS.filter(d=> (lang==='ar'?d.ar:d.en).toLowerCase().includes(lq) || d.code.toLowerCase().includes(lq)).slice(0,5);
+  const projMatches = state.projects.filter(p=> p.name.toLowerCase().includes(lq) || p.code.toLowerCase().includes(lq)).slice(0,3);
+  let html = '';
+  projMatches.forEach(p=> html += `<div class="sr-item" data-action="sr-project" data-id="${p.id}"><div class="code">${esc(tr('projects_title'))}</div>${esc(p.code)} — ${esc(p.name)}</div>`);
+  docMatches.forEach(d=> html += `<div class="sr-item" data-action="sr-doc" data-code="${d.code}"><div class="code">${esc(d.code)}</div>${esc(lang==='ar'?d.ar:d.en)}</div>`);
+  if(!html){ box.classList.add('hidden'); return; }
+  box.innerHTML = html; box.classList.remove('hidden');
+  box.querySelectorAll('[data-action="sr-doc"]').forEach(el=> el.addEventListener('click', ()=>{
+    state.route='documents'; state.selectedDocCode = el.dataset.code; saveState(); render();
+  }));
+  box.querySelectorAll('[data-action="sr-project"]').forEach(el=> el.addEventListener('click', ()=>{
+    state.activeProjectId = el.dataset.id; saveState(); render();
+  }));
+}
+
+})();
+</script>
+</body>
+</html>
