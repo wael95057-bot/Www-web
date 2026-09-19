@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HPTG Framework - High-Performance Team Governance Platform</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Cairo', 'Inter', sans-serif; margin:0; }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; font-size: 12pt; }
+      .card-box { border: 1px solid #ddd !important; box-shadow: none !important; }
+    }
+    .print-only { display: none; }
+    .heat-Expert{ background:#064e3b; color:#6ee7b7; }
+    .heat-Proficient{ background:#1e3a8a; color:#93c5fd; }
+    .heat-Developing{ background:#78350f; color:#fcd34d; }
+    .heat-Basic{ background:#450a0a; color:#fca5a5; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const translations = {
+      ar: {
+        appTitle: "منصة حوكمة الفرق عالية الأداء (HPTG)",
+        subtitle: "High-Performance Team Governance Framework",
+        author: "م. وائل علي عويس محمود",
+        authorTitle: "كبير مديري المشاريع ومهندس مدني - مبادرة الصندوق الأسود الرقمي",
+        portfolio: "سجل المشاريع",
+        profiling: "1. التقييم والتحليل",
+        structuring: "2. الهيكلة والحوكمة",
+        monitoring: "3. المتابعة الرقمية",
+        optimization: "4. التحسين والتطوير",
+        gaps: "5. الفجوات والتوصيات",
+        finalReport: "التقرير النهائي الشامل",
+        printPdf: "طباعة",
+        exportPdf: "حفظ PDF",
+        switchLang: "English",
+        newProject: "إضافة مشروع جديد",
+        projectName: "اسم المشروع",
+        clientName: "المالك / الجهة",
+        status: "الحالة",
+        progress: "نسبة الإنجاز",
+        actions: "الإجراءات",
+        discProfile: "تحليل نمط الشخصية (DISC)",
+        skillsMatrix: "مصفوفة المهارات (Skills Matrix)",
+        raciMatrix: "مصفوفة المسؤوليات (RACI Matrix)",
+        kpis: "مؤشرات الأداء الرئيسية (KPIs)",
+        lessonsLearned: "سجل الدروس المستفادة",
+        idp: "خطط التطوير الفردية (IDP)",
+        save: "حفظ",
+        delete: "حذف",
+        add: "إضافة",
+        responsible: "R - المسؤول",
+        accountable: "A - المحاسب",
+        consulted: "C - المستشار",
+        informed: "I - المُبلغ",
+        allRightsReserved: "جميع الحقوق محفوظة © إطار عمل HPTG - مبادرة الصندوق الأسود الرقمي"
+      },
+      en: {
+        appTitle: "HPTG Platform - Team Governance",
+        subtitle: "High-Performance Team Governance Framework",
+        author: "Eng. Wael Ali Ewis Mahmoud",
+        authorTitle: "Senior Project Manager & Civil Engineer | Digital Black Box Initiative",
+        portfolio: "Projects Portfolio",
+        profiling: "1. Profiling Phase",
+        structuring: "2. Structuring Phase",
+        monitoring: "3. Digital Monitoring",
+        optimization: "4. Optimization Phase",
+        gaps: "5. Gaps & Recommendations",
+        finalReport: "Final Closure Report",
+        printPdf: "Print",
+        exportPdf: "Save PDF",
+        switchLang: "عربي",
+        newProject: "Add New Project",
+        projectName: "Project Name",
+        clientName: "Client / Owner",
+        status: "Status",
+        progress: "Progress",
+        actions: "Actions",
+        discProfile: "DISC Behavioral Assessment",
+        skillsMatrix: "Skills Matrix",
+        raciMatrix: "RACI Responsibility Matrix",
+        kpis: "Key Performance Indicators (KPIs)",
+        lessonsLearned: "Lessons Learned Register",
+        idp: "Individual Development Plans (IDP)",
+        save: "Save",
+        delete: "Delete",
+        add: "Add",
+        responsible: "R - Responsible",
+        accountable: "A - Accountable",
+        consulted: "C - Consulted",
+        informed: "I - Informed",
+        allRightsReserved: "All Rights Reserved © HPTG Framework - Digital Black Box Initiative"
+      }
+    };
+
+    const DISC_TYPES = ["D - Dominance", "I - Influence", "S - Steadiness", "C - Conscientiousness"];
+    const SKILL_KEYS = ["bim", "p6", "qhse", "contract", "site"];
+    const SKILL_LABELS = { bim:"BIM / Revit", p6:"Primavera P6", qhse:"QHSE Standards", contract:"Contract Mgmt", site:"Site Supervision" };
+    const SKILL_LEVELS = ["Expert","Proficient","Developing","Basic"];
+
+    const STORAGE_KEY = 'hptg_data_v1';
+    const COMPANIES_KEY = 'hptg_companies_v1';
+    const SESSION_KEY = 'hptg_session_v1';
+
+    function hashPw(str){
+      let h = 0;
+      for(let i=0;i<str.length;i++){ h = ((h<<5)-h) + str.charCodeAt(i); h |= 0; }
+      return 'h'+h;
+    }
+
+    function defaultProjects(){
+      return [{
+        id: 1,
+        name: "مشروع إنشاء مركز البيانات السحابي الرئيسي (Data Center Tier IV)",
+        client: "وزارة الاتصالات وتكنولوجيا المعلومات",
+        status: "قيد التنفيذ (In Progress)",
+        progress: 68,
+        team: [
+          { id: 1, name: "م. أحمد مصطفى", disc: "D - Dominance", skills: { bim:"Proficient", p6:"Developing", qhse:"Basic", contract:"Expert", site:"Proficient" } },
+          { id: 2, name: "م. سارة محمود", disc: "C - Conscientiousness", skills: { bim:"Proficient", p6:"Expert", qhse:"Proficient", contract:"Developing", site:"Basic" } }
+        ],
+        raci: [
+          { id: 1, task: "اعتماد المخططات التنفيذية", r: "م. أحمد مصطفى", a: "م. وائل محمود", c: "استشاري المالك", i: "مدير المشروع" },
+          { id: 2, task: "متابعة التحديث الأسبوعي P6", r: "م. سارة محمود", a: "م. سارة محمود", c: "مهندس الموقع", i: "المالك" }
+        ],
+        kpis: { schedulePerf: 94, teamEfficiency: 87, reworkReduction: 72, skillGapClosure: 65 },
+        lessons: [
+          { id: 1, text: "وجوب مراجعة التنسيق الكهروميكانيكي (MEP) مع الأسقف المرفوعة قبل صب الخرسانة وتفادي الاعتماد على المخططات الأولية." }
+        ],
+        idp: [
+          { id: 1, member: "م. أحمد مصطفى", focus: "Primavera P6 (من Developing إلى Proficient)", plan: "دورة معتمدة 40 ساعة + تطبيق عملي على جدول المشروع الحالي خلال 3 أشهر" }
+        ]
+      }];
+    }
+
+    // ======================================================================
+    //  HPTG SMART ENGINE — ترشيح RACI الذكي + تحليل الفجوات وخارطة الطريق
+    //  محرك قواعد (Rule-based scoring) يعمل محليًا داخل المتصفح بدون اتصال.
+    // ======================================================================
+    const LEVEL_VAL = { Expert:4, Proficient:3, Developing:2, Basic:1 };
+    const LEVEL_NEXT = { Basic:'Developing', Developing:'Proficient', Proficient:'Expert', Expert:'Expert' };
+    const DISC_LETTERS = ['D','I','S','C'];
+
+    // كلمات دالة على المهارة المطلوبة (عربي + إنجليزي) — تُطبَّع قبل المطابقة
+    const SKILL_KW = {
+      bim: ['bim','revit','navisworks','clash','مخطط','رسومات','shop drawing','شوب','تصميم','نمذج','تعارض','as-built','as built','mep'],
+      p6: ['primavera','p6','جدول','برنامج زمني','زمني','schedule','cpm','مسار حرج','critical path','baseline','evm','look ahead','lookahead','تخطيط','planning','delay','تاخير'],
+      qhse: ['qhse','hse','سلامه','جوده','بيئ','iso','تفتيش','inspection','audit','تدقيق','مخاطر','risk','حريق','اطفاء','fire','ncr','عدم مطابقه','itp','qa','qc','مطابق','safety','quality','permit to work','تصريح'],
+      contract: ['عقد','عقود','contract','fidic','مطالب','claim','variation','امر تغيير','اوامر تغيير','مستخلص','ipc','boq','مقايسه','مناقص','tender','مشتريات','procurement','تكلف','cost','ميزاني','budget','تسويه','payment','eot','تمديد'],
+      site: ['موقع','site','اشراف','supervision','تنفيذ الاعمال','تنفيذ اعمال','صب','خرسان','تركيب','استلام','commissioning','تشغيل','اختبار','test','handover','تسليم','قوالب','حديد','اعمال مدنيه','مقاول باطن','subcontract']
+    };
+    // كلمات دالة على السمة السلوكية المطلوبة (DISC)
+    const TRAIT_KW = {
+      D: ['اعتماد','اعتمد','موافقه','قرار','حسم','تصعيد','سلطه','صلاحي','ازمه','تفويض','اقرار','الغاء','رفض','تحكيم','نزاع','approve','approval','decision','escalat','sign-off','signoff','authoriz','crisis','dispute'],
+      I: ['تنسيق','تواصل','اجتماع','مالك','استشاري','ممثل','عرض','تفاوض','ورشه','اصحاب المصلحه','عميل','presentation','meeting','stakeholder','coordinat','liaison','negotiat','communicat','client','owner','consultant','workshop'],
+      S: ['متابعه','تحديث','يومي','اسبوعي','شهري','دوري','روتين','تقرير','تقارير','مستمر','رصد','تسجيل','توثيق','ارشفه','weekly','daily','monthly','follow-up','follow up','routine','recurring','tracking','document control','log'],
+      C: ['مراجعه','تدقيق','فحص','جوده','تحقق','مطابقه','معايير','مواصفات','امتثال','دقه','review','audit','verify','verification','check','inspect','qa','qc','ncr','itp','specification','compliance']
+    };
+    // تفضيل نمط DISC لكل دور (حسب إطار HPTG): A ← D أو C ، R ← S أو C ، C ← I
+    const DISC_PREF = {
+      A: { D:1, C:0.75, I:0.35, S:0.3 },
+      R: { S:1, C:0.9, D:0.5, I:0.4 },
+      C: { I:1, C:0.7, S:0.6, D:0.5 }
+    };
+    const ROLE_TRAIT_LINK = { A:['D'], R:['S','C'], C:['I','C'] };
+
+    const PRESET_TASKS = [
+      ['اعتماد المخططات التنفيذية لنظام الإطفاء', 'Approve shop drawings for the fire-fighting system'],
+      ['إعداد وتحديث الجدول الزمني على Primavera P6', 'Prepare and update the Primavera P6 schedule'],
+      ['مراجعة وتدقيق تقارير الجودة وفحص الأعمال الخرسانية', 'Review quality reports and inspect concrete works'],
+      ['تنسيق الاجتماعات الأسبوعية مع المالك والاستشاري', 'Coordinate weekly meetings with owner and consultant'],
+      ['إعداد مطالبات التمديد (EOT) ومراجعة أوامر التغيير وفق FIDIC', 'Prepare EOT claims and review variation orders per FIDIC'],
+      ['الإشراف على التنفيذ في الموقع وتركيب أنظمة MEP والاستلام', 'Supervise site installation of MEP systems and handover'],
+      ['حسم قرار تصعيد نزاع مع مقاول باطن', 'Decide on escalating a subcontractor dispute'],
+      ['متابعة تقارير السلامة اليومية وتوثيقها', 'Follow up daily safety reports and documentation']
+    ];
+
+    function nz(s){
+      return String(s || '').toLowerCase()
+        .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+        .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه');
+    }
+    function kwHit(text, kw){
+      const k = nz(kw);
+      if(/^[a-z0-9 \-\/]+$/.test(k)){
+        const esc = k.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
+        const re = k.length <= 3 ? new RegExp('(^|[^a-z0-9])' + esc + '([^a-z0-9]|$)') : new RegExp('(^|[^a-z0-9])' + esc);
+        return re.test(text);
+      }
+      return text.indexOf(k) !== -1;
+    }
+    function countHits(text, list){ return list.filter(kw => kwHit(text, kw)).length; }
+    function splitNames(s){ return String(s || '').split(/[،,;؛\/]+/).map(x => x.trim()).filter(Boolean); }
+    const discLetter = m => String(m.disc || '').trim().charAt(0).toUpperCase();
+    const pct = score => Math.max(0, Math.min(99, Math.round(score * 100)));
+
+    // 1) تحليل متطلبات المهمة: المهارات + السمة السلوكية
+    function analyzeTask(text){
+      const nt = nz(text);
+      const skills = SKILL_KEYS.map(k => ({ key:k, hits: countHits(nt, SKILL_KW[k]) })).filter(x => x.hits > 0).sort((a,b) => b.hits - a.hits);
+      const traitHits = {};
+      let total = 0;
+      DISC_LETTERS.forEach(L => { traitHits[L] = countHits(nt, TRAIT_KW[L]); total += traitHits[L]; });
+      const traitShare = {};
+      DISC_LETTERS.forEach(L => { traitShare[L] = total ? traitHits[L] / total : 0; });
+      return { reqSkills: skills.slice(0,3).map(x => x.key), traitShare, hasTraits: total > 0 };
+    }
+
+    function loadMap(raci, team){
+      const map = {};
+      team.forEach(m => { map[m.name] = { r:0, a:0, c:0, i:0 }; });
+      raci.forEach(row => {
+        ['r','a','c','i'].forEach(k => {
+          splitNames(row[k]).forEach(n => { if(map[n]) map[n][k]++; });
+        });
+      });
+      return map;
+    }
+
+    function memberAvg(m){
+      return SKILL_KEYS.reduce((s,k) => s + (LEVEL_VAL[m.skills[k]] || 1), 0) / SKILL_KEYS.length;
+    }
+
+    // 2) خوارزمية المطابقة (كفاءة + نمط + حمل العمل الحالي)
+    function scoreRole(role, m, an, loads, totalRows){
+      const L = loads[m.name] || { r:0, a:0, c:0, i:0 };
+      const keys = an.reqSkills;
+      const lv = keys.length ? keys.map(k => LEVEL_VAL[m.skills[k]] || 1) : [memberAvg(m)];
+      const avg = lv.reduce((a,b) => a + b, 0) / lv.length;
+      let skillFit;
+      if(role === 'C'){
+        // المستشار: خبير مساعد (Proficient/Developing) — نفضّله على الخبير المشغول
+        const curve = { 1:0.3, 2:0.8, 3:1, 4:0.85 };
+        skillFit = lv.map(v => curve[Math.round(v)]).reduce((a,b) => a + b, 0) / lv.length;
+      } else {
+        skillFit = (avg - 1) / 3;
+      }
+      const letter = discLetter(m);
+      const disc = Math.min(1, DISC_PREF[role][letter] || 0.3);
+      let boost = 0;
+      if(an.hasTraits && ROLE_TRAIT_LINK[role].indexOf(letter) > -1) boost = 0.6 * an.traitShare[letter];
+      const w = keys.length ? [0.55, 0.45] : [0.3, 0.7];
+      const share = (role === 'R' ? L.r : role === 'A' ? L.a : L.c) / (totalRows + 1);
+      const pen = (role === 'R' ? 0.6 : role === 'A' ? 0.4 : 0.15) * share;
+      let score = w[0] * skillFit + w[1] * disc + boost - pen;
+      if(role === 'A' && avg < 3) score -= 0.15;
+      return { m, score, avg, letter, load: L, pen };
+    }
+    function rankAll(an, team, loads, totalRows){
+      const out = {};
+      ['A','R','C'].forEach(role => {
+        out[role] = team.map(m => scoreRole(role, m, an, loads, totalRows)).sort((x,y) => y.score - x.score);
+      });
+      return out;
+    }
+    function pickRoles(ranked){
+      const used = new Set();
+      const pick = { A:'', R:'', C:'' };
+      ['A','R','C'].forEach(role => {
+        let cand = ranked[role].filter(x => !used.has(x.m.name));
+        if(!cand.length && role !== 'C') cand = ranked[role]; // فريق من فرد واحد
+        if(cand.length){ pick[role] = cand[0].m.name; used.add(cand[0].m.name); }
+      });
+      return pick;
+    }
+    function recommendRaci(taskText, team, raci){
+      const an = analyzeTask(taskText);
+      const loads = loadMap(raci, team);
+      const ranked = rankAll(an, team, loads, raci.length);
+      return { an, ranked, pick: pickRoles(ranked) };
+    }
+
+    const DISC_NOTE = {
+      A: { D:['نمط D — مناسب لحسم القرار وتحمّل المسؤولية القاطعة','D — decisive, owns accountability'],
+           C:['نمط C — اعتماد مبني على التدقيق والدقة','C — evidence-based sign-off'],
+           I:['نمط I — إقناع وتواصل، لكنه أقل حسمًا عند الأزمات','I — persuasive, but less decisive under pressure'],
+           S:['نمط S — ثبات مع بطء نسبي في حسم القرارات','S — steady, slower to decide'] },
+      R: { S:['نمط S — ثبات وإنجاز منتظم','S — steady, consistent delivery'],
+           C:['نمط C — دقة عالية في التنفيذ والمراجعة','C — precise execution and review'],
+           D:['نمط D — سرعة إنجاز مع حاجة لضبط التفاصيل','D — fast delivery, watch the details'],
+           I:['نمط I — يميل للتنسيق أكثر من التنفيذ الروتيني','I — leans to coordination over routine execution'] },
+      C: { I:['نمط I — مناسب للتواصل وتنسيق الآراء','I — suited to liaison and gathering views'],
+           C:['نمط C — رأي فني مدقَّق','C — rigorous technical opinion'],
+           S:['نمط S — رأي متزن ومستقر','S — balanced, steady input'],
+           D:['نمط D — رأي مباشر وحاسم','D — direct, decisive input'] }
+    };
+    function reasonFor(role, item, an, lang){
+      const tx = (a,e) => lang === 'ar' ? a : e;
+      const m = item.m;
+      const parts = [];
+      if(an.reqSkills.length){
+        parts.push(tx('المهارات المطلوبة: ', 'Required skills: ') + an.reqSkills.map(k => SKILL_LABELS[k] + ' (' + m.skills[k] + ')').join(' + '));
+      } else {
+        parts.push(tx('متوسط مستوى المهارات: ', 'Average skill level: ') + item.avg.toFixed(1) + '/4');
+      }
+      const note = DISC_NOTE[role][item.letter];
+      if(note) parts.push(tx(note[0], note[1]));
+      if(role === 'R' || role === 'A'){
+        const n = role === 'R' ? item.load.r : item.load.a;
+        parts.push(n === 0
+          ? tx('حمل عمل منخفض (لا يحمل دور ' + role + ' حاليًا)', 'Light load (no ' + role + ' roles yet)')
+          : tx('يحمل دور ' + role + ' في ' + n + ' مهمة — يُراعى توزيع الحمل', 'Already ' + role + ' on ' + n + ' task(s) — load is considered'));
+      }
+      return parts.join(' • ');
+    }
+
+    // ---------------------- تحليل الفجوات والتوصيات ----------------------
+    function analyzeGaps(project, lang){
+      const tx = (a,e) => lang === 'ar' ? a : e;
+      const team = project.team || [];
+      const raci = project.raci || [];
+      const res = {
+        empty: team.length === 0, teamSize: team.length, taskCount: raci.length,
+        skills: [], skillGaps: [], discCounts: { D:0, I:0, S:0, C:0 }, discGaps: [],
+        loads: [], raciGaps: [], mismatches: [], mentoring: [], external: [],
+        realloc: [], fill: [], roadmap: [], counts: { crit:0, warn:0, info:0 }
+      };
+      if(res.empty) return res;
+      const add = (list, sev, msg, extra) => {
+        list.push(Object.assign({ sev, msg }, extra || {}));
+        if(res.counts[sev] !== undefined) res.counts[sev]++;
+      };
+      const n = team.length;
+
+      // (أ) فجوات التغطية الفنية
+      SKILL_KEYS.forEach(k => {
+        const by = { Expert:[], Proficient:[], Developing:[], Basic:[] };
+        team.forEach(m => { by[m.skills[k] || 'Basic'].push(m.name); });
+        const avg = team.reduce((s,m) => s + (LEVEL_VAL[m.skills[k]] || 1), 0) / n;
+        res.skills.push({ key:k, label:SKILL_LABELS[k], by, avg });
+        const strong = by.Expert.length + by.Proficient.length;
+        const label = SKILL_LABELS[k];
+        if(strong === 0){
+          add(res.skillGaps, 'crit', tx('لا يوجد أي عضو بمستوى Proficient أو أعلى في ' + label + ' — فجوة حرجة.', 'No member at Proficient or above in ' + label + ' — critical gap.'), { skill:k });
+        } else if(by.Expert.length === 0){
+          add(res.skillGaps, 'warn', tx('لا يوجد خبير (Expert) في ' + label + '؛ أعلى مستوى Proficient (' + by.Proficient.join('، ') + ').', 'No Expert in ' + label + '; highest level is Proficient (' + by.Proficient.join(', ') + ').'), { skill:k });
+        } else if(strong === 1 && n >= 2){
+          add(res.skillGaps, 'warn', tx('الفريق يعتمد على فرد واحد فقط في ' + label + ' (' + by.Expert.concat(by.Proficient).join('، ') + ') — خطر الاعتماد على شخص واحد.', 'Team depends on a single person for ' + label + ' (' + by.Expert.concat(by.Proficient).join(', ') + ') — key-person risk.'), { skill:k });
+        }
+        if(n >= 2 && by.Basic.length / n >= 0.5){
+          add(res.skillGaps, 'warn', tx(by.Basic.length + ' من ' + n + ' أعضاء بمستوى Basic في ' + label + '.', by.Basic.length + ' of ' + n + ' members are Basic in ' + label + '.'), { skill:k });
+        }
+      });
+      if(!res.skillGaps.length) add(res.skillGaps, 'ok', tx('تغطية المهارات الفنية جيدة: يوجد خبير أو أكثر في كل مجال دون اعتماد على فرد واحد.', 'Technical coverage is healthy: every area has depth and no single-person dependency.'));
+
+      // (ب) فجوات التوزيع السلوكي DISC
+      team.forEach(m => { const L = discLetter(m); if(res.discCounts[L] !== undefined) res.discCounts[L]++; });
+      const dc = res.discCounts;
+      const lvl = n >= 4 ? 'warn' : 'info';
+      if(dc.D === 0) add(res.discGaps, lvl, tx('الفريق يفتقر لنمط D (Dominance) في المهام القيادية، مما قد يؤخر حسم القرارات عند الأزمات.', 'No D (Dominance) profile on the team — decisions may stall in a crisis.'), { trait:'D' });
+      if(dc.I === 0) add(res.discGaps, lvl, (n >= 3 && dc.C / n >= 0.5)
+        ? tx('غلبة نمط C بدون وجود نمط I — يبطئ التواصل الخارجي مع الاستشاري والمالك.', 'C-heavy team with no I profile — slows external communication with consultant and owner.')
+        : tx('لا يوجد نمط I (Influence) — قد يبطؤ التواصل والتنسيق الخارجي مع الاستشاري والمالك.', 'No I (Influence) profile — external coordination with consultant/owner may be slow.'), { trait:'I' });
+      if(dc.S === 0) add(res.discGaps, lvl, tx('لا يوجد نمط S (Steadiness) — خطر ضعف الاستمرارية في الأعمال الروتينية والمتابعة الدورية.', 'No S (Steadiness) profile — routine follow-up may lack consistency.'), { trait:'S' });
+      if(dc.C === 0) add(res.discGaps, lvl, tx('لا يوجد نمط C (Conscientiousness) — ضعف الضبط الفني والمراجعة قد يرفع نسبة Rework.', 'No C (Conscientiousness) profile — weaker technical checking may raise rework.'), { trait:'C' });
+      if(n >= 3) DISC_LETTERS.forEach(L => {
+        if(dc[L] / n >= 0.5) add(res.discGaps, 'warn', tx('هيمنة نمط ' + L + ' (' + dc[L] + ' من ' + n + ') — قد يخلّ بتوازن الفريق.', L + ' dominates the team (' + dc[L] + ' of ' + n + ') — may unbalance behaviour.'), { trait:L });
+      });
+      if(!res.discGaps.length) add(res.discGaps, 'ok', tx('توزيع أنماط DISC متوازن ويغطي القيادة والتواصل والاستمرارية والدقة.', 'DISC mix is balanced across leadership, communication, consistency and precision.'));
+
+      // (ج) تضارب المسؤوليات RACI
+      const total = raci.length;
+      const loads = loadMap(raci, team);
+      team.forEach(m => {
+        const L = loads[m.name];
+        res.loads.push({ name:m.name, disc:discLetter(m), r:L.r, a:L.a, c:L.c, i:L.i, rShare: total ? L.r/total : 0, aShare: total ? L.a/total : 0 });
+      });
+      if(total === 0){
+        add(res.raciGaps, 'info', tx('لا توجد مهام في مصفوفة RACI بعد — استخدم «ترشيح RACI الذكي» لإضافتها.', 'No RACI tasks yet — use the Smart RACI engine to add some.'));
+      } else if(total < 3){
+        add(res.raciGaps, 'info', tx('عدد المهام (' + total + ') أقل من 3، فلا يمكن تقييم تركّز الأدوار بشكل موثوق.', 'Only ' + total + ' task(s) — too few to judge role concentration reliably.'));
+      } else {
+        res.loads.forEach(l => {
+          if(l.rShare > 0.7) add(res.raciGaps, 'crit', tx('تم إسناد دور (R) للعضو ' + l.name + ' في ' + Math.round(l.rShare*100) + '% من المهام — عبء مركّز وثغرة في جدول التسليم.', l.name + ' is R on ' + Math.round(l.rShare*100) + '% of tasks — a delivery bottleneck.'), { who:l.name });
+          else if(l.rShare > 0.5) add(res.raciGaps, 'warn', tx('العضو ' + l.name + ' يحمل دور (R) في ' + Math.round(l.rShare*100) + '% من المهام — اقتربت من حد الاختناق.', l.name + ' is R on ' + Math.round(l.rShare*100) + '% of tasks — nearing a bottleneck.'), { who:l.name });
+          if(l.aShare > 0.6) add(res.raciGaps, 'warn', tx('تركّز السلطة (A) عند ' + l.name + ' في ' + Math.round(l.aShare*100) + '% من المهام.', 'Accountability (A) concentrated on ' + l.name + ' (' + Math.round(l.aShare*100) + '%).'), { who:l.name });
+        });
+        res.loads.filter(l => l.r === 0 && l.a === 0).forEach(l => {
+          add(res.raciGaps, 'info', tx(l.name + ' بلا أدوار R/A — طاقة غير مستغلة.', l.name + ' has no R/A roles — unused capacity.'), { who:l.name });
+        });
+      }
+      const sameRA = [];
+      raci.forEach(row => {
+        const rN = splitNames(row.r), aN = splitNames(row.a);
+        if(!rN.length || !aN.length){
+          add(res.raciGaps, 'crit', tx('المهمة «' + row.task + '» بدون ' + (!rN.length && !aN.length ? 'R و A' : !rN.length ? 'R' : 'A') + '.', 'Task "' + row.task + '" has no ' + (!rN.length && !aN.length ? 'R and A' : !rN.length ? 'R' : 'A') + '.'));
+          ['R','A'].forEach(role => {
+            if(splitNames(row[role.toLowerCase()]).length === 0) res.fill.push({ task:row.task, role, row });
+          });
+        } else if(rN.length === 1 && aN.length === 1 && rN[0] === aN[0]) sameRA.push(row.task);
+      });
+      if(sameRA.length) add(res.raciGaps, 'info', tx('في ' + sameRA.length + ' مهمة يجمع نفس الشخص بين R و A (مثال: «' + sameRA[0] + '») — لا فصل بين التنفيذ والمساءلة.', sameRA.length + ' task(s) have the same person as R and A (e.g. "' + sameRA[0] + '") — no separation of doing and answering.'));
+      if(!res.raciGaps.length) add(res.raciGaps, 'ok', tx('لا اختناقات ظاهرة في توزيع أدوار RACI.', 'No visible bottlenecks in RACI distribution.'));
+
+      // (د) عدم تطابق مهارة المسؤول (R) مع متطلبات المهمة
+      raci.forEach(row => {
+        if(res.mismatches.length >= 6) return;
+        const an = analyzeTask(row.task);
+        splitNames(row.r).forEach(name => {
+          const m = team.find(x => x.name === name);
+          if(!m) return;
+          an.reqSkills.forEach(k => {
+            const lv = m.skills[k];
+            if((lv === 'Basic' || lv === 'Developing') && res.mismatches.length < 6){
+              add(res.mismatches, lv === 'Basic' ? 'warn' : 'info', tx('المهمة «' + row.task + '» تتطلب ' + SKILL_LABELS[k] + '، والمسؤول (R) ' + name + ' بمستوى ' + lv + '.', 'Task "' + row.task + '" needs ' + SKILL_LABELS[k] + ' but R (' + name + ') is ' + lv + '.'));
+            }
+          });
+        });
+      });
+
+      // ---------------- التوصيات ----------------
+      // إعادة توزيع الأدوار المركّزة باستخدام نفس محرك الترشيح
+      const work = loadMap(raci, team);
+      const ov = {};
+      const reassign = (role) => {
+        const key = role.toLowerCase();
+        const limit = role === 'R' ? 0.5 : 0.6;
+        const share = l => role === 'R' ? l.rShare : l.aShare;
+        if(total < 3) return;
+        res.loads.filter(l => share(l) > limit).sort((a,b) => share(b) - share(a)).forEach(l => {
+          let toMove = Math.min(3, (role === 'R' ? l.r : l.a) - Math.floor(total * limit));
+          raci.forEach(row => {
+            if(toMove <= 0 || splitNames(row[key]).indexOf(l.name) === -1) return;
+            const an = analyzeTask(row.task);
+            const ranked = rankAll(an, team, work, total)[role].filter(x => x.m.name !== l.name && !(share(res.loads.find(o => o.name === x.m.name)) > limit));
+            const otherKey = role === 'R' ? 'a' : 'r';
+            const other = ov[row.id + otherKey] ? [ov[row.id + otherKey]] : splitNames(row[otherKey]);
+            const best = ranked.find(x => other.indexOf(x.m.name) === -1) || ranked[0];
+            if(!best) return;
+            ov[row.id + key] = best.m.name;
+            work[l.name][key]--; work[best.m.name][key]++;
+            res.realloc.push({ task:row.task, role, from:l.name, to:best.m.name, reason: reasonFor(role, best, an, lang) });
+            toMove--;
+          });
+        });
+      };
+      reassign('R'); reassign('A');
+      res.fill.forEach(f => {
+        const an = analyzeTask(f.task);
+        const ranked = rankAll(an, team, work, total)[f.role];
+        const other = splitNames(f.row[f.role === 'R' ? 'a' : 'r']);
+        const best = ranked.find(x => other.indexOf(x.m.name) === -1) || ranked[0];
+        if(best){ f.name = best.m.name; f.reason = reasonFor(f.role, best, an, lang); }
+      });
+      res.fill = res.fill.filter(f => f.name);
+
+      // التدريب وتبادل المعرفة: خبير ← مبتدئ داخل الفريق
+      const gapSkills = new Set(res.skillGaps.filter(g => g.skill).map(g => g.skill));
+      const order = SKILL_KEYS.slice().sort((a,b) => {
+        const ga = gapSkills.has(a) ? 0 : 1, gb = gapSkills.has(b) ? 0 : 1;
+        if(ga !== gb) return ga - gb;
+        return res.skills.find(s => s.key === a).avg - res.skills.find(s => s.key === b).avg;
+      });
+      const menteeUse = {}, mentorUse = {};
+      const COMP = { C:'I', I:'C', D:'S', S:'D' };
+      order.forEach(k => {
+        if(res.mentoring.length >= 6) return;
+        const weak = team.filter(m => (LEVEL_VAL[m.skills[k]] || 1) <= 2);
+        if(!weak.length) return;
+        let mentors = team.filter(m => m.skills[k] === 'Expert');
+        if(!mentors.length) mentors = team.filter(m => m.skills[k] === 'Proficient');
+        if(!mentors.length){ res.external.push({ skill:k, names:weak.map(m => m.name) }); return; }
+        mentors.sort((a,b) => (mentorUse[a.name] || 0) - (mentorUse[b.name] || 0));
+        const mentor = mentors[0];
+        const mentee = weak.filter(m => m.name !== mentor.name && (LEVEL_VAL[m.skills[k]] || 1) < (LEVEL_VAL[mentor.skills[k]] || 1))
+          .sort((a,b) => (LEVEL_VAL[a.skills[k]] - LEVEL_VAL[b.skills[k]]) || ((menteeUse[a.name] || 0) - (menteeUse[b.name] || 0)) ||
+            ((COMP[discLetter(mentor)] === discLetter(a) ? 0 : 1) - (COMP[discLetter(mentor)] === discLetter(b) ? 0 : 1)))[0];
+        if(!mentee) return;
+        menteeUse[mentee.name] = (menteeUse[mentee.name] || 0) + 1;
+        mentorUse[mentor.name] = (mentorUse[mentor.name] || 0) + 1;
+        res.mentoring.push({ skill:k, mentor:mentor.name, mentorLevel:mentor.skills[k], mentee:mentee.name, menteeLevel:mentee.skills[k],
+          fit: COMP[discLetter(mentor)] === discLetter(mentee) ? (discLetter(mentor) + ' ↔ ' + discLetter(mentee)) : '' });
+      });
+
+      // ---------------- خريطة الطريق ----------------
+      const k = project.kpis || {};
+      const p1 = [];
+      res.realloc.slice(0,4).forEach(r => p1.push(tx('أعد إسناد دور ' + r.role + ' للمهمة «' + r.task + '» من ' + r.from + ' إلى ' + r.to + '.', 'Move ' + r.role + ' for "' + r.task + '" from ' + r.from + ' to ' + r.to + '.')));
+      res.fill.slice(0,3).forEach(f => p1.push(tx('أكمل دور ' + f.role + ' للمهمة «' + f.task + '» ← ' + f.name + '.', 'Fill ' + f.role + ' on "' + f.task + '" → ' + f.name + '.')));
+      if(!p1.length) p1.push(tx('لا توجد اختناقات RACI حرجة — ثبّت التوزيع الحالي واستخدم الترشيح الذكي عند إضافة أي مهمة جديدة.', 'No critical RACI bottlenecks — keep the current split and use the Smart RACI engine for new tasks.'));
+      const p2 = [];
+      res.mentoring.slice(0,4).forEach(p => p2.push(tx('توجيه داخلي: ' + p.mentor + ' ← ' + p.mentee + ' في ' + SKILL_LABELS[p.skill] + ' (' + p.menteeLevel + ' → ' + LEVEL_NEXT[p.menteeLevel] + ')' + (p.fit ? ' — توافق سلوكي ' + p.fit : '') + '.',
+        'Peer mentoring: ' + p.mentor + ' → ' + p.mentee + ' on ' + SKILL_LABELS[p.skill] + ' (' + p.menteeLevel + ' → ' + LEVEL_NEXT[p.menteeLevel] + ')' + (p.fit ? ' — behavioural fit ' + p.fit : '') + '.')));
+      res.discGaps.filter(g => g.trait && (g.sev === 'warn' || g.sev === 'info') && dc[g.trait] === 0).forEach(g => {
+        const act = { D:['تفويض صلاحيات حسم واضحة لأحد الأعضاء أو إشراك قيادة مؤقتًا في القرارات الحرجة', 'Delegate clear decision authority or borrow a decisive lead for critical calls'],
+                      I:['تكليف عضو بدور حلقة الوصل مع المالك والاستشاري أو دعم الفريق بمنسّق', 'Assign a liaison to owner/consultant or add a coordinator'],
+                      S:['وضع روتين متابعة دوري (يومي/أسبوعي) بمسؤول ثابت', 'Set a fixed follow-up routine with a named owner'],
+                      C:['إضافة نقطة مراجعة إلزامية (Peer Review) قبل الاعتماد', 'Add a mandatory peer-review gate before approvals'] }[g.trait];
+        p2.push(tx('معالجة نقص نمط ' + g.trait + ': ' + act[0] + '.', 'Cover missing ' + g.trait + ' profile: ' + act[1] + '.'));
+      });
+      if(!p2.length) p2.push(tx('تفعيل جلسات مراجعة أقران أسبوعية لتقليل Rework.', 'Run weekly peer-review sessions to reduce rework.'));
+      const p3 = [];
+      const gapKeys = order.filter(x => gapSkills.has(x));
+      gapKeys.forEach(x => p3.push(tx('تدريب مكثف على ' + SKILL_LABELS[x] + '.', 'Intensive training on ' + SKILL_LABELS[x] + '.')));
+      res.external.forEach(e => p3.push(tx('لا يوجد مرشد داخلي في ' + SKILL_LABELS[e.skill] + ' — دورة خارجية أو استشاري لـ ' + e.names.join('، ') + '.', 'No internal mentor for ' + SKILL_LABELS[e.skill] + ' — external course/consultant for ' + e.names.join(', ') + '.')));
+      if(!p3.length) p3.push(tx('الحفاظ على المستوى الحالي وإعادة تقييم مصفوفة المهارات كل ربع سنة.', 'Maintain the current level and re-assess the skills matrix quarterly.'));
+      res.roadmap = [
+        { phase: tx('فوري (الأسبوع 1–2)', 'Immediate (weeks 1–2)'), actions: p1, goal: tx('موازنة حمل العمل وتلافي الاختناقات.', 'Balance workload and remove bottlenecks.') },
+        { phase: tx('قصير المدى (الشهر 1)', 'Short term (month 1)'), actions: p2, goal: tx('تسريع مراجعة المخططات وتقليل Rework (الحالي: ' + (k.reworkReduction || 0) + '%).', 'Speed up reviews and cut rework (now ' + (k.reworkReduction || 0) + '%).') },
+        { phase: tx('متوسط المدى (الشهر 2–3)', 'Medium term (months 2–3)'), actions: p3, goal: tx('رفع Skill Gap Closure من ' + (k.skillGapClosure || 0) + '% إلى 85% أو أكثر.', 'Raise Skill Gap Closure from ' + (k.skillGapClosure || 0) + '% to 85%+.') }
+      ];
+      return res;
+    }
+
+    // ---------------------- مكوّنات الواجهة ----------------------
+    function SevRow({ sev, children }){
+      const st = { crit:['🔴','border-rose-500 bg-rose-950/30 text-rose-100'], warn:['🟠','border-amber-500 bg-amber-950/30 text-amber-100'],
+                   info:['🔵','border-sky-500 bg-sky-950/30 text-sky-100'], ok:['🟢','border-emerald-500 bg-emerald-950/30 text-emerald-100'] }[sev] || ['•','border-slate-600 text-slate-200'];
+      return (
+        <div className={'border-r-4 rounded px-3 py-2 text-xs leading-relaxed flex gap-2 ' + st[1]}>
+          <span>{st[0]}</span><span>{children}</span>
+        </div>
+      );
+    }
+
+    function SmartRaciPanel({ lang, project, onApply, onOpenReport }){
+      const tx = (a,e) => lang === 'ar' ? a : e;
+      const [taskText, setTaskText] = useState('');
+      const [res, setRes] = useState(null);
+      const [sel, setSel] = useState({ A:'', R:'', C:'' });
+      const [msg, setMsg] = useState('');
+      const team = project.team;
+
+      function run(){
+        if(!taskText.trim()){ setMsg(tx('اكتب وصف المهمة أو اخترها من القائمة أولًا.', 'Type a task description or pick one from the list.')); return; }
+        if(!team.length){ setRes(null); setMsg(tx('أضف أعضاء الفريق أولًا من تبويب «التقييم والتحليل».', 'Add team members first in the Profiling tab.')); return; }
+        const r = recommendRaci(taskText, team, project.raci);
+        setRes(r); setSel({ A:r.pick.A, R:r.pick.R, C:r.pick.C }); setMsg('');
+      }
+      const iNames = res ? team.map(m => m.name).filter(n => n !== sel.A && n !== sel.R && n !== sel.C) : [];
+      function apply(){
+        onApply(taskText.trim(), sel.R, sel.A, sel.C, iNames.join('، '));
+        setMsg(tx('✅ أُضيفت المهمة إلى مصفوفة RACI أدناه.', '✅ Task added to the RACI matrix below.'));
+      }
+      const roleMeta = {
+        A:{ label: tx('A — المحاسب','A — Accountable'), cls:'bg-amber-900 text-amber-200' },
+        R:{ label: tx('R — المسؤول','R — Responsible'), cls:'bg-blue-900 text-blue-200' },
+        C:{ label: tx('C — المستشار','C — Consulted'), cls:'bg-purple-900 text-purple-200' }
+      };
+      const traitName = { D:'D', I:'I', S:'S', C:'C' };
+
+      return (
+        <div className="bg-gradient-to-br from-slate-900 to-slate-900/60 p-4 rounded-xl border border-blue-500/40 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-sm font-bold text-blue-300">🤖 {tx('محرك ترشيح أدوار RACI الذكي', 'Smart RACI Auto-Assignment Engine')}</h3>
+            <span className="text-[10px] text-slate-400">{tx('يوازن بين المهارة + نمط DISC + الحمل الحالي', 'Balances skill + DISC + current workload')}</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <select value="" onChange={e => { if(e.target.value !== '') setTaskText(PRESET_TASKS[+e.target.value][lang === 'ar' ? 0 : 1]); }}
+              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white md:col-span-1">
+              <option value="">{tx('— اختر مهمة جاهزة —', '— Pick a preset task —')}</option>
+              {PRESET_TASKS.map((p,ix) => <option key={ix} value={ix}>{p[lang === 'ar' ? 0 : 1]}</option>)}
+            </select>
+            <input value={taskText} onChange={e => setTaskText(e.target.value)} onKeyDown={e => { if(e.key === 'Enter') run(); }}
+              placeholder={tx('أدخل وصف المهمة (مثال: مراجعة واعتماد المخططات التنفيذية لنظام الإطفاء)', 'Describe the task (e.g. Review and approve fire-fighting shop drawings)')}
+              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white md:col-span-2" />
+          </div>
+          <button onClick={run} className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold">
+            🤖 {tx('ترشيح مصفوفة RACI الذكية', 'Suggest smart RACI')}
+          </button>
+          {msg && <p className="text-xs text-amber-300">{msg}</p>}
+
+          {res && (
+            <div className="space-y-3 pt-2 border-t border-slate-700">
+              <div className="flex flex-wrap gap-2 text-[11px] items-center">
+                <span className="text-slate-400">{tx('المهارات المرصودة:', 'Detected skills:')}</span>
+                {res.an.reqSkills.length
+                  ? res.an.reqSkills.map(k => <span key={k} className="bg-slate-700 text-slate-100 px-2 py-0.5 rounded">{SKILL_LABELS[k]}</span>)
+                  : <span className="text-slate-500">{tx('لم تُرصد مهارة محددة — يُستخدم متوسط مستوى الفريق', 'None detected — falling back to overall level')}</span>}
+                <span className="text-slate-400 mr-2">{tx('السمة المطلوبة:', 'Trait needed:')}</span>
+                {res.an.hasTraits
+                  ? DISC_LETTERS.filter(L => res.an.traitShare[L] > 0).sort((a,b) => res.an.traitShare[b] - res.an.traitShare[a]).map(L => <span key={L} className="bg-blue-950 text-blue-200 px-2 py-0.5 rounded">{traitName[L]} {Math.round(res.an.traitShare[L]*100)}%</span>)
+                  : <span className="text-slate-500">{tx('غير محددة', 'not specific')}</span>}
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-right table-fixed">
+                  <thead className="bg-slate-900 text-slate-400">
+                    <tr><th className="p-2 w-[22%]">{tx('الدور','Role')}</th><th className="p-2 w-[30%]">{tx('المرشَّح','Nominee')}</th><th className="p-2">{tx('السبب','Reason')}</th></tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700">
+                    {['A','R','C'].map(role => {
+                      const item = res.ranked[role].find(x => x.m.name === sel[role]);
+                      const rec = res.pick[role] === sel[role];
+                      return (
+                        <tr key={role} className="align-top">
+                          <td className="p-2"><span className={'px-2 py-1 rounded font-bold ' + roleMeta[role].cls}>{roleMeta[role].label}</span></td>
+                          <td className="p-2">
+                            <select value={sel[role]} onChange={e => setSel({ ...sel, [role]: e.target.value })}
+                              className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+                              <option value="">—</option>
+                              {res.ranked[role].map(x => <option key={x.m.name} value={x.m.name}>{x.m.name} — {pct(x.score)}%</option>)}
+                            </select>
+                            {!rec && sel[role] && <p className="text-[10px] text-amber-300 mt-1">{tx('تعديل يدوي — ترشيح النظام: ', 'Manual override — engine picked: ')}{res.pick[role] || '—'}</p>}
+                          </td>
+                          <td className="p-2 text-slate-300 leading-relaxed">{item ? reasonFor(role, item, res.an, lang) : <span className="text-slate-500">{tx('لا يوجد عضو متاح لهذا الدور في الفريق الحالي', 'No available member for this role')}</span>}</td>
+                        </tr>
+                      );
+                    })}
+                    <tr className="align-top">
+                      <td className="p-2"><span className="px-2 py-1 rounded font-bold bg-slate-700 text-slate-200">{tx('I — المُبلغ','I — Informed')}</span></td>
+                      <td className="p-2 text-white font-semibold">{iNames.length ? iNames.join('، ') : '—'}</td>
+                      <td className="p-2 text-slate-300">{tx('باقي أعضاء الفريق الذين تتأثر أعمالهم بمخرجات المهمة.', 'Remaining members whose work is affected by the outputs.')}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              {sel.A && sel.A === sel.R && <p className="text-[11px] text-amber-300">⚠️ {tx('نفس الشخص في دورَي A و R — لا فصل بين التنفيذ والمساءلة.', 'Same person is A and R — no separation of doing and answering.')}</p>}
+              <p className="text-[10px] text-slate-500">{tx('النسبة بجانب كل اسم = درجة الملاءمة. الترشيح يقتصر على أعضاء الفريق المسجّلين؛ الأطراف الخارجية (المالك/الاستشاري) تُضاف يدويًا.', 'Percentage = fit score. Only registered team members are considered; external parties (owner/consultant) are added manually.')}</p>
+
+              <div className="flex flex-wrap gap-2">
+                <button onClick={apply} disabled={!sel.A && !sel.R} className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs px-4 py-2 rounded-lg font-bold">✅ {tx('إضافة إلى المصفوفة', 'Add to matrix')}</button>
+                <button onClick={onOpenReport} className="bg-slate-700 hover:bg-slate-600 text-white text-xs px-4 py-2 rounded-lg font-bold">📄 {tx('إنشاء تقرير الفجوات وتوصيات التطوير', 'Generate gap & recommendations report')}</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function GapReport({ project, lang, embedded, onApplyIdp }){
+      const tx = (a,e) => lang === 'ar' ? a : e;
+      const g = React.useMemo(() => analyzeGaps(project, lang), [project, lang]);
+      const [msg, setMsg] = useState('');
+      if(g.empty){
+        return <p className="text-xs text-slate-400">{tx('أضف أعضاء الفريق وقيّم مهاراتهم أولًا ليتمكن التطبيق من تحليل الفجوات.', 'Add team members and rate their skills so gaps can be analysed.')}</p>;
+      }
+      const H = ({ children }) => <h3 className="font-bold text-sm text-white border-b border-slate-700 pb-1">{children}</h3>;
+      const SH = ({ children }) => <h4 className="text-xs font-bold text-blue-300 mt-1">{children}</h4>;
+      const levels = ['Expert','Proficient','Developing','Basic'];
+
+      function applyIdp(){
+        const items = g.mentoring.map(p => ({
+          member: p.mentee,
+          focus: SKILL_LABELS[p.skill] + ' (' + p.menteeLevel + ' → ' + LEVEL_NEXT[p.menteeLevel] + ')',
+          plan: tx('توجيه داخلي (Peer Mentoring) مع ' + p.mentor + ' (' + p.mentorLevel + ') لمدة 4–8 أسابيع مع تطبيق عملي على مهام المشروع الحالية.',
+                   'Peer mentoring with ' + p.mentor + ' (' + p.mentorLevel + ') for 4–8 weeks with hands-on application on current tasks.')
+        }));
+        const n = onApplyIdp(items);
+        setMsg(n ? tx('✅ أُضيفت ' + n + ' خطة إلى «التحسين والتطوير» (IDP).', '✅ ' + n + ' plan(s) added to Optimization (IDP).') : tx('هذه الخطط مضافة مسبقًا.', 'These plans already exist.'));
+      }
+
+      return (
+        <div className="space-y-5 text-slate-200">
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="bg-rose-950 text-rose-200 px-3 py-1 rounded-full">🔴 {tx('حرجة', 'Critical')}: {g.counts.crit}</span>
+            <span className="bg-amber-950 text-amber-200 px-3 py-1 rounded-full">🟠 {tx('تحذيرات', 'Warnings')}: {g.counts.warn}</span>
+            <span className="bg-sky-950 text-sky-200 px-3 py-1 rounded-full">🔵 {tx('ملاحظات', 'Notes')}: {g.counts.info}</span>
+            <span className="text-slate-500 self-center">{tx('فريق من ' + g.teamSize + ' • ' + g.taskCount + ' مهمة في RACI', g.teamSize + ' members • ' + g.taskCount + ' RACI tasks')}</span>
+          </div>
+
+          <div className="space-y-3">
+            <H>{tx('1) تحليل الفجوات المهارية والسلوكية', '1) Skill & behavioural gaps')}</H>
+
+            <SH>{tx('أ. فجوات التغطية الفنية', 'A. Technical skill coverage')}</SH>
+            <table className="w-full text-[11px] text-right table-fixed border border-slate-700">
+              <thead className="bg-slate-900 text-slate-400">
+                <tr><th className="p-2 w-[16%]">{tx('المهارة','Skill')}</th>{levels.map(lv => <th key={lv} className="p-2">{lv}</th>)}<th className="p-2 w-[14%]">{tx('المتوسط','Avg')}</th></tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700">
+                {g.skills.map(s => (
+                  <tr key={s.key} className="align-top">
+                    <td className="p-2 font-bold text-white break-words">{s.label}</td>
+                    {levels.map(lv => (
+                      <td key={lv} className="p-2 break-words">
+                        {s.by[lv].length ? <span className={'heat-' + lv + ' px-1.5 py-0.5 rounded block'}>{s.by[lv].join('، ')}</span> : <span className="text-slate-600">—</span>}
+                      </td>
+                    ))}
+                    <td className="p-2">
+                      <div className="w-full bg-slate-700 h-2 rounded-full overflow-hidden"><div className={'h-full rounded-full ' + (s.avg >= 3 ? 'bg-emerald-500' : s.avg >= 2.2 ? 'bg-amber-500' : 'bg-rose-500')} style={{ width: (s.avg/4*100) + '%' }}></div></div>
+                      <span className="text-[10px] text-slate-400">{s.avg.toFixed(1)}/4</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="space-y-1">{g.skillGaps.map((x,ix) => <SevRow key={ix} sev={x.sev}>{x.msg}</SevRow>)}</div>
+
+            <SH>{tx('ب. فجوات التوزيع السلوكي (DISC)', 'B. DISC imbalance')}</SH>
+            <div className="grid grid-cols-4 gap-2 text-center text-xs">
+              {DISC_LETTERS.map(L => (
+                <div key={L} className={'p-2 rounded-lg border ' + (g.discCounts[L] === 0 ? 'border-rose-500/60 bg-rose-950/20' : 'border-slate-700 bg-slate-900')}>
+                  <p className="text-lg font-black text-white">{g.discCounts[L]}</p>
+                  <p className="text-slate-400">{L}</p>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-1">{g.discGaps.map((x,ix) => <SevRow key={ix} sev={x.sev}>{x.msg}</SevRow>)}</div>
+
+            <SH>{tx('ج. تضارب المسؤوليات (RACI Bottlenecks)', 'C. RACI bottlenecks')}</SH>
+            {g.taskCount >= 1 && (
+              <table className="w-full text-[11px] text-right table-fixed border border-slate-700">
+                <thead className="bg-slate-900 text-slate-400">
+                  <tr><th className="p-2 w-[28%]">{tx('العضو','Member')}</th><th className="p-2">R</th><th className="p-2">A</th><th className="p-2 w-[10%]">C</th><th className="p-2 w-[10%]">I</th></tr>
+                </thead>
+                <tbody className="divide-y divide-slate-700">
+                  {g.loads.map(l => (
+                    <tr key={l.name}>
+                      <td className="p-2 font-bold text-white break-words">{l.name} <span className="text-slate-500">({l.disc})</span></td>
+                      <td className="p-2"><div className="w-full bg-slate-700 h-2 rounded-full overflow-hidden"><div className={'h-full ' + (l.rShare > 0.7 ? 'bg-rose-500' : l.rShare > 0.5 ? 'bg-amber-500' : 'bg-blue-500')} style={{ width: Math.round(l.rShare*100) + '%' }}></div></div><span className="text-[10px] text-slate-400">{l.r} • {Math.round(l.rShare*100)}%</span></td>
+                      <td className="p-2"><div className="w-full bg-slate-700 h-2 rounded-full overflow-hidden"><div className={'h-full ' + (l.aShare > 0.6 ? 'bg-amber-500' : 'bg-amber-700')} style={{ width: Math.round(l.aShare*100) + '%' }}></div></div><span className="text-[10px] text-slate-400">{l.a} • {Math.round(l.aShare*100)}%</span></td>
+                      <td className="p-2">{l.c}</td><td className="p-2">{l.i}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            <div className="space-y-1">{g.raciGaps.map((x,ix) => <SevRow key={ix} sev={x.sev}>{x.msg}</SevRow>)}</div>
+            {g.mismatches.length > 0 && (
+              <div className="space-y-1">
+                <SH>{tx('د. عدم تطابق مهارة المسؤول مع المهمة', 'D. Task–skill mismatches')}</SH>
+                {g.mismatches.map((x,ix) => <SevRow key={ix} sev={x.sev}>{x.msg}</SevRow>)}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <H>{tx('2) التوصيات الإجرائية المباشرة', '2) Actionable recommendations')}</H>
+            <SH>{tx('أ. التدريب وتبادل المعرفة (Upskilling & Cross-Training)', 'A. Upskilling & cross-training')}</SH>
+            {g.mentoring.length > 0 ? (
+              <table className="w-full text-[11px] text-right table-fixed border border-slate-700">
+                <thead className="bg-slate-900 text-slate-400"><tr><th className="p-2">{tx('المرشد','Mentor')}</th><th className="p-2">{tx('المتدرّب','Mentee')}</th><th className="p-2">{tx('المهارة','Skill')}</th><th className="p-2">{tx('الهدف','Target')}</th></tr></thead>
+                <tbody className="divide-y divide-slate-700">
+                  {g.mentoring.map((p,ix) => (
+                    <tr key={ix}>
+                      <td className="p-2 break-words">{p.mentor} <span className="text-slate-500">({p.mentorLevel})</span></td>
+                      <td className="p-2 font-bold text-white break-words">{p.mentee}</td>
+                      <td className="p-2">{SKILL_LABELS[p.skill]}</td>
+                      <td className="p-2">{p.menteeLevel} → {LEVEL_NEXT[p.menteeLevel]}{p.fit ? <span className="text-emerald-300"> • {p.fit}</span> : null}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : <SevRow sev="ok">{tx('لا حاجة لتوجيه داخلي حاليًا — لا يوجد أعضاء بمستوى Basic/Developing تحت مرشد مناسب.', 'No internal mentoring needed right now.')}</SevRow>}
+            {g.external.map((e,ix) => <SevRow key={ix} sev="warn">{tx('لا يوجد مرشد داخلي في ' + SKILL_LABELS[e.skill] + ' — يلزم تدريب خارجي أو استشاري لـ ' + e.names.join('، ') + '.', 'No internal mentor for ' + SKILL_LABELS[e.skill] + ' — external training/consultant for ' + e.names.join(', ') + '.')}</SevRow>)}
+
+            <SH>{tx('ب. إعادة توزيع المهام (Re-allocation)', 'B. Re-allocation')}</SH>
+            {(g.realloc.length + g.fill.length) > 0 ? (
+              <div className="space-y-1">
+                {g.realloc.map((r,ix) => <SevRow key={'r'+ix} sev="warn"><b>{tx('المهمة «' + r.task + '»: ', 'Task "' + r.task + '": ')}</b>{tx('انقل دور ' + r.role + ' من ' + r.from + ' إلى ' + r.to + '.', 'move ' + r.role + ' from ' + r.from + ' to ' + r.to + '.')} <span className="text-slate-400">{r.reason}</span></SevRow>)}
+                {g.fill.map((f,ix) => <SevRow key={'f'+ix} sev="crit"><b>{tx('المهمة «' + f.task + '»: ', 'Task "' + f.task + '": ')}</b>{tx('أسند دور ' + f.role + ' إلى ' + f.name + '.', 'assign ' + f.role + ' to ' + f.name + '.')} <span className="text-slate-400">{f.reason}</span></SevRow>)}
+              </div>
+            ) : <SevRow sev="ok">{tx('لا حاجة لإعادة توزيع الأدوار حاليًا.', 'No re-allocation needed right now.')}</SevRow>}
+
+            {!embedded && g.mentoring.length > 0 && (
+              <div className="no-print flex flex-wrap items-center gap-3">
+                <button onClick={applyIdp} className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold">➕ {tx('تحويل التوجيه الداخلي إلى خطط IDP', 'Turn mentoring into IDP plans')}</button>
+                {msg && <span className="text-xs text-emerald-300">{msg}</span>}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <H>{tx('3) خريطة طريق تحسين أداء الفريق', '3) Performance enhancement roadmap')}</H>
+            <table className="w-full text-[11px] text-right table-fixed border border-slate-700">
+              <thead className="bg-slate-900 text-slate-400"><tr><th className="p-2 w-[20%]">{tx('المرحلة','Phase')}</th><th className="p-2">{tx('الإجراء التوصياتي','Recommended actions')}</th><th className="p-2 w-[28%]">{tx('الهدف','Goal')}</th></tr></thead>
+              <tbody className="divide-y divide-slate-700">
+                {g.roadmap.map((ph,ix) => (
+                  <tr key={ix} className="align-top">
+                    <td className="p-2 font-bold text-blue-300">{ph.phase}</td>
+                    <td className="p-2"><ul className="space-y-1">{ph.actions.map((a,j) => <li key={j} className="leading-relaxed">• {a}</li>)}</ul></td>
+                    <td className="p-2 text-slate-300 leading-relaxed">{ph.goal}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function HptgApp() {
+      const [lang, setLang] = useState('ar');
+      const [activeTab, setActiveTab] = useState('portfolio');
+      const [selectedProject, setSelectedProject] = useState(0);
+      const [projects, setProjects] = useState(defaultProjects());
+
+      const t = translations[lang];
+
+      // ---------- الحفظ الدائم ----------
+      useEffect(() => {
+        try{
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+          if(saved && Array.isArray(saved) && saved.length) setProjects(saved);
+        }catch(e){}
+      }, []);
+      useEffect(() => {
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); }catch(e){}
+      }, [projects]);
+
+      const toggleLanguage = () => {
+        const nextLang = lang === 'ar' ? 'en' : 'ar';
+        setLang(nextLang);
+        document.documentElement.dir = nextLang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = nextLang;
+      };
+
+      const handlePrint = () => window.print();
+      const handleExportPdf = () => {
+        const el = document.getElementById('hptg-main-content');
+        html2canvas(el, { scale: 2, backgroundColor: '#0f172a', useCORS: true }).then(canvas => {
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF('p','mm','a4');
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          const imgWidth = pageWidth;
+          const imgHeight = canvas.height * imgWidth / canvas.width;
+          let heightLeft = imgHeight, position = 0;
+          pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+          heightLeft -= pageHeight;
+          while(heightLeft > 0){
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+            heightLeft -= pageHeight;
+          }
+          pdf.save('HPTG_' + activeTab + '.pdf');
+        });
+      };
+
+      const currentProj = projects[selectedProject] || projects[0];
+
+      function updateProject(updater){
+        setProjects(prev => prev.map((p,idx) => idx === selectedProject ? updater({...p}) : p));
+      }
+
+      // ---------- إدارة المشاريع ----------
+      function addProject(name, client){
+        if(!name) return;
+        const newProj = {
+          id: Date.now(), name, client: client || '-', status: "تحت التخطيط (Planning)", progress: 0,
+          team: [], raci: [], kpis: { schedulePerf:0, teamEfficiency:0, reworkReduction:0, skillGapClosure:0 }, lessons: [], idp: []
+        };
+        setProjects(prev => [...prev, newProj]);
+        setSelectedProject(projects.length);
+      }
+      function deleteProject(idx){
+        if(projects.length <= 1){ alert('يجب أن يتبقى مشروع واحد على الأقل.'); return; }
+        setProjects(prev => prev.filter((_,i) => i !== idx));
+        setSelectedProject(0);
+      }
+
+      // ---------- إدارة الفريق (DISC + Skills) ----------
+      function addTeamMember(name, disc){
+        if(!name) return;
+        updateProject(p => ({...p, team: [...p.team, { id: Date.now(), name, disc, skills: { bim:"Basic", p6:"Basic", qhse:"Basic", contract:"Basic", site:"Basic" } }]}));
+      }
+      function deleteTeamMember(id){
+        updateProject(p => ({...p, team: p.team.filter(m => m.id !== id)}));
+      }
+      function updateSkill(memberId, skillKey, level){
+        updateProject(p => ({...p, team: p.team.map(m => m.id === memberId ? {...m, skills: {...m.skills, [skillKey]: level}} : m)}));
+      }
+
+      // ---------- إدارة RACI ----------
+      function addRaciRow(task, r, a, c, i){
+        if(!task) return;
+        updateProject(p => ({...p, raci: [...p.raci, { id: Date.now(), task, r, a, c, i }]}));
+      }
+      function deleteRaciRow(id){
+        updateProject(p => ({...p, raci: p.raci.filter(row => row.id !== id)}));
+      }
+
+      // ---------- إدارة KPIs ----------
+      function updateKpi(key, value){
+        updateProject(p => ({...p, kpis: {...p.kpis, [key]: parseFloat(value) || 0}}));
+      }
+      function updateProgress(value){
+        updateProject(p => ({...p, progress: parseFloat(value) || 0}));
+      }
+
+      // ---------- إدارة الدروس المستفادة ----------
+      function addLesson(text){
+        if(!text) return;
+        updateProject(p => ({...p, lessons: [...p.lessons, { id: Date.now(), text }]}));
+      }
+      function deleteLesson(id){
+        updateProject(p => ({...p, lessons: p.lessons.filter(l => l.id !== id)}));
+      }
+
+      // ---------- إدارة IDP ----------
+      function addIdp(member, focus, plan){
+        if(!member || !focus) return;
+        updateProject(p => ({...p, idp: [...p.idp, { id: Date.now(), member, focus, plan }]}));
+      }
+      function deleteIdp(id){
+        updateProject(p => ({...p, idp: p.idp.filter(x => x.id !== id)}));
+      }
+
+      function addIdpBulk(items){
+        const fresh = items.filter(it => !currentProj.idp.some(x => x.member === it.member && x.focus === it.focus));
+        if(!fresh.length) return 0;
+        updateProject(p => ({...p, idp: [...p.idp, ...fresh.map((it, ix) => ({ id: Date.now() + ix, ...it }))]}));
+        return fresh.length;
+      }
+
+      return (
+        <div className="min-h-screen flex flex-col bg-slate-900 text-slate-100">
+
+          <header className="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 shadow-lg no-print">
+            <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-blue-600 text-white font-black text-xs px-2 py-1 rounded">HPTG</span>
+                  <h1 className="text-lg sm:text-xl font-bold text-white">{t.appTitle}</h1>
+                </div>
+                <p className="text-xs text-blue-400 font-semibold mt-1">
+                  إطار عمل: <span className="text-slate-200">{t.author}</span> ({t.authorTitle})
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button onClick={toggleLanguage} className="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg border border-slate-600 transition">
+                  🌐 {t.switchLang}
+                </button>
+                <button onClick={handlePrint} className="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1 transition">
+                  🖨️ {t.printPdf}
+                </button>
+                <button onClick={handleExportPdf} className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-4 py-2 rounded-lg font-bold shadow flex items-center gap-1 transition">
+                  📄 {t.exportPdf}
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <div className="print-only p-4 border-b border-black text-slate-900 mb-6">
+            <h1 className="text-2xl font-bold">{t.appTitle}</h1>
+            <p className="text-sm font-semibold">إعداد وتطوير: {t.author} - {t.authorTitle}</p>
+            <p className="text-xs text-slate-600">HPTG Governance & Black Box Initiative | Document Reference ID: HPTG-2026-X1</p>
+          </div>
+
+          <nav className="bg-slate-800/80 backdrop-blur border-b border-slate-700 no-print">
+            <div className="max-w-7xl mx-auto flex overflow-x-auto text-xs font-semibold">
+              {[
+                { id: 'portfolio', label: t.portfolio },
+                { id: 'profiling', label: t.profiling },
+                { id: 'structuring', label: t.structuring },
+                { id: 'monitoring', label: t.monitoring },
+                { id: 'optimization', label: t.optimization },
+                { id: 'gaps', label: t.gaps },
+                { id: 'report', label: t.finalReport }
+              ].map(tab => (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                  className={`px-5 py-3 whitespace-nowrap border-b-2 transition ${activeTab === tab.id ? 'border-blue-500 text-blue-400 bg-slate-700/50 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'}`}>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          <main id="hptg-main-content" className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+            {/* TAB 1: PORTFOLIO */}
+            {activeTab === 'portfolio' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center no-print flex-wrap gap-3">
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">📁 {t.portfolio}</h2>
+                  <NewProjectForm onAdd={addProject} t={t} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {projects.map((p, idx) => (
+                    <div key={p.id} onClick={() => setSelectedProject(idx)}
+                      className={`p-5 rounded-xl border cursor-pointer transition card-box ${selectedProject === idx ? 'bg-slate-800 border-blue-500 ring-2 ring-blue-500/20' : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'}`}>
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs font-bold text-blue-400 bg-blue-950 px-2 py-1 rounded">#{idx+1}</span>
+                        <button onClick={(e) => { e.stopPropagation(); deleteProject(idx); }} className="text-rose-400 hover:text-rose-300 text-xs no-print">🗑️</button>
+                      </div>
+                      <h3 className="font-bold text-base text-white mt-2">{p.name}</h3>
+                      <p className="text-xs text-slate-400 mt-1">{t.clientName}: <span className="text-slate-200">{p.client}</span></p>
+                      <div className="mt-4 space-y-1">
+                        <div className="flex justify-between text-xs text-slate-400">
+                          <span>{t.progress}</span><span className="font-bold text-emerald-400">{p.progress}%</span>
+                        </div>
+                        <div className="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                          <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${p.progress}%` }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: PROFILING */}
+            {activeTab === 'profiling' && (
+              <div className="space-y-6">
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 card-box">
+                  <h2 className="text-lg font-bold text-blue-400 border-b border-slate-700 pb-3">Phase 1: Profiling — {currentProj.name}</h2>
+
+                  <div className="space-y-3 no-print">
+                    <AddTeamMemberForm onAdd={addTeamMember} t={t} />
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-bold text-slate-200">{t.discProfile}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {currentProj.team.map((m) => (
+                        <div key={m.id} className="bg-slate-900/60 p-4 rounded-lg border border-slate-700 flex justify-between items-center">
+                          <div>
+                            <p className="font-bold text-white text-sm">{m.name}</p>
+                            <p className="text-xs text-blue-400 mt-1">النمط السلوكي: {m.disc}</p>
+                          </div>
+                          <button onClick={() => deleteTeamMember(m.id)} className="text-rose-400 hover:text-rose-300 text-xs no-print">🗑️</button>
+                        </div>
+                      ))}
+                      {currentProj.team.length === 0 && <p className="text-xs text-slate-500">لا يوجد أعضاء فريق بعد — أضف أول عضو من الفورم فوق.</p>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-slate-700">
+                    <h3 className="text-sm font-bold text-slate-200">{t.skillsMatrix} Heatmap</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-right text-slate-300">
+                        <thead className="bg-slate-900 text-slate-400">
+                          <tr>
+                            <th className="p-3">عضو الفريق</th>
+                            {SKILL_KEYS.map(k => <th key={k} className="p-3">{SKILL_LABELS[k]}</th>)}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-700">
+                          {currentProj.team.map((m) => (
+                            <tr key={m.id}>
+                              <td className="p-3 font-bold text-white">{m.name}</td>
+                              {SKILL_KEYS.map(k => (
+                                <td key={k} className="p-2">
+                                  <select value={m.skills[k]} onChange={(e) => updateSkill(m.id, k, e.target.value)}
+                                    className={`text-xs px-2 py-1 rounded font-semibold border-0 heat-${m.skills[k]} no-print-select`}>
+                                    {SKILL_LEVELS.map(lv => <option key={lv} value={lv}>{lv}</option>)}
+                                  </select>
+                                  <span className={`print-only px-2 py-1 rounded font-semibold heat-${m.skills[k]}`}>{m.skills[k]}</span>
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: STRUCTURING */}
+            {activeTab === 'structuring' && (
+              <div className="space-y-6">
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 card-box">
+                  <h2 className="text-lg font-bold text-blue-400 border-b border-slate-700 pb-3">Phase 2: Structuring — {t.raciMatrix}</h2>
+                  <div className="no-print">
+                    <SmartRaciPanel lang={lang} project={currentProj} onApply={addRaciRow} onOpenReport={() => { setActiveTab('gaps'); window.scrollTo(0,0); }} />
+                  </div>
+                  <div className="no-print">
+                    <AddRaciForm onAdd={addRaciRow} t={t} teamNames={currentProj.team.map(m=>m.name)} />
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-right text-slate-200">
+                      <thead className="bg-slate-900 text-slate-400">
+                        <tr>
+                          <th className="p-3">النشاط / المهمة الهندسية</th>
+                          <th className="p-3">{t.responsible}</th>
+                          <th className="p-3">{t.accountable}</th>
+                          <th className="p-3">{t.consulted}</th>
+                          <th className="p-3">{t.informed}</th>
+                          <th className="p-3 no-print">{t.actions}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-700">
+                        {currentProj.raci.map((r) => (
+                          <tr key={r.id}>
+                            <td className="p-3 font-bold text-white">{r.task}</td>
+                            <td className="p-3"><span className="bg-blue-900 text-blue-200 px-2 py-1 rounded">{r.r}</span></td>
+                            <td className="p-3"><span className="bg-amber-900 text-amber-200 px-2 py-1 rounded">{r.a}</span></td>
+                            <td className="p-3"><span className="bg-slate-700 text-slate-200 px-2 py-1 rounded">{r.c}</span></td>
+                            <td className="p-3"><span className="bg-slate-700 text-slate-200 px-2 py-1 rounded">{r.i}</span></td>
+                            <td className="p-3 no-print"><button onClick={() => deleteRaciRow(r.id)} className="text-rose-400 text-xs">🗑️</button></td>
+                          </tr>
+                        ))}
+                        {currentProj.raci.length === 0 && <tr><td colSpan="6" className="p-3 text-center text-slate-500">لا توجد أنشطة بعد</td></tr>}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: MONITORING */}
+            {activeTab === 'monitoring' && (
+              <div className="space-y-6">
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 card-box">
+                  <h2 className="text-lg font-bold text-blue-400 border-b border-slate-700 pb-3">Phase 3: Digital Monitoring — {t.kpis}</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      {key:'schedulePerf', label:'Schedule Performance (P6)', color:'text-blue-400'},
+                      {key:'teamEfficiency', label:'Team Efficiency', color:'text-emerald-400'},
+                      {key:'reworkReduction', label:'Rework Reduction', color:'text-amber-400'},
+                      {key:'skillGapClosure', label:'Skill Gap Closure', color:'text-purple-400'}
+                    ].map(kpi => (
+                      <div key={kpi.key} className="bg-slate-900 p-4 rounded-xl text-center border border-slate-700">
+                        <input type="number" min="0" max="100" value={currentProj.kpis[kpi.key]}
+                          onChange={(e) => updateKpi(kpi.key, e.target.value)}
+                          className={`w-full bg-transparent text-2xl font-black text-center outline-none no-print-input ${kpi.color}`} />
+                        <span className={`print-only text-2xl font-black ${kpi.color}`}>{currentProj.kpis[kpi.key]}%</span>
+                        <p className="text-xs text-slate-400 mt-1">{kpi.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="pt-3 border-t border-slate-700">
+                    <label className="text-xs text-slate-400 block mb-1">نسبة الإنجاز الإجمالية للمشروع (%)</label>
+                    <input type="number" min="0" max="100" value={currentProj.progress} onChange={(e) => updateProgress(e.target.value)}
+                      className="bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white w-32 no-print-input" />
+                    <span className="print-only text-sm font-bold text-white">{currentProj.progress}%</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: OPTIMIZATION */}
+            {activeTab === 'optimization' && (
+              <div className="space-y-6">
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 card-box">
+                  <h2 className="text-lg font-bold text-blue-400 border-b border-slate-700 pb-3">Phase 4: Optimization — {t.idp} & {t.lessonsLearned}</h2>
+
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-bold text-slate-200">{t.idp}</h3>
+                    <div className="no-print"><AddIdpForm onAdd={addIdp} t={t} teamNames={currentProj.team.map(m=>m.name)} /></div>
+                    <div className="space-y-2">
+                      {currentProj.idp.map(x => (
+                        <div key={x.id} className="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs flex justify-between items-start gap-2">
+                          <div>
+                            <p className="font-bold text-white">{x.member} — <span className="text-blue-400">{x.focus}</span></p>
+                            <p className="text-slate-400 mt-1">{x.plan}</p>
+                          </div>
+                          <button onClick={() => deleteIdp(x.id)} className="text-rose-400 no-print">🗑️</button>
+                        </div>
+                      ))}
+                      {currentProj.idp.length === 0 && <p className="text-xs text-slate-500">لا توجد خطط تطوير بعد</p>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-slate-700">
+                    <h3 className="text-sm font-bold text-slate-200">{t.lessonsLearned}</h3>
+                    <div className="no-print"><AddLessonForm onAdd={addLesson} /></div>
+                    <div className="space-y-2">
+                      {currentProj.lessons.map(l => (
+                        <div key={l.id} className="bg-slate-900 p-4 rounded-lg border-r-4 border-amber-500 text-xs text-slate-300 leading-relaxed flex justify-between items-start gap-2">
+                          <span>{l.text}</span>
+                          <button onClick={() => deleteLesson(l.id)} className="text-rose-400 no-print shrink-0">🗑️</button>
+                        </div>
+                      ))}
+                      {currentProj.lessons.length === 0 && <p className="text-xs text-slate-500">لا توجد دروس مسجلة بعد</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: GAPS & RECOMMENDATIONS */}
+            {activeTab === 'gaps' && (
+              <div className="space-y-6">
+                <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 card-box">
+                  <h2 className="text-lg font-bold text-blue-400 border-b border-slate-700 pb-3">Phase 5: Gap Analysis &amp; Performance Roadmap — {currentProj.name}</h2>
+                  <GapReport project={currentProj} lang={lang} onApplyIdp={addIdpBulk} />
+                </div>
+              </div>
+            )}
+
+            {/* TAB 6: FINAL REPORT */}
+            {activeTab === 'report' && (
+              <div className="bg-slate-800 p-8 rounded-xl border border-slate-700 space-y-6 card-box text-slate-200">
+                <div className="text-center border-b border-slate-700 pb-6">
+                  <h1 className="text-2xl font-extrabold text-white">{t.finalReport}</h1>
+                  <p className="text-sm text-blue-400 font-semibold mt-1">{currentProj.name}</p>
+                  <p className="text-xs text-slate-400 mt-1">{t.clientName}: {currentProj.client}</p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                  <div className="bg-slate-900 p-4 rounded-lg border border-slate-700"><p className="text-slate-400">Schedule Perf.</p><p className="text-xl font-bold text-blue-400 mt-1">{currentProj.kpis.schedulePerf}%</p></div>
+                  <div className="bg-slate-900 p-4 rounded-lg border border-slate-700"><p className="text-slate-400">Team Efficiency</p><p className="text-xl font-bold text-emerald-400 mt-1">{currentProj.kpis.teamEfficiency}%</p></div>
+                  <div className="bg-slate-900 p-4 rounded-lg border border-slate-700"><p className="text-slate-400">Rework Reduction</p><p className="text-xl font-bold text-amber-400 mt-1">{currentProj.kpis.reworkReduction}%</p></div>
+                  <div className="bg-slate-900 p-4 rounded-lg border border-slate-700"><p className="text-slate-400">Skill Gap Closure</p><p className="text-xl font-bold text-purple-400 mt-1">{currentProj.kpis.skillGapClosure}%</p></div>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-bold text-sm text-white border-b border-slate-700 pb-1">{t.discProfile} & {t.skillsMatrix}</h3>
+                  <table className="w-full table-fixed text-[11px] text-right border border-slate-700 break-words">
+                    <thead className="bg-slate-900 text-slate-400"><tr><th className="p-2 border border-slate-700">{lang === 'ar' ? 'عضو الفريق' : 'Member'}</th><th className="p-2 border border-slate-700">DISC</th>
+                      {SKILL_KEYS.map(k=><th key={k} className="p-2 border border-slate-700">{SKILL_LABELS[k]}</th>)}</tr></thead>
+                    <tbody>
+                      {currentProj.team.map(m => (
+                        <tr key={m.id}><td className="p-2 border border-slate-700 font-bold">{m.name}</td><td className="p-2 border border-slate-700">{m.disc}</td>
+                          {SKILL_KEYS.map(k=><td key={k} className="p-2 border border-slate-700">{m.skills[k]}</td>)}</tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-bold text-sm text-white border-b border-slate-700 pb-1">{t.raciMatrix}</h3>
+                  <table className="w-full text-xs text-right border border-slate-700">
+                    <thead className="bg-slate-900 text-slate-400"><tr><th className="p-2 border border-slate-700">{lang === 'ar' ? 'المهمة' : 'Task'}</th><th className="p-2 border border-slate-700">R</th><th className="p-2 border border-slate-700">A</th><th className="p-2 border border-slate-700">C</th><th className="p-2 border border-slate-700">I</th></tr></thead>
+                    <tbody>
+                      {currentProj.raci.map(r => (
+                        <tr key={r.id}><td className="p-2 border border-slate-700 font-bold">{r.task}</td><td className="p-2 border border-slate-700">{r.r}</td><td className="p-2 border border-slate-700">{r.a}</td><td className="p-2 border border-slate-700">{r.c}</td><td className="p-2 border border-slate-700">{r.i}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="font-bold text-sm text-white border-b border-slate-700 pb-1">{lang === 'ar' ? 'تقرير الفجوات والتوصيات وخارطة الطريق' : 'Gaps, Recommendations & Roadmap'}</h3>
+                  <GapReport project={currentProj} lang={lang} embedded={true} onApplyIdp={addIdpBulk} />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-bold text-sm text-white border-b border-slate-700 pb-1">{t.lessonsLearned}</h3>
+                  {currentProj.lessons.map(l => <p key={l.id} className="text-xs text-slate-300 leading-relaxed">• {l.text}</p>)}
+                  {currentProj.lessons.length === 0 && <p className="text-xs text-slate-500">—</p>}
+                </div>
+
+                <div className="pt-8 border-t border-slate-700 flex justify-between items-end text-xs">
+                  <div>
+                    <p className="font-bold text-white">اعتماد استشاري الإدارة والحوكمة:</p>
+                    <p className="text-blue-400 font-bold mt-1">{t.author}</p>
+                    <p className="text-slate-400">{t.authorTitle}</p>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-slate-500">{new Date().toLocaleDateString('ar-EG')}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </main>
+
+          <footer className="bg-slate-800 border-t border-slate-700 p-4 text-center text-xs text-slate-400 no-print">
+            <p>{t.allRightsReserved}</p>
+            <p className="mt-1 text-slate-500">تطوير وتصميم: {t.author}</p>
+          </footer>
+
+        </div>
+      );
+    }
+
+    // ---------- فورمات الإضافة (مكونات مساعدة) ----------
+    function NewProjectForm({ onAdd, t }){
+      const [name, setName] = useState('');
+      const [client, setClient] = useState('');
+      return (
+        <div className="flex flex-wrap gap-2">
+          <input value={name} onChange={e=>setName(e.target.value)} placeholder={t.projectName} className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+          <input value={client} onChange={e=>setClient(e.target.value)} placeholder={t.clientName} className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+          <button onClick={() => { onAdd(name, client); setName(''); setClient(''); }} className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold">+ {t.newProject}</button>
+        </div>
+      );
+    }
+
+    function AddTeamMemberForm({ onAdd, t }){
+      const [name, setName] = useState('');
+      const [disc, setDisc] = useState(DISC_TYPES[0]);
+      return (
+        <div className="flex flex-wrap gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+          <input value={name} onChange={e=>setName(e.target.value)} placeholder="اسم عضو الفريق" className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white flex-1 min-w-[140px]" />
+          <select value={disc} onChange={e=>setDisc(e.target.value)} className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+            {DISC_TYPES.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+          <button onClick={() => { onAdd(name, disc); setName(''); }} className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold">+ إضافة عضو</button>
+        </div>
+      );
+    }
+
+    function AddRaciForm({ onAdd, t, teamNames }){
+      const [task, setTask] = useState('');
+      const [r, setR] = useState('');
+      const [a, setA] = useState('');
+      const [c, setC] = useState('');
+      const [i, setI] = useState('');
+      return (
+        <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700 space-y-2">
+          <input value={task} onChange={e=>setTask(e.target.value)} placeholder="النشاط / المهمة" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <input value={r} onChange={e=>setR(e.target.value)} placeholder="R المسؤول" className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+            <input value={a} onChange={e=>setA(e.target.value)} placeholder="A المحاسب" className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+            <input value={c} onChange={e=>setC(e.target.value)} placeholder="C المستشار" className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+            <input value={i} onChange={e=>setI(e.target.value)} placeholder="I المُبلغ" className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+          </div>
+          <button onClick={() => { onAdd(task,r,a,c,i); setTask('');setR('');setA('');setC('');setI(''); }} className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold">+ إضافة نشاط RACI</button>
+        </div>
+      );
+    }
+
+    function AddLessonForm({ onAdd }){
+      const [text, setText] = useState('');
+      return (
+        <div className="flex gap-2">
+          <input value={text} onChange={e=>setText(e.target.value)} placeholder="اكتب الدرس المستفاد..." className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+          <button onClick={() => { onAdd(text); setText(''); }} className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold">+ إضافة</button>
+        </div>
+      );
+    }
+
+    function AddIdpForm({ onAdd, t, teamNames }){
+      const [member, setMember] = useState('');
+      const [focus, setFocus] = useState('');
+      const [plan, setPlan] = useState('');
+      return (
+        <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700 space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <input value={member} onChange={e=>setMember(e.target.value)} placeholder="اسم عضو الفريق" list="idp-members" className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+            <datalist id="idp-members">{teamNames.map(n=><option key={n} value={n} />)}</datalist>
+            <input value={focus} onChange={e=>setFocus(e.target.value)} placeholder="مجال التطوير المستهدف" className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" />
+          </div>
+          <textarea value={plan} onChange={e=>setPlan(e.target.value)} placeholder="خطة التطوير التفصيلية" rows="2" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"></textarea>
+          <button onClick={() => { onAdd(member,focus,plan); setMember('');setFocus('');setPlan(''); }} className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-bold">+ إضافة خطة تطوير</button>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<HptgApp />);
+  </script>
+</body>
+</html>
