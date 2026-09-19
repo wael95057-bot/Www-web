@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="h-full bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stakeholder Smart-Link (SSL) - Platform Module</title>
+  
+  <!-- Tailwind CSS & FontAwesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- html2pdf.js for PDF Exporting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#0c4a6e',
+              accent: '#f59e0b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; }
+      .bg-slate-800, .bg-slate-900 { background: white !important; color: black !important; border: 1px solid #ccc; }
+    }
+    .print-only { display: none; }
+    .section-toolbar{ display:flex; gap:8px; margin-bottom:14px; }
+    .section-toolbar button{ font-size:11px; font-weight:700; padding:6px 12px; border-radius:8px; border:1px solid #334155; cursor:pointer; background:#1e293b; color:#cbd5e1; }
+    .section-toolbar button.pdf-btn{ background:#0369a1; color:#fff; border-color:#0369a1; }
+    @media print{
+      body.printing-one *{ visibility:hidden !important; }
+      body.printing-one .print-active, body.printing-one .print-active *{ visibility:visible !important; }
+      body.printing-one .print-active{ position:absolute; top:0; left:0; width:100%; padding:16px; background:#fff !important; color:#000 !important; }
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- ============ بوابة تسجيل دخول الشركة (Company ID) ============ -->
+  <div id="sslLoginGate" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#0f172a;">
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:28px;max-width:380px;width:100%;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:28px;">🔗</div>
+        <h2 style="color:#fff;font-weight:900;font-size:16px;margin:6px 0 4px;">SSL — تسجيل دخول الشركة</h2>
+        <p style="color:#94a3b8;font-size:11px;line-height:1.7;">كل شركة أو عضو ليه معرّف وكلمة سر منفصلة، وبياناته محفوظة لوحده من غير أي تداخل مع شركات تانية.</p>
+      </div>
+      <label style="color:#94a3b8;font-size:12px;display:block;margin-bottom:4px;">معرّف الدخول (Company / Member ID)</label>
+      <input id="sslLoginId" type="text" placeholder="مثال: bena-pm-2026" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#fff;margin-bottom:10px;">
+      <label style="color:#94a3b8;font-size:12px;display:block;margin-bottom:4px;">كلمة السر</label>
+      <input id="sslLoginPw" type="password" placeholder="كلمة سر" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#fff;margin-bottom:6px;" onkeydown="if(event.key==='Enter') sslAttemptLogin();">
+      <div id="sslLoginError" style="color:#f87171;font-size:11px;text-align:center;min-height:16px;margin-bottom:6px;"></div>
+      <button onclick="sslAttemptLogin()" style="width:100%;background:#0369a1;color:#fff;font-weight:800;padding:11px;border:none;border-radius:8px;cursor:pointer;font-size:13px;">دخول / تفعيل مباشر</button>
+      <p style="color:#64748b;font-size:10px;text-align:center;margin-top:10px;">أول مرة تكتب فيها معرّف جديد، هيتسجل تلقائياً بكلمة السر دي — مفيش انتظار موافقة.</p>
+    </div>
+  </div>
+
+  <!-- TOP HEADER / NAVBAR -->
+  <header id="sslHeader" style="display:none;" class="no-print bg-slate-800 border-b border-slate-700 px-4 sm:px-6 py-4 flex flex-wrap justify-between items-center shadow-lg gap-3">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="p-2 bg-brand-600 rounded-lg text-white">
+        <i class="fa-solid me-1 fa-diagram-project text-2xl"></i>
+      </div>
+      <div>
+        <h1 class="text-base sm:text-xl font-bold text-white tracking-wide" data-i18n="appTitle">Stakeholder Smart-Link (SSL)</h1>
+        <p class="text-[10px] sm:text-xs text-brand-accent font-medium" data-i18n="appSubtitle">The Digital Trust Bridge | Engr. Wael Ali Ewis Mahmoud</p>
+      </div>
+    </div>
+
+    <!-- Actions & Translation Header Bar -->
+    <div class="flex items-center flex-wrap gap-2 w-full md:w-auto">
+      <!-- Active Project Selector -->
+      <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 flex-1 md:flex-none min-w-0">
+        <i class="fa-solid fa-folder-open text-brand-accent text-sm shrink-0"></i>
+        <select id="projectSelector" onchange="switchProject(this.value)" class="bg-transparent text-sm font-semibold focus:outline-none text-slate-200 w-full min-w-0">
+          <!-- Populated by JS, grouped by project type -->
+        </select>
+      </div>
+
+      <!-- Language Toggle -->
+      <button onclick="toggleLanguage()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition flex items-center gap-2">
+        <i class="fa-solid fa-globe text-brand-500"></i>
+        <span id="langLabel">English</span>
+      </button>
+
+      <!-- Logout Button -->
+      <button onclick="if(confirm('تسجيل خروج من حساب الشركة؟')) sslLogout();" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+        <i class="fa-solid fa-arrow-right-from-bracket text-rose-400"></i>
+      </button>
+
+      <!-- Print Page Button -->
+      <button onclick="window.print()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+        <i class="fa-solid fa-print"></i>
+        <span data-i18n="print">طباعة</span>
+      </button>
+
+      <!-- PDF Page Button -->
+      <button onclick="exportCurrentPagePDF()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow">
+        <i class="fa-solid fa-file-pdf"></i>
+        <span data-i18n="exportPdf">تصدير PDF</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div id="sslMainWrapper" style="display:none;" class="flex-1 flex overflow-hidden relative">
+
+    <!-- SIDEBAR OVERLAY (mobile only) -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="no-print hidden fixed inset-0 bg-black/60 z-30 md:hidden"></div>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar" class="no-print w-72 max-w-[80vw] bg-slate-800 border-l border-slate-700 flex flex-col justify-between p-4 overflow-y-auto
+      fixed inset-y-0 z-40 transform translate-x-full transition-transform duration-300 ease-in-out
+      md:static md:translate-x-0 md:z-auto md:w-64 md:max-w-none">
+      <div class="flex justify-end mb-2 md:hidden">
+        <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <nav class="space-y-1">
+        <button onclick="navigate('projects')" id="nav-projects" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-briefcase w-5 text-center text-brand-500"></i>
+          <span data-i18n="navProjects">سجل المشاريع</span>
+        </button>
+
+        <button onclick="navigate('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition bg-brand-600 text-white shadow">
+          <i class="fa-solid fa-chart-line w-5 text-center"></i>
+          <span data-i18n="navDashboard">لوحة القيادة QAI</span>
+        </button>
+
+        <button onclick="navigate('register')" id="nav-register" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-users-gear w-5 text-center text-brand-500"></i>
+          <span data-i18n="navRegister">سجل أصحاب المصلحة</span>
+        </button>
+
+        <button onclick="navigate('matrices')" id="nav-matrices" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-cubes w-5 text-center text-brand-500"></i>
+          <span data-i18n="navMatrices">المصادقة والمصفوفات</span>
+        </button>
+
+        <button onclick="navigate('engagement')" id="nav-engagement" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-arrows-left-right w-5 text-center text-brand-500"></i>
+          <span data-i18n="navEngagement">مصفوفة تقييم المشاركة</span>
+        </button>
+
+        <button onclick="navigate('sla_sow')" id="nav-sla_sow" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-file-contract w-5 text-center text-brand-500"></i>
+          <span data-i18n="navSlaSow">اتفاقيات SLA / SOW / RACI</span>
+        </button>
+
+        <button onclick="navigate('transactions')" id="nav-transactions" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-hourglass-half w-5 text-center text-brand-500"></i>
+          <span>معاملات SLA (الرادار)</span>
+        </button>
+
+        <button onclick="navigate('clauses')" id="nav-clauses" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-gavel w-5 text-center text-brand-500"></i>
+          <span data-i18n="navClauses">مصفوفة بنود العقد</span>
+        </button>
+
+        <button onclick="navigate('full_report')" id="nav-full_report" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition text-slate-300 hover:bg-slate-700">
+          <i class="fa-solid fa-file-invoice w-5 text-center text-brand-accent"></i>
+          <span data-i18n="navFullReport">التقرير الشامل</span>
+        </button>
+      </nav>
+
+      <!-- AUTHOR CREDITS BANNER -->
+      <div class="mt-6 p-3 bg-slate-900/80 border border-slate-700/60 rounded-xl text-center">
+        <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1" data-i18n="designedBy">Designed & Developed By</p>
+        <p class="text-xs font-bold text-slate-100">Engr. Wael Ali Ewis Mahmoud</p>
+        <p class="text-[10px] text-brand-accent mt-0.5">Senior Project Manager | PMP® | FIDIC | QAI</p>
+      </div>
+    </aside>
+
+    <!-- CONTENT DISPLAY AREA -->
+    <main id="pdfContainer" class="flex-1 bg-slate-900 p-6 overflow-y-auto">
+
+      <!-- HEADER STAMP FOR PDF / PRINT COPIES -->
+      <div class="print-only mb-6 border-b-2 border-slate-900 pb-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-2xl font-bold">Stakeholder Smart-Link (SSL) Governance Report</h1>
+            <p class="text-sm font-semibold text-slate-700">Lead Visionary: Engr. Wael Ali Ewis Mahmoud (PMP® | FIDIC | QAI)</p>
+          </div>
+          <div class="text-left text-xs">
+            <p><strong>Date:</strong> <span id="printDate"></span></p>
+            <p><strong>Project:</strong> <span id="printProjectName"></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: PROJECTS MANAGEMENT REGISTER -->
+      <section id="view-projects" class="space-y-6 hidden">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-projects')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-projects','SSL_Projects.pdf')">📄 حفظ PDF</button></div>
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-briefcase text-brand-500"></i>
+              <span data-i18n="projectRegisterTitle">سجل حوكمة المشاريع</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="projectRegisterDesc">إضافة، تعديل، وإدارة المشاريع النشطة على المنصة</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportProjectsBackup()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-download"></i> حفظ نسخة (Backup)
+            </button>
+            <label class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
+              <i class="fa-solid fa-upload"></i> استيراد نسخة
+              <input type="file" accept=".json" onchange="importProjectsBackup(event)" class="hidden">
+            </label>
+            <button onclick="openProjectModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-sm font-bold flex items-center gap-2 transition shadow">
+              <i class="fa-solid fa-plus"></i>
+              <span data-i18n="addProject">إضافة مشروع جديد</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projectsGrid">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </section>
+
+      <!-- VIEW 2: QAI DASHBOARD -->
+      <section id="view-dashboard" class="space-y-6">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-dashboard')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-dashboard','SSL_Dashboard.pdf')">📄 حفظ PDF</button></div>
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-brand-500"></i>
+              <span data-i18n="dashTitle">لوحة التحليلات والتنبؤات الذكية (QAI)</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="dashSubtitle">مراقبة صحة العلاقات وتنبؤات المخاطر الاستباقية</p>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <p class="text-xs text-slate-400" data-i18n="totalStakeholders">إجمالي أصحاب المصلحة</p>
+            <h3 class="text-2xl font-bold text-white mt-1" id="dashTotalCount">0</h3>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <p class="text-xs text-slate-400" data-i18n="definitiveCount">أطراف حاسمة (Definitive)</p>
+            <h3 class="text-2xl font-bold text-red-400 mt-1" id="dashDefinitiveCount">0</h3>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <p class="text-xs text-slate-400" data-i18n="slaCompliance">نسبة الالتزام بالـ SLA</p>
+            <h3 id="dashSlaCompliance" class="text-2xl font-bold text-slate-500 mt-1">—</h3>
+            <p id="dashSlaNote" class="text-[10px] text-slate-500 mt-0.5"></p>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <p class="text-xs text-slate-400" data-i18n="activeRiskAlerts">تنبيهات المخاطر النشطة</p>
+            <h3 class="text-2xl font-bold text-brand-accent mt-1" id="dashActiveAlertsCount">0</h3>
+          </div>
+        </div>
+
+        <!-- Predictive Risk Radar (dynamic — يقرأ من محرك المخاطر) -->
+        <div id="riskRadarPanel" class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h3 class="text-md font-bold text-white flex items-center gap-2 flex-wrap">
+              <i class="fa-solid fa-robot text-brand-accent"></i>
+              <span data-i18n="aiRiskRadar">رادار التنبؤ الاستباقي للمخاطر (QAI Risk Alerts)</span>
+              <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-950/50 border border-emerald-800 rounded-full px-2 py-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span id="radarLiveLabel">مباشر</span></span>
+            </h3>
+            <div class="flex items-center gap-2 no-print">
+              <button id="radarNotifyBtn" onclick="enableRadarNotifications()" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px] font-bold text-slate-200">تفعيل تنبيهات المتصفح</button>
+              <button onclick="toggleRadarSettings()" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs text-slate-200" title="إعدادات الرادار"><i class="fa-solid fa-sliders"></i></button>
+            </div>
+          </div>
+
+          <div id="radarSettings" class="hidden no-print grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-900/60 border border-slate-700 rounded-lg p-3 text-[11px] text-slate-400">
+            <label class="block"><span id="radarLblWarn">حد التحذير (%)</span><input id="radarWarn" type="number" min="10" max="95" onchange="updateRadarConfig()" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white"></label>
+            <label class="block"><span id="radarLblCrit">حد الإنذار الأحمر (%)</span><input id="radarCrit" type="number" min="15" max="120" onchange="updateRadarConfig()" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white"></label>
+            <label class="block"><span id="radarLblContact">أيام بلا تواصل قبل التنبيه</span><input id="radarContact" type="number" min="1" max="60" onchange="updateRadarConfig()" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white"></label>
+            <label class="flex items-end gap-2 pb-1.5"><input id="radarWeekend" type="checkbox" onchange="updateRadarConfig()" class="rounded bg-slate-900 border-slate-700"><span id="radarLblWeekend">استبعاد الجمعة والسبت من حساب المهلة</span></label>
+          </div>
+
+          <div id="radarSummary" class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center"></div>
+          <div class="space-y-3" id="aiAlertsList"></div>
+          <div id="radarHistory" class="bg-slate-900/50 border border-slate-700 rounded-lg p-3"></div>
+          <details class="bg-slate-900/50 border border-slate-700 rounded-lg p-3">
+            <summary id="radarNeutralizedTitle" class="text-xs font-bold text-slate-300 cursor-pointer"></summary>
+            <div id="radarNeutralized" class="mt-2"></div>
+          </details>
+          <p id="radarUpdated" class="text-[10px] text-slate-500"></p>
+        </div>
+      </section>
+
+      <!-- VIEW 3: STAKEHOLDER REGISTER -->
+      <section id="view-register" class="space-y-6 hidden">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-register')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-register','SSL_Stakeholder_Register.pdf')">📄 حفظ PDF</button></div>
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-users-gear text-brand-500"></i>
+              <span data-i18n="registerTitle">السجل الرقمي الحي لأصحاب المصلحة</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="registerSubtitle">قاعدة البيانات المركزية لإدارة وتصنيف الأدوار</p>
+          </div>
+          <button onclick="openStakeholderModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-sm font-bold flex items-center gap-2 transition shadow">
+            <i class="fa-solid fa-user-plus"></i>
+            <span data-i18n="addStakeholder">إضافة طرف جديد</span>
+          </button>
+        </div>
+
+        <!-- Stakeholders Table -->
+        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-x-auto">
+          <table class="w-full text-right text-sm text-slate-300">
+            <thead class="bg-slate-900/80 text-xs text-slate-400 uppercase border-b border-slate-700">
+              <tr>
+                <th class="p-3" data-i18n="tblName">الكيان / الاسم</th>
+                <th class="p-3" data-i18n="tblRole">الدور بالمشروع</th>
+                <th class="p-3" data-i18n="tblAttributes">الخصائص (P / L / U)</th>
+                <th class="p-3" data-i18n="tblSalience">نموذج البروز</th>
+                <th class="p-3" data-i18n="tblStrategy">استراتيجية التعامل</th>
+                <th class="p-3 text-center" data-i18n="tblActions">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="stakeholderTableBody" class="divide-y divide-slate-700">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 4: MATRICES & CLASSIFICATION -->
+      <section id="view-matrices" class="space-y-6 hidden">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-matrices')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-matrices','SSL_Matrices.pdf')">📄 حفظ PDF</button></div>
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-cubes text-brand-500"></i>
+            <span data-i18n="matricesTitle">المصادقة والمصفوفات التفاعلية</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1" data-i18n="matricesSubtitle">تحديد الأولويات، تصنيف القوة والاهتمام، وتقييم المشاركة</p>
+        </div>
+
+        <!-- Power / Interest Grid (2x2 Matrix) -->
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
+          <h3 class="text-md font-bold text-white" data-i18n="piMatrixTitle">مصفوفة القوة والاهتمام (Power / Interest Matrix)</h3>
+          <div class="grid grid-cols-2 gap-4 h-80 text-xs text-center font-bold">
+            <div class="bg-red-950/30 border border-red-700/50 p-3 rounded-xl flex flex-col justify-between">
+              <span class="text-red-400" data-i18n="quad1">إدارة عن قرب (Manage Closely) - قوة عالية / اهتمام عالٍ</span>
+              <div id="quad-manage" class="flex flex-wrap gap-1 justify-center my-auto"></div>
+            </div>
+            <div class="bg-amber-950/30 border border-amber-700/50 p-3 rounded-xl flex flex-col justify-between">
+              <span class="text-amber-400" data-i18n="quad2">إبقاء مطلعاً (Keep Informed) - قوة منخفضة / اهتمام عالٍ</span>
+              <div id="quad-informed" class="flex flex-wrap gap-1 justify-center my-auto"></div>
+            </div>
+            <div class="bg-blue-950/30 border border-blue-700/50 p-3 rounded-xl flex flex-col justify-between">
+              <span class="text-blue-400" data-i18n="quad3">إبقاء قانعاً (Keep Satisfied) - قوة عالية / اهتمام منخفض</span>
+              <div id="quad-satisfied" class="flex flex-wrap gap-1 justify-center my-auto"></div>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-700 p-3 rounded-xl flex flex-col justify-between">
+              <span class="text-slate-400" data-i18n="quad4">مراقبة فقط (Monitor) - قوة منخفضة / اهتمام منخفض</span>
+              <div id="quad-monitor" class="flex flex-wrap gap-1 justify-center my-auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4.5: ENGAGEMENT ASSESSMENT MATRIX (Current vs Desired) -->
+      <section id="view-engagement" class="space-y-6 hidden">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-engagement')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-engagement','SSL_Engagement_Matrix.pdf')">📄 حفظ PDF</button></div>
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrows-left-right text-brand-500"></i>
+            <span>مصفوفة تقييم المشاركة (Current vs Desired)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">حدّد مستوى المشاركة الحالي والمطلوب لكل صاحب مصلحة — الفجوة بينهم بتحدد خطة العمل</p>
+        </div>
+        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-x-auto">
+          <table class="w-full text-right text-xs text-slate-300">
+            <thead class="bg-slate-900/80 text-slate-400 uppercase border-b border-slate-700">
+              <tr>
+                <th class="p-3">الكيان</th>
+                <th class="p-3">المستوى الحالي</th>
+                <th class="p-3">المستوى المطلوب</th>
+                <th class="p-3">الفجوة</th>
+                <th class="p-3 no-print">آخر تواصل</th>
+              </tr>
+            </thead>
+            <tbody id="engagementTableBody" class="divide-y divide-slate-700"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 5: SLA / SOW / RACI GOVERNANCE -->
+      <section id="view-sla_sow" class="space-y-6 hidden">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-sla_sow')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-sla_sow','SSL_SLA_SOW_RACI.pdf')">📄 حفظ PDF</button></div>
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-file-contract text-brand-500"></i>
+            <span data-i18n="govTitle">حاوية الحوكمة التشغيلية (SLA / SOW / RACI)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1" data-i18n="govSubtitle">ضبط الاتفاقيات الخدمية، حدود نطاق العمل، وتوزيع المسؤوليات</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- SLA Matrix Table -->
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-clock text-brand-accent"></i>
+              <span data-i18n="slaTableTitle">اتفاقية مستوى الخدمة (SLA Matrix)</span>
+            </h3>
+            <div class="grid grid-cols-3 gap-2 no-print">
+              <input type="text" id="sla-service" placeholder="الخدمة" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+              <input type="text" id="sla-target" placeholder="الزمن المعتمد" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+              <input type="text" id="sla-escalation" placeholder="مسار التصعيد" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+            </div>
+            <button onclick="addSlaRow()" class="no-print w-full py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded">+ إضافة بند SLA</button>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-slate-300">
+                <thead class="bg-slate-900 text-slate-400 uppercase border-b border-slate-700">
+                  <tr>
+                    <th class="p-2" data-i18n="slaService">الخدمة</th>
+                    <th class="p-2" data-i18n="slaTarget">الزمن المعتمد</th>
+                    <th class="p-2" data-i18n="slaEscalation">مسار التصعيد</th>
+                    <th class="p-2 no-print">حذف</th>
+                  </tr>
+                </thead>
+                <tbody id="slaTableBody" class="divide-y divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- RACI Matrix Table -->
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-sitemap text-brand-accent"></i>
+              <span data-i18n="raciTableTitle">مصفوفة المسؤوليات (RACI Matrix)</span>
+            </h3>
+            <div class="grid grid-cols-2 gap-2 no-print">
+              <input type="text" id="raci-task" placeholder="المهمة / النشاط" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white col-span-2">
+              <select id="raci-pm" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"><option>R</option><option>A</option><option>C</option><option>I</option></select>
+              <select id="raci-consultant" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"><option>R</option><option>A</option><option>C</option><option>I</option></select>
+              <select id="raci-sub" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white col-span-2"><option>R</option><option>A</option><option>C</option><option>I</option></select>
+            </div>
+            <button onclick="addRaciRow()" class="no-print w-full py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded">+ إضافة نشاط RACI</button>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-slate-300 text-center">
+                <thead class="bg-slate-900 text-slate-400 uppercase border-b border-slate-700">
+                  <tr>
+                    <th class="p-2 text-right" data-i18n="raciTask">المهمة / النشاط</th>
+                    <th class="p-2">PM</th>
+                    <th class="p-2">Consultant</th>
+                    <th class="p-2">Subcontractor</th>
+                    <th class="p-2 no-print">حذف</th>
+                  </tr>
+                </thead>
+                <tbody id="raciTableBody" class="divide-y divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conflict Cost & Time Impact Calculator -->
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-calculator text-brand-accent"></i>
+            <span>حاسبة الأثر المالي والزمني لخرق SLA (Conflict Cost Calculator)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 no-print">
+            <div><label class="block text-slate-400 text-xs mb-1">أيام التأخير عن الـ SLA</label><input type="number" id="ccDays" oninput="calcConflictCost()" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"></div>
+            <div><label class="block text-slate-400 text-xs mb-1">التكلفة اليومية للمعدات/العمالة المتوقفة ($)</label><input type="number" id="ccDailyCost" oninput="calcConflictCost()" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"></div>
+            <div><label class="block text-slate-400 text-xs mb-1">أيام التأخير المتوقعة على المسار الحرج</label><input type="number" id="ccCriticalDays" oninput="calcConflictCost()" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-slate-900 p-3 rounded-lg border border-slate-700"><span class="text-[11px] text-slate-400 block">التكلفة التقديرية للتأخير</span><span class="text-xl font-black text-red-400" id="ccResultCost">$0</span></div>
+            <div class="bg-slate-900 p-3 rounded-lg border border-slate-700"><span class="text-[11px] text-slate-400 block">التأثير على المسار الحرج</span><span class="text-xl font-black text-amber-400" id="ccResultDays">0 يوم</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5.2: SLA TRANSACTIONS (مصدر بيانات الرادار) -->
+      <section id="view-transactions" class="space-y-6 hidden">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-transactions')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-transactions','SSL_SLA_Transactions.pdf')">📄 حفظ PDF</button></div>
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-hourglass-half text-brand-500"></i>
+            <span>معاملات SLA الجارية (تغذية الرادار)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">سجّل كل معاملة مرسلة لطرف ينتظر رده (اعتماد Shop Drawings، RFI ...). الرادار بيحسب مؤشر الخطر لحظياً ويطلق الإنذار قبل خرق المهلة.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 no-print">
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-2 text-xs">
+            <input type="text" id="tx-title" placeholder="اسم / مرجع المعاملة" class="md:col-span-2 bg-slate-900 border border-slate-700 rounded p-2 text-white">
+            <select id="tx-sla" onchange="onTxSlaChange()" class="bg-slate-900 border border-slate-700 rounded p-2 text-white"></select>
+            <select id="tx-stk" class="bg-slate-900 border border-slate-700 rounded p-2 text-white"></select>
+            <input type="datetime-local" id="tx-sent" class="bg-slate-900 border border-slate-700 rounded p-2 text-white">
+            <input type="number" id="tx-days" min="0.1" step="0.5" placeholder="المهلة (أيام)" class="bg-slate-900 border border-slate-700 rounded p-2 text-white">
+          </div>
+          <button onclick="addTransaction()" class="w-full py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded">+ تسجيل معاملة</button>
+        </div>
+        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-x-auto">
+          <table class="w-full text-right text-xs text-slate-300">
+            <thead class="bg-slate-900/80 text-slate-400 uppercase border-b border-slate-700">
+              <tr><th class="p-3">المعاملة</th><th class="p-3">الطرف المسؤول</th><th class="p-3">تاريخ الإرسال</th><th class="p-3">المهلة</th><th class="p-3">المنقضي</th><th class="p-3">مؤشر الخطر</th><th class="p-3">الحالة</th><th class="p-3 no-print">إجراءات</th></tr>
+            </thead>
+            <tbody id="txTableBody" class="divide-y divide-slate-700"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 5.5: CONTRACT CLAUSES RISK MATRIX -->
+      <section id="view-clauses" class="space-y-6 hidden">
+        <div class="section-toolbar no-print"><button onclick="printSection('view-clauses')">🖨️ طباعة</button><button class="pdf-btn" onclick="downloadSectionPdf('view-clauses','SSL_Contract_Clauses.pdf')">📄 حفظ PDF</button></div>
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-gavel text-brand-500"></i>
+            <span>مصفوفة بنود العقد الحرجة (Contract Clauses Risk Matrix)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">ربط الأنشطة اليومية بالبنود التعاقدية الحرجة لتفادي الغرامات وتفويت مهل الإشعار</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 no-print">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <input type="text" id="clause-name" placeholder="البند التعاقدي" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+            <input type="text" id="clause-owner" placeholder="الجهة المسؤولة" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+            <select id="clause-risk" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"><option value="HIGH">مرتفع (HIGH)</option><option value="MEDIUM">متوسط (MEDIUM)</option><option value="LOW">منخفض (LOW)</option></select>
+            <input type="text" id="clause-mitigation" placeholder="استراتيجية المعالجة">
+          </div>
+          <button onclick="addClauseRow()" class="w-full py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded">+ إضافة بند</button>
+        </div>
+        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-x-auto">
+          <table class="w-full text-right text-xs text-slate-300">
+            <thead class="bg-slate-900/80 text-slate-400 uppercase border-b border-slate-700">
+              <tr><th class="p-3">البند التعاقدي</th><th class="p-3">الجهة المسؤولة</th><th class="p-3">مستوى الخطورة</th><th class="p-3">استراتيجية المعالجة</th><th class="p-3">إشعار آلي مفعّل</th><th class="p-3 no-print">حذف</th></tr>
+            </thead>
+            <tbody id="clausesTableBody" class="divide-y divide-slate-700"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 6: COMPREHENSIVE FULL REPORT -->
+      <section id="view-full_report" class="space-y-6 hidden">
+        <div class="border-b border-slate-800 pb-4 no-print flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-file-invoice text-brand-accent"></i>
+              <span data-i18n="fullReportTitle">التقرير الاستراتيجي الشامل للمشروع</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="fullReportSubtitle">تقرير حوكمة موحد جاهز للطباعة والتصدير</p>
+          </div>
+          <button onclick="exportCurrentPagePDF()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-2 shadow">
+            <i class="fa-solid fa-file-pdf"></i>
+            <span data-i18n="exportPdf">طباعة / تصدير PDF</span>
+          </button>
+        </div>
+
+        <!-- FULL REPORT PRINTABLE BODY -->
+        <div class="bg-slate-800 p-8 rounded-xl border border-slate-700 space-y-8 text-slate-200">
+          <!-- Document Header -->
+          <div class="border-b border-slate-700 pb-6 text-center space-y-2">
+            <h1 class="text-2xl font-bold text-white tracking-wide">STAKEHOLDER SMART-LINK (SSL) GOVERNANCE REPORT</h1>
+            <p class="text-sm font-semibold text-brand-accent">The Digital Trust Bridge Ecosystem</p>
+            <div class="text-xs text-slate-400 flex justify-center gap-6 mt-3">
+              <span><strong>Lead Champion:</strong> Engr. Wael Ali Ewis Mahmoud</span>
+              <span><strong>Credentials:</strong> PMP® | FIDIC | QAI</span>
+              <span><strong>Project:</strong> <span id="reportProjectTitle" class="text-white font-bold"></span></span>
+            </div>
+          </div>
+
+          <!-- Section 1: Executive Summary -->
+          <div class="space-y-2">
+            <h3 class="text-md font-bold text-brand-500 border-b border-slate-700 pb-1">1. EXECUTIVE SUMMARY & QAI ALERTS</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              This governance report outlines the active stakeholder strategy, risk predictions, and compliance matrices established under the SSL framework. The primary objective is eliminating randomness, resolving conflict before escalation, and securing full audit trails.
+            </p>
+          </div>
+
+          <!-- Section 2: Stakeholder Classifications -->
+          <div class="space-y-3">
+            <h3 class="text-md font-bold text-brand-500 border-b border-slate-700 pb-1">2. ACTIVE STAKEHOLDER REGISTER SUMMARY</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border border-slate-700 text-right">
+                <thead class="bg-slate-900 text-slate-300">
+                  <tr>
+                    <th class="p-2 border border-slate-700">Entity</th>
+                    <th class="p-2 border border-slate-700">Project Role</th>
+                    <th class="p-2 border border-slate-700">Salience Category</th>
+                    <th class="p-2 border border-slate-700">Engagement Strategy</th>
+                  </tr>
+                </thead>
+                <tbody id="reportStakeholderTable" class="divide-y divide-slate-700">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 3: Power/Interest Matrix Summary -->
+          <div class="space-y-3">
+            <h3 class="text-md font-bold text-brand-500 border-b border-slate-700 pb-1">3. POWER / INTEREST MATRIX</h3>
+            <div id="reportPowerInterest" class="grid grid-cols-2 gap-3 text-xs"></div>
+          </div>
+
+          <!-- Section 4: Engagement Assessment Matrix -->
+          <div class="space-y-3">
+            <h3 class="text-md font-bold text-brand-500 border-b border-slate-700 pb-1">4. ENGAGEMENT ASSESSMENT MATRIX (Current vs Desired)</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border border-slate-700 text-right">
+                <thead class="bg-slate-900 text-slate-300"><tr>
+                  <th class="p-2 border border-slate-700">Entity</th><th class="p-2 border border-slate-700">Current</th>
+                  <th class="p-2 border border-slate-700">Desired</th><th class="p-2 border border-slate-700">Gap</th>
+                </tr></thead>
+                <tbody id="reportEngagementTable" class="divide-y divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 5: SLA Matrix -->
+          <div class="space-y-3">
+            <h3 class="text-md font-bold text-brand-500 border-b border-slate-700 pb-1">5. SERVICE LEVEL AGREEMENT (SLA) MATRIX</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border border-slate-700 text-right">
+                <thead class="bg-slate-900 text-slate-300"><tr>
+                  <th class="p-2 border border-slate-700">Service</th><th class="p-2 border border-slate-700">Target</th><th class="p-2 border border-slate-700">Escalation</th>
+                </tr></thead>
+                <tbody id="reportSlaTable" class="divide-y divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 6: RACI Matrix -->
+          <div class="space-y-3">
+            <h3 class="text-md font-bold text-brand-500 border-b border-slate-700 pb-1">6. RACI MATRIX</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border border-slate-700 text-center">
+                <thead class="bg-slate-900 text-slate-300"><tr>
+                  <th class="p-2 border border-slate-700 text-right">Task</th><th class="p-2 border border-slate-700">PM</th>
+                  <th class="p-2 border border-slate-700">Consultant</th><th class="p-2 border border-slate-700">Subcontractor</th>
+                </tr></thead>
+                <tbody id="reportRaciTable" class="divide-y divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 7: Contract Clauses Risk Matrix -->
+          <div class="space-y-3">
+            <h3 class="text-md font-bold text-brand-500 border-b border-slate-700 pb-1">7. CONTRACT CLAUSES RISK MATRIX</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border border-slate-700 text-right">
+                <thead class="bg-slate-900 text-slate-300"><tr>
+                  <th class="p-2 border border-slate-700">Clause</th><th class="p-2 border border-slate-700">Owner</th>
+                  <th class="p-2 border border-slate-700">Risk</th><th class="p-2 border border-slate-700">Mitigation</th>
+                </tr></thead>
+                <tbody id="reportClausesTable" class="divide-y divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 8: Strategic Sign-Off Stamp -->
+          <div class="pt-8 border-t border-slate-700 flex justify-between items-end text-xs">
+            <div>
+              <p class="font-bold text-white">Engr. Wael Ali Ewis Mahmoud</p>
+              <p class="text-slate-400">Senior Project Manager & SSL Lead Champion</p>
+            </div>
+            <div class="text-center">
+              <div class="w-32 h-12 border-2 border-dashed border-slate-600 rounded flex items-center justify-center text-[10px] text-slate-500">
+                OFFICIAL DIGITAL STAMP
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: ADD/EDIT PROJECT -->
+  <div id="projectModal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-xl p-6 space-y-4">
+      <h3 class="text-lg font-bold text-white border-b border-slate-700 pb-2" data-i18n="modalProjectTitle">إدارة بيانات المشروع</h3>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1" data-i18n="lblProjName">اسم المشروع</label>
+          <input type="text" id="inputProjName" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-brand-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1" data-i18n="lblProjCode">كود المشروع / العقد</label>
+          <input type="text" id="inputProjCode" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-brand-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">تصنيف/نوع المشروع</label>
+          <select id="inputProjType" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-brand-500">
+            <option value="مراكز بيانات">مراكز بيانات (Data Centers)</option>
+            <option value="بنية تحتية">بنية تحتية (Infrastructure)</option>
+            <option value="طرق وكباري">طرق وكباري (Roads & Bridges)</option>
+            <option value="مطارات">مطارات (Airports)</option>
+            <option value="موانئ ومرافئ">موانئ ومرافئ (Ports & Marine)</option>
+            <option value="سكك حديدية">سكك حديدية ومترو (Rail & Metro)</option>
+            <option value="سكني">سكني (Residential)</option>
+            <option value="مجمعات سكنية">مجمعات سكنية (Residential Compounds)</option>
+            <option value="أبراج">أبراج وناطحات سحاب (Towers)</option>
+            <option value="تجاري">تجاري (Commercial)</option>
+            <option value="مولات ومراكز تسوق">مولات ومراكز تسوق (Malls & Retail)</option>
+            <option value="فنادق ومنتجعات">فنادق ومنتجعات (Hotels & Resorts)</option>
+            <option value="صناعي">صناعي (Industrial)</option>
+            <option value="مصانع">مصانع ومنشآت تصنيع (Factories)</option>
+            <option value="محطات طاقة">محطات طاقة (Power Plants)</option>
+            <option value="طاقة متجددة">طاقة متجددة (Renewable Energy)</option>
+            <option value="مياه وصرف صحي">مياه وصرف صحي (Water & Wastewater)</option>
+            <option value="مستشفيات">مستشفيات ومنشآت صحية (Healthcare)</option>
+            <option value="مدارس وجامعات">مدارس وجامعات (Education)</option>
+            <option value="حكومي">حكومي (Government)</option>
+            <option value="دفاعي وعسكري">دفاعي وعسكري (Defense & Military)</option>
+            <option value="رياضي">رياضي - استادات (Sports & Stadiums)</option>
+            <option value="ديني">ديني - مساجد ودور عبادة (Religious)</option>
+            <option value="ترفيهي وسياحي">ترفيهي وسياحي (Leisure & Tourism)</option>
+            <option value="زراعي">زراعي (Agricultural)</option>
+            <option value="أخرى">أخرى (Other)</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-700">
+        <button onclick="closeProjectModal()" class="px-3 py-1.5 bg-slate-700 text-xs rounded hover:bg-slate-600" data-i18n="cancel">إلغاء</button>
+        <button onclick="saveProject()" class="px-3 py-1.5 bg-brand-600 text-xs font-bold text-white rounded hover:bg-brand-500" data-i18n="save">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ADD/EDIT STAKEHOLDER -->
+  <div id="stakeholderModal" class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-xl p-6 space-y-4">
+      <h3 class="text-lg font-bold text-white border-b border-slate-700 pb-2" data-i18n="modalStakeholderTitle">إضافة / تعديل طرف</h3>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1" data-i18n="lblStkName">الاسم / الكيان</label>
+          <input type="text" id="inputStkName" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-brand-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1" data-i18n="lblStkRole">الدور بالمشروع</label>
+          <input type="text" id="inputStkRole" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:outline-none focus:border-brand-500">
+        </div>
+        <!-- Attributes Checklist -->
+        <div class="space-y-2 pt-1">
+          <label class="block text-slate-400" data-i18n="lblAttributes">الخصائص الأساسية (Salience Attributes)</label>
+          <label class="flex items-center gap-2 text-slate-300">
+            <input type="checkbox" id="checkPower" class="rounded bg-slate-900 border-slate-700 text-brand-600">
+            <span>Power (السلطة / القوة)</span>
+          </label>
+          <label class="flex items-center gap-2 text-slate-300">
+            <input type="checkbox" id="checkLegitimacy" class="rounded bg-slate-900 border-slate-700 text-brand-600">
+            <span>Legitimacy (الشرعية / الأحقية)</span>
+          </label>
+          <label class="flex items-center gap-2 text-slate-300">
+            <input type="checkbox" id="checkUrgency" class="rounded bg-slate-900 border-slate-700 text-brand-600">
+            <span>Urgency (الإلحاحية / الأهمية الزمنية)</span>
+          </label>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-700">
+        <button onclick="closeStakeholderModal()" class="px-3 py-1.5 bg-slate-700 text-xs rounded hover:bg-slate-600" data-i18n="cancel">إلغاء</button>
+        <button onclick="saveStakeholder()" class="px-3 py-1.5 bg-brand-600 text-xs font-bold text-white rounded hover:bg-brand-500" data-i18n="save">حفظ البيانات</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="radarToasts" class="no-print fixed top-4 left-4 z-[60] space-y-2 w-80 max-w-[90vw]"></div>
+
+  <!-- SCRIPT ENGINE & LOGIC -->
+  <script>
+    // 1. DICTIONARY FOR TRANSLATION (ARABIC / ENGLISH)
+    const dictionary = {
+      ar: {
+        appTitle: "Stakeholder Smart-Link (SSL)",
+        appSubtitle: "The Digital Trust Bridge | م. وائل علي عويس محمود",
+        print: "طباعة",
+        exportPdf: "تصدير PDF",
+        navProjects: "سجل المشاريع",
+        navDashboard: "لوحة القيادة QAI",
+        navRegister: "سجل أصحاب المصلحة",
+        navMatrices: "المصادقة والمصفوفات",
+        navSlaSow: "اتفاقيات SLA / SOW / RACI",
+        navFullReport: "التقرير الشامل",
+        designedBy: "تطوير وإعداد",
+        projectRegisterTitle: "سجل حوكمة المشاريع",
+        projectRegisterDesc: "إضافة، تعديل، وإدارة المشاريع النشطة على المنصة",
+        addProject: "إضافة مشروع جديد",
+        dashTitle: "لوحة التحليلات والتنبؤات الذكية (QAI)",
+        dashSubtitle: "مراقبة صحة العلاقات وتنبؤات المخاطر الاستباقية",
+        totalStakeholders: "إجمالي أصحاب المصلحة",
+        definitiveCount: "أطراف حاسمة (Definitive)",
+        slaCompliance: "نسبة الالتزام بالـ SLA",
+        activeRiskAlerts: "تنبيهات المخاطر النشطة",
+        aiRiskRadar: "رادار التنبؤ الاستباقي للمخاطر (QAI Risk Alerts)",
+        alert1Title: "توقع خرق SLA الاستشاري (اعتماد الـ Shop Drawings)",
+        alert1Desc: "بناءً على التتبع الزمني، قد يتجاوز الرد مهلة 5 أيام المحددة تعاقدياً خلال 24 ساعة.",
+        critical: "حرج جداً",
+        alert2Title: "مؤشر زحف نطاق العمل (Scope Creep) - المقاول الفرعي",
+        alert2Desc: "رصد طلبات تعديل شفاهية متكررة خارج إطار SOW المحضر رسمياً.",
+        warning: "تحذير",
+        registerTitle: "السجل الرقمي الحي لأصحاب المصلحة",
+        registerSubtitle: "قاعدة البيانات المركزية لإدارة وتصنيف الأدوار",
+        addStakeholder: "إضافة طرف جديد",
+        tblName: "الكيان / الاسم",
+        tblRole: "الدور بالمشروع",
+        tblAttributes: "الخصائص (P / L / U)",
+        tblSalience: "نموذج البروز",
+        tblStrategy: "استراتيجية التعامل",
+        tblActions: "إجراءات",
+        matricesTitle: "المصادقة والمصفوفات التفاعلية",
+        matricesSubtitle: "تحديد الأولويات، تصنيف القوة والاهتمام، وتقييم المشاركة",
+        piMatrixTitle: "مصفوفة القوة والاهتمام (Power / Interest Matrix)",
+        quad1: "إدارة عن قرب (Manage Closely)",
+        quad2: "إبقاء مطلعاً (Keep Informed)",
+        quad3: "إبقاء قانعاً (Keep Satisfied)",
+        quad4: "مراقبة فقط (Monitor)",
+        govTitle: "حاوية الحوكمة التشغيلية (SLA / SOW / RACI)",
+        govSubtitle: "ضبط الاتفاقيات الخدمية، حدود نطاق العمل، وتوزيع المسؤوليات",
+        slaTableTitle: "اتفاقية مستوى الخدمة (SLA Matrix)",
+        slaService: "الخدمة",
+        slaTarget: "الزمن المعتمد",
+        slaEscalation: "مسار التصعيد",
+        raciTableTitle: "مصفوفة المسؤوليات (RACI Matrix)",
+        raciTask: "المهمة / النشاط",
+        fullReportTitle: "التقرير الاستراتيجي الشامل للمشروع",
+        fullReportSubtitle: "تقرير حوكمة موحد جاهز للطباعة والتصدير",
+        modalProjectTitle: "إدارة بيانات المشروع",
+        lblProjName: "اسم المشروع",
+        lblProjCode: "كود المشروع / العقد",
+        cancel: "إلغاء",
+        save: "حفظ",
+        modalStakeholderTitle: "إضافة / تعديل طرف",
+        lblStkName: "الاسم / الكيان",
+        lblStkRole: "الدور بالمشروع",
+        delete: "حذف"
+      },
+      en: {
+        appTitle: "Stakeholder Smart-Link (SSL)",
+        appSubtitle: "The Digital Trust Bridge | Engr. Wael Ali Ewis Mahmoud",
+        print: "Print",
+        exportPdf: "Export PDF",
+        navProjects: "Projects Register",
+        navDashboard: "QAI Dashboard",
+        navRegister: "Stakeholder Register",
+        navMatrices: "Matrices & Alignment",
+        navSlaSow: "SLA / SOW / RACI",
+        navFullReport: "Full Report",
+        designedBy: "Designed & Developed By",
+        projectRegisterTitle: "Project Governance Register",
+        projectRegisterDesc: "Add, edit, and manage active platform projects",
+        addProject: "Add New Project",
+        dashTitle: "QAI Analytics & Predictive Dashboard",
+        dashSubtitle: "Relationship health monitoring & proactive risk alerts",
+        totalStakeholders: "Total Stakeholders",
+        definitiveCount: "Definitive Parties",
+        slaCompliance: "SLA Compliance Rate",
+        activeRiskAlerts: "Active Risk Alerts",
+        aiRiskRadar: "Proactive QAI Risk Alerts Radar",
+        alert1Title: "Consultant SLA Breach Predicted (Shop Drawings)",
+        alert1Desc: "Time tracking predicts review time will exceed the 5-day contractual limit within 24 hrs.",
+        critical: "CRITICAL",
+        alert2Title: "Scope Creep Indicator - Subcontractor",
+        alert2Desc: "Repeated verbal instructions detected outside signed SOW boundary.",
+        warning: "WARNING",
+        registerTitle: "Live Digital Stakeholder Register",
+        registerSubtitle: "Central database for entity classification and strategies",
+        addStakeholder: "Add Stakeholder",
+        tblName: "Entity / Name",
+        tblRole: "Project Role",
+        tblAttributes: "Attributes (P / L / U)",
+        tblSalience: "Salience Model",
+        tblStrategy: "Engagement Strategy",
+        tblActions: "Actions",
+        matricesTitle: "Interactive Matrices & Governance",
+        matricesSubtitle: "Prioritization, Power/Interest mapping, & Salience",
+        piMatrixTitle: "Power / Interest Matrix",
+        quad1: "Manage Closely (High P / High I)",
+        quad2: "Keep Informed (Low P / High I)",
+        quad3: "Keep Satisfied (High P / Low I)",
+        quad4: "Monitor (Low P / Low I)",
+        govTitle: "Operational Governance Container (SLA / SOW / RACI)",
+        govSubtitle: "Service agreements, scope boundaries, and responsibilities",
+        slaTableTitle: "Service Level Agreement (SLA) Matrix",
+        slaService: "Service",
+        slaTarget: "Target SLA",
+        slaEscalation: "Escalation Path",
+        raciTableTitle: "RACI Matrix",
+        raciTask: "Task / Activity",
+        fullReportTitle: "Comprehensive Strategic Project Report",
+        fullReportSubtitle: "Unified governance report ready for print & export",
+        modalProjectTitle: "Manage Project Details",
+        lblProjName: "Project Name",
+        lblProjCode: "Project Code / Contract",
+        cancel: "Cancel",
+        save: "Save",
+        modalStakeholderTitle: "Add / Edit Stakeholder",
+        lblStkName: "Name / Entity",
+        lblStkRole: "Project Role",
+        delete: "Delete"
+      }
+    };
+
+    function exportProjectsBackup(){
+      const data = { projects, stakeholders, slaRows, raciRows, clauseRows, engagementRows, transactions };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'SSL_Projects_Backup_' + new Date().toISOString().slice(0,10) + '.json';
+      link.click();
+    }
+    function importProjectsBackup(event){
+      const file = event.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e){
+        try{
+          const data = JSON.parse(e.target.result);
+          if(!confirm('هيتم دمج الملف ده مع بياناتك الحالية. متأكد؟')) return;
+          if(Array.isArray(data.projects)) projects = projects.concat(data.projects.filter(p=>!projects.some(x=>x.id===p.id)));
+          if(Array.isArray(data.stakeholders)) stakeholders = stakeholders.concat(data.stakeholders.filter(s=>!stakeholders.some(x=>x.id===s.id)));
+          if(Array.isArray(data.slaRows)) slaRows = slaRows.concat(data.slaRows.filter(r=>!slaRows.some(x=>x.id===r.id)));
+          if(Array.isArray(data.raciRows)) raciRows = raciRows.concat(data.raciRows.filter(r=>!raciRows.some(x=>x.id===r.id)));
+          if(Array.isArray(data.clauseRows)) clauseRows = clauseRows.concat(data.clauseRows.filter(r=>!clauseRows.some(x=>x.id===r.id)));
+          if(Array.isArray(data.engagementRows)) engagementRows = engagementRows.concat(data.engagementRows.filter(r=>!engagementRows.some(x=>x.stkId===r.stkId)));
+          if(Array.isArray(data.transactions)) transactions = transactions.concat(data.transactions.filter(r=>!transactions.some(x=>x.id===r.id)));
+          saveSslData();
+          renderAll();
+          alert('تم استيراد البيانات بنجاح.');
+        }catch(err){ alert('⚠️ الملف غير صالح.'); }
+      };
+      reader.readAsText(file);
+    }
+
+    // 2. STATE MANAGEMENT & INITIAL DATA
+    let currentLang = 'ar';
+    let activeProjectId = 'proj-1';
+    let currentCompanyId = null;
+
+    function sslDataKey(){ return 'ssl_app_data_' + currentCompanyId; }
+    function loadSslData(){
+      if(!currentCompanyId) return null;
+      try{ return JSON.parse(localStorage.getItem(sslDataKey()) || 'null'); }catch(e){ return null; }
+    }
+    function saveSslData(){
+      if(!currentCompanyId) return;
+      try{
+        localStorage.setItem(sslDataKey(), JSON.stringify({
+          projects, stakeholders, slaRows, raciRows, clauseRows, engagementRows, activeProjectId,
+          transactions, radarConfig, radarLog
+        }));
+      }catch(e){}
+    }
+
+    let savedSsl = null;
+
+    let projects = [
+      { id: 'proj-1', name: 'مشروع مركز البيانات الرئيسي - Data Center Tier IV', code: 'DC-2026-01', type: 'مراكز بيانات' },
+      { id: 'proj-2', name: 'مشروع تطوير الجسر الرقمي - Infrastructure Bridge', code: 'INF-2026-09', type: 'بنية تحتية' }
+    ];
+
+    let stakeholders = (savedSsl && savedSsl.stakeholders) || [
+      { id: 'stk-1', projectId: 'proj-1', name: 'المالك (Client)', role: 'Project Owner', power: true, legitimacy: true, urgency: true },
+      { id: 'stk-2', projectId: 'proj-1', name: 'الاستشاري الرئيسي (Consultant)', role: 'Technical Approver', power: true, legitimacy: true, urgency: false },
+      { id: 'stk-3', projectId: 'proj-1', name: 'مقاول التكييف (MEP Subcontractor)', role: 'Specialist Contractor', power: false, legitimacy: true, urgency: true }
+    ];
+
+    if(savedSsl && savedSsl.activeProjectId) activeProjectId = savedSsl.activeProjectId;
+
+    // مصفوفة SLA (قابلة للإضافة/الحذف)
+    let slaRows = (savedSsl && savedSsl.slaRows) || [
+      { id:'sla-1', projectId:'proj-1', service:'اعتماد Shop Drawings', target:'5 أيام عمل', escalation:'L1: PM → L2: Director' },
+      { id:'sla-2', projectId:'proj-1', service:'الرد على طلبات الـ RFI', target:'3 أيام عمل', escalation:'L1: Lead Eng → L2: PM' }
+    ];
+
+    // مصفوفة RACI (قابلة للإضافة/الحذف)
+    let raciRows = (savedSsl && savedSsl.raciRows) || [
+      { id:'raci-1', projectId:'proj-1', task:'فحص جودة الأعمال (QC)', pm:'A', consultant:'C', sub:'R' },
+      { id:'raci-2', projectId:'proj-1', task:'الأمر التغييري (Change Order)', pm:'R', consultant:'A', sub:'I' }
+    ];
+
+    // مصفوفة بنود العقد الحرجة
+    let clauseRows = (savedSsl && savedSsl.clauseRows) || [
+      { id:'cl-1', projectId:'proj-1', name:'Delay & Extension of Time (EOT)', owner:'PM / Legal', risk:'HIGH', mitigation:'تفعيل إشعار EOT آلي عند رصد حدث تأخير', noticeActive:true },
+      { id:'cl-2', projectId:'proj-1', name:'Liquidated Damages (LD)', owner:'PM / Director', risk:'HIGH', mitigation:'لوحة تتبع Takt Time يومية + تنبيه قبل 14 يوم من حد LD' }
+    ];
+
+    // مصفوفة تقييم المشاركة (Current vs Desired)
+    let engagementRows = (savedSsl && savedSsl.engagementRows) || [];
+
+    // ============ تسجيل دخول الشركات (Company ID) — تفعيل مباشر ============
+    const SSL_COMPANIES_KEY = 'ssl_companies_v1';
+    const SSL_SESSION_KEY = 'ssl_session_v1';
+
+    function sslHash(str){
+      let h = 0;
+      for(let i=0;i<str.length;i++){ h = ((h<<5)-h) + str.charCodeAt(i); h |= 0; }
+      return 'h'+h;
+    }
+    function sslLoadCompanies(){
+      try{ return JSON.parse(localStorage.getItem(SSL_COMPANIES_KEY) || '{}'); }catch(e){ return {}; }
+    }
+    function sslSaveCompanies(obj){ try{ localStorage.setItem(SSL_COMPANIES_KEY, JSON.stringify(obj)); }catch(e){} }
+
+    function loadCompanyDataIntoState(){
+      savedSsl = loadSslData();
+      if(savedSsl){
+        if(Array.isArray(savedSsl.projects) && savedSsl.projects.length) projects = savedSsl.projects;
+        if(Array.isArray(savedSsl.stakeholders)) stakeholders = savedSsl.stakeholders;
+        if(Array.isArray(savedSsl.slaRows)) slaRows = savedSsl.slaRows;
+        if(Array.isArray(savedSsl.raciRows)) raciRows = savedSsl.raciRows;
+        if(Array.isArray(savedSsl.clauseRows)) clauseRows = savedSsl.clauseRows;
+        if(Array.isArray(savedSsl.engagementRows)) engagementRows = savedSsl.engagementRows;
+        if(savedSsl.activeProjectId) activeProjectId = savedSsl.activeProjectId;
+        transactions = Array.isArray(savedSsl.transactions) ? savedSsl.transactions : [];
+        radarConfig = Object.assign({}, RADAR_DEFAULTS, savedSsl.radarConfig || {});
+        radarLog = (savedSsl.radarLog && savedSsl.radarLog.seen) ? savedSsl.radarLog : { seen:{}, neutralized:[] };
+      } else {
+        transactions = buildDemoTransactions();
+        saveSslData(); // أول مرة للشركة دي: نحفظ البيانات التجريبية الافتراضية كنقطة بداية
+      }
+    }
+
+    function sslAttemptLogin(){
+      const idEl = document.getElementById('sslLoginId');
+      const pwEl = document.getElementById('sslLoginPw');
+      const companyId = (idEl.value||'').trim();
+      const password = (pwEl.value||'').trim();
+      const errEl = document.getElementById('sslLoginError');
+      if(!companyId || !password){
+        errEl.textContent = 'من فضلك اكتب معرّف الدخول وكلمة السر';
+        return;
+      }
+      const companies = sslLoadCompanies();
+      const hashed = sslHash(password);
+      if(companies[companyId]){
+        if(companies[companyId] !== hashed){
+          errEl.textContent = 'كلمة السر غير صحيحة لمعرّف الدخول ده';
+          return;
+        }
+      } else {
+        companies[companyId] = hashed; // تفعيل مباشر بدون انتظار موافقة
+        sslSaveCompanies(companies);
+      }
+      currentCompanyId = companyId;
+      try{ localStorage.setItem(SSL_SESSION_KEY, companyId); }catch(e){}
+      document.getElementById('sslLoginGate').style.display = 'none';
+      document.getElementById('sslHeader').style.display = 'flex';
+      document.getElementById('sslMainWrapper').style.display = 'flex';
+      loadCompanyDataIntoState();
+      renderAll();
+    }
+
+    function sslLogout(){
+      currentCompanyId = null;
+      try{ localStorage.removeItem(SSL_SESSION_KEY); }catch(e){}
+      document.getElementById('sslLoginGate').style.display = 'flex';
+      document.getElementById('sslHeader').style.display = 'none';
+      document.getElementById('sslMainWrapper').style.display = 'none';
+      document.getElementById('sslLoginId').value = '';
+      document.getElementById('sslLoginPw').value = '';
+    }
+
+    function sslTryResumeSession(){
+      let saved = null;
+      try{ saved = localStorage.getItem(SSL_SESSION_KEY); }catch(e){}
+      if(saved){
+        currentCompanyId = saved;
+        document.getElementById('sslLoginGate').style.display = 'none';
+        document.getElementById('sslHeader').style.display = 'flex';
+        document.getElementById('sslMainWrapper').style.display = 'flex';
+        loadCompanyDataIntoState();
+        renderAll();
+      }
+    }
+
+    // 3. SALIENCE MODEL ALGORITHM (POWER, LEGITIMACY, URGENCY)
+    function calculateSalience(p, l, u) {
+      if (p && l && u) return { type: 'Definitive', strategy: 'Manage Closely (Immediate Priority)', color: 'text-red-400 bg-red-950/60 border-red-700' };
+      if (p && l && !u) return { type: 'Dominant', strategy: 'Keep Satisfied', color: 'text-blue-400 bg-blue-950/60 border-blue-700' };
+      if (p && !l && u) return { type: 'Dangerous', strategy: 'Manage Carefully (Legal Control)', color: 'text-amber-400 bg-amber-950/60 border-amber-700' };
+      if (!p && l && u) return { type: 'Dependent', strategy: 'Keep Informed & Support', color: 'text-emerald-400 bg-emerald-950/60 border-emerald-700' };
+      if (p && !l && !u) return { type: 'Dormant', strategy: 'Monitor Only', color: 'text-slate-400 bg-slate-900 border-slate-700' };
+      if (!p && l && !u) return { type: 'Discretionary', strategy: 'Regular Goodwill Info', color: 'text-slate-400 bg-slate-900 border-slate-700' };
+      if (!p && !l && u) return { type: 'Demanding', strategy: 'Acknowledge Urgency', color: 'text-slate-400 bg-slate-900 border-slate-700' };
+      return { type: 'Non-Stakeholder', strategy: 'No Action Required', color: 'text-slate-500 bg-slate-900 border-slate-800' };
+    }
+
+    // ============ الطباعة وتصدير PDF لكل قسم على حدة ============
+    function printSection(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      document.body.classList.add('printing-one');
+      el.classList.add('print-active');
+      window.print();
+      setTimeout(()=>{ el.classList.remove('print-active'); document.body.classList.remove('printing-one'); }, 600);
+    }
+    function downloadSectionPdf(id, filename){
+      const el = document.getElementById(id);
+      if(!el) return;
+      html2pdf().set({
+        margin: 0.3, filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      }).from(el).save();
+    }
+
+    // ============ حاسبة تكلفة النزاع/التأخير ============
+    function calcConflictCost(){
+      const days = parseFloat(document.getElementById('ccDays').value) || 0;
+      const dailyCost = parseFloat(document.getElementById('ccDailyCost').value) || 0;
+      const criticalDays = parseFloat(document.getElementById('ccCriticalDays').value) || 0;
+      document.getElementById('ccResultCost').innerText = '$' + (days * dailyCost).toLocaleString();
+      document.getElementById('ccResultDays').innerText = criticalDays + ' يوم';
+    }
+
+    // ============ إدارة مصفوفة SLA ============
+    function addSlaRow(){
+      const service = document.getElementById('sla-service').value.trim();
+      const target = document.getElementById('sla-target').value.trim();
+      const escalation = document.getElementById('sla-escalation').value.trim();
+      if(!service){ alert('اكتب اسم الخدمة الأول'); return; }
+      slaRows.push({ id:'sla-'+Date.now(), projectId: activeProjectId, service, target, escalation });
+      saveSslData();
+      renderSlaTable();
+      document.getElementById('sla-service').value=''; document.getElementById('sla-target').value=''; document.getElementById('sla-escalation').value='';
+    }
+    function deleteSlaRow(id){ slaRows = slaRows.filter(r=>r.id!==id); saveSslData(); renderSlaTable(); }
+    function renderSlaTable(){
+      const tbody = document.getElementById('slaTableBody');
+      if(!tbody) return;
+      const filtered = slaRows.filter(r=>r.projectId===activeProjectId);
+      tbody.innerHTML = filtered.map(r=>`
+        <tr><td class="p-2 font-semibold">${r.service}</td><td class="p-2 text-emerald-400 font-bold">${r.target}</td><td class="p-2">${r.escalation}</td>
+        <td class="p-2 no-print"><button onclick="deleteSlaRow('${r.id}')" class="text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></td></tr>`
+      ).join('') || '<tr><td colspan="4" class="p-3 text-center text-slate-500">لا توجد بنود بعد</td></tr>';
+    }
+
+    // ============ إدارة مصفوفة RACI ============
+    function addRaciRow(){
+      const task = document.getElementById('raci-task').value.trim();
+      const pm = document.getElementById('raci-pm').value;
+      const consultant = document.getElementById('raci-consultant').value;
+      const sub = document.getElementById('raci-sub').value;
+      if(!task){ alert('اكتب اسم المهمة الأول'); return; }
+      raciRows.push({ id:'raci-'+Date.now(), projectId: activeProjectId, task, pm, consultant, sub });
+      saveSslData();
+      renderRaciTable();
+      document.getElementById('raci-task').value='';
+    }
+    function deleteRaciRow(id){ raciRows = raciRows.filter(r=>r.id!==id); saveSslData(); renderRaciTable(); }
+    function renderRaciTable(){
+      const tbody = document.getElementById('raciTableBody');
+      if(!tbody) return;
+      const raciColor = {R:'text-emerald-400', A:'text-blue-400', C:'text-purple-400', I:'text-amber-400'};
+      const filtered = raciRows.filter(r=>r.projectId===activeProjectId);
+      tbody.innerHTML = filtered.map(r=>`
+        <tr><td class="p-2 text-right font-semibold">${r.task}</td>
+        <td class="p-2 font-bold ${raciColor[r.pm]}">${r.pm}</td>
+        <td class="p-2 font-bold ${raciColor[r.consultant]}">${r.consultant}</td>
+        <td class="p-2 font-bold ${raciColor[r.sub]}">${r.sub}</td>
+        <td class="p-2 no-print"><button onclick="deleteRaciRow('${r.id}')" class="text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></td></tr>`
+      ).join('') || '<tr><td colspan="5" class="p-3 text-center text-slate-500">لا توجد أنشطة بعد</td></tr>';
+    }
+
+    // ============ إدارة مصفوفة بنود العقد ============
+    function addClauseRow(){
+      const name = document.getElementById('clause-name').value.trim();
+      const owner = document.getElementById('clause-owner').value.trim();
+      const risk = document.getElementById('clause-risk').value;
+      const mitigation = document.getElementById('clause-mitigation').value.trim();
+      if(!name){ alert('اكتب اسم البند التعاقدي الأول'); return; }
+      clauseRows.push({ id:'cl-'+Date.now(), projectId: activeProjectId, name, owner, risk, mitigation });
+      saveSslData();
+      renderClausesTable();
+      document.getElementById('clause-name').value=''; document.getElementById('clause-owner').value=''; document.getElementById('clause-mitigation').value='';
+    }
+    function deleteClauseRow(id){ clauseRows = clauseRows.filter(r=>r.id!==id); saveSslData(); renderClausesTable(); }
+    function renderClausesTable(){
+      const tbody = document.getElementById('clausesTableBody');
+      if(!tbody) return;
+      const riskColor = {HIGH:'bg-red-950/60 text-red-300 border-red-700', MEDIUM:'bg-amber-950/60 text-amber-300 border-amber-700', LOW:'bg-emerald-950/60 text-emerald-300 border-emerald-700'};
+      const filtered = clauseRows.filter(r=>r.projectId===activeProjectId);
+      tbody.innerHTML = filtered.map(r=>`
+        <tr><td class="p-3 font-bold text-white">${r.name}</td><td class="p-3">${r.owner}</td>
+        <td class="p-3"><span class="text-xs px-2 py-0.5 rounded border font-semibold ${riskColor[r.risk]}">${r.risk}</span></td>
+        <td class="p-3">${r.mitigation}</td>
+        <td class="p-3"><input type="checkbox" ${r.noticeActive?'checked':''} onchange="toggleClauseNotice('${r.id}')" class="rounded bg-slate-900 border-slate-700"></td>
+        <td class="p-3 no-print"><button onclick="deleteClauseRow('${r.id}')" class="text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></td></tr>`
+      ).join('') || '<tr><td colspan="6" class="p-3 text-center text-slate-500">لا توجد بنود مسجلة بعد</td></tr>';
+    }
+
+    // ============ مصفوفة تقييم المشاركة (Current vs Desired) ============
+    const ENGAGEMENT_LEVELS = ['Unaware','Resistant','Neutral','Supportive','Leading'];
+    function updateEngagement(stkId, field, value){
+      let row = engagementRows.find(r=>r.stkId===stkId);
+      if(!row){ row = { stkId, current:'Neutral', desired:'Supportive' }; engagementRows.push(row); }
+      row[field] = value;
+      saveSslData();
+      renderAll();
+    }
+    function renderEngagementTable(){
+      const tbody = document.getElementById('engagementTableBody');
+      if(!tbody) return;
+      const filtered = stakeholders.filter(s=>s.projectId===activeProjectId);
+      tbody.innerHTML = filtered.map(s=>{
+        let row = engagementRows.find(r=>r.stkId===s.id);
+        if(!row) row = { stkId:s.id, current:'Neutral', desired:'Supportive' };
+        const gap = ENGAGEMENT_LEVELS.indexOf(row.desired) - ENGAGEMENT_LEVELS.indexOf(row.current);
+        const gapLabel = gap <= 0 ? '<span class="text-emerald-400 font-bold">لا توجد فجوة</span>' : `<span class="text-amber-400 font-bold">فجوة ${gap} مستوى</span>`;
+        const opts = lvl => ENGAGEMENT_LEVELS.map(l=>`<option value="${l}" ${l===lvl?'selected':''}>${l}</option>`).join('');
+        return `<tr>
+          <td class="p-3 font-bold text-white">${s.name}</td>
+          <td class="p-3 no-print"><select onchange="updateEngagement('${s.id}','current',this.value)" class="bg-slate-900 border border-slate-700 rounded p-1.5 text-xs text-white">${opts(row.current)}</select><span class="print-only">${row.current}</span></td>
+          <td class="p-3 no-print"><select onchange="updateEngagement('${s.id}','desired',this.value)" class="bg-slate-900 border border-slate-700 rounded p-1.5 text-xs text-white">${opts(row.desired)}</select><span class="print-only">${row.desired}</span></td>
+          <td class="p-3">${gapLabel}</td>
+          <td class="p-3 no-print text-slate-400">${row.lastContact ? esc(fmtDate(row.lastContact)) : '—'} <button onclick="logContact('${s.id}')" class="ms-1 text-brand-500 font-bold underline">سجّل تواصل</button></td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="5" class="p-3 text-center text-slate-500">أضف أصحاب مصلحة أولاً من صفحة السجل</td></tr>';
+    }
+
+    // ============ القائمة الجانبية للموبايل ============
+    function toggleSidebar(){
+      document.getElementById('sidebar').classList.toggle('translate-x-full');
+      document.getElementById('sidebarOverlay').classList.toggle('hidden');
+    }
+    function closeSidebarOnMobile(){
+      const sidebar = document.getElementById('sidebar');
+      if(window.innerWidth < 768 && !sidebar.classList.contains('translate-x-full')){
+        sidebar.classList.add('translate-x-full');
+        document.getElementById('sidebarOverlay').classList.add('hidden');
+      }
+    }
+
+    // =====================================================================
+    // 3.5 PREDICTIVE RISK RADAR ENGINE
+    // منطق المحرك (computeAlerts / txRisk / historicalDelay ...) دوال نقية تقريباً
+    // تقرأ الحالة فقط، عشان تتنقل بسهولة لاحقاً لـ Edge Function / Worker.
+    // =====================================================================
+    const RADAR_DEFAULTS = { warn: 0.70, crit: 0.90, excludeWeekend: true, contactDays: 7 };
+    let radarConfig = Object.assign({}, RADAR_DEFAULTS);
+    let transactions = [];
+    let radarLog = { seen: {}, neutralized: [] };
+    const SAL_W = { Definitive: 1.10, Dominant: 1.05 };   // وزن نموذج البروز
+    const HIST_W_CAP = 0.5;                               // أقصى زيادة من التأخير التاريخي (+50%)
+
+    const RT = {
+      ar: {
+        live:'مباشر', critical:'حرج', warning:'تحذير',
+        notifyOff:'تفعيل تنبيهات المتصفح', notifyOn:'التنبيهات مفعّلة', notifyBlocked:'التنبيهات محظورة من المتصفح',
+        sumCritical:'تنبيهات حرجة', sumWarning:'تحذيرات', sumScope:'مؤشر زحف النطاق', sumSla:'الالتزام بالـ SLA',
+        none:'✅ لا توجد مخاطر نشطة حالياً — الرادار يراقب البيانات لحظياً.',
+        histTitle:'اتجاه التأخير التاريخي (آخر 5 معاملات مغلقة لكل طرف)',
+        histRow:'{name}: متوسط تأخير {avg} يوم ({n} معاملات)',
+        histNone:'لا توجد معاملات مغلقة بعد لبناء الاتجاه التاريخي.',
+        neutTitle:'المخاطر المحيدة ({n})', neutNone:'لا توجد مخاطر محيدة بعد.',
+        rsClosed:'سُجّل الاعتماد الرسمي{note}', rsRemoved:'أُزيلت المعاملة', rsBelow:'انخفض المؤشر تحت حد الإنذار',
+        rsRaci:'حُدّد مسؤول Accountable', rsClause:'فُعّل الإشعار الآلي أو تغيّر تصنيف البند',
+        rsEng:'سُوّيت الفجوة أو سُجّل تواصل', rsGeneric:'زال سبب التنبيه',
+        updated:'آخر تحديث: {time}',
+        setWarn:'حد التحذير (%)', setCrit:'حد الإنذار الأحمر (%)', setWeekend:'استبعاد الجمعة والسبت من حساب المهلة', setContact:'أيام بلا تواصل قبل التنبيه',
+        slaTitle:'توقع خرق SLA — {title}', slaBreachedTitle:'تم خرق مهلة SLA — {title}',
+        slaDesc:'{party}: انقضى {elapsed} من {sla} يوم ({pct}% من المهلة){hist}. مؤشر الخطر {idx}%.',
+        histTxt:'، ومتوسط تأخيره التاريخي {avg} يوم (وزن خطورة +{w}%)',
+        slaActCrit:'فعّل مسار التصعيد: {esc}', slaActWarn:'تابع الطرف المعني قبل الوصول لحد التصعيد (متبقي ≈ {h} ساعة).',
+        escDefault:'الإدارة العليا / صاحب القرار',
+        raciTitle:'فجوة RACI — مهمة بلا مسؤول معتمد (A): {task}',
+        raciDesc:'المهمة ما لهاش Accountable محدد، وده بيفتح باب زحف النطاق وتضارب المسؤوليات.',
+        raciAct:'حدّد طرفاً واحداً بدور A من صفحة SLA / RACI.',
+        clauseTitle:'بند عالي الخطورة بدون إشعار آلي — {name}',
+        clauseDesc:'البند (المسؤول: {owner}) مصنّف HIGH ولا يوجد إشعار آلي مفعّل له{res}.',
+        clauseRes:'، ويوجد طرف غير مدرك/مقاوم في المشروع',
+        clauseAct:'فعّل الإشعار الآلي للبند (أو وثّق الإشعار الرسمي) قبل فوات مهلة الإخطار.',
+        engTitle:'فجوة مشاركة {gap} مستويات — {name}',
+        engDesc:'طرف {sal} (الحالي: {cur} / المطلوب: {des}) — آخر تواصل: {last}.',
+        engAct:'اطلب اجتماعاً لتسوية الفجوة ثم سجّل التواصل.',
+        never:'لا يوجد تواصل مسجّل', daysAgo:'منذ {n} يوم',
+        btnClose:'تسجيل اعتماد', btnEscalate:'تصعيد بالبريد', btnContact:'تسجيل تواصل الآن', btnNotice:'تفعيل الإشعار الآلي',
+        slaNote:'مغلقة في الموعد ÷ (مغلقة + مفتوحة متأخرة)', slaNoData:'لا توجد معاملات بعد',
+        toast48:'⏰ {title} — متبقي أقل من 48 ساعة على مهلة الـ SLA', toast24:'🚨 {title} — متبقي أقل من 24 ساعة على مهلة الـ SLA',
+        toastBreach:'⛔ {title} — تم تجاوز مهلة الـ SLA'
+      },
+      en: {
+        live:'Live', critical:'Critical', warning:'Warning',
+        notifyOff:'Enable browser alerts', notifyOn:'Alerts enabled', notifyBlocked:'Alerts blocked by browser',
+        sumCritical:'Critical alerts', sumWarning:'Warnings', sumScope:'Scope-creep index', sumSla:'SLA compliance',
+        none:'✅ No active risks — the radar is watching your data in real time.',
+        histTitle:'Historical delay trend (last 5 closed transactions per party)',
+        histRow:'{name}: avg delay {avg} days ({n} transactions)',
+        histNone:'No closed transactions yet to build a delay trend.',
+        neutTitle:'Neutralized risks ({n})', neutNone:'No neutralized risks yet.',
+        rsClosed:'Formal approval recorded{note}', rsRemoved:'Transaction removed', rsBelow:'Index dropped below alert threshold',
+        rsRaci:'Accountable party assigned', rsClause:'Auto-notice enabled or clause reclassified',
+        rsEng:'Gap closed or contact logged', rsGeneric:'Alert cause cleared',
+        updated:'Last update: {time}',
+        setWarn:'Warning threshold (%)', setCrit:'Red alert threshold (%)', setWeekend:'Exclude Fri & Sat from SLA clock', setContact:'Days without contact before alert',
+        slaTitle:'SLA breach forecast — {title}', slaBreachedTitle:'SLA breached — {title}',
+        slaDesc:'{party}: {elapsed} of {sla} days elapsed ({pct}% of allowance){hist}. Risk index {idx}%.',
+        histTxt:', historical avg delay {avg} days (risk weight +{w}%)',
+        slaActCrit:'Trigger escalation path: {esc}', slaActWarn:'Follow up with the party before the escalation limit (≈ {h} h left).',
+        escDefault:'Senior management / decision maker',
+        raciTitle:'RACI gap — task with no Accountable (A): {task}',
+        raciDesc:'No Accountable party is defined, which opens the door to scope creep and overlapping duties.',
+        raciAct:'Assign exactly one party the A role from the SLA / RACI page.',
+        clauseTitle:'High-risk clause without auto-notice — {name}',
+        clauseDesc:'Clause (owner: {owner}) is rated HIGH and has no automatic notice enabled{res}.',
+        clauseRes:', and an Unaware/Resistant party exists in the project',
+        clauseAct:'Enable the automatic notice (or document the formal notice) before the notice window is missed.',
+        engTitle:'Engagement gap of {gap} levels — {name}',
+        engDesc:'{sal} party (current: {cur} / desired: {des}) — last contact: {last}.',
+        engAct:'Request a meeting to close the gap, then log the contact.',
+        never:'no contact logged', daysAgo:'{n} days ago',
+        btnClose:'Record approval', btnEscalate:'Escalate by email', btnContact:'Log contact now', btnNotice:'Enable auto-notice',
+        slaNote:'on-time closed ÷ (closed + overdue open)', slaNoData:'No transactions yet',
+        toast48:'⏰ {title} — under 48 h left on the SLA', toast24:'🚨 {title} — under 24 h left on the SLA',
+        toastBreach:'⛔ {title} — SLA deadline exceeded'
+      }
+    };
+    function rt(key, vars){
+      let s = (RT[currentLang] && RT[currentLang][key]) || RT.ar[key] || key;
+      if(vars) Object.keys(vars).forEach(k => { s = s.split('{'+k+'}').join(vars[k]); });
+      return s;
+    }
+    function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function fmt(n){ return Math.round(n * 10) / 10; }
+    function fmtDate(ms){ try{ return new Date(ms).toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-GB', { dateStyle:'short', timeStyle:'short' }); }catch(e){ return new Date(ms).toISOString(); } }
+    function toLocalInput(ms){ const d = new Date(ms), p = n => String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); }
+
+    // "5 أيام عمل" / "٣ أيام" / "48 ساعة" -> عدد الأيام
+    function parseSlaDays(text){
+      const norm = String(text || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+      const m = norm.match(/\d+(\.\d+)?/);
+      if(!m) return null;
+      const n = parseFloat(m[0]);
+      return /ساع|hour|hr/i.test(norm) ? n / 24 : n;
+    }
+
+    // الزمن المنقضي بالأيام (اختيارياً بدون الجمعة والسبت)
+    function elapsedDays(startMs, endMs){
+      if(!(endMs > startMs)) return 0;
+      if(!radarConfig.excludeWeekend) return (endMs - startMs) / 86400000;
+      let total = 0, cur = startMs;
+      while(cur < endMs){
+        const d = new Date(cur);
+        const next = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime();
+        const segEnd = Math.min(next, endMs), dow = d.getDay();
+        if(dow !== 5 && dow !== 6) total += (segEnd - cur) / 86400000;
+        cur = segEnd;
+      }
+      return total;
+    }
+    function startForSpan(endMs, days){
+      let s = endMs, guard = 0;
+      while(elapsedDays(s, endMs) < days && guard < 24 * 120){ s -= 3600000; guard++; }
+      return s;
+    }
+
+    function engRow(stkId){ return engagementRows.find(r => r.stkId === stkId) || { stkId, current:'Neutral', desired:'Supportive' }; }
+    function engGap(stkId){ const r = engRow(stkId); return ENGAGEMENT_LEVELS.indexOf(r.desired) - ENGAGEMENT_LEVELS.indexOf(r.current); }
+    function lastContactMs(stkId){
+      let last = engRow(stkId).lastContact || 0;
+      transactions.forEach(t => { if(t.stkId === stkId) last = Math.max(last, t.sentAt || 0, t.closedAt || 0); });
+      return last;
+    }
+
+    // خوارزمية التأخير التاريخي: متوسط أيام التأخير في آخر 5 معاملات مغلقة للطرف
+    function historicalDelay(stkId){
+      const closed = transactions.filter(t => t.stkId === stkId && t.status === 'closed' && t.closedAt)
+        .sort((a, b) => b.closedAt - a.closedAt).slice(0, 5);
+      if(!closed.length) return { avg: 0, n: 0 };
+      const sum = closed.reduce((acc, t) => acc + Math.max(0, elapsedDays(t.sentAt, t.closedAt) - (t.slaDays > 0 ? t.slaDays : 1)), 0);
+      return { avg: sum / closed.length, n: closed.length };
+    }
+
+    // خوارزمية خطر خرق الـ SLA
+    //   RiskIndex = (Elapsed / SLA) × (1 + min(0.5, AvgHistDelay / SLA)) × SalienceWeight
+    function txRisk(t, now){
+      const sla = t.slaDays > 0 ? t.slaDays : 1;
+      const elapsed = elapsedDays(t.sentAt, now);
+      const base = elapsed / sla;
+      const hist = historicalDelay(t.stkId);
+      const histW = 1 + Math.min(HIST_W_CAP, hist.avg / sla);
+      const stk = stakeholders.find(s => s.id === t.stkId);
+      const sal = stk ? calculateSalience(stk.power, stk.legitimacy, stk.urgency).type : '';
+      const salW = SAL_W[sal] || 1;
+      const index = base * histW * salW;
+      const breached = base >= 1;
+      const level = (breached || index >= radarConfig.crit) ? 'critical' : (index >= radarConfig.warn ? 'warning' : null);
+      return { elapsed, base, hist, histW, salW, index, breached, level, left: (sla - elapsed) * 24, sla };
+    }
+
+    // مؤشر زحف النطاق لكل مشروع (0..1): RACI بلا A (35%) + بنود HIGH بلا إشعار (40%) + فجوات مشاركة الأطراف الحاسمة (25%)
+    function scopeCreepIndex(pid){
+      const raci = raciRows.filter(r => r.projectId === pid);
+      const noA = raci.filter(r => ![r.pm, r.consultant, r.sub].includes('A')).length;
+      const high = clauseRows.filter(c => c.projectId === pid && c.risk === 'HIGH');
+      const noNotice = high.filter(c => !c.noticeActive).length;
+      const key = stakeholders.filter(s => s.projectId === pid && ['Definitive','Dominant'].includes(calculateSalience(s.power, s.legitimacy, s.urgency).type));
+      const gapped = key.filter(s => engGap(s.id) >= 2).length;
+      return 0.35 * (raci.length ? noA / raci.length : 0) + 0.40 * (high.length ? noNotice / high.length : 0) + 0.25 * (key.length ? gapped / key.length : 0);
+    }
+
+    function slaCompliance(pid){
+      const now = Date.now();
+      let ok = 0, total = 0;
+      transactions.filter(t => t.projectId === pid).forEach(t => {
+        const sla = t.slaDays > 0 ? t.slaDays : 1;
+        if(t.status === 'closed'){ total++; if(elapsedDays(t.sentAt, t.closedAt) <= sla) ok++; }
+        else if(elapsedDays(t.sentAt, now) > sla){ total++; }
+      });
+      return total ? ok / total : null;
+    }
+
+    // توليد كل التنبيهات لكل المشاريع (العرض بيتفلتر على المشروع النشط)
+    function computeAlerts(){
+      const now = Date.now(), out = [];
+
+      transactions.filter(t => t.status === 'open').forEach(t => {
+        const r = txRisk(t, now);
+        if(!r.level) return;
+        const stk = stakeholders.find(s => s.id === t.stkId);
+        const sla = slaRows.find(x => x.id === t.slaId);
+        const hist = r.hist.avg > 0 ? rt('histTxt', { avg: fmt(r.hist.avg), w: Math.round((r.histW - 1) * 100) }) : '';
+        out.push({
+          key: 'sla:' + t.id, projectId: t.projectId, level: r.level, type: 'sla', sort: 10 + r.index,
+          title: rt(r.breached ? 'slaBreachedTitle' : 'slaTitle', { title: t.title }),
+          details: rt('slaDesc', { party: stk ? stk.name : '—', elapsed: fmt(r.elapsed), sla: fmt(r.sla), pct: Math.round(r.base * 100), hist, idx: Math.round(r.index * 100) }),
+          action: r.level === 'critical' ? rt('slaActCrit', { esc: (sla && sla.escalation) ? sla.escalation : rt('escDefault') }) : rt('slaActWarn', { h: Math.max(0, Math.round(r.left)) }),
+          pct: Math.min(100, Math.round(r.index * 100)),
+          buttons: `<button onclick="closeTransaction('${t.id}')" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold rounded">${rt('btnClose')}</button>` +
+                   `<button onclick="escalateTx('${t.id}')" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-bold rounded">${rt('btnEscalate')}</button>`
+        });
+      });
+
+      projects.forEach(p => {
+        const pid = p.id;
+        const stks = stakeholders.filter(s => s.projectId === pid);
+        const hasResistant = stks.some(s => ['Unaware','Resistant'].includes(engRow(s.id).current));
+
+        raciRows.filter(r => r.projectId === pid && ![r.pm, r.consultant, r.sub].includes('A')).forEach(r => {
+          out.push({ key: 'raci:' + r.id, projectId: pid, level: 'warning', type: 'raci', sort: 2,
+            title: rt('raciTitle', { task: r.task }), details: rt('raciDesc'), action: rt('raciAct') });
+        });
+
+        clauseRows.filter(c => c.projectId === pid && c.risk === 'HIGH' && !c.noticeActive).forEach(c => {
+          out.push({ key: 'clause:' + c.id, projectId: pid, level: hasResistant ? 'critical' : 'warning', type: 'clause', sort: hasResistant ? 6 : 3,
+            title: rt('clauseTitle', { name: c.name }), details: rt('clauseDesc', { owner: c.owner || '—', res: hasResistant ? rt('clauseRes') : '' }), action: rt('clauseAct'),
+            buttons: `<button onclick="toggleClauseNotice('${c.id}')" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-bold rounded">${rt('btnNotice')}</button>` });
+        });
+
+        stks.forEach(s => {
+          const sal = calculateSalience(s.power, s.legitimacy, s.urgency).type;
+          if(!['Definitive','Dominant'].includes(sal)) return;
+          const gap = engGap(s.id);
+          if(gap < 2) return;
+          const last = lastContactMs(s.id);
+          const daysSince = last ? (now - last) / 86400000 : Infinity;
+          if(daysSince <= radarConfig.contactDays) return;
+          const row = engRow(s.id);
+          out.push({ key: 'eng:' + s.id, projectId: pid, level: gap >= 3 ? 'critical' : 'warning', type: 'eng', sort: 4 + gap,
+            title: rt('engTitle', { gap, name: s.name }),
+            details: rt('engDesc', { sal, cur: row.current, des: row.desired, last: last ? rt('daysAgo', { n: Math.floor(daysSince) }) : rt('never') }),
+            action: rt('engAct'),
+            buttons: `<button onclick="logContact('${s.id}')" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-bold rounded">${rt('btnContact')}</button>` });
+        });
+      });
+
+      return out.sort((a, b) => (b.level === 'critical') - (a.level === 'critical') || b.sort - a.sort);
+    }
+
+    // إغلاق آلي: أي تنبيه كان نشطاً واختفى سببه يتنقل لأرشيف "المخاطر المحيدة"
+    function neutralizedReason(key){
+      const type = key.split(':')[0], id = key.slice(type.length + 1);
+      if(type === 'sla'){
+        const t = transactions.find(x => x.id === id);
+        if(!t) return rt('rsRemoved');
+        return t.status === 'closed' ? rt('rsClosed', { note: t.note ? ' (' + t.note + ')' : '' }) : rt('rsBelow');
+      }
+      return { raci: rt('rsRaci'), clause: rt('rsClause'), eng: rt('rsEng') }[type] || rt('rsGeneric');
+    }
+    function syncRadarLog(alerts){
+      const now = Date.now(), cur = {};
+      let changed = false;
+      alerts.forEach(a => {
+        cur[a.key] = a;
+        const s = radarLog.seen[a.key];
+        if(!s){ radarLog.seen[a.key] = { title: a.title, level: a.level, projectId: a.projectId, firstSeen: now }; changed = true; }
+        else if(s.level !== a.level){ s.level = a.level; s.title = a.title; changed = true; }
+      });
+      Object.keys(radarLog.seen).forEach(k => {
+        if(cur[k]) return;
+        radarLog.neutralized.unshift(Object.assign({ key: k, resolvedAt: now, reason: neutralizedReason(k) }, radarLog.seen[k]));
+        delete radarLog.seen[k];
+        changed = true;
+      });
+      if(radarLog.neutralized.length > 100) radarLog.neutralized.length = 100;
+      if(changed) saveSslData();
+    }
+
+    // ---- التنبيه المبكر: 48 / 24 ساعة قبل الخرق (Toast داخل التطبيق + Web Notification لو مفعّل)
+    function radarToast(msg, level){
+      const box = document.getElementById('radarToasts');
+      if(box){
+        const d = document.createElement('div');
+        d.className = 'p-3 rounded-lg border text-xs font-bold shadow-lg cursor-pointer ' + (level === 'critical' ? 'bg-red-950 border-red-600 text-red-100' : 'bg-amber-950 border-amber-600 text-amber-100');
+        d.textContent = msg;
+        d.onclick = () => d.remove();
+        box.appendChild(d);
+        setTimeout(() => d.remove(), 14000);
+      }
+      if('Notification' in window && Notification.permission === 'granted'){
+        try{ new Notification('SSL — Predictive Risk Radar', { body: msg }); }catch(e){}
+      }
+    }
+    function checkEscalationNotifications(){
+      let changed = false;
+      const now = Date.now();
+      transactions.forEach(t => {
+        if(t.status !== 'open') return;
+        const left = ((t.slaDays > 0 ? t.slaDays : 1) - elapsedDays(t.sentAt, now)) * 24;
+        if(left <= 0){
+          if(!t.nBreach){ t.nBreach = t.n24 = t.n48 = true; changed = true; radarToast(rt('toastBreach', { title: t.title }), 'critical'); }
+        } else if(left <= 24){
+          if(!t.n24){ t.n24 = t.n48 = true; changed = true; radarToast(rt('toast24', { title: t.title }), 'critical'); }
+        } else if(left <= 48){
+          if(!t.n48){ t.n48 = true; changed = true; radarToast(rt('toast48', { title: t.title }), 'warning'); }
+        }
+      });
+      if(changed) saveSslData();
+    }
+    function enableRadarNotifications(){
+      if(!('Notification' in window)){ alert('المتصفح ده مش بيدعم Web Notifications.'); return; }
+      Notification.requestPermission().then(updateNotifyButton);
+    }
+    function updateNotifyButton(){
+      const b = document.getElementById('radarNotifyBtn');
+      if(!b) return;
+      const p = ('Notification' in window) ? Notification.permission : 'denied';
+      b.textContent = p === 'granted' ? rt('notifyOn') : (p === 'denied' ? rt('notifyBlocked') : rt('notifyOff'));
+      b.disabled = p !== 'default';
+      b.classList.toggle('opacity-60', p !== 'default');
+    }
+
+    // ---- بطاقة التنبؤ الديناميكية (RiskAlertCard)
+    function RiskAlertCard(a){
+      const crit = a.level === 'critical';
+      const box = crit ? 'bg-red-950/40 border-red-500' : 'bg-amber-950/40 border-amber-500';
+      const t1 = crit ? 'text-red-200' : 'text-amber-200';
+      const badge = crit ? 'bg-red-900 text-red-200' : 'bg-amber-900 text-amber-200';
+      const bar = a.pct != null ? `<div class="h-1.5 bg-slate-900 rounded"><div class="h-1.5 rounded ${crit ? 'bg-red-500' : 'bg-amber-500'}" style="width:${a.pct}%"></div></div>` : '';
+      return `<div class="p-3 ${box} border-r-4 rounded-lg space-y-2">
+        <div class="flex justify-between items-start gap-3">
+          <div class="min-w-0"><p class="text-sm font-bold ${t1}">${esc(a.title)}</p><p class="text-xs text-slate-400 mt-1">${esc(a.details)}</p></div>
+          <span class="text-xs ${badge} px-2.5 py-1 rounded font-bold shrink-0">${crit ? rt('critical') : rt('warning')}</span>
+        </div>${bar}
+        <p class="text-xs text-slate-300"><i class="fa-solid fa-lightbulb text-brand-accent me-1"></i>${esc(a.action)}</p>
+        ${a.buttons ? `<div class="no-print flex flex-wrap gap-2 pt-1">${a.buttons}</div>` : ''}
+      </div>`;
+    }
+
+    function renderRadar(){
+      const list = document.getElementById('aiAlertsList');
+      if(!list) return;
+      const alerts = computeAlerts();
+      syncRadarLog(alerts);
+      const mine = alerts.filter(a => a.projectId === activeProjectId);
+      const nCrit = mine.filter(a => a.level === 'critical').length, nWarn = mine.length - nCrit;
+
+      // العدادات (بدل الأرقام الثابتة)
+      document.getElementById('dashActiveAlertsCount').innerText = mine.length;
+      const comp = slaCompliance(activeProjectId), compEl = document.getElementById('dashSlaCompliance');
+      compEl.innerText = comp == null ? '—' : Math.round(comp * 100) + '%';
+      compEl.className = 'text-2xl font-bold mt-1 ' + (comp == null ? 'text-slate-500' : comp >= 0.9 ? 'text-emerald-400' : comp >= 0.75 ? 'text-amber-400' : 'text-red-400');
+      document.getElementById('dashSlaNote').innerText = comp == null ? rt('slaNoData') : rt('slaNote');
+
+      // ملخص
+      const scope = scopeCreepIndex(activeProjectId);
+      const tile = (label, val, cls) => `<div class="bg-slate-900 border border-slate-700 rounded-lg p-2"><p class="text-[10px] text-slate-400">${label}</p><p class="text-lg font-black ${cls}">${val}</p></div>`;
+      document.getElementById('radarSummary').innerHTML =
+        tile(rt('sumCritical'), nCrit, 'text-red-400') + tile(rt('sumWarning'), nWarn, 'text-amber-400') +
+        tile(rt('sumScope'), Math.round(scope * 100) + '%', scope >= 0.6 ? 'text-red-400' : scope >= 0.3 ? 'text-amber-400' : 'text-emerald-400') +
+        tile(rt('sumSla'), comp == null ? '—' : Math.round(comp * 100) + '%', 'text-slate-100');
+
+      list.innerHTML = mine.length ? mine.map(RiskAlertCard).join('') : `<p class="text-xs text-slate-400 p-3 bg-slate-900/60 rounded-lg border border-slate-700">${rt('none')}</p>`;
+
+      // اتجاه التأخير التاريخي
+      const hist = stakeholders.filter(s => s.projectId === activeProjectId).map(s => ({ s, h: historicalDelay(s.id) })).filter(x => x.h.n > 0);
+      document.getElementById('radarHistory').innerHTML = `<p class="text-xs font-bold text-slate-300 mb-1"><i class="fa-solid fa-clock-rotate-left text-brand-accent me-1"></i>${rt('histTitle')}</p>` +
+        (hist.length ? `<ul class="text-xs text-slate-400 space-y-0.5">${hist.map(x => `<li>• ${esc(rt('histRow', { name: x.s.name, avg: fmt(x.h.avg), n: x.h.n }))}</li>`).join('')}</ul>` : `<p class="text-xs text-slate-500">${rt('histNone')}</p>`);
+
+      // المخاطر المحيدة
+      const neut = radarLog.neutralized.filter(n => n.projectId === activeProjectId);
+      document.getElementById('radarNeutralizedTitle').innerText = rt('neutTitle', { n: neut.length });
+      document.getElementById('radarNeutralized').innerHTML = neut.length
+        ? neut.slice(0, 10).map(n => `<div class="text-xs text-slate-400 py-1 border-b border-slate-700/60"><span class="text-emerald-400 font-bold">✔</span> ${esc(n.title)} — <span class="text-slate-300">${esc(n.reason)}</span> <span class="text-slate-500">(${esc(fmtDate(n.resolvedAt))})</span></div>`).join('')
+        : `<p class="text-xs text-slate-500">${rt('neutNone')}</p>`;
+
+      // الإعدادات + الحالة
+      document.getElementById('radarLiveLabel').innerText = rt('live');
+      document.getElementById('radarUpdated').innerText = rt('updated', { time: new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-GB') });
+      const setLbl = { radarLblWarn:'setWarn', radarLblCrit:'setCrit', radarLblWeekend:'setWeekend', radarLblContact:'setContact' };
+      Object.keys(setLbl).forEach(id => { const el = document.getElementById(id); if(el) el.innerText = rt(setLbl[id]); });
+      const setVal = { radarWarn: Math.round(radarConfig.warn * 100), radarCrit: Math.round(radarConfig.crit * 100), radarContact: radarConfig.contactDays };
+      Object.keys(setVal).forEach(id => { const el = document.getElementById(id); if(el && document.activeElement !== el) el.value = setVal[id]; });
+      const wk = document.getElementById('radarWeekend'); if(wk) wk.checked = !!radarConfig.excludeWeekend;
+      updateNotifyButton();
+      checkEscalationNotifications();
+    }
+    function toggleRadarSettings(){ document.getElementById('radarSettings').classList.toggle('hidden'); }
+    function updateRadarConfig(){
+      let w = parseFloat(document.getElementById('radarWarn').value) / 100;
+      let c = parseFloat(document.getElementById('radarCrit').value) / 100;
+      let d = parseInt(document.getElementById('radarContact').value, 10);
+      if(!(w >= 0.1 && w <= 0.95)) w = RADAR_DEFAULTS.warn;
+      if(!(c > w && c <= 1.2)) c = Math.min(1.2, Math.max(w + 0.05, RADAR_DEFAULTS.crit));
+      if(!(d >= 1 && d <= 60)) d = RADAR_DEFAULTS.contactDays;
+      radarConfig = { warn: w, crit: c, contactDays: d, excludeWeekend: document.getElementById('radarWeekend').checked };
+      saveSslData();
+      renderAll();
+    }
+
+    // ============ شاشة معاملات SLA (مصدر بيانات الرادار) ============
+    function onTxSlaChange(){
+      const id = document.getElementById('tx-sla').value;
+      const row = slaRows.find(r => r.id === id);
+      const d = row ? parseSlaDays(row.target) : null;
+      if(d) document.getElementById('tx-days').value = fmt(d);
+    }
+    function addTransaction(){
+      const title = document.getElementById('tx-title').value.trim();
+      const stkId = document.getElementById('tx-stk').value;
+      const slaId = document.getElementById('tx-sla').value;
+      const days = parseFloat(document.getElementById('tx-days').value);
+      const sentAt = new Date(document.getElementById('tx-sent').value).getTime();
+      if(!title){ alert('اكتب اسم/مرجع المعاملة الأول'); return; }
+      if(!stkId){ alert('أضف صاحب مصلحة للمشروع الأول ثم اختره كطرف مسؤول عن الرد'); return; }
+      if(!(days > 0)){ alert('حدد مهلة الـ SLA بالأيام'); return; }
+      if(!isFinite(sentAt)){ alert('حدد تاريخ ووقت الإرسال'); return; }
+      transactions.push({ id: 'tx-' + Date.now(), projectId: activeProjectId, slaId, title, stkId, slaDays: days, sentAt, status: 'open' });
+      document.getElementById('tx-title').value = '';
+      document.getElementById('tx-sent').value = toLocalInput(Date.now());
+      saveSslData();
+      renderAll();
+    }
+    function closeTransaction(id){
+      const t = transactions.find(x => x.id === id);
+      if(!t) return;
+      const note = prompt('مرجع الاعتماد الرسمي / الإجراء التصحيحي (اختياري):', '');
+      if(note === null) return;
+      t.status = 'closed'; t.closedAt = Date.now(); t.note = note.trim();
+      saveSslData();
+      renderAll();
+    }
+    function reopenTransaction(id){
+      const t = transactions.find(x => x.id === id);
+      if(!t) return;
+      t.status = 'open'; delete t.closedAt; delete t.note; t.n48 = t.n24 = t.nBreach = false;
+      saveSslData();
+      renderAll();
+    }
+    function deleteTransaction(id){
+      if(!confirm('حذف المعاملة؟')) return;
+      transactions = transactions.filter(t => t.id !== id);
+      saveSslData();
+      renderAll();
+    }
+    function escalateTx(id){
+      const t = transactions.find(x => x.id === id);
+      if(!t) return;
+      const r = txRisk(t, Date.now()), sla = slaRows.find(x => x.id === t.slaId), stk = stakeholders.find(s => s.id === t.stkId);
+      const subject = '[SSL] تصعيد SLA — ' + t.title;
+      const body = 'المعاملة: ' + t.title + '\nالطرف المسؤول: ' + (stk ? stk.name : '—') + '\nتاريخ الإرسال: ' + fmtDate(t.sentAt) +
+        '\nالمهلة: ' + fmt(r.sla) + ' يوم — المنقضي: ' + fmt(r.elapsed) + ' يوم (' + Math.round(r.base * 100) + '%)\nمؤشر الخطر: ' + Math.round(r.index * 100) + '%' +
+        '\nمسار التصعيد المعتمد: ' + (sla && sla.escalation ? sla.escalation : '—') + '\n\nمطلوب الرد/الاعتماد فوراً تفادياً لخرق المهلة التعاقدية.';
+      window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    }
+    function loadDemoTransactions(){
+      const hasDemo = transactions.some(t => t.projectId === 'proj-1');
+      if(hasDemo && !confirm('فيه معاملات فعلاً على المشروع الأول. تضيف المعاملات التجريبية برضه؟')) return;
+      const demo = buildDemoTransactions().filter(d => !transactions.some(t => t.id === d.id));
+      transactions = transactions.concat(demo);
+      saveSslData();
+      renderAll();
+    }
+    function buildDemoTransactions(){
+      const now = Date.now(), D = 86400000, out = [];
+      const mk = (id, slaId, title, stkId, slaDays, span, closedAgo) => {
+        if(closedAgo == null) out.push({ id, projectId:'proj-1', slaId, title, stkId, slaDays, sentAt: startForSpan(now, span), status:'open' });
+        else { const closedAt = now - closedAgo * D; out.push({ id, projectId:'proj-1', slaId, title, stkId, slaDays, sentAt: startForSpan(closedAt, span), status:'closed', closedAt }); }
+      };
+      mk('tx-d1','sla-1','Shop Drawings – غرفة الشيلرات','stk-2',5,4.3);
+      mk('tx-d2','sla-2','RFI – مسار الدكت الرئيسي','stk-3',3,1);
+      mk('tx-d3','sla-1','Shop Drawings – حوامل الكابلات','stk-2',5,2);
+      mk('tx-h1','sla-1','Shop Drawings – الأساسات','stk-2',5,7.5,3);
+      mk('tx-h2','sla-1','Shop Drawings – الهيكل الخرساني','stk-2',5,6.5,8);
+      mk('tx-h3','sla-1','Shop Drawings – الواجهات','stk-2',5,5,12);
+      mk('tx-h4','sla-1','Shop Drawings – الحوائط','stk-2',5,4,15);
+      mk('tx-h5','sla-1','Shop Drawings – الأسقف','stk-2',5,3,18);
+      mk('tx-h6','sla-2','RFI – تقاطع المواسير','stk-3',3,2,5);
+      mk('tx-h7','sla-2','RFI – مواصفات الفلاتر','stk-3',3,2.5,10);
+      return out;
+    }
+
+    function renderTransactions(){
+      const tbody = document.getElementById('txTableBody');
+      if(!tbody) return;
+      const slaSel = document.getElementById('tx-sla'), stkSel = document.getElementById('tx-stk');
+      const slaHtml = slaRows.filter(r => r.projectId === activeProjectId).map(r => `<option value="${esc(r.id)}">${esc(r.service)} (${esc(r.target)})</option>`).join('') + '<option value="">— أخرى / بدون ربط —</option>';
+      const stkHtml = stakeholders.filter(s => s.projectId === activeProjectId).map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+      if(slaSel.dataset.sig !== slaHtml){ const prev = slaSel.value; slaSel.innerHTML = slaHtml; slaSel.dataset.sig = slaHtml; if([...slaSel.options].some(o => o.value === prev)) slaSel.value = prev; onTxSlaChange(); }
+      if(stkSel.dataset.sig !== stkHtml){ const prev = stkSel.value; stkSel.innerHTML = stkHtml; stkSel.dataset.sig = stkHtml; if([...stkSel.options].some(o => o.value === prev)) stkSel.value = prev; }
+      const sent = document.getElementById('tx-sent'); if(!sent.value) sent.value = toLocalInput(Date.now());
+
+      const now = Date.now();
+      const list = transactions.filter(t => t.projectId === activeProjectId).map(t => ({ t, r: t.status === 'open' ? txRisk(t, now) : null }))
+        .sort((a, b) => (a.t.status === 'open' ? 0 : 1) - (b.t.status === 'open' ? 0 : 1) || (b.r ? b.r.index : 0) - (a.r ? a.r.index : 0) || (b.t.sentAt - a.t.sentAt));
+      tbody.innerHTML = list.map(({ t, r }) => {
+        const stk = stakeholders.find(s => s.id === t.stkId);
+        let elapsedCell, riskCell, statusCell, actions;
+        if(t.status === 'closed'){
+          const used = elapsedDays(t.sentAt, t.closedAt), late = used - t.slaDays;
+          elapsedCell = fmt(used) + ' يوم';
+          riskCell = '<span class="text-slate-500">—</span>';
+          statusCell = late > 0 ? `<span class="text-red-400 font-bold">أُغلقت متأخرة ${fmt(late)} يوم</span>` : '<span class="text-emerald-400 font-bold">أُغلقت في الموعد</span>';
+          if(t.note) statusCell += `<div class="text-[10px] text-slate-500">${esc(t.note)}</div>`;
+          actions = `<button onclick="reopenTransaction('${t.id}')" class="text-slate-300 text-xs me-2" title="إعادة فتح"><i class="fa-solid fa-rotate-left"></i></button>`;
+        } else {
+          const pct = Math.round(r.index * 100), col = r.level === 'critical' ? 'bg-red-500' : r.level === 'warning' ? 'bg-amber-500' : 'bg-emerald-500';
+          elapsedCell = fmt(r.elapsed) + ' يوم';
+          riskCell = `<div class="w-28"><div class="h-1.5 bg-slate-900 rounded"><div class="h-1.5 rounded ${col}" style="width:${Math.min(100, pct)}%"></div></div><span class="text-[10px] text-slate-400">${pct}%${r.hist.avg > 0 ? ' (+تاريخي)' : ''}</span></div>`;
+          statusCell = r.breached ? '<span class="text-red-400 font-bold">متجاوزة للمهلة</span>' : r.level === 'critical' ? '<span class="text-red-400 font-bold">إنذار أحمر</span>' : r.level === 'warning' ? '<span class="text-amber-400 font-bold">تحذير مبكر</span>' : '<span class="text-emerald-400 font-bold">آمنة</span>';
+          actions = `<button onclick="closeTransaction('${t.id}')" class="text-emerald-400 text-xs me-2" title="تسجيل اعتماد"><i class="fa-solid fa-circle-check"></i></button><button onclick="escalateTx('${t.id}')" class="text-amber-400 text-xs me-2" title="تصعيد"><i class="fa-solid fa-bullhorn"></i></button>`;
+        }
+        return `<tr class="hover:bg-slate-700/40"><td class="p-3 font-bold text-white">${esc(t.title)}</td><td class="p-3">${esc(stk ? stk.name : '—')}</td>
+          <td class="p-3 text-slate-400">${esc(fmtDate(t.sentAt))}</td><td class="p-3">${fmt(t.slaDays)} يوم</td><td class="p-3">${elapsedCell}</td>
+          <td class="p-3">${riskCell}</td><td class="p-3">${statusCell}</td>
+          <td class="p-3 no-print whitespace-nowrap">${actions}<button onclick="deleteTransaction('${t.id}')" class="text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+      }).join('') || `<tr><td colspan="8" class="p-4 text-center text-slate-500">لا توجد معاملات بعد. أضف أول معاملة من النموذج أعلاه، أو <button onclick="loadDemoTransactions()" class="text-brand-500 underline font-bold">حمّل معاملات تجريبية</button>.</td></tr>`;
+    }
+
+    // مفاتيح صغيرة تربط الشاشات الأخرى بالرادار
+    function toggleClauseNotice(id){
+      const c = clauseRows.find(x => x.id === id);
+      if(!c) return;
+      c.noticeActive = !c.noticeActive;
+      saveSslData();
+      renderAll();
+    }
+    function logContact(stkId){
+      let row = engagementRows.find(r => r.stkId === stkId);
+      if(!row){ row = { stkId, current:'Neutral', desired:'Supportive' }; engagementRows.push(row); }
+      row.lastContact = Date.now();
+      saveSslData();
+      renderAll();
+    }
+
+    // 4. NAVIGATION SYSTEM
+    function navigate(viewId) {
+      document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(`view-${viewId}`).classList.remove('hidden');
+
+      document.querySelectorAll('aside nav button').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white', 'shadow');
+        btn.classList.add('text-slate-300');
+      });
+      const activeNav = document.getElementById(`nav-${viewId}`);
+      if(activeNav) {
+        activeNav.classList.add('bg-brand-600', 'text-white', 'shadow');
+        activeNav.classList.remove('text-slate-300');
+      }
+
+      closeSidebarOnMobile();
+      renderAll();
+    }
+
+    // 5. RENDER FUNCTIONS
+    function renderAll() {
+      renderProjectSelector();
+      renderProjectsGrid();
+      renderStakeholderTable();
+      renderPowerInterestGrid();
+      renderDashboardMetrics();
+      renderFullReport();
+      renderSlaTable();
+      renderRaciTable();
+      renderClausesTable();
+      renderEngagementTable();
+      renderTransactions();
+      renderRadar();
+    }
+
+    function renderProjectSelector() {
+      const select = document.getElementById('projectSelector');
+      const groups = {};
+      projects.forEach(p => {
+        const type = p.type || 'أخرى';
+        if(!groups[type]) groups[type] = [];
+        groups[type].push(p);
+      });
+      select.innerHTML = Object.keys(groups).map(type => `
+        <optgroup label="${type}">
+          ${groups[type].map(p => `<option value="${p.id}" ${p.id === activeProjectId ? 'selected' : ''}>${p.name}</option>`).join('')}
+        </optgroup>
+      `).join('');
+      
+      const currentProj = projects.find(p => p.id === activeProjectId);
+      if(currentProj) {
+        document.getElementById('printProjectName').innerText = currentProj.name;
+        document.getElementById('reportProjectTitle').innerText = `${currentProj.name} (${currentProj.code})`;
+      }
+    }
+
+    function switchProject(id) {
+      activeProjectId = id;
+      saveSslData();
+      renderAll();
+    }
+
+    function renderProjectsGrid() {
+      const grid = document.getElementById('projectsGrid');
+      grid.innerHTML = projects.map(p => `
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex justify-between items-start">
+              <span class="text-[10px] font-bold bg-brand-900 text-brand-500 px-2 py-0.5 rounded border border-brand-700">${p.code}</span>
+              <button onclick="deleteProject('${p.id}')" class="text-xs text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <h3 class="text-md font-bold text-white mt-2">${p.name}</h3>
+            <span class="text-[10px] text-slate-400 mt-1 inline-block">🏷️ ${p.type || 'أخرى'}</span>
+          </div>
+          <button onclick="switchProject('${p.id}'); navigate('dashboard');" class="w-full py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-bold text-slate-200 rounded transition">
+            فتح لوحة الحوكمة
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function renderStakeholderTable() {
+      const tbody = document.getElementById('stakeholderTableBody');
+      const filtered = stakeholders.filter(s => s.projectId === activeProjectId);
+
+      tbody.innerHTML = filtered.map(s => {
+        const salience = calculateSalience(s.power, s.legitimacy, s.urgency);
+        return `
+          <tr class="hover:bg-slate-700/40">
+            <td class="p-3 font-bold text-white">${s.name}</td>
+            <td class="p-3 text-slate-300">${s.role}</td>
+            <td class="p-3">
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${s.power ? 'bg-red-950 text-red-300' : 'bg-slate-900 text-slate-500'}">P</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${s.legitimacy ? 'bg-blue-950 text-blue-300' : 'bg-slate-900 text-slate-500'}">L</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${s.urgency ? 'bg-amber-950 text-amber-300' : 'bg-slate-900 text-slate-500'}">U</span>
+            </td>
+            <td class="p-3">
+              <span class="text-xs px-2 py-0.5 rounded border font-semibold ${salience.color}">${salience.type}</span>
+            </td>
+            <td class="p-3 text-xs text-slate-300">${salience.strategy}</td>
+            <td class="p-3 text-center">
+              <button onclick="deleteStakeholder('${s.id}')" class="text-xs text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderPowerInterestGrid() {
+      const filtered = stakeholders.filter(s => s.projectId === activeProjectId);
+      document.getElementById('quad-manage').innerHTML = '';
+      document.getElementById('quad-informed').innerHTML = '';
+      document.getElementById('quad-satisfied').innerHTML = '';
+      document.getElementById('quad-monitor').innerHTML = '';
+
+      filtered.forEach(s => {
+        const badge = `<span class="bg-slate-800 text-slate-200 border border-slate-600 px-2 py-0.5 rounded text-[11px]">${s.name}</span>`;
+        if (s.power && s.urgency) document.getElementById('quad-manage').innerHTML += badge;
+        else if (!s.power && s.urgency) document.getElementById('quad-informed').innerHTML += badge;
+        else if (s.power && !s.urgency) document.getElementById('quad-satisfied').innerHTML += badge;
+        else document.getElementById('quad-monitor').innerHTML += badge;
+      });
+    }
+
+    function renderDashboardMetrics() {
+      const filtered = stakeholders.filter(s => s.projectId === activeProjectId);
+      document.getElementById('dashTotalCount').innerText = filtered.length;
+      
+      const definities = filtered.filter(s => s.power && s.legitimacy && s.urgency).length;
+      document.getElementById('dashDefinitiveCount').innerText = definities;
+    }
+
+    function renderFullReport() {
+      const filtered = stakeholders.filter(s => s.projectId === activeProjectId);
+      const tbody = document.getElementById('reportStakeholderTable');
+      
+      tbody.innerHTML = filtered.map(s => {
+        const salience = calculateSalience(s.power, s.legitimacy, s.urgency);
+        return `
+          <tr>
+            <td class="p-2 border border-slate-700 font-bold">${s.name}</td>
+            <td class="p-2 border border-slate-700">${s.role}</td>
+            <td class="p-2 border border-slate-700 font-semibold">${salience.type}</td>
+            <td class="p-2 border border-slate-700">${salience.strategy}</td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="4" class="p-2 border border-slate-700 text-center text-slate-500">لا يوجد بيانات</td></tr>';
+
+      // القوة والاهتمام
+      const quads = [
+        { label:'Manage Closely', test: s=>s.power && s.urgency },
+        { label:'Keep Informed', test: s=>!s.power && s.urgency },
+        { label:'Keep Satisfied', test: s=>s.power && !s.urgency },
+        { label:'Monitor', test: s=>!s.power && !s.urgency }
+      ];
+      document.getElementById('reportPowerInterest').innerHTML = quads.map(q=>{
+        const names = filtered.filter(q.test).map(s=>s.name).join(', ') || '—';
+        return `<div class="border border-slate-700 rounded p-2"><b>${q.label}:</b> ${names}</div>`;
+      }).join('');
+
+      // تقييم المشاركة
+      document.getElementById('reportEngagementTable').innerHTML = filtered.map(s=>{
+        let row = engagementRows.find(r=>r.stkId===s.id) || { current:'Neutral', desired:'Supportive' };
+        const gap = ENGAGEMENT_LEVELS.indexOf(row.desired) - ENGAGEMENT_LEVELS.indexOf(row.current);
+        return `<tr><td class="p-2 border border-slate-700 font-bold">${s.name}</td><td class="p-2 border border-slate-700">${row.current}</td>
+          <td class="p-2 border border-slate-700">${row.desired}</td><td class="p-2 border border-slate-700">${gap<=0?'No Gap':gap+' level(s)'}</td></tr>`;
+      }).join('') || '<tr><td colspan="4" class="p-2 border border-slate-700 text-center text-slate-500">—</td></tr>';
+
+      // SLA
+      const slaFiltered = slaRows.filter(r=>r.projectId===activeProjectId);
+      document.getElementById('reportSlaTable').innerHTML = slaFiltered.map(r=>
+        `<tr><td class="p-2 border border-slate-700">${r.service}</td><td class="p-2 border border-slate-700">${r.target}</td><td class="p-2 border border-slate-700">${r.escalation}</td></tr>`
+      ).join('') || '<tr><td colspan="3" class="p-2 border border-slate-700 text-center text-slate-500">لا توجد بنود</td></tr>';
+
+      // RACI
+      const raciFiltered = raciRows.filter(r=>r.projectId===activeProjectId);
+      document.getElementById('reportRaciTable').innerHTML = raciFiltered.map(r=>
+        `<tr><td class="p-2 border border-slate-700 text-right">${r.task}</td><td class="p-2 border border-slate-700">${r.pm}</td><td class="p-2 border border-slate-700">${r.consultant}</td><td class="p-2 border border-slate-700">${r.sub}</td></tr>`
+      ).join('') || '<tr><td colspan="4" class="p-2 border border-slate-700 text-center text-slate-500">لا توجد أنشطة</td></tr>';
+
+      // بنود العقد
+      const clausesFiltered = clauseRows.filter(r=>r.projectId===activeProjectId);
+      document.getElementById('reportClausesTable').innerHTML = clausesFiltered.map(r=>
+        `<tr><td class="p-2 border border-slate-700 font-bold">${r.name}</td><td class="p-2 border border-slate-700">${r.owner}</td><td class="p-2 border border-slate-700">${r.risk}</td><td class="p-2 border border-slate-700">${r.mitigation}</td></tr>`
+      ).join('') || '<tr><td colspan="4" class="p-2 border border-slate-700 text-center text-slate-500">لا توجد بنود مسجلة</td></tr>';
+    }
+
+    // 6. PROJECTS & STAKEHOLDERS MODAL ACTIONS
+    function openProjectModal() { document.getElementById('projectModal').classList.remove('hidden'); }
+    function closeProjectModal() { document.getElementById('projectModal').classList.add('hidden'); }
+
+    function saveProject() {
+      const name = document.getElementById('inputProjName').value;
+      const code = document.getElementById('inputProjCode').value;
+      const type = document.getElementById('inputProjType').value;
+      if(!name) return;
+
+      const newProj = { id: `proj-${Date.now()}`, name, code: code || 'PRJ-2026', type: type || 'أخرى' };
+      projects.push(newProj);
+      activeProjectId = newProj.id;
+      
+      closeProjectModal();
+      document.getElementById('inputProjName').value = '';
+      document.getElementById('inputProjCode').value = '';
+      saveSslData();
+      renderAll();
+    }
+
+    function deleteProject(id) {
+      if(projects.length <= 1) return alert('يجب أن يتبقى مشروع واحد على الأقل.');
+      projects = projects.filter(p => p.id !== id);
+      stakeholders = stakeholders.filter(s => s.projectId !== id);
+      activeProjectId = projects[0].id;
+      saveSslData();
+      renderAll();
+    }
+
+    function openStakeholderModal() { document.getElementById('stakeholderModal').classList.remove('hidden'); }
+    function closeStakeholderModal() { document.getElementById('stakeholderModal').classList.add('hidden'); }
+
+    function saveStakeholder() {
+      const name = document.getElementById('inputStkName').value;
+      const role = document.getElementById('inputStkRole').value;
+      const power = document.getElementById('checkPower').checked;
+      const legitimacy = document.getElementById('checkLegitimacy').checked;
+      const urgency = document.getElementById('checkUrgency').checked;
+
+      if(!name) return;
+
+      stakeholders.push({
+        id: `stk-${Date.now()}`,
+        projectId: activeProjectId,
+        name,
+        role: role || 'Member',
+        power,
+        legitimacy,
+        urgency
+      });
+
+      closeStakeholderModal();
+      document.getElementById('inputStkName').value = '';
+      document.getElementById('inputStkRole').value = '';
+      saveSslData();
+      renderAll();
+    }
+
+    function deleteStakeholder(id) {
+      stakeholders = stakeholders.filter(s => s.id !== id);
+      saveSslData();
+      renderAll();
+    }
+
+    // 7. LANGUAGE TOGGLE & TRANSLATION ENGINE
+    function toggleLanguage() {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      document.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById('langLabel').innerText = currentLang === 'ar' ? 'English' : 'عربي';
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if(dictionary[currentLang][key]) {
+          el.innerText = dictionary[currentLang][key];
+        }
+      });
+      renderRadar();
+    }
+
+    // 8. PDF EXPORTING ENGINE
+    function exportCurrentPagePDF() {
+      const element = document.getElementById('pdfContainer');
+      const opt = {
+        margin:       0.3,
+        filename:     `SSL_Governance_Report_${activeProjectId}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // INITIALIZATION
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('printDate').innerText = new Date().toLocaleDateString('ar-EG');
+      sslTryResumeSession();
+
+      // تحديث لحظي: الزمن بيمشي حتى من غير أي إدخال، فنعيد حساب الرادار كل دقيقة
+      setInterval(() => {
+        if(!currentCompanyId) return;
+        renderRadar();
+        const v = document.getElementById('view-transactions');
+        if(v && !v.classList.contains('hidden')) renderTransactions();
+      }, 60000);
+
+      // مزامنة بين التابات: أي تعديل في تاب تاني يتعكس هنا فوراً بدون Refresh
+      window.addEventListener('storage', e => {
+        if(currentCompanyId && e.key === sslDataKey()){ loadCompanyDataIntoState(); renderAll(); }
+      });
+    });
+  </script>
+</body>
+</html>
