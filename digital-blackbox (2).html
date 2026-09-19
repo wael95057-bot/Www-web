@@ -1,0 +1,2809 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة الصندوق الأسود الرقمي | Digital Blackbox Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+tailwind.config = { theme: { extend: { colors: { brand: { 50:'#f0f7ff',100:'#e0effe',500:'#0284c7',800:'#075985',900:'#0c4a6e',gold:'#d97706' } } } } }
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap');
+body{font-family:'Cairo','Inter',sans-serif;}
+.eng-header-stamp{border-bottom:2px solid #0284c7;}
+.modal-overlay{background:rgba(2,6,23,.85);}
+.stage-dot{width:14px;height:14px;border-radius:9999px;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:9999px;}
+@media print{ .no-print{display:none!important;} body{background:white;color:black;} }
+</style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+<header class="bg-slate-950 border-b border-slate-800 px-6 py-3 flex justify-between items-center no-print sticky top-0 z-40">
+    <div class="flex items-center gap-3">
+        <div class="bg-brand-500 text-white p-2 rounded-lg font-bold"><i class="fa-solid fa-cube text-xl"></i></div>
+        <div>
+            <h1 class="font-extrabold text-lg tracking-wide text-white">منصة الصندوق الأسود الرقمي</h1>
+            <p class="text-xs text-brand-gold font-semibold">إستراتيجية التوثيق الرقمي والحوكمة الهندسية</p>
+        </div>
+    </div>
+    <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs">
+            <i class="fa-solid fa-user-check text-brand-500"></i>
+            <span class="text-slate-400">إعداد وتطوير:</span>
+            <span class="font-bold text-white">م. وائل عويس</span>
+        </div>
+        <button onclick="toggleLanguage()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 border border-slate-700 transition">
+            <i class="fa-solid fa-globe text-brand-500"></i><span id="lang-btn-text">English</span>
+        </button>
+        <div id="user-session-info" class="hidden flex items-center gap-3">
+            <span id="current-company-name" class="bg-brand-900/60 text-brand-100 text-xs px-2.5 py-1 rounded border border-brand-500/30"></span>
+            <button onclick="logoutCompany()" class="bg-rose-900/40 hover:bg-rose-800/60 text-rose-300 px-2.5 py-1 rounded text-xs border border-rose-700/50 transition"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto">
+
+<div class="eng-header-stamp hidden mb-6 p-4 bg-slate-800 rounded-lg border border-slate-700 flex justify-between items-center" id="engineer-official-stamp">
+    <div>
+        <h2 class="font-bold text-lg text-brand-500" id="stamp-company-title">—</h2>
+        <p class="text-xs text-slate-400">منصة الصندوق الأسود الرقمي — إعداد وتطوير: م. وائل عويس</p>
+    </div>
+    <div class="text-left text-xs text-slate-400">
+        <p>Digital Blackbox Strategy Framework</p>
+        <p>التاريخ: <span id="stamp-current-date"></span></p>
+    </div>
+</div>
+
+<!-- AUTH VIEW -->
+<section id="auth-view" class="max-w-md mx-auto my-10 bg-slate-950 p-8 rounded-2xl border border-slate-800 shadow-2xl">
+    <div class="text-center mb-6">
+        <div class="inline-block p-3 bg-brand-500/10 text-brand-500 rounded-full mb-3"><i class="fa-solid fa-shield-halved text-3xl"></i></div>
+        <h2 class="text-xl font-bold text-white" id="auth-title">تسجيل الدخول لحساب شركتك</h2>
+        <p class="text-xs text-slate-400 mt-1" id="auth-sub">كل شركة لها بيانات وسجلات مستقلة وآمنة</p>
+    </div>
+
+    <div class="flex bg-slate-900 rounded-lg p-1 mb-5 border border-slate-800">
+        <button onclick="setAuthMode('login')" id="auth-tab-login" class="flex-1 py-2 rounded-md text-xs font-bold transition bg-brand-500 text-white">تسجيل الدخول</button>
+        <button onclick="setAuthMode('register')" id="auth-tab-register" class="flex-1 py-2 rounded-md text-xs font-bold transition text-slate-400">إنشاء حساب شركة جديد</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+            <input type="email" id="login-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="company@example.com">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+            <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="••••••••">
+        </div>
+        <p id="login-error" class="hidden text-xs text-rose-400 bg-rose-950/40 border border-rose-800/50 rounded p-2"></p>
+        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-800 text-white font-bold py-2.5 rounded-lg transition text-sm flex justify-center items-center gap-2">
+            <i class="fa-solid fa-lock-open"></i> تسجيل الدخول
+        </button>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+        <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">اسم الشركة / المؤسسة</label>
+            <input type="text" id="reg-name" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="اسم شركتك">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+            <input type="email" id="reg-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="company@example.com">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">رقم التليفون</label>
+            <input type="tel" id="reg-phone" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="01xxxxxxxxx">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+            <input type="password" id="reg-password" required minlength="6" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="6 أحرف على الأقل">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">تأكيد كلمة المرور</label>
+            <input type="password" id="reg-password2" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="أعد كتابة كلمة المرور">
+        </div>
+        <p id="register-error" class="hidden text-xs text-rose-400 bg-rose-950/40 border border-rose-800/50 rounded p-2"></p>
+        <button type="submit" class="w-full bg-brand-gold hover:bg-amber-700 text-white font-bold py-2.5 rounded-lg transition text-sm flex justify-center items-center gap-2">
+            <i class="fa-solid fa-building-circle-check"></i> إنشاء الحساب والدخول
+        </button>
+    </form>
+
+    <div class="mt-6 pt-4 border-t border-slate-900 text-center text-xs text-slate-500">
+        بيانات كل شركة مخزّنة بشكل مستقل وآمن على هذا الجهاز<br>
+        <span class="text-slate-600">تطوير: م. وائل عويس</span>
+    </div>
+</section>
+
+<!-- DASHBOARD -->
+<div id="dashboard-app" class="hidden space-y-6">
+
+    <div class="bg-slate-950 p-2 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-3 no-print">
+        <nav class="flex flex-wrap gap-1">
+            <button onclick="switchTab('projects-tab')" id="tab-btn-projects" class="tab-btn bg-brand-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-diagram-project"></i><span>سجل المشاريع</span>
+            </button>
+            <button onclick="switchTab('signatories-tab')" id="tab-btn-signatories" class="tab-btn bg-slate-900 text-slate-400 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-id-card-clip"></i><span>سجل الموقّعين المعتمدين</span>
+            </button>
+            <button onclick="switchTab('viewer-tab')" id="tab-btn-viewer" class="tab-btn bg-slate-900 text-slate-400 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-vr-cardboard"></i><span>المعاينة البصرية 360°</span>
+            </button>
+            <button onclick="switchTab('requests-tab')" id="tab-btn-requests" class="tab-btn bg-slate-900 text-slate-400 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-check"></i><span>الطلبات والمسارات</span>
+            </button>
+            <button onclick="switchTab('archive-tab')" id="tab-btn-archive" class="tab-btn bg-slate-900 text-slate-400 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-box-archive"></i><span>الأرشيف</span>
+            </button>
+            <button onclick="switchTab('reports-tab')" id="tab-btn-reports" class="tab-btn bg-slate-900 text-slate-400 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-file-contract"></i><span>التقرير النهائي الشامل</span>
+            </button>
+        </nav>
+        <div class="flex items-center gap-2">
+            <button onclick="printActiveView()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-print text-brand-500"></i><span>طباعة الصفحة</span>
+            </button>
+            <button onclick="exportViewToPDF()" class="bg-brand-gold hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition">
+                <i class="fa-solid fa-file-pdf"></i><span>تصدير PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- TAB 1: PROJECTS (starts empty, add/delete only) -->
+    <section id="projects-tab" class="tab-content space-y-4">
+
+        <!-- DIGITAL APPROVAL LOG — every digitally-signed document & its fingerprint, at a glance -->
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h2 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-stamp text-brand-gold"></i> سجل الاعتماد الرقمي للمستندات</h2>
+                <span class="text-[10px] text-slate-500" id="digital-approvals-count">0 توقيع معتمد</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-900 text-slate-300 border-b border-slate-800">
+                            <th class="p-2">المستند</th><th class="p-2">الموقّع</th><th class="p-2">الصفة</th>
+                            <th class="p-2">تاريخ الاعتماد</th><th class="p-2">البصمة الرقمية (Hash)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="digital-approvals-table" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                </table>
+            </div>
+            <p id="digital-approvals-empty" class="hidden text-center text-slate-500 text-xs py-6">لا توجد طلبات أو مستندات معتمدة رقمياً بعد — تظهر هنا تلقائياً فور إضافة أول توقيع رقمي على أي طلب.</p>
+        </div>
+
+        <div class="flex justify-between items-center bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <div>
+                <h2 class="text-base font-bold text-white">سجل المشاريع</h2>
+                <p class="text-xs text-slate-400">السجل فارغ افتراضياً — أضف مشاريع شركتك الفعلية فقط</p>
+            </div>
+            <button onclick="openAddProjectForm()" class="bg-brand-500 hover:bg-brand-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 no-print">
+                <i class="fa-solid fa-plus"></i><span>إضافة مشروع جديد</span>
+            </button>
+        </div>
+
+        <!-- Add project inline form -->
+        <div id="add-project-form" class="hidden bg-slate-950 p-4 rounded-xl border border-brand-500/40 space-y-3">
+            <h3 class="font-bold text-sm text-brand-500">بيانات المشروع الجديد</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">اسم المشروع *</label>
+                    <input id="np-name" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="مثال: مشروع كذا">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">كود المشروع</label>
+                    <input id="np-code" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="PRJ-001">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">الموقع الجغرافي</label>
+                    <input id="np-location" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="المدينة / الحي">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">اسم العميل / المالك</label>
+                    <input id="np-client" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="جهة المالك">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+                <button onclick="addProject()" class="bg-brand-500 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-xs font-bold">حفظ المشروع</button>
+                <button onclick="closeAddProjectForm()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold">إلغاء</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="projects-list"></div>
+        <div id="projects-empty" class="hidden bg-slate-950 border border-dashed border-slate-800 rounded-xl p-10 text-center text-slate-500 text-sm">
+            <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+            لا توجد مشاريع مسجّلة بعد. اضغط "إضافة مشروع جديد" للبدء.
+        </div>
+    </section>
+
+    <!-- TAB: SIGNATORIES REGISTRY — master list of authorized names & digital signature codes -->
+    <section id="signatories-tab" class="tab-content hidden space-y-4">
+        <div class="flex justify-between items-center bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <div>
+                <h2 class="text-base font-bold text-white">سجل الموقّعين المعتمدين</h2>
+                <p class="text-xs text-slate-400">الأسماء والصفات ورموز التوقيع الرقمي المعتمدة لدى شركتك — تُستخدم عند توقيع أي طلب أو مستند</p>
+            </div>
+            <button onclick="openAddSignatoryForm()" class="bg-brand-500 hover:bg-brand-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 no-print">
+                <i class="fa-solid fa-plus"></i><span>إضافة موقّع جديد</span>
+            </button>
+        </div>
+
+        <div id="add-signatory-form" class="hidden bg-slate-950 p-4 rounded-xl border border-brand-500/40 space-y-3">
+            <h3 class="font-bold text-sm text-brand-500">بيانات الموقّع الجديد</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">الاسم *</label>
+                    <input id="ns-name" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="الاسم الثلاثي">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">الصفة / المسمى الوظيفي *</label>
+                    <input id="ns-role" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="مثال: مهندس الموقع">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">كلمة السر / رمز التوقيع الرقمي (4 أرقام) *</label>
+                    <input id="ns-code" type="password" maxlength="4" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="••••">
+                    <p class="text-[10px] text-slate-500 mt-1">لن تظهر هذه الكلمة لأي شخص في الجدول — تُستخدم فقط للتحقق عند التوقيع</p>
+                </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+                <button onclick="addSignatory()" class="bg-brand-500 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-xs font-bold">حفظ الموقّع</button>
+                <button onclick="closeAddSignatoryForm()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold">إلغاء</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-900 text-slate-300 border-b border-slate-800">
+                            <th class="p-3">الصفة</th><th class="p-3">الاسم</th><th class="p-3">رمز التوقيع الرقمي</th><th class="p-3">تاريخ الإضافة</th><th class="p-3 text-center no-print">حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="signatories-table-body" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                </table>
+            </div>
+            <p id="signatories-empty" class="hidden text-center text-slate-500 text-xs py-10">
+                <i class="fa-solid fa-id-card text-2xl mb-2 block"></i>
+                لا يوجد موقّعون مسجّلون بعد. أضف أول موقّع للبدء.
+            </p>
+        </div>
+    </section>
+
+    <!-- TAB 2: VIEWER -->
+    <section id="viewer-tab" class="tab-content hidden space-y-4">
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="space-y-3">
+                <h3 class="font-bold text-sm text-brand-500 border-b border-slate-800 pb-2">رفع ومعالجة اللقطات والمخططات</h3>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">المشروع</label>
+                    <select id="viewer-project" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"></select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">رفع صورة 360° البانورامية</label>
+                    <input type="file" id="pano-input" accept="image/*" onchange="loadPanoImage(event)" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-400">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">رفع مخطط / لقطة الـ Revit المطابقة</label>
+                    <input type="file" id="revit-input" accept="image/*" onchange="loadRevitImage(event)" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-400">
+                </div>
+                <div class="pt-2 space-y-1">
+                    <button onclick="triggerAiAudit()" class="w-full bg-brand-gold hover:bg-amber-700 text-white font-bold py-2 rounded text-xs transition flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i><span>مطابقة الواقع الفعلي بـ Revit عبر AI</span>
+                    </button>
+                    <div class="flex justify-between items-center">
+                        <span id="ai-audit-status" class="text-[10px] text-slate-500">ارفع صورة الموقع وصورة الـ Revit معاً أولاً</span>
+                        <button onclick="openAiSettingsModal()" class="text-[10px] text-slate-400 hover:text-brand-500 flex items-center gap-1"><i class="fa-solid fa-gear"></i> إعدادات AI</button>
+                    </div>
+                </div>
+                <div id="ai-audit-result" class="hidden bg-slate-900 border border-slate-800 rounded-lg p-3 mt-1"></div>
+            </div>
+            <div class="lg:col-span-2 bg-slate-900 rounded-lg border border-slate-800 p-2 flex flex-col h-96">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <span class="text-xs font-bold text-slate-300 flex items-center gap-2"><i class="fa-solid fa-globe text-brand-500"></i>شاشة العرض البانورامي التفاعلية 360°</span>
+                </div>
+                <div id="panorama-container" class="flex-1 rounded bg-black"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI SETTINGS MODAL — Gemini API key, stored only in this browser's localStorage -->
+    <div id="ai-settings-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-3 no-print">
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-key text-brand-gold"></i> إعدادات مطابقة الذكاء الاصطناعي</h3>
+                <button onclick="closeAiSettingsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-relaxed">
+                المطابقة تعمل عبر خدمة Google Gemini المجانية. أنشئ مفتاح API مجاني خاص بك من
+                <a href="https://aistudio.google.com/apikey" target="_blank" class="text-brand-500 underline">aistudio.google.com/apikey</a>
+                والصقه هنا. المفتاح يُحفظ في متصفحك فقط (localStorage) ولا يُكتب داخل ملفات الموقع.
+            </p>
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">مفتاح Gemini API</label>
+                <input id="ai-settings-key-input" type="password" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="AIza...">
+            </div>
+            <div class="flex gap-2 pt-1">
+                <button onclick="saveGeminiApiKey()" class="flex-1 bg-brand-500 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-xs font-bold">حفظ</button>
+                <button onclick="clearGeminiApiKey()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold">مسح المفتاح</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: REQUESTS (fixed catalog, fill + sign, no add/delete) -->
+    <section id="requests-tab" class="tab-content hidden space-y-4">
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+            <div class="border-b border-slate-800 pb-3">
+                <h2 class="text-base font-bold text-white">دليل الطلبات والمسارات الهندسية</h2>
+                <p class="text-xs text-slate-400">اختر نوع الطلب لفتح نموذجه ومساره الرسمي وتعبئته بالتوقيع الرقمي — القائمة والمسارات ثابتة</p>
+            </div>
+
+            <div id="no-projects-warning" class="hidden bg-amber-950/40 border border-amber-700/50 p-3 rounded text-xs text-amber-300 flex gap-2 items-center">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>يجب إضافة مشروع واحد على الأقل من تبويب "سجل المشاريع" قبل إنشاء أي طلب.</span>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                <input id="req-search" oninput="renderRequestCatalog()" placeholder="ابحث عن نوع طلب..." class="flex-1 min-w-[180px] bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white">
+                <select id="req-cat-filter" onchange="renderRequestCatalog()" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white">
+                    <option value="">كل التصنيفات</option>
+                </select>
+            </div>
+
+            <div id="request-catalog" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+            <div class="pt-4 border-t border-slate-800 space-y-2">
+                <h3 class="font-bold text-sm text-white">سجل الطلبات المُنشأة (Audit Trail)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-900 text-slate-300 border-b border-slate-800">
+                                <th class="p-3">كود الطلب</th><th class="p-3">نوع الطلب</th><th class="p-3">المشروع</th>
+                                <th class="p-3">المرحلة الحالية</th><th class="p-3">التوقيعات</th><th class="p-3">الحالة</th><th class="p-3 text-center no-print">فتح</th><th class="p-3 text-center no-print">حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requests-table-body" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                    </table>
+                </div>
+                <p id="requests-log-empty" class="hidden text-center text-slate-500 text-xs py-6">لا توجد طلبات منشأة بعد.</p>
+            </div>
+
+            <!-- Document templates manager (moved here from the removed "المستندات" tab) — documents themselves are prepared from inside each request -->
+            <details id="templates-manager" class="pt-4 border-t border-slate-800">
+                <summary class="cursor-pointer font-bold text-sm text-white flex items-center gap-2 select-none"><i class="fa-solid fa-file-lines text-brand-500"></i> صيغ المستندات (إضافة / تعديل / حذف)</summary>
+                <div class="space-y-4 mt-3">
+                    <p class="text-[11px] text-slate-400">تُعدّ المستندات من داخل كل طلب (زر "إعداد المستند الآن" في نموذج الطلب). من هنا تدير الصيغ فقط.</p>
+                    <button onclick="openTemplateForm()" class="bg-brand-500 hover:bg-brand-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 no-print">
+                        <i class="fa-solid fa-plus"></i><span>إضافة صيغة مستند جديدة</span>
+                    </button>
+
+                    <div id="template-form" class="hidden bg-slate-950 p-4 rounded-xl border border-brand-500/40 space-y-3">
+                        <h3 class="font-bold text-sm text-brand-500" id="template-form-title">صيغة مستند جديدة</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1">اسم المستند *</label>
+                                <input id="tf-name" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="مثال: خطاب تسليم موقع">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1">التصنيف</label>
+                                <select id="tf-category" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white"></select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1">نص صيغة المستند *</label>
+                            <p class="text-[10px] text-slate-500 mb-1">اكتب النص كما تريد أن يظهر في المستند، وضع أي بيانات ستدخلها يدوياً لاحقاً بين أقواس مزدوجة، مثال: {{اسم_العميل}} أو {{اسم_المشروع}} أو {{التاريخ}} — أما التوقيعات فلا تكتبها هنا، لأنها تُسحب تلقائياً من التوقيع الرقمي على الطلب.</p>
+                            <textarea id="tf-body" rows="10" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white leading-relaxed" placeholder="السادة/ {{اسم_العميل}} المحترمين تحية طيبة وبعد،&#10;نفيدكم بخصوص مشروع {{اسم_المشروع}} بتاريخ {{التاريخ}} ..."></textarea>
+                        </div>
+                        <div class="flex gap-2 pt-1">
+                            <button onclick="saveTemplate()" class="bg-brand-500 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-xs font-bold">حفظ الصيغة</button>
+                            <button onclick="closeTemplateForm()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold">إلغاء</button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <input id="doc-search" oninput="renderTemplates()" placeholder="ابحث عن صيغة مستند..." class="flex-1 min-w-[180px] bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white">
+                        <select id="doc-cat-filter" onchange="renderTemplates()" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white">
+                            <option value="">كل التصنيفات</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="templates-list"></div>
+                    <p id="templates-empty" class="hidden text-center text-slate-500 text-xs py-10">
+                        <i class="fa-solid fa-file-circle-plus text-2xl mb-2 block"></i>
+                        لا توجد صيغ مستندات بعد. أضف أول صيغة لتبدأ.
+                    </p>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- TAB: ARCHIVE — every prepared document lands here automatically, view/download/PDF/print -->
+    <section id="archive-tab" class="tab-content hidden space-y-4">
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+            <div class="border-b border-slate-800 pb-3">
+                <h2 class="text-base font-bold text-white">الأرشيف الرقمي للمستندات</h2>
+                <p class="text-xs text-slate-400">كل مستند يتم إعداده، وكل مطابقة ثنائية تؤرشفها، تُضاف هنا — عرض، تنزيل، حفظ PDF، أو طباعة في أي وقت</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <input id="archive-search" oninput="renderArchiveList()" placeholder="ابحث في الأرشيف..." class="flex-1 min-w-[180px] bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white">
+                <button onclick="openUploadOldDocModal()" class="bg-emerald-800 hover:bg-emerald-700 text-emerald-100 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 no-print">
+                    <i class="fa-solid fa-file-arrow-up"></i><span>رفع مستند قديم</span>
+                </button>
+            </div>
+
+            <!-- Upload old / external document into archive -->
+            <div id="upload-old-doc-form" class="hidden bg-slate-950 p-4 rounded-xl border border-emerald-700/40 space-y-3">
+                <h3 class="font-bold text-sm text-emerald-400">رفع مستند قديم إلى الأرشيف</h3>
+                <p class="text-[10px] text-slate-500">ملف PDF أو صورة أو مستند خارجي جاهز — يُضاف للأرشيف كما هو، بدون تعديل نصه</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">الملف *</label>
+                        <input type="file" id="uod-file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onchange="handleOldDocFileSelect(event)" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs text-slate-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">عنوان المستند</label>
+                        <input id="uod-title" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="اسم المستند">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">المشروع (اختياري)</label>
+                        <select id="uod-project" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white"><option value="">بدون مشروع</option></select>
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button onclick="saveUploadedOldDocument()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold">إضافة للأرشيف</button>
+                    <button onclick="closeUploadOldDocModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold">إلغاء</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="archive-list"></div>
+            <p id="archive-empty" class="hidden text-center text-slate-500 text-xs py-10">
+                <i class="fa-solid fa-box-open text-2xl mb-2 block"></i>
+                الأرشيف فارغ حالياً — أي مستند تُعدّه سيظهر هنا تلقائياً.
+            </p>
+        </div>
+    </section>
+
+    <section id="reports-tab" class="tab-content hidden space-y-6">
+        <div id="final-report-document" class="bg-slate-950 p-8 rounded-xl border border-slate-800 space-y-6 text-slate-200">
+            <div class="border-b-2 border-brand-500 pb-6 flex justify-between items-start flex-wrap gap-4">
+                <div>
+                    <span class="bg-brand-500/20 text-brand-400 text-xs px-3 py-1 rounded-full font-bold">التقرير الاستراتيجي النهائي</span>
+                    <h1 class="text-2xl font-black text-white mt-2">تقرير حوكمة التوثيق الرقمي للصندوق الأسود</h1>
+                    <p class="text-xs text-slate-400 mt-1">Digital Blackbox Executive Final Audit & Compliance Report</p>
+                </div>
+                <div class="text-left text-xs space-y-1">
+                    <p class="font-bold text-brand-gold" id="report-company-name">—</p>
+                    <p class="text-slate-500">التاريخ: <span id="report-date-display"></span></p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-center">
+                    <span class="text-slate-400 text-[10px] block">إجمالي المشاريع</span>
+                    <span class="text-xl font-extrabold text-brand-500" id="m-total-projects">0</span>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-center">
+                    <span class="text-slate-400 text-[10px] block">الطلبات المنشأة</span>
+                    <span class="text-xl font-extrabold text-emerald-400" id="m-total-requests">0</span>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-center">
+                    <span class="text-slate-400 text-[10px] block">الطلبات المغلقة رقمياً</span>
+                    <span class="text-xl font-extrabold text-amber-400" id="m-closed-requests">0</span>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-center">
+                    <span class="text-slate-400 text-[10px] block">التوقيعات المسجّلة</span>
+                    <span class="text-xl font-extrabold text-sky-400" id="m-total-signatures">0</span>
+                </div>
+            </div>
+            <div class="space-y-3">
+                <h3 class="font-bold text-sm text-white border-b border-slate-800 pb-2">سجل الاعتمادات والتوقيعات الرقمية الموثقة</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse text-xs">
+                        <thead><tr class="bg-slate-900 text-slate-400">
+                            <th class="p-2 border border-slate-800">الطلب</th><th class="p-2 border border-slate-800">المشروع</th>
+                            <th class="p-2 border border-slate-800">آخر توقيع</th><th class="p-2 border border-slate-800">التاريخ</th>
+                            <th class="p-2 border border-slate-800">الحالة</th>
+                        </tr></thead>
+                        <tbody id="report-log-body" class="divide-y divide-slate-800 text-slate-300"></tbody>
+                    </table>
+                </div>
+                <p id="report-log-empty" class="hidden text-center text-slate-500 text-xs py-6">لا توجد بيانات موقعة بعد.</p>
+            </div>
+        </div>
+    </section>
+</div>
+</main>
+
+<footer class="bg-slate-950 border-t border-slate-900 py-4 px-6 text-center text-xs text-slate-500 no-print">
+    <p>جميع الحقوق محفوظة © 2026 | منصة الصندوق الأسود الرقمي (Digital Blackbox Platform)</p>
+    <p class="mt-1 text-[10px] text-slate-600">تم التطوير والتصميم بواسطة <strong>م. وائل عويس</strong></p>
+</footer>
+
+<!-- REQUEST FORM MODAL -->
+<div id="request-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-start md:items-center justify-center p-3 overflow-y-auto no-print">
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl max-w-2xl w-full my-6 max-h-[92vh] overflow-y-auto">
+        <div class="sticky top-0 bg-slate-950 border-b border-slate-800 p-4 flex justify-between items-center z-10">
+            <div>
+                <p class="text-[10px] text-brand-gold font-mono" id="rm-code"></p>
+                <h3 class="font-bold text-white text-sm" id="rm-title"></h3>
+            </div>
+            <button onclick="closeRequestModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div class="p-4 space-y-4">
+            <!-- Workflow stepper -->
+            <div id="rm-stepper" class="flex items-center gap-1 flex-wrap"></div>
+            <p id="rm-sig-count" class="text-[11px] font-bold"></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">المشروع *</label>
+                    <select id="rm-project" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white"></select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">المنطقة / القطاع</label>
+                    <input id="rm-zone" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="مثال: القطاع A - الدور الثالث">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">وصف / تفاصيل الطلب</label>
+                <textarea id="rm-desc" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">إرفاق صور 360° / مخططات (اختياري)</label>
+                <input type="file" multiple class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-400">
+            </div>
+
+            <!-- Document preparation linked to this request -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-2">
+                <h4 class="text-xs font-bold text-brand-500 flex items-center gap-2"><i class="fa-solid fa-file-lines"></i> إعداد مستند لهذا الطلب</h4>
+                <div class="flex flex-wrap gap-2 items-end">
+                    <div class="flex-1 min-w-[160px]">
+                        <label class="block text-[11px] text-slate-300 mb-1">قالب المستند</label>
+                        <select id="rm-template-select" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white"></select>
+                    </div>
+                    <button onclick="prepareRequestDocument()" class="bg-brand-gold hover:bg-amber-700 text-white text-[11px] font-bold px-3 py-2 rounded flex items-center gap-1">
+                        <i class="fa-solid fa-file-circle-plus"></i> إعداد المستند الآن
+                    </button>
+                </div>
+                <p id="rm-no-templates-note" class="hidden text-[10px] text-amber-400">لا توجد قوالب مستندات بعد. <a href="#" onclick="goCreateTemplateFromRequest(event)" class="underline text-brand-400">أضف قالبًا من قسم "صيغ المستندات" في صفحة الطلبات</a></p>
+                <p class="text-[10px] text-slate-500">توقيعات هذا الطلب الرقمية (الجدول أدناه) تظهر تلقائياً داخل المستند — تُوقَّع مرة واحدة فقط هنا.</p>
+                <div id="rm-linked-docs" class="space-y-1"></div>
+            </div>
+
+            <!-- Digital signature table — role / name / code / date — with add & delete -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-2">
+                <h4 class="text-xs font-bold text-brand-500 flex items-center gap-2"><i class="fa-solid fa-fingerprint"></i> جدول التوقيع الرقمي لهذا الطلب</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse text-[11px]">
+                        <thead>
+                            <tr class="bg-slate-950 text-slate-400">
+                                <th class="p-2">الصفة</th><th class="p-2">الاسم</th><th class="p-2">رمز التوقيع الرقمي</th><th class="p-2">التاريخ</th><th class="p-2 text-center no-print">حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rm-signatures-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- signing box -->
+            <div id="rm-sign-box" class="bg-slate-900 border border-brand-500/30 rounded-lg p-4 space-y-3">
+                <h4 class="text-xs font-bold text-brand-500 flex items-center gap-2"><i class="fa-solid fa-signature"></i> اعتماد المرحلة الحالية: <span id="rm-current-stage-label" class="text-white"></span></h4>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">اختيار من سجل الموقّعين (اختياري)</label>
+                    <select id="rm-signatory-select" onchange="applyRequestSignatoryPick()" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white"></select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">اسم الموقّع *</label>
+                        <input id="rm-sign-name" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="الاسم الثلاثي">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">رمز PIN للتوقيع الرقمي *</label>
+                        <input id="rm-sign-pin" type="password" maxlength="4" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="••••" autocomplete="off">
+                        <p class="text-[10px] text-slate-500 mt-1">يجب إدخال الرمز يدوياً بواسطة صاحبه — لا يُملأ تلقائياً حتى عند الاختيار من السجل</p>
+                    </div>
+                </div>
+                <p class="text-[10px] text-slate-500" id="rm-geo-status">جاري تحديد الموقع الجغرافي...</p>
+                <button onclick="signCurrentStage()" class="w-full bg-brand-500 hover:bg-brand-800 text-white font-bold py-2.5 rounded-lg text-xs flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-stamp"></i> توقيع واعتماد المرحلة
+                </button>
+            </div>
+            <div id="rm-closed-note" class="hidden bg-emerald-950/40 border border-emerald-700/50 text-emerald-300 text-xs p-3 rounded flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> تم إغلاق هذا الطلب وأرشفته نهائياً في الصندوق الأسود الرقمي.
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button onclick="saveRequestDraft()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded-lg text-xs font-bold">حفظ كمسودة</button>
+                <button onclick="closeRequestModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded-lg text-xs font-bold">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DOCUMENT GENERATE / EDIT MODAL -->
+<div id="document-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-start md:items-center justify-center p-3 overflow-y-auto no-print">
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl max-w-3xl w-full my-6 max-h-[92vh] overflow-y-auto">
+        <div class="sticky top-0 bg-slate-950 border-b border-slate-800 p-4 flex justify-between items-center z-10">
+            <div>
+                <p class="text-[10px] text-brand-gold" id="dm-template-name"></p>
+                <input id="dm-title" class="bg-transparent text-white font-bold text-sm border-b border-transparent focus:border-brand-500 focus:outline-none" placeholder="عنوان المستند">
+            </div>
+            <button onclick="closeDocumentModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div class="p-4 space-y-4">
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">ربط المستند بمشروع (اختياري)</label>
+                <select id="dm-project" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white"></select>
+            </div>
+
+            <div id="dm-fields-box" class="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-2">
+                <h4 class="text-xs font-bold text-brand-500">بيانات العميل / المشروع (تُدخل يدوياً)</h4>
+                <div id="dm-fields-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                <button onclick="regenerateDocumentText()" class="mt-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold px-3 py-1.5 rounded flex items-center gap-2 w-fit">
+                    <i class="fa-solid fa-arrows-rotate"></i> توليد / تحديث نص المستند من البيانات أعلاه
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-brand-gold/30 rounded-lg p-3 space-y-3">
+                <h4 class="text-xs font-bold text-brand-gold flex items-center gap-2"><i class="fa-solid fa-robot"></i> إعداد المستند بالذكاء الاصطناعي (Gemini / ChatGPT)</h4>
+                <textarea id="dm-ai-instructions" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="اكتب أي تفاصيل إضافية تريد أن يعتمد عليها الذكاء الاصطناعي في صياغة المستند (اختياري)"></textarea>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="copyAiPrompt()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold px-3 py-2 rounded flex items-center gap-1">
+                        <i class="fa-solid fa-copy"></i> ١. نسخ أمر الذكاء الاصطناعي
+                    </button>
+                    <button onclick="window.open('https://gemini.google.com/','_blank')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold px-3 py-2 rounded flex items-center gap-1">
+                        <i class="fa-solid fa-up-right-from-square"></i> ٢. فتح Gemini
+                    </button>
+                    <button onclick="window.open('https://chatgpt.com/','_blank')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold px-3 py-2 rounded flex items-center gap-1">
+                        <i class="fa-solid fa-up-right-from-square"></i> فتح ChatGPT
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-500">الصق الأمر المنسوخ هناك، ثم انسخ الرد الناتج والصقه في الصندوق تحت:</p>
+                <textarea id="dm-ai-paste" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white" placeholder="٣. الصق هنا النص اللي طلع من الذكاء الاصطناعي..."></textarea>
+                <button onclick="useAiPastedText()" class="bg-brand-gold hover:bg-amber-700 text-white text-[11px] font-bold px-3 py-2 rounded flex items-center gap-1 w-fit">
+                    <i class="fa-solid fa-check"></i> ٤. استخدام هذا النص كمستند نهائي
+                </button>
+                <p id="dm-ai-status" class="text-[10px] text-slate-500"></p>
+            </div>
+
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">نص المستند النهائي (قابل للتعديل مباشرة)</label>
+                <textarea id="dm-final-text" rows="12" class="w-full bg-white text-slate-900 rounded px-4 py-3 text-xs leading-relaxed"></textarea>
+            </div>
+
+            <!-- Digital signatures: signed ONCE on the request, pulled here automatically (read-only) -->
+            <div class="bg-slate-900 border border-brand-500/30 rounded-lg p-4 space-y-3">
+                <h4 class="text-xs font-bold text-brand-500 flex items-center gap-2"><i class="fa-solid fa-fingerprint"></i> التوقيعات الرقمية للمستند (تُسحب تلقائياً من الطلب)</h4>
+                <p id="dm-sig-count" class="text-[11px] font-bold"></p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse text-[11px]">
+                        <thead>
+                            <tr class="bg-slate-950 text-slate-400">
+                                <th class="p-2">الصفة</th><th class="p-2">الاسم</th><th class="p-2">رمز التوقيع الرقمي</th><th class="p-2">التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dm-signatures-table"></tbody>
+                    </table>
+                </div>
+                <p class="text-[10px] text-slate-500">التوقيع الرقمي يتم مرة واحدة فقط على الطلب، وتظهر التوقيعات تلقائياً داخل المستند عند العرض والطباعة وPDF والأرشفة والمشاركة — لا حاجة لتوقيعه مرة أخرى هنا.</p>
+                <button id="dm-back-to-request" onclick="closeDocumentModal()" class="hidden bg-brand-500 hover:bg-brand-800 text-white font-bold px-4 py-2 rounded-lg text-xs items-center gap-2"><i class="fa-solid fa-arrow-right"></i> العودة إلى الطلب للتوقيع</button>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+                <button onclick="saveDocumentInstance()" class="bg-brand-500 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> حفظ المستند</button>
+                <button onclick="printDocumentInstance()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-print"></i> طباعة</button>
+                <button onclick="exportDocumentPDF()" class="bg-brand-gold hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> تصدير PDF</button>
+                <button id="dm-delete-btn" onclick="deleteDocumentInstance()" class="hidden bg-rose-900/40 hover:bg-rose-800/60 text-rose-300 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 border border-rose-700/50"><i class="fa-solid fa-trash"></i> حذف المستند</button>
+                <button onclick="closeDocumentModal()" class="mr-auto bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-bold">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden printable container used for print/export of a generated document -->
+<div id="doc-print-container" class="hidden bg-white text-slate-900 p-10" style="direction:rtl;">
+    <div class="border-b-2 border-slate-800 pb-4 mb-6 flex justify-between items-start">
+        <div>
+            <h1 class="text-lg font-black" id="dpc-company"></h1>
+            <p class="text-xs text-slate-500" id="dpc-title"></p>
+        </div>
+        <p class="text-xs text-slate-500" id="dpc-date"></p>
+    </div>
+    <div id="dpc-images"></div>
+    <pre id="dpc-body" class="whitespace-pre-wrap text-sm leading-loose" style="font-family:'Cairo',sans-serif;"></pre>
+    <div id="dpc-signatures" class="mt-8 pt-4 border-t border-slate-300 text-xs space-y-1"></div>
+</div>
+
+<!-- QR SHARE MODAL -->
+<div id="share-qr-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-3 no-print">
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 text-center">
+        <div class="flex justify-between items-center">
+            <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-qrcode text-brand-500"></i> مشاركة المستند برمز QR</h3>
+            <button onclick="closeShareModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <p class="text-[11px] text-slate-400" id="share-doc-title"></p>
+        <div id="share-qr-code" class="bg-white p-3 rounded-lg inline-flex justify-center items-center"></div>
+        <p class="text-[10px] text-slate-500">امسح الرمز أو أرسل الرابط — يفتح المستند مباشرة بدون تسجيل دخول</p>
+        <div class="flex gap-2">
+            <button onclick="shareQRToWhatsApp()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold flex justify-center items-center gap-2"><i class="fa-brands fa-whatsapp"></i> واتساب</button>
+            <button onclick="copyShareLink()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-bold flex justify-center items-center gap-2"><i class="fa-solid fa-copy"></i> نسخ الرابط</button>
+        </div>
+    </div>
+</div>
+
+<!-- SHARED DOCUMENT VIEW (opened directly from a shared link/QR — no login required) -->
+<div id="shared-doc-view" class="hidden fixed inset-0 z-[100] bg-slate-950 overflow-y-auto">
+    <div class="max-w-2xl mx-auto p-4 space-y-4">
+        <div class="flex items-center gap-2 pt-2">
+            <div class="bg-brand-500 text-white p-2 rounded-lg font-bold"><i class="fa-solid fa-cube"></i></div>
+            <div>
+                <h1 class="font-extrabold text-sm text-white">منصة الصندوق الأسود الرقمي</h1>
+                <p class="text-[10px] text-brand-gold">مستند مُشارك — عرض مباشر</p>
+            </div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <p class="text-[10px] text-brand-gold" id="sdv-company"></p>
+            <h2 class="font-bold text-white text-base mb-1" id="sdv-title"></h2>
+            <p class="text-[10px] text-slate-500 mb-3" id="sdv-date"></p>
+            <div class="bg-white text-slate-900 rounded-lg p-4">
+                <pre id="sdv-body" class="whitespace-pre-wrap text-xs leading-relaxed" style="font-family:'Cairo',sans-serif;"></pre>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-xs font-bold text-brand-500 mb-1"><i class="fa-solid fa-fingerprint"></i> التوقيعات الرقمية</h4>
+                <div id="sdv-signatures"></div>
+            </div>
+        </div>
+        <p class="text-center text-[10px] text-slate-600 pb-6">تطوير: م. وائل عويس</p>
+    </div>
+</div>
+
+<!-- ARCHIVE VIEW MODAL (read-only) -->
+<div id="archive-view-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-start md:items-center justify-center p-3 overflow-y-auto no-print">
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl max-w-2xl w-full my-6 max-h-[92vh] overflow-y-auto">
+        <div class="sticky top-0 bg-slate-950 border-b border-slate-800 p-4 flex justify-between items-center z-10">
+            <div>
+                <p class="text-[10px] text-brand-gold" id="av-date"></p>
+                <h3 class="font-bold text-white text-sm" id="av-title"></h3>
+            </div>
+            <button onclick="closeArchiveView()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div class="p-4 space-y-4">
+            <div class="bg-white text-slate-900 rounded-lg p-4">
+                <pre id="av-body" class="whitespace-pre-wrap text-xs leading-relaxed" style="font-family:'Cairo',sans-serif;"></pre>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-brand-500 mb-1"><i class="fa-solid fa-fingerprint"></i> التوقيعات الرقمية</h4>
+                <div id="av-signatures"></div>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">
+                <button onclick="archivePrint(activeDocumentId)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-print"></i> طباعة</button>
+                <button onclick="archiveExportPDF(activeDocumentId)" class="bg-brand-gold hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> حفظ PDF</button>
+                <button onclick="archiveDownloadText(activeDocumentId)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-download"></i> تنزيل</button>
+                <button id="av-qr-btn" onclick="openShareModal(activeDocumentId)" class="bg-emerald-800 hover:bg-emerald-700 text-emerald-100 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-qrcode"></i> مشاركة QR</button>
+                <button onclick="closeArchiveView()" class="mr-auto bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-bold">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ============ Request Type Catalog (fixed — no add/delete) ============ */
+const ROUTE_FIELD  = ["مهندس الموقع / المُنشئ","مهندس الجودة QA/QC","الاستشاري المختص","مدير المشروع / الأرشفة"];
+const ROUTE_HSE    = ["مسؤول السلامة HSE","مشرف الموقع","استشاري السلامة","مدير المشروع / الأرشفة"];
+const ROUTE_COMM   = ["مسؤول العقود / التجاري","مدير المشروع","الاستشاري / المالك","الأرشفة النهائية"];
+const ROUTE_LOG    = ["مسؤول الموقع / اللوجستيات","مدير الموقع","الاستشاري (إن لزم)","الأرشفة"];
+const ROUTE_TEST   = ["مهندس الموقع","مسؤول المعمل / الجودة","الاستشاري المختص","الأرشفة"];
+const ROUTE_DATA   = ["مقدم الطلب","مسؤول تقنية المعلومات / الأمن","مدير المشروع","الأرشفة"];
+const ROUTE_CLOSE  = ["مهندس الموقع","الاستشاري","مدير المشروع","لجنة التسليم النهائي"];
+const ROUTE_EMRG   = ["مُبلّغ الحالة","مسؤول السلامة","مدير المشروع","الأرشفة الفورية"];
+
+const CATS = {
+  field:"طلبات ميدانية وهندسية", qc:"جودة وسلامة", periodic:"تقارير دورية", commercial:"تعاقدية ومالية",
+  resource:"موارد ولوجستيات", testing:"اختبارات وتشغيل", closeout:"إغلاق وتسليم", design:"هندسة وتصميم",
+  data:"أمن وبيانات", emergency:"طوارئ ونزاعات", sustain:"استدامة", vendor:"موردون ومقاولون"
+};
+
+const REQUEST_TYPES = [
+ {id:"WIR",cat:"field",name:"طلبات فحص واستلام الأعمال الميدانية",route:ROUTE_FIELD},
+ {id:"RFI",cat:"field",name:"طلبات الاستفسارات الفنية",route:ROUTE_FIELD},
+ {id:"MAR",cat:"field",name:"طلبات اعتماد المواد",route:ROUTE_FIELD},
+ {id:"MIR",cat:"field",name:"طلبات فحص المواد عند الوصول",route:ROUTE_FIELD},
+ {id:"CR",cat:"commercial",name:"طلبات التغيير في نطاق العمل",route:ROUTE_COMM},
+ {id:"VO",cat:"commercial",name:"أوامر التغيير (Variation Order)",route:ROUTE_COMM},
+ {id:"EQH",cat:"resource",name:"طلبات تسليم واستلام المعدات",route:ROUTE_LOG},
+ {id:"NCR",cat:"qc",name:"تقارير عدم المطابقة الميدانية",route:ROUTE_FIELD},
+ {id:"SNAG",cat:"qc",name:"قوائم الملاحظات والإنهاءات الميدانية",route:ROUTE_FIELD},
+ {id:"HSEINS",cat:"qc",name:"تقارير السلامة والصحة المهنية",route:ROUTE_HSE},
+ {id:"DAILY",cat:"periodic",name:"التقارير الميدانية اليومية",route:ROUTE_FIELD},
+ {id:"WEEKLY",cat:"periodic",name:"التقارير الميدانية الأسبوعية",route:ROUTE_FIELD},
+ {id:"ASBUILT",cat:"periodic",name:"تقرير مطابقة الواقع بالنموذج الهندسي",route:ROUTE_FIELD},
+ {id:"CLAIMS",cat:"commercial",name:"تقارير مطالبات التمديد الزمني والنزاعات",route:ROUTE_COMM},
+ {id:"P6PROG",cat:"periodic",name:"تقارير الربط مع الجدول الزمني Primavera",route:ROUTE_COMM},
+ {id:"CLOSE",cat:"closeout",name:"سجل الامتثال والإغلاق الرقمي النهائي",route:ROUTE_CLOSE},
+ {id:"VAR",cat:"commercial",name:"طلبات أوامر التغيير وفرق الكميات",route:ROUTE_COMM},
+ {id:"EOT",cat:"commercial",name:"طلبات التمديد الزمني التعاقدي",route:ROUTE_COMM},
+ {id:"IPC",cat:"commercial",name:"طلبات اعتماد المستخلصات المالية",route:ROUTE_COMM},
+ {id:"PTW",cat:"qc",name:"طلبات تصاريح العمل الخاصة",route:ROUTE_HSE},
+ {id:"GATE",cat:"resource",name:"طلبات دخول وخروج المعدات",route:ROUTE_LOG},
+ {id:"KEYPERS",cat:"data",name:"طلبات اعتماد الطواقم والكفاءات",route:ROUTE_DATA},
+ {id:"LTR",cat:"testing",name:"طلبات الفحوصات والاختبارات المعملية",route:ROUTE_TEST},
+ {id:"COMMSU",cat:"testing",name:"طلبات بدء التشغيل التجريبي",route:ROUTE_TEST},
+ {id:"ASSETREG",cat:"data",name:"طلبات تسجيل أصول المرافق",route:ROUTE_DATA},
+ {id:"PUNCHCLR",cat:"closeout",name:"طلبات معاينة المعالجات النهائية",route:ROUTE_CLOSE},
+ {id:"HANDINIT",cat:"closeout",name:"طلبات التسلم الابتدائي / النهائي",route:ROUTE_CLOSE},
+ {id:"SDAR",cat:"design",name:"طلبات اعتماد المخططات التنفيذية (Shop Drawings)",route:ROUTE_FIELD},
+ {id:"VE",cat:"design",name:"طلبات الهندسة القيمية (Value Engineering)",route:ROUTE_FIELD},
+ {id:"MEPCO",cat:"design",name:"طلبات التنسيق الإلكتروميكانيكي MEP",route:ROUTE_FIELD},
+ {id:"CDEACC",cat:"data",name:"طلبات تعديل صلاحيات الوصول للمجلدات",route:ROUTE_DATA},
+ {id:"BBEXP",cat:"data",name:"طلبات استخراج الأرشيف الرقمي",route:ROUTE_DATA},
+ {id:"INCIDENT",cat:"emergency",name:"طلبات توثيق الحوادث والمخاطر الميدانية",route:ROUTE_EMRG},
+ {id:"CALIB",cat:"testing",name:"طلبات معايرة أجهزة الفحص والمساحة",route:ROUTE_TEST},
+ {id:"MIXDES",cat:"testing",name:"طلبات اعتماد الخلطات التصميمية",route:ROUTE_TEST},
+ {id:"UTILCONN",cat:"resource",name:"طلبات ربط المرافق الدائمة",route:ROUTE_LOG},
+ {id:"WARRANTY",cat:"closeout",name:"طلبات استلام الضمانات والكتالوجات",route:ROUTE_CLOSE},
+ {id:"POUR",cat:"field",name:"طلبات فحص وإصدار شهادة صب الخرسانة",route:ROUTE_FIELD},
+ {id:"FACADE",cat:"field",name:"طلبات إغلاق وتشغيل الواجهات",route:ROUTE_FIELD},
+ {id:"INFRA",cat:"field",name:"طلبات استلام أعمال البنية التحتية",route:ROUTE_FIELD},
+ {id:"TEMPW",cat:"qc",name:"طلبات اعتماد الأعمال المؤقتة (سقالات وشدات)",route:ROUTE_HSE},
+ {id:"LAYDOWN",cat:"resource",name:"طلبات تخصيص المساحات الميدانية",route:ROUTE_LOG},
+ {id:"WASTE",cat:"resource",name:"طلبات إدارة التخلص من المخلفات",route:ROUTE_LOG},
+ {id:"DEVICEON",cat:"data",name:"طلبات ربط أجهزة المسح الميداني الذكية",route:ROUTE_DATA},
+ {id:"DATAFRZ",cat:"data",name:"طلبات المراجعة الجنائية والمالية للملفات",route:ROUTE_DATA},
+ {id:"KEYREAS",cat:"data",name:"طلبات استبدال وإعادة تعيين الحسابات",route:ROUTE_DATA},
+ {id:"TENANTFIT",cat:"field",name:"طلبات معاينة الفحص المبدئي للمستأجرين",route:ROUTE_FIELD},
+ {id:"BMSINT",cat:"testing",name:"طلبات التوصيل النهائي لأنظمة المبنى الذكية BMS",route:ROUTE_TEST},
+ {id:"SWR",cat:"emergency",name:"طلبات إيقاف الأعمال الطارئ (Stop Work)",route:ROUTE_EMRG},
+ {id:"JOINTDISP",cat:"emergency",name:"طلبات المعاينة المشتركة للنزاعات",route:ROUTE_EMRG},
+ {id:"REVOKE",cat:"commercial",name:"طلبات التراجع عن الاعتماد أو التعديل الرجعي",route:ROUTE_COMM},
+ {id:"LEED",cat:"sustain",name:"طلبات شهادات مطابقة المباني الخضراء LEED",route:ROUTE_FIELD},
+ {id:"THERMAL",cat:"sustain",name:"طلبات قياس الكفاءة الحرارية والعزل",route:ROUTE_FIELD},
+ {id:"SUBCONPQ",cat:"vendor",name:"طلبات تأهيل وتقييم مقاولي الباطن",route:ROUTE_COMM},
+ {id:"RETAIN",cat:"vendor",name:"طلبات الإفراج عن المحجوزات الضامنة",route:ROUTE_COMM},
+ {id:"APISYNC",cat:"data",name:"طلبات التزامن مع الأنظمة الخارجية (ERP/API)",route:ROUTE_DATA},
+ {id:"ARCHTR",cat:"closeout",name:"طلبات نقل ملكية أرشيف المشروع",route:ROUTE_CLOSE},
+];
+
+/* ============ Built-in Document Templates (seeded once per company; freely add/edit/delete afterward) ============ */
+const SEED_TEMPLATES = [
+{
+  name:"مبادرة الصندوق الأسود الرقمي - غلاف المستند",
+  category:"periodic",
+  body:`مبادرة الصندوق الأسود الرقمي (Digital Black Box Initiative)
+النسخة الذهبية النهائية لخطة إدارة النطاق الاستراتيجي وحماية الأصول الرقمية
+
+المشروع: {{اسم_المشروع}}
+العميل / المالك: {{اسم_العميل}}
+إعداد: {{اسم_المعد}}
+التاريخ: {{التاريخ}}`
+},
+{
+  name:"هيكل تقسيم العمل (WBS)",
+  category:"periodic",
+  body:`هيكل تقسيم العمل (Work Breakdown Structure - WBS)
+مشروع: {{اسم_المشروع}}
+
+1. التأسيس (Foundation)
+تجهيز البنية التحتية السحابية وتوريد الأجهزة.
+
+2. التفعيل (Activation)
+تدريب الفريق وإعداد مسارات الاعتماد والشهادات.
+
+3. التشغيل (Operation)
+التوثيق اليومي والمزامنة اللحظية للبيانات.
+
+4. الإغلاق (Closure)
+أرشفة الصندوق الأسود وتوثيق الدروس المستفادة.
+
+ملاحظات إضافية: {{ملاحظات}}`
+},
+{
+  name:"الأثر الاستراتيجي للمبادرة",
+  category:"periodic",
+  body:`الأثر الاستراتيجي للمبادرة
+مشروع: {{اسم_المشروع}}
+
+نسبة التوفير في الوقت الإداري: {{نسبة_توفير_الوقت_الإداري}}٪
+كفاءة تشغيلية غير مسبوقة عبر تقليل الجهد اليدوي في البحث عن الأوراق والمستندات التقليدية، والاعتماد الكامل على الاسترجاع الرقمي السريع عبر رمز QR.
+
+كفاءة استرجاع البيانات:
+- التوثيق الورقي التقليدي: {{نسبة_التوثيق_الورقي}}٪
+- نظام الصندوق الأسود الرقمي: {{نسبة_التوثيق_الرقمي}}٪
+سرعة ودقة الوصول للمعلومات المطلوبة أثناء النزاعات التعاقدية (أقل من دقيقة واحدة).`
+},
+{
+  name:"معايير القبول والجودة",
+  category:"closeout",
+  body:`معايير القبول والجودة (Acceptance Criteria)
+مشروع: {{اسم_المشروع}}
+
+✓ دقة الأرشفة: ربط {{نسبة_ربط_الصور}}٪ من الصور البانورامية ببنود الجدول الزمني المعتمد.
+✓ سهولة الوصول: استرجاع أي معلومة بنجاح عبر مسح رمز QR في أقل من {{مدة_الاسترجاع_بالثانية}} ثانية.
+✓ الموعد النهائي: إتمام التحول الرقمي الكامل بحلول {{تاريخ_الموعد_النهائي}}.
+✓ المصداقية: تطابق كامل بنسبة {{نسبة_التطابق}}٪ بين واقع الموقع ومخططات As-Built.`
+},
+{
+  name:"خطة إدارة النطاق (نطاق المنتج والمشروع)",
+  category:"commercial",
+  body:`خطة إدارة النطاق - المرجع الذهبي للتنفيذ
+مشروع: {{اسم_المشروع}}
+
+أولاً: نطاق المنتج (Product Scope)
+- بيئة بيانات موحدة (CDE Data Environment): بيئة سحابية موحدة لدمج جميع المراسلات والمستندات، لضمان تدفق المعلومات بنسبة 100٪ بين جميع الأطراف دون فقد أي بيانات تعاقدية.
+- التوثيق البصري 360°: ألبوم رقمي تفاعلي مرتبط مكانياً وزمنياً بالمخططات، يوفر مرجعاً بصرياً لأعمال الموقع لا يترك مجالاً للتأويل.
+
+ثانياً: نطاق المشروع (Project Scope)
+- البنية التحتية والتكامل: عمليات الربط التقني عبر واجهات برمجية (APIs) بين Primavera وبيئة CDE، وتجهيز الخوادم السحابية لضمان المزامنة اللحظية للبيانات.
+- إدارة التغيير والتأهيل: تصميم بروتوكولات التوثيق الميداني وتدريب الفريق الميداني على التقنيات الحديثة لضمان استدامة جودة إدخال البيانات.
+
+العميل / المالك: {{اسم_العميل}}
+إعداد: {{اسم_المعد}}`
+},
+{
+  name:"مصفوفة تتبع المتطلبات (RTM)",
+  category:"design",
+  body:`مصفوفة تتبع المتطلبات (Requirements Traceability Matrix - RTM)
+مشروع: {{اسم_المشروع}}
+
+المتطلب الأساسي: كاميرات 360° الميدانية والأجهزة اللوحية | التصنيف: فيزيائي | القيمة التجارية: حماية قانونية وشفافية كاملة للمالك والمقاول
+المتطلب الأساسي: ربط بيانات Primavera–CDE | التصنيف: تقني | القيمة التجارية: مراقبة لحظية لانحرافات الجدول الزمني
+المتطلب الأساسي: خبير عقود ومدير BIM | التصنيف: بشري | القيمة التجارية: تحويل البيانات الموثقة إلى مطالبات تعاقدية ناجحة
+المتطلب الأساسي: سياسة أمن البيانات وبروتوكول التصوير | التصنيف: تنظيمي | القيمة التجارية: ضمان سلامة الأصول الرقمية واستمرارية التوثيق
+
+ملاحظات: {{ملاحظات}}`
+},
+{
+  name:"خارطة طريق تنفيذ المشروع",
+  category:"periodic",
+  body:`خارطة طريق تنفيذ المشروع
+مشروع: {{اسم_المشروع}}
+
+المرحلة الأولى: التأسيس
+- توريد الأجهزة: تجهيز كاميرات Insta360 والأجهزة اللوحية للموقع.
+- الإعداد السحابي: تجهيز المستودع الرقمي على منصة ACC أو Procore.
+- الاتصال: ضمان تغطية قوية لشبكات 5G/WiFi في نقاط التصوير الرئيسية.
+
+المرحلة الثانية: التفعيل والتكامل الرقمي
+- التكامل التقني: تفعيل واجهات API للربط التلقائي بين Primavera وCDE.
+- تصميم البروتوكولات: وضع قواعد رسمية لجداول التصوير وتكراره.
+- تدريب الفريق: ورش عمل مكثفة على استخدام الكاميرات ورفع البيانات.
+
+المرحلة الثالثة: التشغيل الميداني
+- التقاط يومي: ربط صور 360° بطلبات RFI والاعتمادات.
+- مزامنة لحظية: ضمان تدفق البيانات للسحابة فوراً للإدارة.
+- المراجعة والتحقق: مطابقة الواقع بالمخططات واكتشاف الانحرافات مبكراً.
+
+المرحلة الرابعة: الإغلاق والتحليل
+- تقارير ذكاء الأعمال (BI): تفعيل لوحات تحليل أداء المشروع والدروس المستفادة.
+- الأرشيف النهائي: تسليم الصندوق الأسود كمرجع كامل للأعمال المنفذة (As-Built).
+- حماية الحقوق: إغلاق ناجح للمطالبات والنزاعات القانونية عبر السجلات.
+
+تاريخ البدء: {{تاريخ_البدء}}
+تاريخ الإغلاق المتوقع: {{تاريخ_الإغلاق}}`
+},
+{
+  name:"الاستراتيجية الميدانية",
+  category:"field",
+  body:`الاستراتيجية الميدانية
+مشروع: {{اسم_المشروع}}
+
+من خلال دمج الأجهزة اللوحية مع كاميرات 360 درجة، يتم توثيق كل زاوية في المشروع وربطها مباشرة بطلبات الفحص.
+هذا يضمن أن "الصندوق الأسود" يسجل واقع الموقع دون تدخل بشري، مما يمنع النزاعات قبل نشوئها.
+حماية قانونية كاملة بنسبة 100٪.
+
+المسؤول الميداني: {{اسم_المسؤول_الميداني}}`
+},
+{
+  name:"حدود نطاق العمل (المشمول والمستثنى)",
+  category:"commercial",
+  body:`حدود نطاق العمل
+مشروع: {{اسم_المشروع}}
+
+✓ ما يشمله النطاق:
+- ربط Primavera وتفعيل بيئة CDE.
+- تدريب الفريق الميداني.
+- الأرشفة الذكية عبر نظام رمز QR.
+- تطوير بروتوكولات الحماية القانونية.
+
+✗ ما لا يشمله النطاق:
+- توريد أجهزة الحاسب المكتبية.
+- رسوم الإنترنت والاتصالات الشهرية.
+- أعمال المساحة التقليدية.
+- التعديلات الإنشائية في الموقع.
+
+ملاحظات إضافية: {{ملاحظات}}`
+},
+{
+  name:"الأثر الاستراتيجي والقيمة النهائية (خاتمة)",
+  category:"closeout",
+  body:`الأثر الاستراتيجي والقيمة النهائية
+مشروع: {{اسم_المشروع}}
+
+{{نسبة_توفير_الوقت_الإداري}}٪ توفير في الوقت الإداري
+{{نسبة_سرعة_الوصول}}٪ سرعة الوصول إلى المعلومات
+{{نسبة_مخاطر_فقد_الحقوق}}٪ نسبة مخاطر فقدان الحقوق
+
+"نحن لا نبني مشاريع فقط، بل نبني أنظمة ذكية تحفظ الأرواح والحقوق والأصول"
+
+شكراً لكم
+لأي استفسار بخصوص خارطة الطريق، يرجى التواصل مع: {{اسم_المعد}}`
+}
+];
+
+/* ============ 12 Official Standard Templates (one per master category) ============ */
+const SEED_OFFICIAL_TEMPLATES = [
+{
+  name:"قالب رسمي: طلب فحص ميداني / استلام أعمال (IR)",
+  category:"field",
+  body:`طلب فحص ميداني / استلام أعمال (Inspection Request - IR)
+
+المشروع: {{اسم_المشروع}}
+الموقع: {{الموقع}}
+المنطقة / الشبكة المرجعية (Zone/Grid): {{المنطقة_الشبكة}}
+
+نوع العمل المراد فحصه (مدني / كهرباء / ميكانيكا / شبكات): {{نوع_العمل}}
+تاريخ ووقت المعاينة الميدانية: {{تاريخ_ووقت_المعاينة}}
+
+حالة الاعتماد (مقبول / مقبول بملاحظات / مرفوض): {{حالة_الاعتماد}}
+الملاحظات: {{الملاحظات}}
+
+توقيع مهندس الموقع: {{توقيع_مهندس_الموقع}}
+توقيع ممثل الاستشاري: {{توقيع_ممثل_الاستشاري}}`
+},
+{
+  name:"قالب رسمي: تقرير عدم مطابقة / حادث سلامة (NCR)",
+  category:"qc",
+  body:`تقرير عدم مطابقة / حادث سلامة (Non-Conformance Report - NCR / Incident Report)
+
+المشروع: {{اسم_المشروع}}
+التاريخ: {{التاريخ}}
+
+وصف المخالفة أو الحادثة (بالصور الميدانية المرفقة): {{وصف_المخالفة_الحادثة}}
+بند المواصفات / الكود المُجهد: {{بند_المواصفات_الكود}}
+
+تحليل السبب الجذري (Root Cause Analysis): {{تحليل_السبب_الجذري}}
+الإجراء التصحيحي والوقائي المطلوب (CAPA): {{الإجراء_التصحيحي_الوقائي}}
+زمن التنفيذ: {{زمن_التنفيذ}}
+
+توقيع مدير الجودة / السلامة (للغلق): {{توقيع_مدير_الجودة_السلامة}}`
+},
+{
+  name:"قالب رسمي: التقرير الدوري لإنجاز المشروع",
+  category:"periodic",
+  body:`التقرير الدوري لإنجاز المشروع (Daily / Weekly / Monthly Progress Report)
+
+المشروع: {{اسم_المشروع}}
+الفترة المشمولة: {{الفترة_المشمولة}}
+
+نسبة الإنجاز المخططة: {{نسبة_الإنجاز_المخططة}}٪
+نسبة الإنجاز المحققة: {{نسبة_الإنجاز_المحققة}}٪
+(مرفق منحنى الإنجاز S-Curve إن وجد)
+
+ملخص العمالة والمعدات بالموقع: {{ملخص_العمالة_والمعدات}}
+توريدات المواد بالموقع: {{توريدات_المواد}}
+
+العوائق والمخاطر الميدانية (Site Constraints): {{العوائق_والمخاطر}}
+خطة العمل للفترة القادمة: {{خطة_العمل_القادمة}}`
+},
+{
+  name:"قالب رسمي: المستخلص المالي / طلب تغيير",
+  category:"commercial",
+  body:`المستخلص المالي / طلب تغيير (Payment Application / Change Order Request)
+
+المشروع: {{اسم_المشروع}}
+رقم المستخلص: {{رقم_المستخلص}}
+
+بيان الأعمال المنجزة والكميات المحسوبة (BOQ): {{بيان_الأعمال_والكميات}}
+نسبة الإنجاز السابقة: {{نسبة_الإنجاز_السابقة}}٪
+نسبة الإنجاز الحالية: {{نسبة_الإنجاز_الحالية}}٪
+نسبة الإنجاز الإجمالية: {{نسبة_الإنجاز_الإجمالية}}٪
+
+خصومات الدفعات المقدمة: {{خصومات_الدفعات_المقدمة}}
+استقطاعات ضمان الأعمال (Retention): {{استقطاعات_الضمان}}
+
+جدول المبالغ المستحقة: {{المبالغ_المستحقة}}
+الاعتمادات التعاقدية: {{الاعتمادات_التعاقدية}}`
+},
+{
+  name:"قالب رسمي: إذن صرف وتوريد مواد / معدات",
+  category:"resource",
+  body:`إذن صرف وتوريد مواد / معدات (Material / Equipment Requisition & Log)
+
+المشروع: {{اسم_المشروع}}
+كود المادة / المعدة: {{كود_المادة_المعدة}}
+بيانات المورد: {{بيانات_المورد}}
+
+الكمية المطلوبة: {{الكمية_المطلوبة}}
+الرصيد المتاح: {{الرصيد_المتاح}}
+
+مسار النقل: {{مسار_النقل}}
+تاريخ الوصول المتوقع للموقع: {{تاريخ_الوصول_المتوقع}}
+
+حالة الفحص الظاهري: {{حالة_الفحص_الظاهري}}
+حالة الاستلام بالمخزن: {{حالة_الاستلام_بالمخزن}}`
+},
+{
+  name:"قالب رسمي: محضر اختبار وتشغيل منظومة",
+  category:"testing",
+  body:`محضر اختبار وتشغيل منظومة (Testing & Commissioning Record)
+
+المشروع: {{اسم_المشروع}}
+نوع المنظومة (ضغط شبكات / كابلات / أنظمة إنذار / HVAC): {{نوع_المنظومة}}
+
+المعايير والنتائج القياسية المقبولة: {{المعايير_والنتائج_المقبولة}}
+نتائج الاختبار الميداني: {{نتائج_الاختبار_الميداني}}
+
+الأجهزة المستخدمة: {{الأجهزة_المستخدمة}}
+رقم معايرة الأجهزة: {{رقم_معايرة_الأجهزة}}
+
+اعتماد مهندس الاختبار: {{اعتماد_مهندس_الاختبار}}
+اعتماد الاستشاري المختص: {{اعتماد_الاستشاري}}`
+},
+{
+  name:"قالب رسمي: شهادة الإنجاز وقائمة الملاحظات",
+  category:"closeout",
+  body:`شهادة الإنجاز وقائمة الملاحظات (Punch List & Taking-Over Certificate)
+
+المشروع: {{اسم_المشروع}}
+
+حصر الملاحظات المعلقة: {{حصر_الملاحظات_المعلقة}}
+تصنيف الملاحظات (Minor / Major): {{تصنيف_الملاحظات}}
+الجدول الزمني لإغلاق كل ملاحظة: {{جدول_إغلاق_الملاحظات}}
+
+تسليم كتالوجات التشغيل: {{تسليم_كتالوجات_التشغيل}}
+تسليم المخططات النهائية (As-Built): {{تسليم_المخططات_النهائية}}
+
+اعتماد لجنة التسليم الابتدائية: {{اعتماد_لجنة_التسليم_الابتدائية}}
+اعتماد التسليم النهائي: {{اعتماد_التسليم_النهائي}}`
+},
+{
+  name:"قالب رسمي: طلب تقديم ومراجعة مخططات (Submittal/RFI)",
+  category:"design",
+  body:`طلب تقديم ومراجعة مخططات (Technical Submittal / RFI)
+
+المشروع: {{اسم_المشروع}}
+كود المخطط / الطلب: {{كود_المخطط_الطلب}}
+رقم الإصدار (Revision): {{رقم_الإصدار}}
+
+الاستفسار الفني / المخطط المقدم للمراجعة: {{الاستفسار_الفني}}
+توجيهات مهندس التصميم / الاستشاري: {{توجيهات_مهندس_التصميم}}
+
+التأثير على التكلفة (إن وجد): {{التأثير_على_التكلفة}}
+التأثير على الجدول الزمني (إن وجد): {{التأثير_على_الجدول_الزمني}}`
+},
+{
+  name:"قالب رسمي: تصريح الوصول والتعامل مع البيانات",
+  category:"data",
+  body:`تصريح الوصول والتعامل مع البيانات / السجلات (Data Access & Site Security Authorization)
+
+المشروع: {{اسم_المشروع}}
+اسم مقدم الطلب: {{اسم_مقدم_الطلب}}
+
+مستوى صلاحيات الوصول (Access Level): {{مستوى_الصلاحيات}}
+تصريح دخول الأجهزة الرقمية: {{تصريح_دخول_الأجهزة}}
+تداول وثائق المشروع: {{تداول_وثائق_المشروع}}
+
+سجل المتابعة والنسخ الاحتياطي للأرشيف: {{سجل_المتابعة_والنسخ_الاحتياطي}}
+إقرار الالتزام بسرية المعلومات: {{إقرار_الالتزام_بالسرية}}`
+},
+{
+  name:"قالب رسمي: إشعار مطالبة / تقرير طوارئ",
+  category:"emergency",
+  body:`إشعار مطالبة / تقرير التعامل مع الطوارئ (Claim Notice / Emergency Response Form)
+
+المشروع: {{اسم_المشروع}}
+التاريخ والوقت: {{التاريخ_والوقت}}
+
+وصف حادثة الطوارئ / سبب المطالبة التعاقدية: {{وصف_الحادثة_أو_المطالبة}}
+المرجعية التعاقدية / بند FIDIC المتعلق: {{المرجعية_التعاقدية}}
+
+التقييم المبدئي للتكلفة: {{التقييم_المبدئي_للتكلفة}}
+المدة الزمنية المطلوبة (Extension of Time): {{المدة_الزمنية_المطلوبة}}
+
+الإجراءات الفورية المتخذة احترازياً: {{الإجراءات_الفورية_المتخذة}}`
+},
+{
+  name:"قالب رسمي: تقرير الامتثال البيئي والاستدامة",
+  category:"sustain",
+  body:`تقرير الامتثال البيئي والاستدامة (Environmental & Sustainability Log)
+
+المشروع: {{اسم_المشروع}}
+الفترة المشمولة: {{الفترة_المشمولة}}
+
+مؤشرات إدارة النفايات وإعادة التدوير بالموقع: {{مؤشرات_إدارة_النفايات}}
+معدلات استهلاك الطاقة: {{معدلات_استهلاك_الطاقة}}
+معدلات استهلاك المياه: {{معدلات_استهلاك_المياه}}
+
+تقييم البصمة الكربونية: {{تقييم_البصمة_الكربونية}}
+المواد الصديقة للبيئة المستخدمة: {{المواد_الصديقة_للبيئة}}
+
+مدى المطابقة لمعايير المباني الخضراء (LEED / مستدام): {{مدى_المطابقة_لمعايير_LEED}}`
+},
+{
+  name:"قالب رسمي: نموذج تقييم وتأهيل مقاول / مورد",
+  category:"vendor",
+  body:`نموذج تقييم وتأهيل مقاول / مورد (Vendor Evaluation & Prequalification Form)
+
+اسم المقاول / المورد: {{اسم_المقاول_المورد}}
+البيانات الرسمية والتراخيص: {{البيانات_الرسمية_والتراخيص}}
+سجل الأعمال السابق: {{سجل_الأعمال_السابق}}
+
+التقييم الفني: {{التقييم_الفني}}
+التقييم المالي: {{التقييم_المالي}}
+معايير الجودة والسلامة: {{معايير_الجودة_والسلامة}}
+
+نتائج التقييم الدوري للأداء بالموقع: {{نتائج_التقييم_الدوري}}
+
+قرار الاعتماد: {{قرار_الاعتماد}}
+الدرجة المستحقة: {{الدرجة_المستحقة}}`
+}
+];
+
+/* ============ Auto-generated document template for EACH of the 57+ request types ============ */
+const CAT_BODY_SECTIONS = {
+  field: `المنطقة / القطاع: {{المنطقة_القطاع}}
+وصف الأعمال محل الطلب:
+{{وصف_الأعمال}}
+
+نتيجة الفحص / الحالة: {{نتيجة_الفحص}}
+الملاحظات: {{الملاحظات}}
+المرفقات: صور 360° / مخططات مرجعية (تُرفق داخل الطلب)`,
+  qc: `نوع المخالفة / الملاحظة: {{نوع_المخالفة}}
+الوصف التفصيلي:
+{{الوصف}}
+
+الإجراء التصحيحي المطلوب: {{الإجراء_التصحيحي}}
+الموعد النهائي للإغلاق: {{تاريخ_الإغلاق}}`,
+  periodic: `الفترة المشمولة بالتقرير: {{الفترة}}
+الأنشطة المنفذة:
+{{الأنشطة}}
+
+نسبة الإنجاز: {{نسبة_الإنجاز}}٪
+المعوقات: {{المعوقات}}`,
+  commercial: `البند التعاقدي المرجعي: {{البند_التعاقدي}}
+الوصف والمبرر:
+{{الوصف}}
+
+الأثر المالي المقدّر: {{الأثر_المالي}}
+الأثر الزمني المقدّر: {{الأثر_الزمني}}`,
+  resource: `نوع المورد / المعدة: {{نوع_المورد}}
+التفاصيل:
+{{التفاصيل}}
+
+الكمية / المدة: {{الكمية}}
+الجهة المسؤولة: {{الجهة_المسؤولة}}`,
+  testing: `نوع الاختبار: {{نوع_الاختبار}}
+رقم العينة / المرجع: {{رقم_العينة}}
+المعيار المرجعي: {{المعيار_المرجعي}}
+النتيجة: {{النتيجة}}`,
+  closeout: `بنود الإغلاق المطلوبة:
+{{بنود_الإغلاق}}
+
+نسبة الاكتمال: {{نسبة_الاكتمال}}٪
+المرفقات المطلوبة: {{المرفقات}}`,
+  design: `المرجع التصميمي / رقم المخطط: {{رقم_المخطط}}
+الوصف الفني:
+{{الوصف_الفني}}
+
+التأثير على التنفيذ: {{التأثير}}`,
+  data: `نوع البيانات / الصلاحية المطلوبة: {{نوع_البيانات}}
+الغرض من الطلب:
+{{الغرض}}
+
+المدة الزمنية: {{المدة}}`,
+  emergency: `وصف الحالة الطارئة:
+{{وصف_الحالة}}
+
+الإجراء الفوري المتخذ: {{الإجراء_الفوري}}
+الأطراف المُبلَغة: {{الأطراف_المبلغة}}`,
+  sustain: `المعيار المرجعي (بيئي / استدامة): {{المعيار_المرجعي}}
+الوصف:
+{{الوصف}}
+
+نسبة الالتزام: {{نسبة_الالتزام}}٪`,
+  vendor: `اسم المورد / مقاول الباطن: {{اسم_المورد}}
+نطاق العمل: {{نطاق_العمل}}
+القرار / التقييم: {{القرار}}`
+};
+
+function buildRequestTemplateBody(type){
+  const header = `${type.name}
+كود الطلب: {{كود_الطلب}}
+المشروع: {{اسم_المشروع}}
+التاريخ: {{التاريخ}}
+
+`;
+  const body = CAT_BODY_SECTIONS[type.cat] || CAT_BODY_SECTIONS.field;
+  const footer = `
+
+إعداد: {{اسم_المُعد}}
+التوقيع: ____________________`;
+  return header + body + footer;
+}
+
+const SEED_REQUEST_TEMPLATES = REQUEST_TYPES.map(t => ({
+  name: t.name,
+  category: t.cat,
+  body: buildRequestTemplateBody(t)
+}));
+
+/* ============ State & Storage helpers ============ */
+let currentCompany = null; // {id,name,email,phone}
+let activeRequestId = null;
+let lastGeo = null;
+
+function loadCompanies(){ return JSON.parse(localStorage.getItem('bb_companies')||'[]'); }
+function saveCompanies(list){ localStorage.setItem('bb_companies', JSON.stringify(list)); }
+function projectsKey(cid){ return 'bb_projects_'+cid; }
+function requestsKey(cid){ return 'bb_requests_'+cid; }
+function loadProjects(){ return JSON.parse(localStorage.getItem(projectsKey(currentCompany.id))||'[]'); }
+function saveProjects(list){ localStorage.setItem(projectsKey(currentCompany.id), JSON.stringify(list)); }
+function loadRequests(){ return JSON.parse(localStorage.getItem(requestsKey(currentCompany.id))||'[]'); }
+function saveRequests(list){ localStorage.setItem(requestsKey(currentCompany.id), JSON.stringify(list)); }
+function templatesKey(cid){ return 'bb_doc_templates_'+cid; }
+function docsKey(cid){ return 'bb_documents_'+cid; }
+function loadTemplates(){ return JSON.parse(localStorage.getItem(templatesKey(currentCompany.id))||'[]'); }
+function saveTemplates(list){ localStorage.setItem(templatesKey(currentCompany.id), JSON.stringify(list)); }
+function loadDocuments(){ return JSON.parse(localStorage.getItem(docsKey(currentCompany.id))||'[]'); }
+function saveDocuments(list){ localStorage.setItem(docsKey(currentCompany.id), JSON.stringify(list)); }
+function signatoriesKey(cid){ return 'bb_signatories_'+cid; }
+function loadSignatories(){ return JSON.parse(localStorage.getItem(signatoriesKey(currentCompany.id))||'[]'); }
+function saveSignatories(list){ localStorage.setItem(signatoriesKey(currentCompany.id), JSON.stringify(list)); }
+
+function simpleHash(str){
+  let h = 5381;
+  for(let i=0;i<str.length;i++){ h = ((h<<5)+h) + str.charCodeAt(i); h = h & 0xffffffff; }
+  return (h>>>0).toString(16).padStart(8,'0');
+}
+
+/* ============ Auth ============ */
+function setAuthMode(mode){
+  const isLogin = mode==='login';
+  document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+  document.getElementById('register-form').classList.toggle('hidden', isLogin);
+  document.getElementById('auth-tab-login').className = 'flex-1 py-2 rounded-md text-xs font-bold transition '+(isLogin?'bg-brand-500 text-white':'text-slate-400');
+  document.getElementById('auth-tab-register').className = 'flex-1 py-2 rounded-md text-xs font-bold transition '+(!isLogin?'bg-brand-500 text-white':'text-slate-400');
+  document.getElementById('auth-title').innerText = isLogin?'تسجيل الدخول لحساب شركتك':'إنشاء حساب شركة جديدة';
+}
+
+function handleRegister(e){
+  e.preventDefault();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pass = document.getElementById('reg-password').value;
+  const pass2 = document.getElementById('reg-password2').value;
+  const errEl = document.getElementById('register-error');
+  errEl.classList.add('hidden');
+
+  if(pass !== pass2){ errEl.innerText='كلمتا المرور غير متطابقتين'; errEl.classList.remove('hidden'); return; }
+  const companies = loadCompanies();
+  if(companies.some(c=>c.email===email)){ errEl.innerText='هذا البريد الإلكتروني مسجّل بالفعل، يرجى تسجيل الدخول'; errEl.classList.remove('hidden'); return; }
+
+  const company = { id:'C'+Date.now(), name, email, phone, password: pass, createdAt: new Date().toISOString() };
+  companies.push(company);
+  saveCompanies(companies);
+  loginAs(company);
+}
+
+function handleLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.classList.add('hidden');
+  const companies = loadCompanies();
+  const match = companies.find(c=>c.email===email && c.password===pass);
+  if(!match){ errEl.innerText='البريد الإلكتروني أو كلمة المرور غير صحيحة'; errEl.classList.remove('hidden'); return; }
+  loginAs(match);
+}
+
+function loginAs(company){
+  currentCompany = company;
+  localStorage.setItem('bb_current_company_id', company.id);
+  document.getElementById('auth-view').classList.add('hidden');
+  document.getElementById('dashboard-app').classList.remove('hidden');
+  document.getElementById('user-session-info').classList.remove('hidden');
+  document.getElementById('current-company-name').innerText = company.name;
+  document.getElementById('stamp-company-title').innerText = company.name;
+  document.getElementById('report-company-name').innerText = company.name;
+  ensureSeedTemplates();
+  ensureOfficialTemplatesSeed();
+  renderProjects();
+  renderSignatories();
+  renderRequestCatalog();
+  renderRequestsLog();
+  renderTemplates();
+  renderDigitalApprovalsLog();
+  renderFinalReport();
+}
+
+/* Seed the built-in Digital Blackbox document templates once per company (never re-added after that, even if all deleted) */
+function ensureSeedTemplates(){
+  const flagKey = 'bb_templates_seeded_'+currentCompany.id;
+  if(localStorage.getItem(flagKey)) return;
+  const existing = loadTemplates();
+  if(existing.length===0){
+    const allSeeds = [...SEED_TEMPLATES, ...SEED_REQUEST_TEMPLATES];
+    const seeded = allSeeds.map((t,i)=>({
+      id:'T'+Date.now()+'_'+i, name:t.name, category:t.category, body:t.body, createdAt:new Date().toISOString()
+    }));
+    saveTemplates(seeded);
+  }
+  localStorage.setItem(flagKey,'1');
+}
+
+/* Adds the 12 official standard templates once per company — runs even for companies that already seeded before this feature existed */
+function ensureOfficialTemplatesSeed(){
+  const flagKey = 'bb_official12_seeded_'+currentCompany.id;
+  if(localStorage.getItem(flagKey)) return;
+  const existing = loadTemplates();
+  const already = new Set(existing.map(t=>t.name));
+  const toAdd = SEED_OFFICIAL_TEMPLATES.filter(t=>!already.has(t.name));
+  if(toAdd.length){
+    const seeded = toAdd.map((t,i)=>({
+      id:'T'+Date.now()+'_off_'+i, name:t.name, category:t.category, body:t.body, createdAt:new Date().toISOString()
+    }));
+    saveTemplates([...existing, ...seeded]);
+  }
+  localStorage.setItem(flagKey,'1');
+}
+
+function logoutCompany(){
+  currentCompany = null;
+  localStorage.removeItem('bb_current_company_id');
+  document.getElementById('dashboard-app').classList.add('hidden');
+  document.getElementById('user-session-info').classList.add('hidden');
+  document.getElementById('auth-view').classList.remove('hidden');
+  document.getElementById('login-form').reset();
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(renderSharedDocFromURL()) return; // فتح مباشر من رابط/QR مُشارك — لا حاجة لتحميل باقي المنصة
+
+  document.getElementById('stamp-current-date').innerText = new Date().toLocaleDateString('ar-EG');
+  document.getElementById('report-date-display').innerText = new Date().toLocaleDateString('ar-EG');
+  populateCategoryFilter();
+  populateDocCategorySelects();
+  initPannellumViewer();
+
+  const savedId = localStorage.getItem('bb_current_company_id');
+  if(savedId){
+    const c = loadCompanies().find(x=>x.id===savedId);
+    if(c) loginAs(c);
+  }
+});
+
+/* ============ Tabs ============ */
+function switchTab(tabId){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(btn=>{ btn.classList.remove('bg-brand-500','text-white'); btn.classList.add('bg-slate-900','text-slate-400'); });
+  document.getElementById(tabId).classList.remove('hidden');
+  const activeBtn = document.getElementById('tab-btn-'+tabId.replace('-tab',''));
+  if(activeBtn){ activeBtn.classList.remove('bg-slate-900','text-slate-400'); activeBtn.classList.add('bg-brand-500','text-white'); }
+  if(tabId==='reports-tab') renderFinalReport();
+  if(tabId==='requests-tab'){ renderRequestsLog(); renderTemplates(); }
+  if(tabId==='archive-tab') renderArchiveList();
+  if(tabId==='signatories-tab') renderSignatories();
+}
+
+/* ============ Projects ============ */
+function openAddProjectForm(){ document.getElementById('add-project-form').classList.remove('hidden'); }
+function closeAddProjectForm(){
+  document.getElementById('add-project-form').classList.add('hidden');
+  ['np-name','np-code','np-location','np-client'].forEach(id=>document.getElementById(id).value='');
+}
+function addProject(){
+  const name = document.getElementById('np-name').value.trim();
+  if(!name){ alert('يرجى إدخال اسم المشروع'); return; }
+  const project = {
+    id:'P'+Date.now(),
+    name,
+    code: document.getElementById('np-code').value.trim(),
+    location: document.getElementById('np-location').value.trim(),
+    client: document.getElementById('np-client').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  const list = loadProjects();
+  list.push(project);
+  saveProjects(list);
+  closeAddProjectForm();
+  renderProjects();
+  renderRequestCatalog();
+}
+function deleteProject(id){
+  if(!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
+  saveProjects(loadProjects().filter(p=>p.id!==id));
+  renderProjects();
+  renderRequestCatalog();
+}
+function renderProjects(){
+  const list = loadProjects();
+  const container = document.getElementById('projects-list');
+  const empty = document.getElementById('projects-empty');
+  container.innerHTML = '';
+  empty.classList.toggle('hidden', list.length>0);
+
+  list.forEach(p=>{
+    const card = document.createElement('div');
+    card.className = "bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3";
+    card.innerHTML = `
+      <div class="flex justify-between items-start">
+        <span class="text-[10px] bg-brand-900/50 text-brand-300 font-mono px-2 py-0.5 rounded border border-brand-700/30">${p.code||p.id}</span>
+        <button onclick="deleteProject('${p.id}')" class="text-rose-400 hover:text-rose-300 text-xs no-print"><i class="fa-solid fa-trash"></i></button>
+      </div>
+      <div>
+        <h3 class="font-bold text-sm text-white">${p.name}</h3>
+        ${p.location?`<p class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-brand-gold ml-1"></i>${p.location}</p>`:''}
+        ${p.client?`<p class="text-xs text-slate-500">العميل: ${p.client}</p>`:''}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // sync selects
+  const opts = list.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('viewer-project').innerHTML = opts || `<option value="">لا توجد مشاريع</option>`;
+  document.getElementById('no-projects-warning').classList.toggle('hidden', list.length>0);
+}
+
+/* ============ Signatories Registry (names & digital signature codes — add/delete) ============ */
+function openAddSignatoryForm(){ document.getElementById('add-signatory-form').classList.remove('hidden'); }
+function closeAddSignatoryForm(){
+  document.getElementById('add-signatory-form').classList.add('hidden');
+  ['ns-name','ns-role','ns-code'].forEach(id=>document.getElementById(id).value='');
+}
+function addSignatory(){
+  const name = document.getElementById('ns-name').value.trim();
+  const role = document.getElementById('ns-role').value.trim();
+  const code = document.getElementById('ns-code').value.trim();
+  if(!name || !role){ alert('يرجى إدخال الاسم والصفة'); return; }
+  if(code.length!==4){ alert('يرجى إدخال رمز توقيع مكوّن من 4 أرقام'); return; }
+  const list = loadSignatories();
+  list.push({ id:'SG'+Date.now(), name, role, code, createdAt:new Date().toISOString() });
+  saveSignatories(list);
+  closeAddSignatoryForm();
+  renderSignatories();
+}
+function deleteSignatory(id){
+  if(!confirm('هل تريد حذف هذا الموقّع من السجل؟')) return;
+  saveSignatories(loadSignatories().filter(s=>s.id!==id));
+  renderSignatories();
+}
+function renderSignatories(){
+  const list = loadSignatories();
+  const tbody = document.getElementById('signatories-table-body');
+  tbody.innerHTML = '';
+  document.getElementById('signatories-empty').classList.toggle('hidden', list.length>0);
+  list.forEach(s=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-3">${s.role}</td>
+      <td class="p-3 font-bold text-white">${s.name}</td>
+      <td class="p-3 font-mono text-brand-400 tracking-widest">••••</td>
+      <td class="p-3">${new Date(s.createdAt).toLocaleDateString('ar-EG')}</td>
+      <td class="p-3 text-center no-print"><button onclick="deleteSignatory('${s.id}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function verifySignatory(name, pin){
+  const list = loadSignatories();
+  if(list.length===0) return { ok:true, unregisteredAllowed:true };
+  const match = list.find(s=>s.name.trim()===name.trim() && s.code===pin);
+  return { ok: !!match, unregisteredAllowed:false };
+}
+function populateSignatorySelect(selectEl){
+  const list = loadSignatories();
+  selectEl.innerHTML = '<option value="">— اختر من سجل الموقّعين (اختياري) —</option>' +
+    list.map(s=>`<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
+}
+
+/* ============ Requests catalog & filters ============ */
+function populateCategoryFilter(){
+  const sel = document.getElementById('req-cat-filter');
+  Object.entries(CATS).forEach(([key,label])=>{
+    const opt = document.createElement('option');
+    opt.value = key; opt.innerText = label;
+    sel.appendChild(opt);
+  });
+}
+
+function renderRequestCatalog(){
+  const search = (document.getElementById('req-search').value||'').trim();
+  const cat = document.getElementById('req-cat-filter').value;
+  const container = document.getElementById('request-catalog');
+  container.innerHTML = '';
+  const filtered = REQUEST_TYPES.filter(t=>{
+    const matchesSearch = !search || t.name.includes(search) || t.id.toLowerCase().includes(search.toLowerCase());
+    const matchesCat = !cat || t.cat===cat;
+    return matchesSearch && matchesCat;
+  });
+  filtered.forEach(t=>{
+    const card = document.createElement('div');
+    card.className = "bg-slate-900 border border-slate-800 hover:border-brand-500/50 rounded-lg p-3 flex flex-col gap-2 transition";
+    card.innerHTML = `
+      <div class="flex justify-between items-start gap-2">
+        <span class="text-[10px] font-mono bg-brand-900/50 text-brand-300 px-2 py-0.5 rounded border border-brand-700/30">${t.id}</span>
+        <span class="text-[9px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">${CATS[t.cat]}</span>
+      </div>
+      <p class="text-xs font-bold text-white leading-snug">${t.name}</p>
+      <p class="text-[10px] text-slate-500">${t.route.length} مراحل اعتماد</p>
+      <button onclick="openRequestModal('${t.id}')" class="mt-1 bg-brand-500 hover:bg-brand-800 text-white text-[11px] font-bold py-1.5 rounded flex justify-center items-center gap-1">
+        <i class="fa-solid fa-file-signature"></i> فتح النموذج
+      </button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* ============ Request instance modal ============ */
+function openRequestModal(typeId){
+  const projects = loadProjects();
+  if(projects.length===0){ alert('يرجى إضافة مشروع واحد على الأقل أولاً من تبويب "سجل المشاريع".'); return; }
+  const type = REQUEST_TYPES.find(t=>t.id===typeId);
+
+  const requests = loadRequests();
+  const codePrefix = `${typeId}-${new Date().getFullYear()}-`;
+  const serial = requests.filter(r=>r.code && r.code.startsWith(codePrefix))
+    .reduce((m,r)=>Math.max(m, parseInt(r.code.slice(codePrefix.length),10)||0), 0) + 1;
+  const code = codePrefix + String(serial).padStart(3,'0');
+
+  const instance = {
+    id:'R'+Date.now(), typeId, code, projectId: projects[0].id, zone:'', description:'',
+    stageIndex:0, status:'قيد التنفيذ', signatures:[], createdAt: new Date().toISOString()
+  };
+  requests.push(instance);
+  saveRequests(requests);
+  activeRequestId = instance.id;
+  renderRequestModal();
+  document.getElementById('request-modal').classList.remove('hidden');
+
+  lastGeo = null;
+  document.getElementById('rm-geo-status').innerText = 'جاري تحديد الموقع الجغرافي...';
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos=>{ lastGeo = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; document.getElementById('rm-geo-status').innerText = 'الموقع الجغرافي: '+lastGeo; },
+      ()=>{ document.getElementById('rm-geo-status').innerText = 'تعذر تحديد الموقع الجغرافي (GPS غير متاح)'; },
+      { timeout: 6000 }
+    );
+  } else {
+    document.getElementById('rm-geo-status').innerText = 'الموقع الجغرافي غير مدعوم على هذا الجهاز';
+  }
+}
+
+function reopenRequest(reqId){
+  activeRequestId = reqId;
+  renderRequestModal();
+  document.getElementById('request-modal').classList.remove('hidden');
+  document.getElementById('rm-geo-status').innerText = lastGeo? ('الموقع الجغرافي: '+lastGeo) : 'الموقع الجغرافي غير محدّث لهذه الجلسة';
+}
+
+function getActiveRequest(){ return loadRequests().find(r=>r.id===activeRequestId); }
+
+function renderRequestModal(){
+  const req = getActiveRequest();
+  const type = REQUEST_TYPES.find(t=>t.id===req.typeId);
+  const projects = loadProjects();
+
+  document.getElementById('rm-code').innerText = req.code;
+  document.getElementById('rm-title').innerText = type.name;
+
+  // project select
+  const projSel = document.getElementById('rm-project');
+  projSel.innerHTML = projects.map(p=>`<option value="${p.id}" ${p.id===req.projectId?'selected':''}>${p.name}</option>`).join('');
+  projSel.onchange = ()=>{ req.projectId = projSel.value; persistActiveRequest(req); };
+
+  document.getElementById('rm-zone').value = req.zone;
+  document.getElementById('rm-zone').oninput = (e)=>{ req.zone = e.target.value; persistActiveRequest(req); };
+  document.getElementById('rm-desc').value = req.description;
+  document.getElementById('rm-desc').oninput = (e)=>{ req.description = e.target.value; persistActiveRequest(req); };
+
+  // linked document preparation
+  const templates = loadTemplates();
+  const templateSel = document.getElementById('rm-template-select');
+  templateSel.innerHTML = templates.map(t=>`<option value="${t.id}" ${t.name===type.name?'selected':''}>${t.name}</option>`).join('');
+  document.getElementById('rm-no-templates-note').classList.toggle('hidden', templates.length>0);
+  templateSel.parentElement.parentElement.querySelector('button').disabled = templates.length===0;
+
+  const linkedDocs = loadDocuments().filter(d=>d.requestId===req.id);
+  const linkedBox = document.getElementById('rm-linked-docs');
+  linkedBox.innerHTML = linkedDocs.length ? linkedDocs.map(d=>`
+    <div class="flex justify-between items-center bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-[11px]">
+      <span class="text-slate-300">${d.title}</span>
+      <button onclick="reopenDocument('${d.id}')" class="text-brand-400 hover:text-brand-300"><i class="fa-solid fa-arrow-up-left-from-circle"></i> فتح المستند</button>
+    </div>
+  `).join('') : '';
+
+  // stepper
+  const stepper = document.getElementById('rm-stepper');
+  stepper.innerHTML = type.route.map((stage,i)=>{
+    const done = i < req.stageIndex || req.status==='مغلق ومؤرشف';
+    const current = i === req.stageIndex && req.status!=='مغلق ومؤرشف';
+    const color = done?'bg-emerald-500':current?'bg-brand-500':'bg-slate-700';
+    return `<div class="flex items-center gap-1">
+      <div class="flex flex-col items-center gap-1">
+        <span class="stage-dot ${color}"></span>
+        <span class="text-[9px] text-slate-400 text-center w-16 leading-tight">${stage}</span>
+      </div>
+      ${i<type.route.length-1?'<span class="text-slate-700">──</span>':''}
+    </div>`;
+  }).join('');
+
+  // signature completeness indicator — flags missing signatures at a glance
+  const signedCount = req.signatures.length;
+  const requiredCount = type.route.length;
+  const sigCountEl = document.getElementById('rm-sig-count');
+  if(signedCount >= requiredCount){
+    sigCountEl.className = 'text-[11px] font-bold text-emerald-400';
+    sigCountEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${signedCount} من ${requiredCount} توقيعات مكتملة`;
+  } else {
+    sigCountEl.className = 'text-[11px] font-bold text-amber-400';
+    sigCountEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${signedCount} من ${requiredCount} توقيعات فقط — يوجد ${requiredCount-signedCount} توقيع ناقص`;
+  }
+
+  // digital signature table: الصفة / الاسم / رمز التوقيع الرقمي / التاريخ — with delete
+  const sigTable = document.getElementById('rm-signatures-table');
+  if(req.signatures.length===0){
+    sigTable.innerHTML = '<tr><td colspan="5" class="p-2 text-[11px] text-slate-500 text-center">لا توجد توقيعات مسجّلة بعد على هذا الطلب.</td></tr>';
+  } else {
+    sigTable.innerHTML = req.signatures.map(s=>`
+      <tr class="border-t border-slate-800">
+        <td class="p-2">${s.role}</td>
+        <td class="p-2 font-bold text-white">${s.name}</td>
+        <td class="p-2 font-mono text-brand-400">${s.hash}</td>
+        <td class="p-2">${s.timestamp}</td>
+        <td class="p-2 text-center no-print"><button onclick="deleteRequestSignature('${s.id}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button></td>
+      </tr>
+    `).join('');
+  }
+
+  // registry picker for quick sign-in
+  populateSignatorySelect(document.getElementById('rm-signatory-select'));
+
+  const closed = req.status==='مغلق ومؤرشف';
+  document.getElementById('rm-sign-box').classList.toggle('hidden', closed);
+  document.getElementById('rm-closed-note').classList.toggle('hidden', !closed);
+  if(!closed){
+    document.getElementById('rm-current-stage-label').innerText = type.route[req.stageIndex];
+    document.getElementById('rm-sign-name').value = '';
+    document.getElementById('rm-sign-pin').value = '';
+  }
+}
+
+function applyRequestSignatoryPick(){
+  const sel = document.getElementById('rm-signatory-select');
+  const s = loadSignatories().find(x=>x.id===sel.value);
+  if(!s) return;
+  document.getElementById('rm-sign-name').value = s.name;
+  document.getElementById('rm-sign-pin').value = '';
+  document.getElementById('rm-sign-pin').focus();
+}
+
+function deleteRequestSignature(sigId){
+  if(!confirm('هل تريد حذف هذا التوقيع؟ سيعود الطلب لمرحلة ما قبل هذا التوقيع.')) return;
+  const req = getActiveRequest();
+  req.signatures = req.signatures.filter(s=>s.id!==sigId);
+  req.stageIndex = req.signatures.length;
+  req.status = 'قيد التنفيذ';
+  persistActiveRequest(req);
+  renderRequestModal();
+  renderRequestsLog();
+  renderFinalReport();
+  renderDigitalApprovalsLog();
+}
+
+function persistActiveRequest(updated){
+  const list = loadRequests();
+  const idx = list.findIndex(r=>r.id===updated.id);
+  if(idx>-1){ list[idx] = updated; saveRequests(list); }
+}
+
+function signCurrentStage(){
+  const req = getActiveRequest();
+  const type = REQUEST_TYPES.find(t=>t.id===req.typeId);
+  const name = document.getElementById('rm-sign-name').value.trim();
+  const pin = document.getElementById('rm-sign-pin').value.trim();
+  if(!name){ alert('يرجى إدخال اسم الموقّع'); return; }
+  if(pin.length!==4){ alert('يرجى إدخال رمز PIN مكوّن من 4 أرقام لاعتماد التوقيع الرقمي'); return; }
+
+  const check = verifySignatory(name, pin);
+  if(!check.ok){
+    alert('الاسم أو رمز التوقيع الرقمي غير مطابق لسجل الموقّعين المعتمدين. تأكد من البيانات، أو أضف هذا الشخص أولاً من تبويب "سجل الموقّعين المعتمدين".');
+    return;
+  }
+
+  const role = type.route[req.stageIndex];
+  const timestamp = new Date().toLocaleString('ar-EG');
+  const content = req.id+role+name+timestamp+req.stageIndex;
+  const hash = simpleHash(content);
+
+  req.signatures.push({ id:'S'+Date.now(), stage: req.stageIndex, role, name, timestamp, geo: lastGeo, hash });
+  req.stageIndex += 1;
+  if(req.stageIndex >= type.route.length){
+    req.status = 'مغلق ومؤرشف';
+  }
+  persistActiveRequest(req);
+  renderRequestModal();
+  renderRequestsLog();
+  renderFinalReport();
+  renderDigitalApprovalsLog();
+}
+
+function saveRequestDraft(){
+  closeRequestModal();
+  renderRequestsLog();
+}
+function closeRequestModal(){
+  document.getElementById('request-modal').classList.add('hidden');
+  activeRequestId = null;
+}
+
+function renderRequestsLog(){
+  const requests = loadRequests();
+  const tbody = document.getElementById('requests-table-body');
+  const projects = loadProjects();
+  tbody.innerHTML = '';
+  document.getElementById('requests-log-empty').classList.toggle('hidden', requests.length>0);
+
+  requests.slice().reverse().forEach(req=>{
+    const type = REQUEST_TYPES.find(t=>t.id===req.typeId);
+    const project = projects.find(p=>p.id===req.projectId);
+    const stageLabel = req.status==='مغلق ومؤرشف' ? 'مكتمل' : type.route[req.stageIndex];
+    const signedCount = req.signatures.length;
+    const requiredCount = type.route.length;
+    const sigBadge = signedCount>=requiredCount
+      ? `<span class="text-emerald-400 font-bold">${signedCount}/${requiredCount}</span>`
+      : `<span class="text-amber-400 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> ${signedCount}/${requiredCount}</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-3 font-mono text-brand-400 font-bold">${req.code}</td>
+      <td class="p-3">${type.name}</td>
+      <td class="p-3">${project?project.name:'—'}</td>
+      <td class="p-3"><span class="bg-slate-800 text-slate-300 px-2 py-1 rounded text-[10px]">${stageLabel}</span></td>
+      <td class="p-3">${sigBadge}</td>
+      <td class="p-3">${req.status==='مغلق ومؤرشف'?'<span class="text-emerald-400 font-bold"><i class="fa-solid fa-lock"></i> مغلق</span>':'<span class="text-amber-400 font-bold">قيد التوقيع</span>'}</td>
+      <td class="p-3 text-center no-print"><button onclick="reopenRequest('${req.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-1 rounded text-[10px]">فتح</button></td>
+      <td class="p-3 text-center no-print"><button onclick="deleteRequest('${req.id}')" title="حذف الطلب" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function deleteRequest(id){
+  const req = loadRequests().find(r=>r.id===id);
+  if(!req) return;
+  const linked = loadDocuments().filter(d=>d.requestId===id);
+  let msg = `هل تريد حذف الطلب ${req.code} نهائياً؟`;
+  if(req.status==='مغلق ومؤرشف') msg += '\nتنبيه: هذا الطلب مغلق ومؤرشف رقمياً بكل توقيعاته.';
+  if(linked.length) msg += `\nسيتم أيضاً حذف ${linked.length} مستند مرتبط به من الأرشيف.`;
+  if(!confirm(msg)) return;
+  saveRequests(loadRequests().filter(r=>r.id!==id));
+  if(linked.length) saveDocuments(loadDocuments().filter(d=>d.requestId!==id));
+  renderRequestsLog();
+  renderFinalReport();
+  renderDigitalApprovalsLog();
+  renderArchiveList();
+}
+
+/* ============ Final report (computed, not invented) ============ */
+function renderFinalReport(){
+  if(!currentCompany) return;
+  const projects = loadProjects();
+  const requests = loadRequests();
+  const closed = requests.filter(r=>r.status==='مغلق ومؤرشف').length;
+  const totalSignatures = requests.reduce((sum,r)=>sum+r.signatures.length,0);
+
+  document.getElementById('m-total-projects').innerText = projects.length;
+  document.getElementById('m-total-requests').innerText = requests.length;
+  document.getElementById('m-closed-requests').innerText = closed;
+  document.getElementById('m-total-signatures').innerText = totalSignatures;
+
+  const body = document.getElementById('report-log-body');
+  body.innerHTML = '';
+  const withSigs = requests.filter(r=>r.signatures.length>0);
+  document.getElementById('report-log-empty').classList.toggle('hidden', withSigs.length>0);
+
+  withSigs.slice().reverse().forEach(req=>{
+    const type = REQUEST_TYPES.find(t=>t.id===req.typeId);
+    const project = projects.find(p=>p.id===req.projectId);
+    const lastSig = req.signatures[req.signatures.length-1];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-2 border border-slate-800">${type.name} (${req.code})</td>
+      <td class="p-2 border border-slate-800">${project?project.name:'—'}</td>
+      <td class="p-2 border border-slate-800">${lastSig.name} — ${lastSig.role}</td>
+      <td class="p-2 border border-slate-800">${lastSig.timestamp}</td>
+      <td class="p-2 border border-slate-800 ${req.status==='مغلق ومؤرشف'?'text-emerald-400':'text-amber-400'} font-bold">${req.status==='مغلق ومؤرشف'?'موثق ومؤرشف نهائياً':'قيد المسار'}</td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+/* ============ Document Templates (add / edit / delete freely) ============ */
+let editingTemplateId = null;
+
+function openTemplateForm(id){
+  editingTemplateId = id || null;
+  document.getElementById('template-form').classList.remove('hidden');
+  if(id){
+    const t = loadTemplates().find(x=>x.id===id);
+    document.getElementById('template-form-title').innerText = 'تعديل صيغة المستند';
+    document.getElementById('tf-name').value = t.name;
+    document.getElementById('tf-category').value = t.category;
+    document.getElementById('tf-body').value = t.body;
+  } else {
+    document.getElementById('template-form-title').innerText = 'صيغة مستند جديدة';
+    document.getElementById('tf-name').value = '';
+    document.getElementById('tf-category').value = 'field';
+    document.getElementById('tf-body').value = '';
+  }
+}
+function closeTemplateForm(){
+  document.getElementById('template-form').classList.add('hidden');
+  editingTemplateId = null;
+}
+function saveTemplate(){
+  const name = document.getElementById('tf-name').value.trim();
+  const category = document.getElementById('tf-category').value;
+  const body = document.getElementById('tf-body').value;
+  if(!name || !body.trim()){ alert('يرجى إدخال اسم المستند ونص الصيغة'); return; }
+  const list = loadTemplates();
+  if(editingTemplateId){
+    const idx = list.findIndex(t=>t.id===editingTemplateId);
+    if(idx>-1){ list[idx].name=name; list[idx].category=category; list[idx].body=body; }
+  } else {
+    list.push({ id:'T'+Date.now(), name, category, body, createdAt:new Date().toISOString() });
+  }
+  saveTemplates(list);
+  closeTemplateForm();
+  renderTemplates();
+}
+function deleteTemplate(id){
+  if(!confirm('هل تريد حذف صيغة المستند هذه نهائياً؟')) return;
+  saveTemplates(loadTemplates().filter(t=>t.id!==id));
+  renderTemplates();
+}
+function populateDocCategorySelects(){
+  const tfCat = document.getElementById('tf-category');
+  const filterCat = document.getElementById('doc-cat-filter');
+  const options = Object.entries(CATS).map(([key,label])=>`<option value="${key}">${label}</option>`).join('');
+  tfCat.innerHTML = options;
+  filterCat.innerHTML = '<option value="">كل التصنيفات</option>' + options;
+}
+function renderTemplates(){
+  const search = (document.getElementById('doc-search').value||'').trim();
+  const cat = document.getElementById('doc-cat-filter').value;
+  const list = loadTemplates().filter(t=>{
+    const matchesSearch = !search || t.name.includes(search);
+    const matchesCat = !cat || t.category===cat;
+    return matchesSearch && matchesCat;
+  });
+  const container = document.getElementById('templates-list');
+  container.innerHTML = '';
+  document.getElementById('templates-empty').classList.toggle('hidden', list.length>0);
+  list.forEach(t=>{
+    const card = document.createElement('div');
+    card.className = "bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col gap-2";
+    card.innerHTML = `
+      <div class="flex justify-between items-start gap-2">
+        <span class="text-[9px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">${CATS[t.category] || t.category}</span>
+        <div class="flex gap-2 no-print">
+          <button onclick="openTemplateForm('${t.id}')" class="text-brand-400 hover:text-brand-300 text-xs"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="deleteTemplate('${t.id}')" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+      <p class="text-xs font-bold text-white">${t.name}</p>
+      <p class="text-[10px] text-slate-500 line-clamp-2">${t.body.slice(0,90)}${t.body.length>90?'…':''}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* ============ Document generation & editing ============ */
+let activeDocumentId = null;
+
+function extractPlaceholders(body){
+  const matches = [...body.matchAll(/{{\s*([^{}]+?)\s*}}/g)].map(m=>m[1]);
+  return [...new Set(matches)];
+}
+
+function reopenDocument(id){
+  activeDocumentId = id;
+  document.getElementById('dm-delete-btn').classList.remove('hidden');
+  renderDocumentModal();
+  document.getElementById('document-modal').classList.remove('hidden');
+}
+
+/* Prepare a document directly from an open request (Requests & Workflows page) */
+function prepareRequestDocument(){
+  const req = getActiveRequest();
+  const type = REQUEST_TYPES.find(t=>t.id===req.typeId);
+  const templateId = document.getElementById('rm-template-select').value;
+  if(!templateId){ alert('يرجى إضافة قالب مستند من قسم "صيغ المستندات" في صفحة الطلبات أولاً، ثم اختياره هنا.'); return; }
+  const t = loadTemplates().find(x=>x.id===templateId);
+  const instance = {
+    id:'D'+Date.now(), templateId, title: type.name+' - '+req.code, projectId: req.projectId, requestId: req.id,
+    fieldsData:{}, finalText: applySignatureSlots(t.body), signatures:[], createdAt:new Date().toISOString()
+  };
+  const list = loadDocuments();
+  list.push(instance);
+  saveDocuments(list);
+  activeDocumentId = instance.id;
+  closeRequestModal();
+  document.getElementById('dm-delete-btn').classList.add('hidden');
+  renderDocumentModal();
+  document.getElementById('document-modal').classList.remove('hidden');
+}
+function goCreateTemplateFromRequest(e){
+  e.preventDefault();
+  closeRequestModal();
+  switchTab('requests-tab');
+  const box = document.getElementById('templates-manager');
+  if(box) box.open = true;
+  openTemplateForm();
+  const form = document.getElementById('template-form');
+  if(form) form.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+/* Signature slots inside a template ({{توقيع_...}} / {{اعتماد_...}} / "التوقيع: ____") are not typed by hand any more —
+   the digital signature is made once on the request and printed under the document automatically. */
+const SIG_MARK = '(موقّع رقمياً على الطلب — تفاصيل التوقيع في جدول التوقيعات أسفل المستند)';
+function isSignatureField(name){ return /^(توقيع|اعتماد_)/.test(name); }
+function applySignatureSlots(text){
+  return String(text)
+    .replace(/{{\s*(?:توقيع|اعتماد_)[^{}]*?}}/g, SIG_MARK)
+    .replace(/^[ \t]*التوقيع\s*:\s*[_\-.\s]{3,}$/gm, '')
+    .replace(/\s+$/, '');
+}
+
+/* Signatures shown inside a document = the signatures of its linked request (single source of truth) */
+function getDocSignatures(doc){
+  if(doc && doc.requestId){
+    const req = loadRequests().find(r=>r.id===doc.requestId);
+    if(req) return (req.signatures||[]).map(x=>({ id:x.id, role:x.role, name:x.name, timestamp:x.timestamp, geo:x.geo, hash:x.hash }));
+  }
+  return (doc && doc.signatures) || [];
+}
+function getActiveDocument(){ return loadDocuments().find(d=>d.id===activeDocumentId); }
+function persistActiveDocument(updated){
+  const list = loadDocuments();
+  const idx = list.findIndex(d=>d.id===updated.id);
+  if(idx>-1){ list[idx]=updated; saveDocuments(list); }
+  renderDigitalApprovalsLog();
+}
+
+/* Flattens every digital signature (made on requests) into one home-page log, newest first.
+   Old standalone documents that carry their own legacy signatures are still listed. */
+function renderDigitalApprovalsLog(){
+  const tbody = document.getElementById('digital-approvals-table');
+  if(!tbody) return;
+  const rows = [];
+  const idNum = x => parseInt(String(x||'').replace(/\D/g,''),10) || 0;
+  loadRequests().forEach(req=>{
+    const type = REQUEST_TYPES.find(t=>t.id===req.typeId);
+    (req.signatures||[]).forEach(sg=>{
+      rows.push({ title: `${type?type.name:req.typeId} (${req.code})`, role:sg.role, name:sg.name, timestamp:sg.timestamp, hash:sg.hash, order:idNum(sg.id) });
+    });
+  });
+  loadDocuments().forEach(doc=>{
+    if(doc.requestId) return;
+    (doc.signatures||[]).forEach(sg=>{
+      rows.push({ title: doc.title, role:sg.role, name:sg.name, timestamp:sg.timestamp, hash:sg.hash, order:idNum(sg.id) });
+    });
+  });
+  rows.sort((a,b)=> b.order - a.order);
+  document.getElementById('digital-approvals-count').innerText = rows.length + ' توقيع معتمد';
+  document.getElementById('digital-approvals-empty').classList.toggle('hidden', rows.length>0);
+  tbody.innerHTML = rows.map(r=>`
+    <tr>
+      <td class="p-2 font-bold text-white">${r.title}</td>
+      <td class="p-2">${r.name}</td>
+      <td class="p-2">${r.role||'—'}</td>
+      <td class="p-2">${r.timestamp}</td>
+      <td class="p-2 font-mono text-brand-400">${r.hash}</td>
+    </tr>
+  `).join('');
+}
+
+function renderDocumentSignatures(){
+  const doc = getActiveDocument();
+  const sigs = getDocSignatures(doc);
+  const req = doc.requestId ? loadRequests().find(r=>r.id===doc.requestId) : null;
+  const type = req ? REQUEST_TYPES.find(t=>t.id===req.typeId) : null;
+  const tbody = document.getElementById('dm-signatures-table');
+  tbody.innerHTML = sigs.length ? sigs.map(sg=>`
+    <tr class="border-t border-slate-800">
+      <td class="p-2">${sg.role||'—'}</td>
+      <td class="p-2 font-bold text-white">${sg.name}</td>
+      <td class="p-2 font-mono text-brand-400">${sg.hash}</td>
+      <td class="p-2">${sg.timestamp}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="4" class="p-2 text-[11px] text-slate-500 text-center">لا توجد توقيعات بعد — وقّع على الطلب وستظهر هنا تلقائياً.</td></tr>';
+
+  const countEl = document.getElementById('dm-sig-count');
+  if(type){
+    const need = type.route.length;
+    if(sigs.length >= need){
+      countEl.className = 'text-[11px] font-bold text-emerald-400';
+      countEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${sigs.length} من ${need} توقيعات مكتملة`;
+    } else {
+      countEl.className = 'text-[11px] font-bold text-amber-400';
+      countEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${sigs.length} من ${need} توقيعات — يوجد ${need-sigs.length} توقيع ناقص على الطلب`;
+    }
+  } else {
+    countEl.className = 'text-[11px] font-bold text-slate-400';
+    countEl.innerText = `عدد التوقيعات: ${sigs.length}`;
+  }
+  const back = document.getElementById('dm-back-to-request');
+  back.classList.toggle('hidden', !req);
+  back.classList.toggle('flex', !!req);
+}
+
+function renderDocumentModal(){
+  const doc = getActiveDocument();
+  const t = loadTemplates().find(x=>x.id===doc.templateId);
+  document.getElementById('dm-template-name').innerText = t ? ('الصيغة: '+t.name) : 'صيغة محذوفة';
+  document.getElementById('dm-title').value = doc.title;
+  document.getElementById('dm-title').oninput = e=>{ doc.title=e.target.value; persistActiveDocument(doc); };
+
+  const projects = loadProjects();
+  const projSel = document.getElementById('dm-project');
+  projSel.innerHTML = '<option value="">بدون ربط بمشروع</option>' + projects.map(p=>`<option value="${p.id}" ${p.id===doc.projectId?'selected':''}>${p.name}</option>`).join('');
+  projSel.onchange = ()=>{ doc.projectId = projSel.value; persistActiveDocument(doc); };
+
+  const fields = t ? extractPlaceholders(t.body).filter(f=>!isSignatureField(f)) : [];
+  const fieldsBox = document.getElementById('dm-fields-box');
+  const fieldsList = document.getElementById('dm-fields-list');
+  fieldsBox.classList.toggle('hidden', fields.length===0);
+  fieldsList.innerHTML = fields.map(f=>`
+    <div>
+      <label class="block text-[11px] text-slate-300 mb-1">${f}</label>
+      <input data-field="${f}" value="${doc.fieldsData[f]||''}" class="dm-field-input w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white">
+    </div>
+  `).join('');
+  fieldsList.querySelectorAll('.dm-field-input').forEach(inp=>{
+    inp.oninput = ()=>{ doc.fieldsData[inp.dataset.field] = inp.value; persistActiveDocument(doc); };
+  });
+
+  document.getElementById('dm-final-text').value = doc.finalText;
+  document.getElementById('dm-final-text').oninput = e=>{ doc.finalText = e.target.value; persistActiveDocument(doc); };
+
+  renderDocumentSignatures();
+}
+
+function regenerateDocumentText(){
+  const doc = getActiveDocument();
+  const t = loadTemplates().find(x=>x.id===doc.templateId);
+  if(!t) return;
+  let text = applySignatureSlots(t.body);
+  Object.entries(doc.fieldsData).forEach(([key,val])=>{
+    const re = new RegExp('{{\\s*'+key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*}}','g');
+    text = text.replace(re, val || `{{${key}}}`);
+  });
+  text = applySignatureSlots(text);
+  doc.finalText = text;
+  persistActiveDocument(doc);
+  document.getElementById('dm-final-text').value = text;
+}
+
+function buildAiPrompt(){
+  const doc = getActiveDocument();
+  const t = loadTemplates().find(x=>x.id===doc.templateId);
+  const project = loadProjects().find(p=>p.id===doc.projectId);
+  const extra = document.getElementById('dm-ai-instructions').value.trim();
+  const knownFields = Object.entries(doc.fieldsData).filter(([,v])=>v).map(([k,v])=>`${k}: ${v}`).join('\n') || 'لا توجد بيانات مُدخلة بعد';
+
+  return `أنت مساعد لصياغة مستندات هندسية وإدارية رسمية باللغة العربية لمنصة "الصندوق الأسود الرقمي".
+صيغة المستند الأصلية (تحتوي على حقول بين أقواس مزدوجة {{ }} يجب ملؤها):
+"""
+${t ? applySignatureSlots(t.body) : ''}
+"""
+
+بيانات معروفة عن السياق:
+اسم الشركة: ${currentCompany ? currentCompany.name : 'غير محدد'}
+اسم المشروع: ${project ? project.name : 'غير محدد'}
+العميل / المالك: ${project ? (project.client || 'غير محدد') : 'غير محدد'}
+موقع المشروع: ${project ? (project.location || 'غير محدد') : 'غير محدد'}
+بيانات مُدخلة يدوياً من المستخدم:
+${knownFields}
+تعليمات إضافية من المستخدم: ${extra || 'لا يوجد'}
+
+اكتب نسخة نهائية كاملة من هذا المستند بالعربية الفصحى الرسمية، مع ملء كل الحقول بشكل احترافي ومنطقي بناءً على المعطيات أعلاه. إن لم تتوفر معلومة محددة كرقم أو نسبة أو تاريخ دقيق، اترك الحقل بصيغة واضحة مثل [يُستكمل يدويًا] بدلاً من اختلاق رقم غير مؤكد. حافظ على تنسيق العناوين والفقرات. لا تضف أي توقيعات أو أختام أو أسماء موقّعين — فالتوقيعات الرقمية تُضاف تلقائياً أسفل المستند. أعد نص المستند النهائي فقط دون أي شرح أو مقدمة إضافية.`;
+}
+
+function copyAiPrompt(){
+  const statusEl = document.getElementById('dm-ai-status');
+  const prompt = buildAiPrompt();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(prompt).then(()=>{
+      statusEl.innerText = 'تم نسخ الأمر — افتح Gemini أو ChatGPT والصقه هناك.';
+    }).catch(()=>{
+      window.prompt('تعذر النسخ التلقائي، انسخ هذا النص يدوياً (Ctrl+C):', prompt);
+    });
+  } else {
+    window.prompt('انسخ هذا النص يدوياً (Ctrl+C):', prompt);
+  }
+}
+
+function useAiPastedText(){
+  const text = document.getElementById('dm-ai-paste').value.trim();
+  const statusEl = document.getElementById('dm-ai-status');
+  if(!text){ alert('يرجى لصق نص المستند الناتج من الذكاء الاصطناعي أولاً'); return; }
+  const doc = getActiveDocument();
+  doc.finalText = text;
+  persistActiveDocument(doc);
+  document.getElementById('dm-final-text').value = text;
+  statusEl.innerText = 'تم استخدام النص بنجاح — راجعه في الصندوق أدناه ويمكنك تعديله قبل الحفظ.';
+}
+
+function saveDocumentInstance(){
+  const doc = getActiveDocument();
+  if(!doc.title.trim()){ alert('يرجى إدخال عنوان للمستند'); return; }
+  persistActiveDocument(doc);
+  closeDocumentModal();
+}
+/* closing a document that belongs to a request returns to that request (where the digital signing happens) */
+function closeDocumentModal(){
+  const doc = activeDocumentId ? getActiveDocument() : null;
+  const reqId = doc ? doc.requestId : null;
+  document.getElementById('document-modal').classList.add('hidden');
+  activeDocumentId = null;
+  if(reqId && loadRequests().some(r=>r.id===reqId)) reopenRequest(reqId);
+}
+function deleteDocumentInstance(){
+  if(!confirm('هل تريد حذف هذا المستند نهائياً؟')) return;
+  const doc = getActiveDocument();
+  const reqId = doc ? doc.requestId : null;
+  saveDocuments(loadDocuments().filter(d=>d.id!==activeDocumentId));
+  document.getElementById('document-modal').classList.add('hidden');
+  activeDocumentId = null;
+  renderDigitalApprovalsLog();
+  if(reqId && loadRequests().some(r=>r.id===reqId)) reopenRequest(reqId);
+}
+
+function fillPrintContainerFor(doc){
+  document.getElementById('dpc-company').innerText = currentCompany ? currentCompany.name : '';
+  document.getElementById('dpc-title').innerText = doc.title;
+  document.getElementById('dpc-date').innerText = new Date(doc.createdAt).toLocaleDateString('ar-EG');
+  document.getElementById('dpc-body').innerText = doc.finalText;
+
+  const imgBox = document.getElementById('dpc-images');
+  if(doc.isMatching && doc.matchImages){
+    const fig = (src, cap)=>`<figure style="flex:1;margin:0"><img src="${src}" style="width:100%;border:1px solid #cbd5e1;border-radius:4px"><figcaption style="font-size:11px;text-align:center;margin-top:4px;color:#475569">${cap}</figcaption></figure>`;
+    imgBox.innerHTML = `<div style="display:flex;gap:12px;margin-bottom:18px">${fig(doc.matchImages.pano,'صورة الموقع الفعلي (360°)')}${fig(doc.matchImages.revit,'مخطط / لقطة Revit المرجعية')}</div>`;
+  } else {
+    imgBox.innerHTML = '';
+  }
+
+  const sigs = getDocSignatures(doc);
+  const cell = 'border:1px solid #cbd5e1;padding:4px 6px;text-align:right';
+  document.getElementById('dpc-signatures').innerHTML = sigs.length ? (
+    '<p class="font-bold mb-2">التوقيعات الرقمية المعتمدة:</p>' +
+    `<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="background:#f1f5f9"><th style="${cell}">الصفة</th><th style="${cell}">الاسم</th><th style="${cell}">التاريخ</th><th style="${cell}">Hash</th></tr></thead><tbody>` +
+    sigs.map(sg=>`<tr><td style="${cell}">${sg.role||'—'}</td><td style="${cell}">${sg.name}</td><td style="${cell}">${sg.timestamp}${sg.geo?(' · '+sg.geo):''}</td><td style="${cell};font-family:monospace">${sg.hash}</td></tr>`).join('') +
+    '</tbody></table>'
+  ) : '';
+}
+function getDocumentById(id){ return loadDocuments().find(d=>d.id===id); }
+
+function archivePrint(docId){
+  const doc = getDocumentById(docId);
+  if(doc) printDocObject(doc);
+}
+function printDocObject(doc){
+  fillPrintContainerFor(doc);
+  const container = document.getElementById('doc-print-container');
+  const dash = document.getElementById('dashboard-app');
+  container.classList.remove('hidden');
+  if(dash) dash.classList.add('no-print');
+  window.print();
+  container.classList.add('hidden');
+  if(dash) dash.classList.remove('no-print');
+}
+function archiveExportPDF(docId){
+  const doc = getDocumentById(docId);
+  if(doc) exportDocObjectPDF(doc);
+}
+function exportDocObjectPDF(doc){
+  fillPrintContainerFor(doc);
+  const container = document.getElementById('doc-print-container');
+  container.classList.remove('hidden');
+  const opt = { margin:0.5, filename:(doc.title||'document')+'.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,backgroundColor:'#ffffff'}, jsPDF:{unit:'in',format:'letter',orientation:'portrait'} };
+  html2pdf().set(opt).from(container).save().then(()=> container.classList.add('hidden'));
+}
+function archiveDownloadText(docId){
+  const doc = getDocumentById(docId);
+  if(!doc) return;
+  const sigs = getDocSignatures(doc);
+  const sigText = sigs.length ? ('\n\n---\nالتوقيعات الرقمية:\n' + sigs.map(s=>`${s.role?(s.role+' — '):''}${s.name} — ${s.timestamp} ${s.geo?('· '+s.geo):''} — Hash: ${s.hash}`).join('\n')) : '';
+  const bom = '\uFEFF'; // ensures Arabic text opens correctly instead of garbled characters in text viewers
+  const blob = new Blob([bom + doc.finalText + sigText], { type:'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = (doc.title || 'document') + '.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function archiveView(docId){
+  activeDocumentId = docId;
+  const doc = getActiveDocument();
+  document.getElementById('av-title').innerText = doc.title;
+  document.getElementById('av-date').innerText = new Date(doc.createdAt).toLocaleDateString('ar-EG');
+  if(doc.isUploaded){
+    if((doc.fileType||'').startsWith('image/')){
+      document.getElementById('av-body').innerHTML = '';
+      const img = document.createElement('img');
+      img.src = doc.fileData; img.className = 'max-w-full rounded';
+      document.getElementById('av-body').appendChild(img);
+    } else if(doc.fileType==='application/pdf'){
+      document.getElementById('av-body').innerHTML = `<iframe src="${doc.fileData}" class="w-full" style="height:60vh;border:0;background:#fff;"></iframe>`;
+    } else {
+      document.getElementById('av-body').innerText = 'هذا النوع من الملفات لا يمكن معاينته مباشرة — استخدم زر "تحميل الملف الأصلي".';
+    }
+    document.getElementById('av-signatures').innerHTML = '<p class="text-[11px] text-slate-500">مستند مرفوع كملف أصلي — بدون توقيعات داخل المنصة</p>';
+  } else if(doc.isMatching){
+    const box = document.getElementById('av-body');
+    box.innerHTML = '';
+    if(doc.matchImages){
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px';
+      [['pano','صورة الموقع الفعلي (360°)'],['revit','مخطط / لقطة Revit المرجعية']].forEach(([k,cap])=>{
+        const fig = document.createElement('figure');
+        fig.style.cssText = 'flex:1;min-width:200px;margin:0';
+        const im = document.createElement('img'); im.src = doc.matchImages[k]; im.style.cssText = 'width:100%;border:1px solid #cbd5e1;border-radius:4px';
+        const fc = document.createElement('figcaption'); fc.style.cssText = 'font-size:11px;text-align:center;margin-top:4px;color:#475569'; fc.innerText = cap;
+        fig.appendChild(im); fig.appendChild(fc); wrap.appendChild(fig);
+      });
+      box.appendChild(wrap);
+    }
+    const txt = document.createElement('div');
+    txt.style.whiteSpace = 'pre-wrap';
+    txt.innerText = doc.finalText;
+    box.appendChild(txt);
+    document.getElementById('av-signatures').innerHTML = '<p class="text-[11px] text-slate-500">نتيجة مطابقة ثنائية (الواقع الفعلي × Revit) — لا تحتاج توقيعات</p>';
+  } else {
+    document.getElementById('av-body').innerText = doc.finalText;
+    const sigs = getDocSignatures(doc);
+    document.getElementById('av-signatures').innerHTML = sigs.length ? sigs.map(s=>`
+      <div class="text-[11px] text-slate-300 border-t border-slate-800 pt-1 mt-1">${s.role?(s.role+' — '):''}${s.name} — ${s.timestamp} ${s.geo?('· '+s.geo):''} · <span class="font-mono text-brand-400">Hash: ${s.hash}</span></div>
+    `).join('') : '<p class="text-[11px] text-slate-500">بدون توقيعات</p>';
+  }
+  document.getElementById('av-qr-btn').classList.toggle('hidden', !!doc.isMatching);
+  document.getElementById('archive-view-modal').classList.remove('hidden');
+}
+
+/* ============ Upload old / external documents into the archive ============ */
+let pendingOldDocFile = null;
+function openUploadOldDocModal(){
+  const projects = loadProjects();
+  const sel = document.getElementById('uod-project');
+  sel.innerHTML = '<option value="">بدون مشروع</option>' + projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('upload-old-doc-form').classList.remove('hidden');
+}
+function closeUploadOldDocModal(){
+  document.getElementById('upload-old-doc-form').classList.add('hidden');
+  document.getElementById('uod-file').value = '';
+  document.getElementById('uod-title').value = '';
+  pendingOldDocFile = null;
+}
+function handleOldDocFileSelect(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const titleInput = document.getElementById('uod-title');
+  if(!titleInput.value.trim()){ titleInput.value = file.name.replace(/\.[^/.]+$/, ''); }
+  const reader = new FileReader();
+  reader.onload = e => { pendingOldDocFile = { fileName: file.name, fileType: file.type || 'application/octet-stream', fileData: e.target.result }; };
+  reader.readAsDataURL(file);
+}
+function saveUploadedOldDocument(){
+  if(!pendingOldDocFile){ alert('يرجى اختيار ملف أولاً'); return; }
+  const title = document.getElementById('uod-title').value.trim() || pendingOldDocFile.fileName;
+  const projectId = document.getElementById('uod-project').value || null;
+  const docs = loadDocuments();
+  docs.push({
+    id:'D'+Date.now(), title, projectId, templateId:null, requestId:null,
+    finalText:'', signatures:[], createdAt:new Date().toISOString(),
+    isUploaded:true, fileName: pendingOldDocFile.fileName, fileType: pendingOldDocFile.fileType, fileData: pendingOldDocFile.fileData
+  });
+  saveDocuments(docs);
+  closeUploadOldDocModal();
+  renderArchiveList();
+}
+function archiveDownloadOriginalFile(docId){
+  const doc = getDocumentById(docId);
+  if(!doc || !doc.fileData) return;
+  const a = document.createElement('a');
+  a.href = doc.fileData; a.download = doc.fileName || (doc.title+'.bin');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function closeArchiveView(){
+  document.getElementById('archive-view-modal').classList.add('hidden');
+}
+
+function renderArchiveList(){
+  const search = (document.getElementById('archive-search').value||'').trim();
+  const docs = loadDocuments().filter(d => !search || d.title.includes(search));
+  const templates = loadTemplates();
+  const projects = loadProjects();
+  const container = document.getElementById('archive-list');
+  container.innerHTML = '';
+  document.getElementById('archive-empty').classList.toggle('hidden', docs.length>0);
+
+  docs.slice().reverse().forEach(doc=>{
+    const t = templates.find(x=>x.id===doc.templateId);
+    const p = projects.find(x=>x.id===doc.projectId);
+    const sigCount = getDocSignatures(doc).length;
+    const card = document.createElement('div');
+    card.className = "bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-2";
+    if(doc.isUploaded){
+      card.innerHTML = `
+        <div class="flex justify-between items-start gap-2">
+          <span class="text-[9px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded"><i class="fa-solid fa-file-arrow-up"></i> ملف مرفوع</span>
+        </div>
+        <p class="text-xs font-bold text-white">${doc.title}</p>
+        <p class="text-[10px] text-slate-500">${p?p.name:'بدون مشروع'} · ${new Date(doc.createdAt).toLocaleDateString('ar-EG')}</p>
+        <div class="flex flex-wrap gap-1 pt-1">
+          <button onclick="archiveView('${doc.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-eye"></i> عرض</button>
+          <button onclick="archiveDownloadOriginalFile('${doc.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-download"></i> تحميل الملف الأصلي</button>
+        </div>
+      `;
+    } else if(doc.isMatching){
+      card.innerHTML = `
+        <div class="flex justify-between items-start gap-2">
+          <span class="text-[9px] bg-sky-950 text-sky-300 border border-sky-800 px-2 py-0.5 rounded"><i class="fa-solid fa-code-compare"></i> مطابقة ثنائية</span>
+          <button onclick="deleteArchivedMatching('${doc.id}')" title="حذف من الأرشيف" class="text-rose-400 hover:text-rose-300 text-xs no-print"><i class="fa-solid fa-trash"></i></button>
+        </div>
+        <p class="text-xs font-bold text-white">${doc.title}</p>
+        <p class="text-[10px] text-slate-500">${p?p.name:'بدون مشروع'} · ${new Date(doc.createdAt).toLocaleDateString('ar-EG')}</p>
+        ${doc.matchImages?`<div class="flex gap-1"><img src="${doc.matchImages.pano}" class="w-1/2 h-16 object-cover rounded border border-slate-800"><img src="${doc.matchImages.revit}" class="w-1/2 h-16 object-cover rounded border border-slate-800"></div>`:''}
+        <div class="flex flex-wrap gap-1 pt-1">
+          <button onclick="archiveView('${doc.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-eye"></i> عرض</button>
+          <button onclick="archiveExportPDF('${doc.id}')" class="bg-brand-gold hover:bg-amber-700 text-white text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          <button onclick="archivePrint('${doc.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-print"></i> طباعة</button>
+        </div>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="flex justify-between items-start gap-2">
+          <span class="text-[9px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">${t?t.name:'—'}</span>
+          <span class="text-[9px] ${sigCount>0?'bg-emerald-950 text-emerald-400 border border-emerald-800':'bg-slate-800 text-slate-500'} px-2 py-0.5 rounded">${sigCount} توقيع رقمي</span>
+        </div>
+        <p class="text-xs font-bold text-white">${doc.title}</p>
+        <p class="text-[10px] text-slate-500">${p?p.name:'بدون مشروع'} · ${new Date(doc.createdAt).toLocaleDateString('ar-EG')}</p>
+        <div class="flex flex-wrap gap-1 pt-1">
+          <button onclick="archiveView('${doc.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-eye"></i> عرض</button>
+          <button onclick="archiveDownloadText('${doc.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-download"></i> تنزيل</button>
+          <button onclick="archiveExportPDF('${doc.id}')" class="bg-brand-gold hover:bg-amber-700 text-white text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+          <button onclick="archivePrint('${doc.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-print"></i> طباعة</button>
+          <button onclick="openShareModal('${doc.id}')" class="bg-emerald-800 hover:bg-emerald-700 text-emerald-100 text-[10px] px-2 py-1 rounded"><i class="fa-solid fa-qrcode"></i> QR</button>
+        </div>
+      `;
+    }
+    container.appendChild(card);
+  });
+}
+
+function deleteArchivedMatching(id){
+  if(!confirm('هل تريد حذف هذه المطابقة الثنائية من الأرشيف نهائياً؟')) return;
+  saveDocuments(loadDocuments().filter(d=>d.id!==id));
+  if(lastAudit && lastAudit.archivedDocId===id) lastAudit.archivedDocId = null;
+  renderArchiveList();
+}
+
+function printDocumentInstance(){ archivePrint(activeDocumentId); }
+function exportDocumentPDF(){ archiveExportPDF(activeDocumentId); }
+
+/* ============ Share via QR / WhatsApp ============
+   بما أن بيانات المنصة محفوظة محلياً (localStorage) على كل جهاز فقط وليس على سيرفر مشترك،
+   فإن الرابط/الرمز المُولَّد هنا يحمل بيانات المستند نفسها مُرمّزة داخل الرابط (base64)،
+   بحيث يفتح أي شخص الرابط ويشاهد المستند مباشرة دون الحاجة لتسجيل دخول أو لوجود المستند على جهازه. */
+let currentShareLink = '';
+function buildShareLink(doc){
+  const payload = {
+    v:1,
+    company: currentCompany ? currentCompany.name : '',
+    title: doc.title,
+    date: new Date(doc.createdAt).toLocaleDateString('ar-EG'),
+    body: doc.finalText,
+    signatures: getDocSignatures(doc).map(s=>({role:s.role,name:s.name,timestamp:s.timestamp,geo:s.geo,hash:s.hash}))
+  };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const base = location.origin + location.pathname;
+  return base + '?shared=' + encoded;
+}
+function openShareModal(docId){
+  const doc = getDocumentById(docId);
+  if(!doc) return;
+  currentShareLink = buildShareLink(doc);
+  document.getElementById('share-doc-title').innerText = doc.title;
+  const qrBox = document.getElementById('share-qr-code');
+  qrBox.innerHTML = '';
+  new QRCode(qrBox, { text: currentShareLink, width:180, height:180, colorDark:"#0c4a6e", colorLight:"#ffffff" });
+  document.getElementById('share-qr-modal').classList.remove('hidden');
+}
+function closeShareModal(){ document.getElementById('share-qr-modal').classList.add('hidden'); }
+function shareQRToWhatsApp(){
+  if(!currentShareLink) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent(currentShareLink), '_blank');
+}
+function copyShareLink(){
+  if(!currentShareLink) return;
+  navigator.clipboard.writeText(currentShareLink).then(()=> alert('تم نسخ الرابط')).catch(()=> alert(currentShareLink));
+}
+function renderSharedDocFromURL(){
+  const params = new URLSearchParams(location.search);
+  const encoded = params.get('shared');
+  if(!encoded) return false;
+  try{
+    const payload = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+    document.getElementById('sdv-company').innerText = payload.company || '';
+    document.getElementById('sdv-title').innerText = payload.title || '';
+    document.getElementById('sdv-date').innerText = payload.date || '';
+    document.getElementById('sdv-body').innerText = payload.body || '';
+    const sigs = payload.signatures || [];
+    document.getElementById('sdv-signatures').innerHTML = sigs.length ? sigs.map(s=>`
+      <div class="text-[11px] text-slate-300 border-t border-slate-800 pt-1 mt-1">${s.role?(s.role+' — '):''}${s.name} — ${s.timestamp} ${s.geo?('· '+s.geo):''} · <span class="font-mono text-brand-400">Hash: ${s.hash}</span></div>
+    `).join('') : '<p class="text-[11px] text-slate-500">بدون توقيعات</p>';
+    document.getElementById('shared-doc-view').classList.remove('hidden');
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+/* ============ Viewer + Real AI Matching (Gemini Vision API) ============ */
+let pannellumViewer = null;
+let currentPanoImageData = null;   // base64 data URL of the uploaded 360°/site photo
+let currentRevitImageData = null;  // base64 data URL of the uploaded Revit reference image
+let lastAudit = null;              // last successful dual-matching result (text + the two images it was based on)
+
+/* Down-scale a photo before printing / archiving so localStorage and the PDF stay light */
+function makeThumb(dataUrl, maxW){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const scale = Math.min(1, maxW / img.width);
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width*scale));
+      c.height = Math.max(1, Math.round(img.height*scale));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = ()=>resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+async function buildAuditDoc(){
+  if(!lastAudit) return null;
+  if(!lastAudit.thumbs){
+    lastAudit.thumbs = { pano: await makeThumb(lastAudit.pano, 900), revit: await makeThumb(lastAudit.revit, 900) };
+  }
+  if(!lastAudit.docId) lastAudit.docId = 'D'+Date.now();
+  const project = loadProjects().find(p=>p.id===lastAudit.projectId);
+  const dateStr = new Date(lastAudit.createdAt).toLocaleDateString('ar-EG');
+  return {
+    id: lastAudit.docId,
+    title: `مطابقة ثنائية: الواقع الفعلي × Revit${project?(' — '+project.name):''} — ${dateStr}`,
+    projectId: lastAudit.projectId || null, templateId:null, requestId:null,
+    finalText: lastAudit.text, signatures:[], createdAt: lastAudit.createdAt,
+    isMatching:true, matchImages: lastAudit.thumbs
+  };
+}
+
+function auditActionsHtml(){
+  return `<div class="mt-3 pt-3 border-t border-slate-800 space-y-2 no-print">
+    <div class="flex flex-wrap gap-2">
+      <button onclick="printAuditResult()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-print"></i> طباعة</button>
+      <button onclick="exportAuditPDF()" class="bg-brand-gold hover:bg-amber-700 text-white px-3 py-1.5 rounded text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-file-pdf"></i> حفظ PDF</button>
+      <button onclick="archiveAuditResult()" class="bg-emerald-800 hover:bg-emerald-700 text-emerald-100 px-3 py-1.5 rounded text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-box-archive"></i> أرشفة</button>
+    </div>
+    <p id="audit-action-status" class="text-[10px] text-slate-500"></p>
+  </div>`;
+}
+function setAuditStatus(msg, cls){
+  const el = document.getElementById('audit-action-status');
+  if(el){ el.innerText = msg; el.className = 'text-[10px] '+(cls||'text-slate-500'); }
+}
+async function printAuditResult(){
+  if(!lastAudit) return;
+  setAuditStatus('جاري تجهيز الطباعة...');
+  const doc = await buildAuditDoc();
+  setAuditStatus('');
+  printDocObject(doc);
+}
+async function exportAuditPDF(){
+  if(!lastAudit) return;
+  setAuditStatus('جاري تجهيز ملف PDF...');
+  const doc = await buildAuditDoc();
+  setAuditStatus('');
+  exportDocObjectPDF(doc);
+}
+async function archiveAuditResult(){
+  if(!lastAudit) return;
+  if(lastAudit.archivedDocId && loadDocuments().some(d=>d.id===lastAudit.archivedDocId)){
+    setAuditStatus('هذه المطابقة مؤرشفة بالفعل — تجدها في تبويب "الأرشيف".', 'text-amber-400');
+    return;
+  }
+  setAuditStatus('جاري الأرشفة...');
+  const doc = await buildAuditDoc();
+  try{
+    const docs = loadDocuments();
+    docs.push(doc);
+    saveDocuments(docs);
+  } catch(e){
+    setAuditStatus('تعذّرت الأرشفة: مساحة تخزين المتصفح ممتلئة — احذف بعض العناصر القديمة من الأرشيف ثم أعد المحاولة.', 'text-rose-400');
+    return;
+  }
+  lastAudit.archivedDocId = doc.id;
+  setAuditStatus('تمت الأرشفة بنجاح — تجدها في تبويب "الأرشيف".', 'text-emerald-400');
+}
+
+function initPannellumViewer(){
+  pannellumViewer = pannellum.viewer('panorama-container', { type:"equirectangular", panorama:"https://pannellum.org/images/alma.jpg", autoLoad:true, compass:true });
+}
+function loadPanoImage(event){
+  const file = event.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e=>{
+      currentPanoImageData = e.target.result;
+      pannellumViewer = pannellum.viewer('panorama-container', { type:"equirectangular", panorama:e.target.result, autoLoad:true });
+      updateAiAuditReadiness();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+function loadRevitImage(event){
+  const file = event.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e=>{
+      currentRevitImageData = e.target.result;
+      updateAiAuditReadiness();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+function updateAiAuditReadiness(){
+  const el = document.getElementById('ai-audit-status');
+  if(!el) return;
+  if(currentPanoImageData && currentRevitImageData){
+    el.innerText = 'الصورتان جاهزتان — اضغط زر المطابقة للبدء';
+    el.className = 'text-[10px] text-emerald-400';
+  } else {
+    el.innerText = 'ارفع صورة الموقع وصورة الـ Revit معاً أولاً';
+    el.className = 'text-[10px] text-slate-500';
+  }
+}
+
+/* ---- Gemini API key management (stored only in this browser's localStorage — never written into the page's source) ---- */
+function getGeminiApiKey(){ return localStorage.getItem('bb_gemini_api_key') || ''; }
+function openAiSettingsModal(){
+  document.getElementById('ai-settings-key-input').value = getGeminiApiKey();
+  document.getElementById('ai-settings-modal').classList.remove('hidden');
+}
+function closeAiSettingsModal(){ document.getElementById('ai-settings-modal').classList.add('hidden'); }
+function saveGeminiApiKey(){
+  const key = document.getElementById('ai-settings-key-input').value.trim();
+  if(!key){ alert('يرجى إدخال مفتاح API'); return; }
+  localStorage.setItem('bb_gemini_api_key', key);
+  closeAiSettingsModal();
+  alert('تم حفظ المفتاح في هذا المتصفح فقط.');
+}
+function clearGeminiApiKey(){
+  if(!confirm('حذف مفتاح الـ API المحفوظ من هذا المتصفح؟')) return;
+  localStorage.removeItem('bb_gemini_api_key');
+  document.getElementById('ai-settings-key-input').value = '';
+}
+
+function base64PartFromDataURL(dataUrl){
+  const match = /^data:(.+?);base64,(.*)$/.exec(dataUrl || '');
+  if(!match) return null;
+  return { mimeType: match[1], data: match[2] };
+}
+
+async function triggerAiAudit(){
+  const resultBox = document.getElementById('ai-audit-result');
+  const apiKey = getGeminiApiKey();
+
+  if(!currentPanoImageData || !currentRevitImageData){
+    alert('يرجى رفع صورة الموقع (360°) وصورة مخطط الـ Revit المطابقة أولاً.');
+    return;
+  }
+  if(!apiKey){
+    alert('لم يتم إعداد مفتاح الذكاء الاصطناعي بعد. اضغط "إعدادات AI" بجانب الزر وأدخل مفتاح Gemini API المجاني الخاص بك.');
+    openAiSettingsModal();
+    return;
+  }
+
+  const panoPart = base64PartFromDataURL(currentPanoImageData);
+  const revitPart = base64PartFromDataURL(currentRevitImageData);
+  if(!panoPart || !revitPart){ alert('تعذّرت قراءة إحدى الصورتين، حاول رفعها مرة أخرى.'); return; }
+
+  lastAudit = null;
+  resultBox.classList.remove('hidden');
+  resultBox.innerHTML = '<p class="text-xs text-brand-400"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحليل ومطابقة الصورتين عبر الذكاء الاصطناعي...</p>';
+
+  const prompt = `أنت مهندس تدقيق مواقع إنشائية. الصورة الأولى هي لقطة فعلية من الموقع (قد تكون بانورامية 360°)، والصورة الثانية هي مخطط أو لقطة من نموذج Revit المرجعي لنفس العنصر أو المساحة.
+قارن بين الصورتين بدقة وأعطني تقريراً موجزاً بالعربية يتضمن:
+1. نسبة تقديرية للتطابق العام بين الواقع الفعلي والنموذج (كنسبة مئوية تقريبية).
+2. أهم نقاط التطابق (عناصر ظاهرة في الصورتين بنفس الموضع/الشكل تقريباً).
+3. أهم الفروقات أو المخالفات المحتملة (عناصر مفقودة، أو في موضع مختلف، أو تختلف عن المخطط).
+4. توصية مختصرة للمهندس المسؤول.
+اجعل الإجابة منظمة بعناوين قصيرة وواضحة، بدون مقدمات طويلة.`;
+
+  const model = 'gemini-3.1-flash-lite';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+  try{
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: prompt },
+            { inline_data: { mime_type: panoPart.mimeType, data: panoPart.data } },
+            { inline_data: { mime_type: revitPart.mimeType, data: revitPart.data } }
+          ]
+        }]
+      })
+    });
+    const data = await response.json();
+    if(!response.ok){
+      const msg = (data && data.error && data.error.message) ? data.error.message : ('خطأ HTTP ' + response.status);
+      resultBox.innerHTML = `<p class="text-xs text-rose-400"><i class="fa-solid fa-triangle-exclamation"></i> تعذّرت المطابقة: ${msg}</p><p class="text-[10px] text-slate-500 mt-1">تأكد من صحة مفتاح الـ API، ومن أنه مفعّل لنموذج ${model}، ومن أنك لم تتجاوز الحد المجاني اليومي.</p>`;
+      return;
+    }
+    const textOut = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts || [])
+      .map(p=>p.text || '').join('\n').trim();
+    resultBox.innerHTML = `<div class="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">${(textOut || 'لم يُرجع النموذج أي نص.').replace(/</g,'&lt;')}</div>`;
+    if(textOut){
+      lastAudit = {
+        text: textOut,
+        projectId: document.getElementById('viewer-project').value || null,
+        createdAt: new Date().toISOString(),
+        pano: currentPanoImageData, revit: currentRevitImageData,
+        thumbs: null, docId: null, archivedDocId: null
+      };
+      resultBox.insertAdjacentHTML('beforeend', auditActionsHtml());
+    }
+  } catch(err){
+    resultBox.innerHTML = `<p class="text-xs text-rose-400"><i class="fa-solid fa-triangle-exclamation"></i> تعذّر الاتصال بخدمة الذكاء الاصطناعي: ${String(err.message||err)}</p>`;
+  }
+}
+
+/* ============ Print / PDF ============ */
+function printActiveView(){
+  document.getElementById('engineer-official-stamp').classList.remove('hidden');
+  window.print();
+  document.getElementById('engineer-official-stamp').classList.add('hidden');
+}
+function exportViewToPDF(){
+  const activeTab = document.querySelector('.tab-content:not(.hidden)');
+  const stamp = document.getElementById('engineer-official-stamp');
+  stamp.classList.remove('hidden');
+  const opt = { margin:0.3, filename:'Digital_Blackbox_Report.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,backgroundColor:'#0f172a'}, jsPDF:{unit:'in',format:'letter',orientation:'portrait'} };
+  html2pdf().set(opt).from(activeTab).save().then(()=> stamp.classList.add('hidden'));
+}
+
+/* ============ Language toggle (label only, minimal) ============ */
+let currentLang='ar';
+function toggleLanguage(){
+  currentLang = currentLang==='ar'?'en':'ar';
+  document.getElementById('lang-btn-text').innerText = currentLang==='ar'?'English':'عربي';
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang==='ar'?'rtl':'ltr';
+}
+</script>
+</body>
+</html>
