@@ -1,0 +1,2613 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMP Master Studio</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<style>
+  :root {
+    --primary: #0284c7;
+    --dark: #0f172a;
+    --border: #cbd5e1;
+    --bg: #f8fafc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    margin: 0;
+    background: #eef2f6;
+    color: var(--dark);
+  }
+  header {
+    background: var(--dark);
+    color: white;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 { font-size: 18px; margin: 0; }
+  header .company-badge { font-size: 14px; }
+  header button {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  nav {
+    display: flex;
+    gap: 6px;
+    background: white;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  nav button {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  nav button.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .container { max-width: 960px; margin: 20px auto; padding: 0 16px; }
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { margin-top: 0; font-size: 18px; color: var(--primary); }
+  label { display: block; margin: 10px 0 4px; font-size: 14px; font-weight: bold; }
+  input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  textarea { min-height: 140px; resize: vertical; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  button.primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+  button.secondary {
+    background: #64748b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 12px;
+    margin-right: 8px;
+  }
+  .msg { padding: 10px; border-radius: 6px; margin: 10px 0; font-size: 14px; }
+  .msg.success { background: #dcfce7; color: #166534; }
+  .msg.error { background: #fee2e2; color: #991b1b; }
+  .msg.info { background: #dbeafe; color: #1e40af; }
+  table.project-list { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  table.project-list th, table.project-list td {
+    border: 1px solid var(--border); padding: 8px; text-align: right; font-size: 13px;
+  }
+  table.project-list th { background: var(--bg); }
+  table.project-list tr { cursor: pointer; }
+  table.project-list tr:hover { background: #f1f5f9; }
+  .tabs-auth { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tabs-auth button { flex: 1; padding: 10px; border: 1px solid var(--border); background: white; cursor: pointer; border-radius: 6px; }
+  .tabs-auth button.active { background: var(--primary); color: white; }
+  #auth-login, #auth-register { display: none; }
+  #auth-login.active, #auth-register.active { display: block; }
+  .badge-yellow { background: #fef9c3; color: #854d0e; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+  .badge-gray { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+  .badge-ai { background: #ede9fe; color: #5b21b6; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+  .ai-settings { border: 1px dashed var(--border); border-radius: 6px; padding: 12px; margin-bottom: 14px; background: #f8fafc; }
+  .ai-settings summary { cursor: pointer; font-weight: bold; font-size: 14px; color: var(--primary); }
+  button.ai-btn {
+    background: linear-gradient(90deg,#7c3aed,#0284c7);
+    color: white; border: none; padding: 10px 18px; border-radius: 6px;
+    cursor: pointer; font-size: 14px; margin-top: 12px; margin-left: 8px;
+  }
+  button.ai-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.5);
+    border-top-color: white; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: middle; margin-left: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-progress-wrap { background: #e2e8f0; border-radius: 6px; overflow: hidden; height: 10px; margin: 10px 0; display: none; }
+  .ai-progress-bar { background: linear-gradient(90deg,#7c3aed,#0284c7); height: 100%; width: 0%; transition: width .3s; }
+  .ai-log { font-size: 12px; color: #475569; max-height: 160px; overflow-y: auto; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 8px; margin-top: 8px; display: none; }
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(15,23,42,.55);
+    align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: white; border-radius: 10px; padding: 22px; max-width: 520px; width: 100%;
+    max-height: 85vh; overflow-y: auto;
+  }
+  .modal-box h3 { margin-top: 0; color: var(--primary); font-size: 16px; }
+  .modal-q { margin-bottom: 12px; }
+  .modal-q label { font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+
+  .arch-item { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 10px; background: #fff; display: flex; gap: 12px; justify-content: space-between; flex-wrap: wrap; }
+  .arch-main { flex: 1; min-width: 220px; }
+  .arch-main small { color: #64748b; }
+  .arch-snip { font-size: 12px; color: #475569; margin-top: 6px; }
+  .arch-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-start; }
+  .arch-actions button { border: 1px solid var(--border); background: #f8fafc; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 13px; }
+  .arch-actions button.danger { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+  #share-qr-wrap { display: flex; justify-content: center; margin: 12px 0; }
+  #share-qr-wrap svg { border: 1px solid var(--border); border-radius: 6px; }
+  .share-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .share-actions button { margin-top: 6px; margin-right: 0; }
+</style>
+</head>
+<body>
+
+<div id="auth-screen" class="container" style="max-width:480px; margin-top:60px;">
+  <div class="card">
+    <h2>🔐 تسجيل الدخول - PMP Master Studio</h2>
+    <p style="font-size:13px;color:#64748b;">كل شركة عندها مساحة بيانات مستقلة تماماً، وبكلمة سر خاصة بيها.</p>
+    <div class="tabs-auth">
+      <button id="tab-login-btn" class="active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+      <button id="tab-register-btn" onclick="switchAuthTab('register')">إنشاء حساب شركة</button>
+    </div>
+
+    <div id="auth-login" class="active">
+      <label>البريد الإلكتروني الخاص بالشركة</label>
+      <input type="email" id="login-email" placeholder="company@example.com">
+      <label>كلمة السر</label>
+      <input type="password" id="login-password">
+      <button class="primary" onclick="handleLogin()">دخول</button>
+      <div id="login-msg"></div>
+    </div>
+
+    <div id="auth-register">
+      <label>اسم الشركة</label>
+      <input type="text" id="register-company-name" placeholder="شركة بناء للتطوير الاستراتيجي">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="register-email" placeholder="company@example.com">
+      <label>كلمة السر</label>
+      <input type="password" id="register-password">
+      <label>تأكيد كلمة السر</label>
+      <input type="password" id="register-confirm">
+      <button class="primary" onclick="handleRegister()">إنشاء الحساب</button>
+      <div id="register-msg"></div>
+    </div>
+  </div>
+</div>
+
+<div id="main-screen" style="display:none;">
+  <header>
+    <h1>📂 PMP Master Studio</h1>
+    <div>
+      <span class="company-badge" id="company-name-display"></span>
+      <button onclick="handleLogout()">🚪 خروج</button>
+    </div>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" data-view="home" onclick="showView('home')">🏠 الرئيسية</button>
+    <button class="nav-btn" data-view="new-project" onclick="showView('new-project')">📝 مشروع جديد / تعديل</button>
+    <button class="nav-btn" data-view="edit-texts" onclick="showView('edit-texts')">✏️ تعديل النصوص</button>
+    <button class="nav-btn" data-view="generate" onclick="showView('generate')">📄 توليد التقرير</button>
+    <button class="nav-btn" data-view="archive" onclick="showView('archive')">🗄️ الأرشيف</button>
+  </nav>
+
+  <div class="container">
+
+    <div id="view-home" class="view">
+      <div class="card">
+        <h2>🏠 سجل المشاريع</h2>
+        <label>فلترة حسب نوع الصناعة</label>
+        <select id="industry-filter" onchange="renderProjectList()"></select>
+        <div id="msg-home"></div>
+        <table class="project-list" id="project-table">
+          <thead><tr><th>الاسم</th><th>الكود</th><th>نوع الصناعة</th><th>الميزانية</th></tr></thead>
+          <tbody id="project-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-new-project" class="view" style="display:none;">
+      <div class="card">
+        <h2>📝 بيانات المشروع ودراسة الجدوى</h2>
+        <div id="current-project-badge"></div>
+        <div class="grid-2">
+          <div>
+            <label>اسم المشروع</label>
+            <input type="text" id="p-name">
+            <label>كود المشروع</label>
+            <input type="text" id="p-code">
+            <label>مدير المشروع</label>
+            <input type="text" id="p-manager" value="م. وائل علي عويس">
+            <label>الجهة المالكة</label>
+            <input type="text" id="p-client">
+            <label>نوع الصناعة</label>
+            <select id="p-industry"></select>
+          </div>
+          <div>
+            <label>الميزانية التقديرية ($)</label>
+            <input type="number" id="p-budget" value="2500000">
+            <label>تاريخ البدء</label>
+            <input type="date" id="p-start">
+            <label>المدة بالأشهر</label>
+            <input type="number" id="p-duration" value="12">
+            <label>العائد السنوي المتوقع ($)</label>
+            <input type="number" id="p-revenue" value="750000">
+          </div>
+        </div>
+        <div id="feasibility-results" class="msg info" style="display:none;"></div>
+        <button class="primary" onclick="calcFeasibility()">📊 احسب دراسة الجدوى</button>
+        <button class="primary" onclick="saveCurrentProject()">💾 حفظ المشروع</button>
+        <button class="secondary" onclick="newProjectForm()">➕ مشروع جديد فارغ</button>
+        <div id="msg-project"></div>
+      </div>
+    </div>
+
+    <div id="view-edit-texts" class="view" style="display:none;">
+      <div class="card">
+        <h2>✏️ تعديل محتوى الوثائق</h2>
+
+        <details class="ai-settings">
+          <summary>🤖 إعدادات الذكاء الاصطناعي (Gemini API)</summary>
+          <label>مفتاح Gemini API الخاص بك</label>
+          <input type="password" id="gemini-api-key" placeholder="AIza...">
+          <label>اسم الموديل</label>
+          <input type="text" id="gemini-model" placeholder="gemini-3.6-flash">
+          <button class="secondary" onclick="saveGeminiSettings()">💾 حفظ إعدادات الذكاء الاصطناعي</button>
+          <div id="msg-gemini-settings"></div>
+          <p style="font-size:12px;color:#94a3b8;margin-top:8px;">المفتاح بيتخزن على المتصفح بتاعك بس (localStorage) ومش بيتبعت لأي حد غير Google. تقدر تجيبه من Google AI Studio.</p>
+        </details>
+
+        <div id="edit-texts-warning" class="msg info" style="display:none;">اختر مشروعاً أولاً من صفحة الرئيسية.</div>
+        <div id="edit-texts-body" style="display:none;">
+          <label>اختر الوثيقة</label>
+          <select id="doc-select" onchange="loadDocText()"></select>
+          <div id="doc-status"></div>
+
+          <details class="ai-settings" id="paste-panel" open>
+            <summary>📋 الصق النص وخلّي Gemini يملّى الخانات</summary>
+            <label>الصق هنا أي نص خام (محضر اجتماع، إيميل، ملاحظات، جدول منسوخ...)</label>
+            <textarea id="paste-source" placeholder="الصق النص هنا..."></textarea>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <select id="paste-mode" style="width:auto;margin-top:12px;">
+                <option value="replace">استبدال الصفوف الحالية</option>
+                <option value="append">إضافة للصفوف الحالية</option>
+              </select>
+              <button class="ai-btn" id="ai-paste-btn" onclick="aiFillFromPaste()" style="margin-left:0;">✨ املأ الخانات من النص</button>
+              <button class="secondary" onclick="document.getElementById('paste-source').value='';document.getElementById('msg-paste').innerHTML='';">🧹 مسح</button>
+            </div>
+            <div id="msg-paste"></div>
+            <p style="font-size:12px;color:#94a3b8;margin:8px 0 0;">النص بيتبعت لـ Google Gemini بس. الذكاء الاصطناعي بيستخدم اللي في النص فقط وبيسيب الخانة فاضية لو المعلومة مش موجودة. راجع الخانات قبل الحفظ.</p>
+          </details>
+
+          <label>نص الغرض والأهداف التنفيذية (اكتبه براحتك)</label>
+          <textarea id="doc-purpose-text"></textarea>
+
+          <label>جدول البيانات</label>
+          <div id="doc-headers-hint" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px 10px;margin-bottom:6px;font-size:13px;color:#1e40af;"></div>
+          <div style="overflow-x:auto;">
+            <table id="doc-rows-table" style="width:100%;border-collapse:collapse;font-size:13px;"></table>
+          </div>
+          <button type="button" class="secondary" onclick="addDocRow()" style="margin-top:8px;">➕ إضافة صف جديد</button>
+
+          <div>
+            <button class="ai-btn" id="ai-gen-single-btn" onclick="aiGenerateSingleDoc()">🤖 ولّد هذه الوثيقة بالذكاء الاصطناعي</button>
+            <button class="primary" onclick="saveDocOverride()">💾 حفظ التعديل</button>
+            <button class="secondary" onclick="resetDocOverride()">↩️ إعادة الكتابة للنص الافتراضي</button>
+          </div>
+          <div>
+            <button class="primary" onclick="saveAndPrintCurrentDoc()">🖨️ حفظ وطباعة هذه الوثيقة</button>
+            <button class="secondary" onclick="archiveCurrentDoc()">🗄️ أرشفة هذه النسخة</button>
+            <button class="secondary" onclick="shareCurrentDoc()">📲 مشاركة بالباركود / واتساب</button>
+          </div>
+          <div id="msg-edit-texts"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-archive" class="view" style="display:none;">
+      <div class="card">
+        <h2>🗄️ أرشيف الوثائق</h2>
+        <div class="grid-2">
+          <div><label>المشروع</label><select id="archive-project-filter" onchange="renderArchive()"></select></div>
+          <div><label>بحث</label><input type="text" id="archive-search" oninput="renderArchive()" placeholder="اسم الوثيقة أو جزء من محتواها"></div>
+        </div>
+        <div id="msg-archive"></div>
+        <div id="archive-list"></div>
+      </div>
+    </div>
+
+    <div id="view-generate" class="view" style="display:none;">
+      <div class="card">
+        <h2>📄 توليد التقرير الكامل (32 وثيقة)</h2>
+        <div id="generate-warning" class="msg info" style="display:none;"></div>
+        <p style="font-size:13px;color:#64748b;">هيفتح تبويب جديد فيه التقرير كامل مُنسّق، ومنه تقدر تضغط "طباعة" ثم "حفظ كـ PDF".</p>
+
+        <button class="ai-btn" id="ai-gen-all-btn" onclick="aiGenerateAllDocs()">🤖 ولّد كل الـ32 وثيقة بالذكاء الاصطناعي (بيانات حقيقية للمشروع)</button>
+        <div class="ai-progress-wrap" id="ai-progress-wrap"><div class="ai-progress-bar" id="ai-progress-bar"></div></div>
+        <div id="ai-progress-label" style="font-size:13px;color:#64748b;"></div>
+        <div class="ai-log" id="ai-log"></div>
+
+        <div>
+          <button class="primary" onclick="generateReport()">🚀 توليد وفتح التقرير</button>
+          <button class="secondary" onclick="archiveAllDocs()">🗄️ أرشفة كل الوثائق المعدّلة</button>
+        </div>
+        <div id="msg-generate"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="ai-modal-overlay">
+  <div class="modal-box">
+    <h3>🤖 الذكاء الاصطناعي محتاج تفاصيل إضافية</h3>
+    <p id="ai-modal-doc-title" style="font-size:13px;color:#64748b;"></p>
+    <div id="ai-modal-questions"></div>
+    <button class="primary" onclick="submitAiClarification()">✅ إرسال الإجابات ومتابعة التوليد</button>
+    <button class="secondary" onclick="submitAiClarification(true)">⏭️ تخطي وتوليد بأفضل تقدير</button>
+    <div id="ai-modal-msg"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="share-modal-overlay">
+  <div class="modal-box" style="text-align:center;">
+    <h3>📲 مشاركة الوثيقة</h3>
+    <p id="share-doc-title" style="font-size:13px;color:#64748b;"></p>
+    <div id="share-qr-wrap"></div>
+    <div id="share-note"></div>
+    <div class="share-actions">
+      <button class="primary" onclick="shareToWhatsApp()">💬 إرسال على واتساب</button>
+      <button class="secondary" onclick="shareQrImage()">🖼️ مشاركة / تنزيل صورة الباركود</button>
+      <button class="secondary" onclick="copyShareLink()">🔗 نسخ الرابط</button>
+      <button class="secondary" onclick="closeShareModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PMP_DOCUMENTS = [
+  {
+    "num": "1",
+    "title": "ميثاق المشروع (Project Charter)",
+    "purpose": "تفويض رسمي لإطلاق المشروع، وتعيين مدير المشروع، وتحديد الصلاحيات والمخرجات الرئيسية والأهداف الاستراتيجية.",
+    "headers": [
+      "عنصر الميثاق",
+      "التفاصيل والمواصفات",
+      "المسؤول",
+      "حالة الاعتماد"
+    ],
+    "rows": [
+      [
+        "مبررات المشروع",
+        "تلبية المتطلبات التقنية والبنية التحتية المستدامة.",
+        "م. وائل علي عويس",
+        "معتمد"
+      ],
+      [
+        "الأهداف الاستراتيجية",
+        "تحقيق أعلى كفاءة تشغيلية وتقليل استهلاك الطاقة PUE.",
+        "إدارة التخطيط",
+        "معتمد"
+      ],
+      [
+        "تعيين مدير المشروع",
+        "منح م. وائل علي عويس صلاحية تطبيق الميزانية والموارد.",
+        "الجهة المالكة",
+        "مفوض"
+      ]
+    ]
+  },
+  {
+    "num": "2",
+    "title": "دراسة الجدوى وحالة العمل (Business Case)",
+    "purpose": "تحليل العائد الاستثماري (ROI) والأثر المالي والمبررات الاقتصادية لإنشاء المشروع مقارنة بالبدائل.",
+    "headers": [
+      "المؤشر المالي",
+      "القيم المقدرة",
+      "طريقة التقييم",
+      "النتيجة"
+    ],
+    "rows": [
+      [
+        "فترة استرداد رأس المال",
+        "2.8 سنة",
+        "تحليل التدفقات النقدية الخصمية",
+        "مجدٍ اقتصادياً"
+      ],
+      [
+        "صافي القيمة الحالية (NPV)",
+        "+$850,000",
+        "معدل خصم 10%",
+        "إيجابي جداً"
+      ],
+      [
+        "معدل العائد الداخلي (IRR)",
+        "18.5%",
+        "مقارنة بتكلفة رأس المال",
+        "مقبول ممتاز"
+      ]
+    ]
+  },
+  {
+    "num": "3",
+    "title": "سجل المعنيين (Stakeholder Register)",
+    "purpose": "حصر كافة أصحاب المصلحة وتصنيفهم حسب التأثير والاهتمام لوضع استراتيجيات التعامل المناسبة.",
+    "headers": [
+      "الجهة / الاسم",
+      "Role / الدور",
+      "مستوى التأثير",
+      "مستوى الاهتمام"
+    ],
+    "rows": [
+      [
+        "شركة بناء للتطوير الاستراتيجي",
+        "المالك / المطور",
+        "عالي جداً",
+        "عالي جداً"
+      ],
+      [
+        "م. وائل علي عويس",
+        "مدير المشروع القيادي",
+        "عالي",
+        "عالي جداً"
+      ],
+      [
+        "فريق الاستشاريين والتنفيذ",
+        "المشرف الميداني",
+        "متوسط",
+        "عالي"
+      ]
+    ]
+  },
+  {
+    "num": "4",
+    "title": "خطة مشاركة المعنيين (Stakeholder Engagement Plan)",
+    "purpose": "آلية التواصل والتفاعل مع المعنيين لتحويل المقاومة إلى دعم وضمان مشاركتهم الفعالة.",
+    "headers": [
+      "المعني",
+      "الموقف الحالي",
+      "الموقف المستهدف",
+      "إجراء التواصل"
+    ],
+    "rows": [
+      [
+        "الإدارة العليا",
+        "داعم (Supportive)",
+        "قيادي (Leading)",
+        "اجتماع توجيهي شهري"
+      ],
+      [
+        "المستثمرون",
+        "حيادي (Neutral)",
+        "داعم (Supportive)",
+        "تقارير قيمة مكتسبة دورية"
+      ],
+      [
+        "فرق العمل الميدانية",
+        "مشارك (Aware)",
+        "داعم (Supportive)",
+        "ورش عمل وتنسيق يومي"
+      ]
+    ]
+  },
+  {
+    "num": "5",
+    "title": "خطة إدارة النطاق (Scope Management Plan)",
+    "purpose": "تحديد آليات تعريف النطاق وتوثيقه والتحكم فيه وتفادي التوسع غير المخطط له (Scope Creep).",
+    "headers": [
+      "المرحلة",
+      "إجراء ضبط النطاق",
+      "أداة التحقق",
+      "المسؤول"
+    ],
+    "rows": [
+      [
+        "تجميع المتطلبات",
+        "مقابلات وورش عمل مع المالك",
+        "وثيقة المتطلبات",
+        "مدير النطاق"
+      ],
+      [
+        "اعتماد النطاق",
+        "مطابقة مخرجات التنفيذ للمواصفات",
+        "محضر استلام ابتدائي",
+        "الاستشاري"
+      ],
+      [
+        "التحكم في التغيير",
+        "تقديم طلب تغيير رسمي لاتحادات النطاق",
+        "نموذج طلب تغيير",
+        "لجنة التغيير"
+      ]
+    ]
+  },
+  {
+    "num": "6",
+    "title": "وثيقة المتطلبات (Requirements Documentation)",
+    "purpose": "توثيق المتطلبات الفنية والتشغيلية والقانونية والتجارية الواجب توفرها في تسليمات المشروع.",
+    "headers": [
+      "كود المتطلب",
+      "الوصف الفني للمتطلب",
+      "الأولوية",
+      "المعيار القياسي"
+    ],
+    "rows": [
+      [
+        "REQ-ENG-01",
+        "استيفاء متطلبات التبريد عالي الكفاءة والتكييف",
+        "حرجة",
+        "Tier Standards"
+      ],
+      [
+        "REQ-SAFE-02",
+        "تركيب أنظمة الإطفاء المبكر والإنذار الآلي",
+        "عالية جداً",
+        "NFPA 2001"
+      ],
+      [
+        "REQ-PWR-03",
+        "توفير مصدر طاقة ثنائي ومولدات احتياطية N+1",
+        "حرجة",
+        "IEEE Standards"
+      ]
+    ]
+  },
+  {
+    "num": "7",
+    "title": "مصفوفة تتبع المتطلبات (Requirements Traceability Matrix - RTM)",
+    "purpose": "ربط كل متطلب بأهداف المشروع وحزمة عمل الـ WBS واختبارات الاعتماد لضمان عدم إغفال أي بند.",
+    "headers": [
+      "كود المتطلب",
+      "حزمة العمل WBS",
+      "اختبار التثبت",
+      "حالة التنفيذ"
+    ],
+    "rows": [
+      [
+        "REQ-ENG-01",
+        "1.3 أنظمة التبريد",
+        "اختبار ضغط وأداء ميداني",
+        "مكتمل بنجاح"
+      ],
+      [
+        "REQ-SAFE-02",
+        "1.4 أنظمة السلامة",
+        "محاكاة إنذار طوارئ",
+        "قيد الاختبار"
+      ],
+      [
+        "REQ-PWR-03",
+        "1.2 البنية الكهربائية",
+        "فحص المولدات والتحميل",
+        "مخطط له"
+      ]
+    ]
+  },
+  {
+    "num": "8",
+    "title": "هيكل تفكيك العمل (Work Breakdown Structure - WBS)",
+    "purpose": "التقسيم الهرمي لنطاق العمل الشامل إلى حزم عمل أصغر قابلة للإدارة والقياس والتحكم.",
+    "headers": [
+      "رمز الـ WBS",
+      "مستوى التفكيك",
+      "اسم حزمة العمل",
+      "الجهة المنفذة"
+    ],
+    "rows": [
+      [
+        "1.1",
+        "المستوى الثاني",
+        "الأعمال المدنية والإنشائية",
+        "مقاول الإنشائيات"
+      ],
+      [
+        "1.2",
+        "المستوى الثاني",
+        "أعمال الكهروميكانيك (MEP)",
+        "مقاول الكهروميكانيك"
+      ],
+      [
+        "1.3",
+        "المستوى الثاني",
+        "أنظمة التحكم وتكنولوجيا المعلومات",
+        "فريق الاتصالات"
+      ]
+    ]
+  },
+  {
+    "num": "9",
+    "title": "قاموس هيكل تفكيك العمل (WBS Dictionary)",
+    "purpose": "توفير بيان تفصيلي وشامل لكل حزمة عمل متضمنة معايير القبول، الموارد والتكلفة والمسؤول.",
+    "headers": [
+      "كود الحزمة",
+      "وصف العمل التفصيلي",
+      "معايير القبول",
+      "الميزانية المخصصة"
+    ],
+    "rows": [
+      [
+        "WBS-1.1.1",
+        "صب القواعد والخرسانات المسلحة للأرضيات Raised Floor",
+        "اختبار مجهود الخرسانة",
+        "$350,000"
+      ],
+      [
+        "WBS-1.2.1",
+        "تركيب وحدات التبريد CRAH/CRAC",
+        "مطابقة معدلات التبريد",
+        "$500,000"
+      ],
+      [
+        "WBS-1.3.1",
+        "كابلات الفايبر وشبكات الربط الرقمي",
+        "اختبار الفقد وسرعة نقل البيانات",
+        "$200,000"
+      ]
+    ]
+  },
+  {
+    "num": "10",
+    "title": "خطة إدارة الجدول الزمني (Schedule Management Plan)",
+    "purpose": "تحديد قواعد وحاسبيات إعداد الجدول الزمني، وتحديثه، ونسب السماحية وضبط المسار الحرج (CPM).",
+    "headers": [
+      "العنصر",
+      "القاعدة الإدارية المعتمدة",
+      "البرنامج المستهدف",
+      "معدل التحديث"
+    ],
+    "rows": [
+      [
+        "برمجيات التخطيط",
+        "Primavera P6 / MS Project",
+        "P6 Flow Engine",
+        "أسبوعي"
+      ],
+      [
+        "منهجية التخطيط",
+        "طريقة المسار الحرج (CPM)",
+        "Critical Path",
+        "شهري"
+      ],
+      [
+        "حدود انحراف الجدول",
+        "تجاوز ±5% يستدعي ضغط الجدول (Crashing)",
+        "عبر مدير المشروع",
+        "فوري"
+      ]
+    ]
+  },
+  {
+    "num": "11",
+    "title": "الجدول الزمني المعتمد للمشروع (Project Schedule)",
+    "purpose": "الجدول التشغيلي الزمني المعتمد للمشروع موضحاً به التواريخ المحددة والمسار الحرج والمراحل.",
+    "headers": [
+      "كود النشاط",
+      "اسم النشاط / المرحلة",
+      "تاريخ البدء",
+      "تاريخ النهاية"
+    ],
+    "rows": [
+      [
+        "ACT-010",
+        "أعمال التأسيس والميثاق",
+        "2026-09-01",
+        "2026-09-20"
+      ],
+      [
+        "ACT-020",
+        "أعمال الخرسانات والبنية التحتية",
+        "2026-09-21",
+        "2026-12-15"
+      ],
+      [
+        "ACT-030",
+        "تركيب الأنظمة الكهروميكانيكية (CRAH/Power)",
+        "2026-12-16",
+        "2027-04-10"
+      ]
+    ]
+  },
+  {
+    "num": "12",
+    "title": "مخطط شبكة الأنشطة (Schedule Network Diagram)",
+    "purpose": "تمثيل بياني للتتابع المنطقي والاعتمادات العلاقاتية (FS, SS, FF) بين الأنشطة لحساب المسار الحرج.",
+    "headers": [
+      "النشاط الحالي",
+      "الأنشطة السابقة (Predecessors)",
+      "نوع العلاقة",
+      "زمن التداخل (Lag)"
+    ],
+    "rows": [
+      [
+        "تركيب التكييف (ACT-030)",
+        "صب الخرسانات (ACT-020)",
+        "Finish to Start (FS)",
+        "0 أيام"
+      ],
+      [
+        "اختبار الكابلات (ACT-040)",
+        "مدمج مع سحب الكابلات",
+        "Start to Start (SS)",
+        "+3 أيام"
+      ],
+      [
+        "التسليم النهائي (ACT-050)",
+        "فحص الجودة (ACT-045)",
+        "Finish to Start (FS)",
+        "0 أيام"
+      ]
+    ]
+  },
+  {
+    "num": "13",
+    "title": "خطة إدارة الموارد (Resource Management Plan)",
+    "purpose": "طريقة تحديد واستحواذ وتخصيص الموارد البشرية والمعدات والمواد وتطوير وقيادة الفريق.",
+    "headers": [
+      "نوع الموارد",
+      "طريقة التوفير",
+      "استراتيجية التدريب",
+      "معدل الاستغلال"
+    ],
+    "rows": [
+      [
+        "المهندسين والفنيين",
+        "تعيين واستقطاب داخلي",
+        "دورات حوكمة وأمان",
+        "90%"
+      ],
+      [
+        "معدات التبريد والأقسام",
+        "شراء واستيراد مباشر",
+        "تدريب المصنع",
+        "100%"
+      ],
+      [
+        "برمجيات التشغيل",
+        "ترخيص سحابي مخصص",
+        "ورش عمل سريعة",
+        "85%"
+      ]
+    ]
+  },
+  {
+    "num": "14",
+    "title": "مصفوفة توزيع المسؤوليات (RACI Matrix)",
+    "purpose": "تحديد الأدوار والمسؤوليات: (R) مسؤول التنفيذ، (A) المحاسب/المعتمد، (C) الاستشاري، (I) المُخطر.",
+    "headers": [
+      "حزمة العمل / المهام",
+      "مدير المشروع (وائل)",
+      "الاستشاري الفني",
+      "فريق الجودة"
+    ],
+    "rows": [
+      [
+        "إعداد ميثاق المشروع",
+        "Responsible / Accountable",
+        "Consulted",
+        "Informed"
+      ],
+      [
+        "اعتماد التوريدات الكهربائية",
+        "Accountable",
+        "Responsible",
+        "Consulted"
+      ],
+      [
+        "فحوصات الجودة والسلامة",
+        "Accountable",
+        "Consulted",
+        "Responsible"
+      ]
+    ]
+  },
+  {
+    "num": "15",
+    "title": "هيكل تفكيك الموارد (Resource Breakdown Structure - RBS)",
+    "purpose": "تصنيف هرمي للموارد المطلوبة مصنفة حسب الفئة والنوع لسهولة المتابعة والتجهيز.",
+    "headers": [
+      "فئة المورد الرئيسية",
+      "المورد الفرعي",
+      "الكمية المطلوبة",
+      "الوحدة"
+    ],
+    "rows": [
+      [
+        "الموارد البشرية",
+        "مهندسو موقع وجودة",
+        "12",
+        "مهندس"
+      ],
+      [
+        "المعدات والأجهزة",
+        "وحدات CRAH وتكييف",
+        "8",
+        "وحدة مركزية"
+      ],
+      [
+        "المواد الأساسية",
+        "كابلات فايبر وأرضيات",
+        "5000",
+        "متر طولي / مربع"
+      ]
+    ]
+  },
+  {
+    "num": "16",
+    "title": "خطة إدارة التكاليف والميزانية (Cost Management Plan & Budget)",
+    "purpose": "آلية تقدير التكاليف، وضع خط الأساس المالي، وضبط التدفقات المالية والقيمة المكتسبة.",
+    "headers": [
+      "بند الميزانية",
+      "التكلفة التقديرية",
+      "احتياطي الطوارئ",
+      "خط الأساس المالي"
+    ],
+    "rows": [
+      [
+        "الأعمال الإنشائية",
+        "$600,000",
+        "$30,000",
+        "$630,000"
+      ],
+      [
+        "أنظمة التبريد والطاقة",
+        "$1,200,000",
+        "$60,000",
+        "$1,260,000"
+      ],
+      [
+        "إدارة المشروع والخدمات",
+        "$200,000",
+        "$10,000",
+        "$210,000"
+      ]
+    ]
+  },
+  {
+    "num": "17",
+    "title": "خطة إدارة الجودة (Quality Management Plan)",
+    "purpose": "تحديد معايير الجودة والتوافق ISO 9001 وآليات الضمان (QA) والضبط (QC) لجميع المخرجات.",
+    "headers": [
+      "عنصر الجودة",
+      "المعيار المعتمد",
+      "إجراء ضمان الجودة (QA)",
+      "إجراء ضبط الجودة (QC)"
+    ],
+    "rows": [
+      [
+        "أعمال الخرسانات",
+        "ISO 9001 / ASTM",
+        "تدقيق الموردين والخلطة",
+        "اختبار المكسر والضغط"
+      ],
+      [
+        "تبريد الأجهزة",
+        "Tier III Standard",
+        "مراجعة التصميم الفني",
+        "اختبار الحرارة والتحميل"
+      ],
+      [
+        "التمديدات الكهربائية",
+        "IEC Standards",
+        "مراجعة مخططات Shop Drawings",
+        "فحص العزل والجريان"
+      ]
+    ]
+  },
+  {
+    "num": "18",
+    "title": "تقارير وضوابط الجودة (Quality Control Measurements)",
+    "purpose": "تسجيل مخرجات الفحص الميداني واختبارات القبول للتحقق من التوافق مع الاشتراطات الفنية.",
+    "headers": [
+      "رقم الفحص",
+      "موضوع الفحص الميداني",
+      "النتيجة الفعلية",
+      "مطابق / غير مطابق"
+    ],
+    "rows": [
+      [
+        "QC-01",
+        "فحص سمك وقوة الخرسانة الأرضية",
+        "350 kg/cm²",
+        "مطابق للمواصفة"
+      ],
+      [
+        "QC-02",
+        "اختبار تسريب أنظمة التبريد",
+        "ضغط 15 bar ثابت",
+        "مطابق للمواصفة"
+      ],
+      [
+        "QC-03",
+        "فحص درجة حماية اللوحات IP65",
+        "مطابقة كاملة",
+        "مطابق للمواصفة"
+      ]
+    ]
+  },
+  {
+    "num": "19",
+    "title": "تحليل قرار الشراء أو التصنيع (Make-or-Buy Analysis)",
+    "purpose": "تقييم الخيارات بين التوريد والتنفيذ الذاتي أو الاستعانة بمقاولين وموردين خارجيين.",
+    "headers": [
+      "البند / الخدمة",
+      "خيار التنفيذ الداخلي",
+      "خيار الشراء/التوريد",
+      "القرار النهائي"
+    ],
+    "rows": [
+      [
+        "لوحات التوزيع الرئيسية",
+        "تكلفة عالية وعدم اختصاص",
+        "مورد متخصص مع ضمان",
+        "شراء وتوريد خارجي"
+      ],
+      [
+        "أعمال الإشراف والإدارة",
+        "فريق م. وائل عويس المباشر",
+        "تكلفة استثمارية اعلى",
+        "تنفيذ داخلي مباشر"
+      ],
+      [
+        "برمجيات المتابعة",
+        "تطوير تطبيق PMP خاص",
+        "شراء رخص جاهزة",
+        "تطوير برمجيات خاصة"
+      ]
+    ]
+  },
+  {
+    "num": "20",
+    "title": "استراتيجية وعقود التوريد (Procurement Strategy & Contracts)",
+    "purpose": "تحديد أنواع العقود (FIDIC)، معايير اختيار المقاولين، واستراتيجيات إدارة عقود التوريد.",
+    "headers": [
+      "حزمة التوريد",
+      "نوع العقد المعتمد",
+      "معيار التقييم",
+      "حالة التعاقد"
+    ],
+    "rows": [
+      [
+        "عقد المقاولة الرئيسية",
+        "عقد الفيديك الأحمر (FIDIC Red)",
+        "الأقل سعراً والأعلى كفاءة",
+        "معتمد وموقع"
+      ],
+      [
+        "توريد وحدات التكييف",
+        "سعر مقطوع (Lump Sum)",
+        "خبرة سابقة وضمان 5 سنوات",
+        "في مرحلة البت"
+      ],
+      [
+        "استشارات الاختبارات",
+        "حسب الوقت والمواد (T&M)",
+        "اعتماد الكوادر والخبرة",
+        "معتمد"
+      ]
+    ]
+  },
+  {
+    "num": "21",
+    "title": "خطة إدارة المخاطر (Risk Management Plan)",
+    "purpose": "منهجية تحديد، تحليل، ووضع استراتيجيات التعامل مع المخاطر الإيجابية والسلبية للمشروع.",
+    "headers": [
+      "مرحلة إدارة الخطر",
+      "المنهجية المتبعة",
+      "الأداة المستخدمة",
+      "المسؤول"
+    ],
+    "rows": [
+      [
+        "تحديد المخاطر",
+        "عصف ذهني وقوائم مراجعة",
+        "سجل المخاطر",
+        "مدير المخاطر"
+      ],
+      [
+        "التحليل الكمي والنوعي",
+        "مصفوفة الاحتمالية والأثر",
+        "FMEA Analysis Matrix",
+        "م. وائل عويس"
+      ],
+      [
+        "خطة الاستجابة",
+        "تجنب، نقل، تخفيف، أو قبول",
+        "Risk Response Plan",
+        "فريق المشروع"
+      ]
+    ]
+  },
+  {
+    "num": "22",
+    "title": "سجل المخاطر (Risk Register)",
+    "purpose": "حصر شامل لجميع المخاطر المحتملة، درجات الاحتمالية والأثر، وخطط الاستجابة الطارئة.",
+    "headers": [
+      "كود الخطر",
+      "وصف الخطر المحتمل",
+      "الاحتمالية x الأثر",
+      "خطة الاستجابة المعتمدة"
+    ],
+    "rows": [
+      [
+        "RSK-01",
+        "تأخر توريد وحدات التبريد من الخارج",
+        "عالي x عالي (حرج)",
+        "التوريد المبكر والتعاقد مع مورد بديل"
+      ],
+      [
+        "RSK-02",
+        "تقلب أسعار المواد الخام والخرسانة",
+        "متوسط x عالي",
+        "تثبيت الأسعار بعقود توريد آجلة"
+      ],
+      [
+        "RSK-03",
+        "انقطاع مفاجئ للتيار أثناء الاختبارات",
+        "منخفض x عالي",
+        "توفير مولدات مؤقتة بالموقع"
+      ]
+    ]
+  },
+  {
+    "num": "23",
+    "title": "تحليل أنماط وآثار الفشل (FMEA Analysis)",
+    "purpose": "تقييم الأعطال الفنية والتشغيلية الممكنة وحساب رقم أولوية الخطر (RPN) لوضع حلول وقائية.",
+    "headers": [
+      "نمط الفشل المحتمل",
+      "السبب الرئيسي",
+      "الشدة x التكرار x الكشف",
+      "رقم RPN / الإجراء الوقائي"
+    ],
+    "rows": [
+      [
+        "ارتفاع حرارة الأجهزة",
+        "انسداد أو عطل مضخات CRAH",
+        "8 x 3 x 4",
+        "RPN=96 / تركيب مضخة احتياطية آلياً"
+      ],
+      [
+        "تسريب في خطوط المياه",
+        "تلف في الفواصل والأنابيب",
+        "9 x 2 x 3",
+        "RPN=54 / حواسات تسريب وحساسات قطع"
+      ],
+      [
+        "انخفاض كفاءة الطاقة",
+        "سوء توزيع الهواء بالأنفاق",
+        "6 x 4 x 3",
+        "RPN=72 / عزل الممرات الباردة والساخنة"
+      ]
+    ]
+  },
+  {
+    "num": "24",
+    "title": "خطة إدارة التغيير (Change Management Plan)",
+    "purpose": "إجراءات تقديم وحوكمة وتقييم واعتماد طلبات التغيير لتجنب التأثير السلبي على خط الأساس.",
+    "headers": [
+      "خطوة الإجراء",
+      "الوصف والمسؤولية",
+      "النموذج المستخدم",
+      "المدة الزمنية"
+    ],
+    "rows": [
+      [
+        "تقديم الطلب",
+        "تقديم المقترح من المالك أو المقاول",
+        "طلب تغيير (CR Form)",
+        "يوم واحد"
+      ],
+      [
+        "دراسة الأثر",
+        "تقييم الأثر على الوقت والتكلفة (وائل عويس)",
+        "تقرير تحليل الأثر",
+        "3 أيام"
+      ],
+      [
+        "قرار لجنة الاعتماد",
+        "الموافقة أو الرفض أو التعديل (CCB)",
+        "سجل التغييرات",
+        "يومين"
+      ]
+    ]
+  },
+  {
+    "num": "25",
+    "title": "سجل التغييرات (Change Log)",
+    "purpose": "توثيق شامل لكافة طلبات التغيير المقدمة للمشروع وحالتها وتأثيرها على التكلفة والجدول.",
+    "headers": [
+      "رقم التغيير",
+      "وصف طلب التغيير",
+      "الأثر المالي / الزمني",
+      "حالة الطلب (CCB)"
+    ],
+    "rows": [
+      [
+        "CR-001",
+        "إضافة حساسات حرارة ذكية إضافية",
+        "+$15,000 / zero days",
+        "معتمد (Approved)"
+      ],
+      [
+        "CR-002",
+        "تغيير نوع دهانات الحوائط لمحيطة",
+        "+$5,000 / +2 days",
+        "مرفوض (Rejected)"
+      ],
+      [
+        "CR-003",
+        "ترقية بطاريات الـ UPS لسعة أعلى",
+        "+$45,000 / zero days",
+        "قيد الدراسة (Pending)"
+      ]
+    ]
+  },
+  {
+    "num": "26",
+    "title": "خطة إدارة الاتصالات (Communications Management Plan)",
+    "purpose": "تحديد قنوات التواصُل، مواعيد التقارير الدورية، وآلية توزيع المعلومات على الأطراف.",
+    "headers": [
+      "نوع التقرير / الاجتماع",
+      "الهدف والمحتوى",
+      "معدل التكرار",
+      "الجمهور المستهدف"
+    ],
+    "rows": [
+      [
+        "التقرير الأسبوعي للموقع",
+        "نسب الإنجاز الفعلي والملاحظات",
+        "أسبوعي",
+        "مدير المشروع والاستشاري"
+      ],
+      [
+        "اجتماع القيمة المكتسبة",
+        "تحليل CPI و SPI والميزانية",
+        "شهري",
+        "الإدارة العليا والمالك"
+      ],
+      [
+        "تنبيهات الطوارئ والمخاطر",
+        "الإبلاغ عن المشاكل الحرجة فوراً",
+        "عند الحدوث",
+        "كافة المعنيين"
+      ]
+    ]
+  },
+  {
+    "num": "27",
+    "title": "سجل المشكلات (Issue Log)",
+    "purpose": "تسجيل المعوقات الحالية التي تحدث في الموقع وتعيين مسؤوليات معالجتها ومتابعة إغلاقها.",
+    "headers": [
+      "كود المشكلة",
+      "وصف المشكلة الميدانية",
+      "المسؤول عن الحل",
+      "تاريخ الإغلاق المستهدف"
+    ],
+    "rows": [
+      [
+        "ISS-01",
+        "تأخر استلام تصريح التمديد الكهربائي",
+        "مدير العلاقات الحكومية",
+        "2026-10-15 (مغلقة)"
+      ],
+      [
+        "ISS-02",
+        "تعارض مسار كابلات مع ماسورة مياه",
+        "مهندس التنسيق الفني",
+        "2026-11-01 (قيد المعالجة)"
+      ],
+      [
+        "ISS-03",
+        "نقص عدد العمالة الفنية المتخصصة",
+        "مقاول التنفيذ الرئيسي",
+        "2026-11-10 (قيد المتابعة)"
+      ]
+    ]
+  },
+  {
+    "num": "28",
+    "title": "تقارير تقدم العمل والأداء (Work Performance Reports)",
+    "purpose": "تقارير تحليل الأداء الميداني والمالي باستخدام منهجية إدارة القيمة المكتسبة (EVM).",
+    "headers": [
+      "مؤشر الأداء",
+      "القيمة الفعلية",
+      "التفسير القياسي",
+      "الإجراء التصحيحي"
+    ],
+    "rows": [
+      [
+        "مؤشر أداء التكلفة (CPI)",
+        "1.04",
+        "أداء مالي ممتاز (أقل من الميزانية)",
+        "الاستمرار على نفس الخطة"
+      ],
+      [
+        "مؤشر أداء الجدول (SPI)",
+        "0.98",
+        "تأخير بسيط جداً في الجدول",
+        "تكثيف عمالة المسار الحرج"
+      ],
+      [
+        "القيمة المكتسبة (EV)",
+        "$1,100,000",
+        "إنجاز أعمال بقيمة 1.1 مليون",
+        "مطابق للتقدم المخطط"
+      ]
+    ]
+  },
+  {
+    "num": "29",
+    "title": "خرائط التدفق وإجراءات العمل (Process Flowcharts & SOPs)",
+    "purpose": "خطوات التنفيذ القياسية والإجراءات التشغيلية المعتمدة لضمان انتظام سير العمل بدون أخطاء.",
+    "headers": [
+      "خطوة العمل القياسية",
+      "المُدخلات المطلوبة",
+      "الإجراء التشغيلي",
+      "المخرجات المعتمدة"
+    ],
+    "rows": [
+      [
+        "بدء توريد الأنظمة",
+        "طلب الشراء واختبارات المصنع",
+        "الفحص الظاهري والمطابقة",
+        "إذن الدخول للموقع"
+      ],
+      [
+        "تركيب الأجهزة والتوصيل",
+        "المخططات المعتمدة Shop Drawings",
+        "التركيب حسب دليل المصنع",
+        "نموذج فحص تركيب"
+      ],
+      [
+        "التشغيل التجريبي",
+        "جاهزية التيار والكهرباء",
+        "التشغيل لمدة 72 ساعة متصلة",
+        "شهادة جاهزية تشغيل"
+      ]
+    ]
+  },
+  {
+    "num": "30",
+    "title": "سجل الدروس المستفادة (Lessons Learned Register)",
+    "purpose": "توثيق الخبرات والتحديات والحلول الناجحة لاستفادة المشاريع المستقبلية وتطوير المؤسسة.",
+    "headers": [
+      "المجال / الفئة",
+      "التحدي أو الإشكال المقابل",
+      "الإجراء الناجح المتبع",
+      "التوصيات للمستقبل"
+    ],
+    "rows": [
+      [
+        "التوريدات",
+        "تأخر الشحن البحري للمعدات",
+        "الشحن المبكر وطلب تصنيع سريع",
+        "إضافة 15 يوماً لسلسلة الإمداد"
+      ],
+      [
+        "التنفيذ M&E",
+        "تعارض مخططات التكييف والكهرباء",
+        "استخدام النمذجة ثلاثية الأبعاد BIM",
+        "تطبيق BIM mandatory في المشاريع"
+      ],
+      [
+        "إدارة التعاقدات",
+        "تعديلات المالك المتكررة",
+        "تفعيل نموذج التغيير الصارم",
+        "تحديد فترة تجميد النطاق Freeze Period"
+      ]
+    ]
+  },
+  {
+    "num": "31",
+    "title": "محاضر الفحص والتسليم الابتدائي (Acceptance Documentation)",
+    "purpose": "نماذج ومستندات الفحص النهائي والتسليم الابتدائي للمخرجات واستلام المالك والاستشاري.",
+    "headers": [
+      "عنصر التسليم",
+      "معيار الاستلام النهائي",
+      "نتيجة المعاينة",
+      "حالة الاستلام"
+    ],
+    "rows": [
+      [
+        "الأعمال الإنشائية والديكور",
+        "إنهاء كافة الملاحظات Punch List",
+        "خالية من الملاحظات",
+        "مستلمة ابتدائياً"
+      ],
+      [
+        "أنظمة التبريد والطاقة",
+        "عمل الأنظمة بكفاءة 100%",
+        "ناجح ومطابق",
+        "مستلمة ابتدائياً"
+      ],
+      [
+        "الوثائق والمخططات As-Built",
+        "تسليم كافة المخططات النهائية",
+        "تم التسليم كاملاً",
+        "معتمدة ومسلمة"
+      ]
+    ]
+  },
+  {
+    "num": "32",
+    "title": "التقرير النهائي لإغلاق المشروع (Final Closeout Report)",
+    "purpose": "الملخص الإداري الشامل لإغلاق المشروع، تسوية العقود والمدفوعات، وتحرير الموارد رسمياً.",
+    "headers": [
+      "محور الإغلاق",
+      "الحالة النهائية",
+      "ملاحظات الإغلاق",
+      "توقيع الاعتماد النهائي"
+    ],
+    "rows": [
+      [
+        "الأداء المالي الإجمالي",
+        "مكتمل في حدود الميزانية",
+        "وفر بنسبة 2.5% من الميزانية",
+        "معتمد من المالك"
+      ],
+      [
+        "التسويات التعاقدية",
+        "مغلقة بنسبة 100%",
+        "تم صرف كافة المستخلصات النهائية",
+        "معتمد من الحسابات"
+      ],
+      [
+        "تحرير الموارد والموقع",
+        "تم الإغلاق وتحرير الفريق",
+        "تسليم الموقع المكتمل للمالك",
+        "إغلاق رسمي تام"
+      ]
+    ]
+  }
+];
+</script>
+<script>
+// ============================================================
+// ⚠️ لازم تعدّل السطرين دول ببيانات مشروعك في Supabase قبل الرفع:
+// من لوحة تحكم Supabase -> Project Settings -> API
+// انسخ "Project URL" و "anon public key" وحطهم هنا
+// ============================================================
+const SUPABASE_URL = "https://wkiwerqfcqlsutgrowvp.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Jc_E4NoFGEfMFnTyh-rAxQ_8sfJvpBj";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const INDUSTRY_TYPES = [
+  "إنشاءات ومباني (Construction & Buildings)",
+  "بنية تحتية (Infrastructure)",
+  "مراكز بيانات (Data Centers)",
+  "صناعي (Industrial)",
+  "طرق وجسور (Roads & Bridges)",
+  "طاقة ومرافق (Energy & Utilities)",
+  "أخرى (Other)"
+];
+
+let currentUser = null;
+let currentCompanyName = "";
+let allProjects = [];
+let currentProject = null; // المشروع المختار حالياً (object كامل من جدول projects)
+
+// ============================================================
+// المصادقة (Auth)
+// ============================================================
+function switchAuthTab(tab) {
+  document.getElementById('tab-login-btn').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register-btn').classList.toggle('active', tab === 'register');
+  document.getElementById('auth-login').classList.toggle('active', tab === 'login');
+  document.getElementById('auth-register').classList.toggle('active', tab === 'register');
+}
+
+function showMsg(elId, text, type) {
+  const el = document.getElementById(elId);
+  el.innerHTML = `<div class="msg ${type}">${text}</div>`;
+}
+
+async function handleRegister() {
+  const companyName = document.getElementById('register-company-name').value.trim();
+  const email = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value;
+  const confirm = document.getElementById('register-confirm').value;
+
+  if (!companyName || !email || !password) {
+    showMsg('register-msg', 'من فضلك املأ كل الحقول', 'error'); return;
+  }
+  if (password !== confirm) {
+    showMsg('register-msg', 'كلمة السر وتأكيدها غير متطابقين', 'error'); return;
+  }
+
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error) { showMsg('register-msg', 'خطأ: ' + error.message, 'error'); return; }
+
+  if (!data.session) {
+    showMsg('register-msg', 'تم إنشاء الحساب. لو مطلوب تأكيد بريد إلكتروني، افتح بريدك ثم سجّل الدخول. (لتفادي ده، عطّل "Confirm email" من إعدادات Supabase Auth)', 'info');
+    return;
+  }
+
+  // إنشاء صف الشركة المرتبط بالحساب
+  const { error: insertErr } = await sb.from('companies').insert({
+    id: data.user.id, company_name: companyName
+  });
+  if (insertErr) {
+    showMsg('register-msg', 'تم إنشاء حساب الدخول لكن حصل خطأ في حفظ اسم الشركة: ' + insertErr.message, 'error');
+    return;
+  }
+
+  showMsg('register-msg', 'تم إنشاء الحساب بنجاح! جاري الدخول...', 'success');
+  await afterLogin(data.user, companyName);
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { showMsg('login-msg', 'خطأ: ' + error.message, 'error'); return; }
+
+  const { data: companyRow, error: companyErr } = await sb.from('companies')
+    .select('company_name').eq('id', data.user.id).single();
+
+  if (companyErr) {
+    showMsg('login-msg', 'تم الدخول لكن مفيش بيانات شركة مرتبطة بالحساب ده', 'error');
+    return;
+  }
+
+  await afterLogin(data.user, companyRow.company_name);
+}
+
+async function afterLogin(user, companyName) {
+  currentUser = user;
+  currentCompanyName = companyName;
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'block';
+  document.getElementById('company-name-display').textContent = '🏢 ' + companyName;
+  populateIndustrySelects();
+  await loadProjects();
+  showView('home');
+}
+
+async function handleLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  currentProject = null;
+  allProjects = [];
+  document.getElementById('main-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'block';
+}
+
+// استرجاع الجلسة تلقائياً لو المستخدم مسجل دخول بالفعل (بعد تحديث الصفحة)
+async function checkExistingSession() {
+  const { data } = await sb.auth.getSession();
+  if (data.session) {
+    const { data: companyRow, error } = await sb.from('companies')
+      .select('company_name').eq('id', data.session.user.id).single();
+    if (!error) {
+      await afterLogin(data.session.user, companyRow.company_name);
+    }
+  }
+}
+</script>
+<script>
+// ============================================================
+// التنقل بين الصفحات
+// ============================================================
+function showView(viewName) {
+  document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+  document.getElementById('view-' + viewName).style.display = 'block';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === viewName));
+
+  if (viewName === 'edit-texts') refreshEditTextsView();
+  if (viewName === 'generate') refreshGenerateView();
+  if (viewName === 'archive') { populateArchiveFilter(); renderArchive(); }
+  if (viewName === 'new-project' && !currentProject) newProjectForm();
+}
+
+function populateIndustrySelects() {
+  const filterSel = document.getElementById('industry-filter');
+  const formSel = document.getElementById('p-industry');
+  filterSel.innerHTML = '<option value="">الكل</option>' +
+    INDUSTRY_TYPES.map(t => `<option value="${t}">${t}</option>`).join('');
+  formSel.innerHTML = INDUSTRY_TYPES.map(t => `<option value="${t}">${t}</option>`).join('');
+}
+
+// ============================================================
+// المشاريع: تحميل / عرض / حفظ / اختيار
+// ============================================================
+async function loadProjects() {
+  const { data, error } = await sb.from('projects')
+    .select('*').eq('company_id', currentUser.id).order('created_at', { ascending: false });
+  if (error) { showMsg('msg-home', 'خطأ في تحميل المشاريع: ' + error.message, 'error'); return; }
+  allProjects = data || [];
+  renderProjectList();
+}
+
+function renderProjectList() {
+  const filterValue = document.getElementById('industry-filter').value;
+  const filtered = filterValue ? allProjects.filter(p => p.industry_type === filterValue) : allProjects;
+  const tbody = document.getElementById('project-table-body');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">لا توجد مشاريع بعد. أنشئ مشروعاً من تاب "مشروع جديد / تعديل".</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => `
+    <tr onclick='selectProjectById("${p.id}")'>
+      <td>${escapeHtml(p.name)}</td>
+      <td>${escapeHtml(p.code || '-')}</td>
+      <td>${escapeHtml(p.industry_type || '-')}</td>
+      <td>${p.budget ? '$' + Number(p.budget).toLocaleString() : '-'}</td>
+    </tr>
+  `).join('');
+}
+
+function selectProjectById(id) {
+  const project = allProjects.find(p => p.id === id);
+  if (!project) return;
+  currentProject = project;
+  showMsg('msg-home', `تم تحميل مشروع: ${project.name}`, 'success');
+  fillProjectForm(project);
+  showView('new-project');
+}
+
+function newProjectForm() {
+  currentProject = null;
+  document.getElementById('current-project-badge').innerHTML = '<span class="badge-gray">مشروع جديد (لسه ماتحفظش)</span>';
+  document.getElementById('p-name').value = '';
+  document.getElementById('p-code').value = '';
+  document.getElementById('p-manager').value = 'م. وائل علي عويس';
+  document.getElementById('p-client').value = '';
+  document.getElementById('p-industry').value = INDUSTRY_TYPES[0];
+  document.getElementById('p-budget').value = 2500000;
+  document.getElementById('p-start').value = '';
+  document.getElementById('p-duration').value = 12;
+  document.getElementById('p-revenue').value = 750000;
+  document.getElementById('feasibility-results').style.display = 'none';
+}
+
+function fillProjectForm(project) {
+  document.getElementById('current-project-badge').innerHTML =
+    `<span class="badge-yellow">بتعدّل مشروع: ${escapeHtml(project.name)}</span>`;
+  document.getElementById('p-name').value = project.name || '';
+  document.getElementById('p-code').value = project.code || '';
+  document.getElementById('p-manager').value = project.manager || '';
+  document.getElementById('p-client').value = project.client || '';
+  document.getElementById('p-industry').value = project.industry_type || INDUSTRY_TYPES[0];
+  document.getElementById('p-budget').value = project.budget || 0;
+  document.getElementById('p-start').value = project.start_date || '';
+  document.getElementById('p-duration').value = project.duration_months || 12;
+  document.getElementById('p-revenue').value = (project.data_json && project.data_json.expected_revenue) || 750000;
+}
+
+function calcFeasibility() {
+  const budget = parseFloat(document.getElementById('p-budget').value) || 0;
+  const revenue = parseFloat(document.getElementById('p-revenue').value) || 0;
+  const opCost = budget * 0.08;
+  const netCash = revenue - opCost;
+  const payback = netCash > 0 ? budget / netCash : 0;
+  const roi = budget ? (netCash / budget) * 100 : 0;
+
+  document.getElementById('feasibility-results').style.display = 'block';
+  document.getElementById('feasibility-results').innerHTML = `
+    📊 التدفق النقدي الصافي: $${netCash.toLocaleString(undefined, {maximumFractionDigits:2})} —
+    فترة الاسترداد: ${payback.toFixed(2)} سنة —
+    العائد الاستثماري (ROI): ${roi.toFixed(1)}%
+  `;
+  return { roi, netCash, payback };
+}
+
+async function saveCurrentProject() {
+  const name = document.getElementById('p-name').value.trim();
+  if (!name) { showMsg('msg-project', 'اسم المشروع مطلوب', 'error'); return; }
+
+  const { roi } = calcFeasibility();
+  const dataJson = (currentProject && currentProject.data_json) ? { ...currentProject.data_json } : {};
+  dataJson.roi = roi;
+  dataJson.expected_revenue = parseFloat(document.getElementById('p-revenue').value) || 0;
+
+  const payload = {
+    company_id: currentUser.id,
+    name: name,
+    code: document.getElementById('p-code').value.trim(),
+    manager: document.getElementById('p-manager').value.trim(),
+    client: document.getElementById('p-client').value.trim(),
+    budget: parseFloat(document.getElementById('p-budget').value) || 0,
+    start_date: document.getElementById('p-start').value,
+    duration_months: parseInt(document.getElementById('p-duration').value) || 0,
+    industry_type: document.getElementById('p-industry').value,
+    data_json: dataJson,
+  };
+
+  const { data, error } = await sb.from('projects')
+    .upsert(payload, { onConflict: 'company_id,name' })
+    .select().single();
+
+  if (error) { showMsg('msg-project', 'خطأ في الحفظ: ' + error.message, 'error'); return; }
+
+  currentProject = data;
+  showMsg('msg-project', 'تم حفظ المشروع بنجاح!', 'success');
+  await loadProjects();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+</script>
+<script>
+// ============================================================
+// تعديل نصوص الوثائق (٣٢ وثيقة)
+// ============================================================
+function refreshEditTextsView() {
+  loadGeminiSettingsIntoInputs();
+  const warning = document.getElementById('edit-texts-warning');
+  const body = document.getElementById('edit-texts-body');
+  if (!currentProject) {
+    warning.style.display = 'block';
+    body.style.display = 'none';
+    return;
+  }
+  warning.style.display = 'none';
+  body.style.display = 'block';
+
+  const sel = document.getElementById('doc-select');
+  sel.innerHTML = PMP_DOCUMENTS.map(d => `<option value="${d.num}">${d.num} - ${escapeHtml(d.title)}</option>`).join('');
+  loadDocText();
+}
+
+function getOverrides() {
+  if (!currentProject.data_json) currentProject.data_json = {};
+  if (!currentProject.data_json.document_overrides) currentProject.data_json.document_overrides = {};
+  return currentProject.data_json.document_overrides;
+}
+
+let currentDocHeaders = [];
+let currentDocRows = [];
+
+function renderRowsTable() {
+  const table = document.getElementById('doc-rows-table');
+  const headHtml = '<thead><tr>' +
+    currentDocHeaders.map(h => `<th style="border:1px solid #cbd5e1;padding:6px;background:#e2e8f0;font-size:12px;text-align:right;">${escapeHtml(h)}</th>`).join('') +
+    '<th style="border:1px solid #cbd5e1;padding:6px;background:#e2e8f0;width:36px;"></th></tr></thead>';
+  const bodyHtml = '<tbody>' + currentDocRows.map((row, ri) => {
+    const cellsHtml = row.map((cell, ci) => `<td style="border:1px solid #cbd5e1;padding:2px;vertical-align:top;"><textarea oninput="updateDocCell(${ri},${ci},this.value)" style="width:100%;min-height:38px;border:none;background:transparent;resize:vertical;font-size:13px;font-family:inherit;padding:4px;">${escapeHtml(cell)}</textarea></td>`).join('');
+    return `<tr>${cellsHtml}<td style="border:1px solid #cbd5e1;text-align:center;vertical-align:top;padding:4px;"><button type="button" onclick="deleteDocRow(${ri})" title="حذف الصف" style="background:#fee2e2;color:#b91c1c;border:none;border-radius:4px;padding:4px 7px;cursor:pointer;">🗑️</button></td></tr>`;
+  }).join('') + '</tbody>';
+  table.innerHTML = headHtml + bodyHtml;
+}
+
+function updateDocCell(ri, ci, value) {
+  if (currentDocRows[ri]) currentDocRows[ri][ci] = value;
+}
+
+function deleteDocRow(ri) {
+  currentDocRows.splice(ri, 1);
+  renderRowsTable();
+}
+
+function addDocRow() {
+  currentDocRows.push(currentDocHeaders.map(() => ''));
+  renderRowsTable();
+}
+
+function loadDocText() {
+  const num = document.getElementById('doc-select').value;
+  const doc = PMP_DOCUMENTS.find(d => d.num === num);
+  const overrides = getOverrides();
+  const override = overrides[num];
+
+  document.getElementById('doc-purpose-text').value = override ? override.purpose : doc.purpose;
+  currentDocHeaders = doc.headers;
+  currentDocRows = JSON.parse(JSON.stringify(override && override.rows ? override.rows : doc.rows));
+  renderRowsTable();
+  document.getElementById('doc-headers-hint').innerHTML =
+    '📋 اكتب في أي خانة عادي، دوس ➕ عشان تضيف صف جديد، ودوس 🗑️ جنب أي صف عشان تمسحه.';
+
+  if (override && override.ai) {
+    document.getElementById('doc-status').innerHTML = '<span class="badge-ai">🤖 مولّدة بالذكاء الاصطناعي (قابلة للتعديل اليدوي)</span>';
+  } else if (override) {
+    document.getElementById('doc-status').innerHTML = '<span class="badge-yellow">🟡 هذه الوثيقة معدّلة عن النص الافتراضي</span>';
+  } else {
+    document.getElementById('doc-status').innerHTML = '<span class="badge-gray">⚪ هذه الوثيقة بنصها الافتراضي حالياً</span>';
+  }
+}
+
+async function saveDocOverride(silent, aiFlag) {
+  const num = document.getElementById('doc-select').value;
+  const purposeText = document.getElementById('doc-purpose-text').value;
+  const overrides = getOverrides();
+  const wasAi = overrides[num] && overrides[num].ai;
+  const rowsToSave = currentDocRows.map(r => r.slice()).filter(r => r.some(c => (c || '').trim() !== ''));
+  overrides[num] = { purpose: purposeText, rows: rowsToSave, ai: aiFlag !== undefined ? aiFlag : !!wasAi };
+
+  const { error } = await sb.from('projects')
+    .update({ data_json: currentProject.data_json })
+    .eq('id', currentProject.id);
+
+  if (error) { if (!silent) showMsg('msg-edit-texts', 'خطأ في الحفظ: ' + error.message, 'error'); return false; }
+  if (!silent) {
+    showMsg('msg-edit-texts', 'تم حفظ النص المعدّل، وهيظهر تلقائياً عند توليد التقرير.', 'success');
+    loadDocText();
+  }
+  return true;
+}
+
+async function resetDocOverride() {
+  const num = document.getElementById('doc-select').value;
+  const overrides = getOverrides();
+  delete overrides[num];
+
+  const { error } = await sb.from('projects')
+    .update({ data_json: currentProject.data_json })
+    .eq('id', currentProject.id);
+
+  if (error) { showMsg('msg-edit-texts', 'خطأ: ' + error.message, 'error'); return; }
+  showMsg('msg-edit-texts', 'تم الرجوع للنص الافتراضي لهذه الوثيقة.', 'info');
+  loadDocText();
+}
+
+// ============================================================
+// توليد التقرير الكامل (يفتح تبويب جديد بصفحة قابلة للطباعة/الحفظ PDF)
+// ============================================================
+function refreshGenerateView() {
+  const warning = document.getElementById('generate-warning');
+  if (!currentProject) {
+    warning.style.display = 'block';
+    warning.textContent = 'مفيش مشروع محدد — هيتم التوليد بالبيانات الافتراضية. تقدر تختار مشروعاً من صفحة الرئيسية.';
+  } else {
+    warning.style.display = 'block';
+    warning.className = 'msg success';
+    warning.textContent = `هيتم التوليد لمشروع: ${currentProject.name}`;
+  }
+}
+
+const REPORT_CSS = `
+      @page { size: A4 portrait; margin: 8mm; }
+      body { font-family: 'Segoe UI', Tahoma, sans-serif; margin:0; color:#0f172a; font-size:9.5pt; }
+      .page { page-break-after: always; padding: 4mm; }
+      .page:last-child { page-break-after: auto; }
+      .header { display:flex; justify-content:space-between; gap:10px; border-bottom:2px solid #0284c7; padding-bottom:5px; font-size:9pt; color:#475569; }
+      .banner { background:#0f172a; color:white; padding:10px 15px; border-radius:4px; margin:10px 0; border-right:5px solid #0284c7; }
+      .doc-num { font-size:8.5pt; color:#38bdf8; font-weight:bold; }
+      .banner h2 { margin:3px 0 0 0; font-size:13pt; }
+      .box { border:1px solid #cbd5e1; padding:10px; border-radius:4px; margin-bottom:10px; background:#f8fafc; page-break-inside: avoid; }
+      .box h4 { margin:0 0 6px 0; color:#0284c7; font-size:10pt; }
+      table { width:100%; border-collapse:collapse; margin-top:5px; font-size:8.5pt; page-break-inside: avoid; }
+      th, td { border:1px solid #cbd5e1; padding:6px; text-align:right; }
+      th { background:#e2e8f0; font-weight:bold; }
+      .sig-area { display:flex; justify-content:space-between; gap:15px; margin-top:10px; page-break-inside: avoid; }
+      .sig-box { flex:1; border:1px dashed #64748b; padding:8px; border-radius:4px; font-size:8.5pt; }
+      .footer { border-top:1px solid #e2e8f0; padding-top:5px; text-align:center; font-size:8pt; color:#94a3b8; margin-top:10px; }
+      @media screen {
+        body { background:#e2e8f0; }
+        .page { background:#fff; max-width:794px; margin:12px auto; padding:16px; box-shadow:0 1px 6px rgba(0,0,0,.15); box-sizing:border-box; }
+        .box { overflow-x:auto; }
+      }
+      @media print { .print-btn { display:none; } }
+`;
+
+function getProjectParties(project) {
+  return {
+    manager: (project && project.manager) || 'م. وائل علي عويس',
+    client: (project && project.client) || 'شركة بناء للتطوير الاستراتيجي'
+  };
+}
+
+// صفحة وثيقة واحدة. content = { purpose, rows, ai }
+function buildDocPageHtml(doc, content, manager, client, projectName) {
+  const purpose = content && content.purpose ? content.purpose : doc.purpose;
+  const rows = (content && content.rows && content.rows.length) ? content.rows : doc.rows;
+  const aiBadge = content && content.ai ? ' <span style="color:#38bdf8;font-size:8pt;">(🤖 مولّدة بالذكاء الاصطناعي)</span>' : '';
+  const headersHtml = doc.headers.map(h => `<th>${escapeHtml(h)}</th>`).join('');
+  const rowsHtml = rows.map(r => '<tr>' + r.map(c => `<td>${escapeHtml(c)}</td>`).join('') + '</tr>').join('');
+  const projLine = projectName ? `<div>المشروع: ${escapeHtml(projectName)}</div>` : '';
+
+  return `
+      <div class="page">
+        <div class="header">
+          <div><b>إشراف وتطوير: ${escapeHtml(manager)}</b></div>
+          ${projLine}
+          <div>منظومة حوكمة إدارة المشاريع (32 PMP Documents)${aiBadge}</div>
+        </div>
+        <div class="banner">
+          <div class="doc-num">وثيقة رسمية رقم (${escapeHtml(doc.num)} من 32)</div>
+          <h2>${escapeHtml(doc.title)}</h2>
+        </div>
+        <div class="box">
+          <h4>1. الغرض والأهداف التنفيذية للوثيقة:</h4>
+          <p>${escapeHtml(purpose)}</p>
+        </div>
+        <div class="box">
+          <h4>2. جدول البيانات التشغيلية والمتابعة الميدانية:</h4>
+          <table><thead><tr>${headersHtml}</tr></thead><tbody>${rowsHtml}</tbody></table>
+        </div>
+        <div class="sig-area">
+          <div class="sig-box"><b>توقيع وإعداد مدير المشروع:</b><br>${escapeHtml(manager)}<br><br>التوقيع: .....................<br>التاريخ: .....................</div>
+          <div class="sig-box"><b>اعتماد الاستشاري / الجهة المالكة:</b><br>${escapeHtml(client)}<br><br>التوقيع: .....................<br>التاريخ: .....................</div>
+        </div>
+        <div class="footer">صفحة رقم (${escapeHtml(doc.num)}) - وثيقة رسمية سارية ضمن ملف حوكمة وإدارة المشروع</div>
+      </div>
+    `;
+}
+
+function buildReportShell(pagesHtml, title) {
+  return `<!DOCTYPE html>
+    <html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(title)}</title>
+    <style>${REPORT_CSS}</style></head>
+    <body>
+      <button class="print-btn" style="position:fixed;top:10px;left:10px;padding:10px 20px;background:#0284c7;color:white;border:none;border-radius:6px;cursor:pointer;z-index:999;" onclick="window.print()">🖨️ طباعة / حفظ كـ PDF</button>
+      ${pagesHtml}
+    </body></html>`;
+}
+
+function openPrintWindow(pagesHtml, title) {
+  const w = window.open('', '_blank');
+  if (!w) { alert('المتصفح منع فتح التبويب الجديد. اسمح بالنوافذ المنبثقة (Pop-ups) للصفحة دي وجرب تاني.'); return null; }
+  w.document.write(buildReportShell(pagesHtml, title));
+  w.document.close();
+  return w;
+}
+
+function generateReport() {
+  const { manager, client } = getProjectParties(currentProject);
+  const overrides = (currentProject && currentProject.data_json && currentProject.data_json.document_overrides) || {};
+  const pagesHtml = PMP_DOCUMENTS.map(doc => buildDocPageHtml(doc, overrides[doc.num], manager, client)).join('');
+  openPrintWindow(pagesHtml, 'تقرير المشروع - 32 وثيقة');
+}
+
+// ============================================================
+// التوليد بالذكاء الاصطناعي (Gemini)
+// ============================================================
+function getGeminiSettings() {
+  const clean = s => (s || '').replace(/[\u200e\u200f\u202a-\u202e]/g, '').trim();
+  return {
+    key: clean(localStorage.getItem('pmp_gemini_key')) || '',
+    model: clean(localStorage.getItem('pmp_gemini_model')) || 'gemini-3.6-flash'
+  };
+}
+
+function loadGeminiSettingsIntoInputs() {
+  const s = getGeminiSettings();
+  const keyEl = document.getElementById('gemini-api-key');
+  const modelEl = document.getElementById('gemini-model');
+  if (keyEl) keyEl.value = s.key;
+  if (modelEl) modelEl.value = s.model;
+}
+
+function saveGeminiSettings() {
+  const key = document.getElementById('gemini-api-key').value.replace(/[\u200e\u200f\u202a-\u202e\s]+/g, '').trim();
+  const rawModel = document.getElementById('gemini-model').value;
+  const model = rawModel.replace(/[\u200e\u200f\u202a-\u202e]/g, '').trim() || 'gemini-3.6-flash';
+  localStorage.setItem('pmp_gemini_key', key);
+  localStorage.setItem('pmp_gemini_model', model);
+  showMsg('msg-gemini-settings', 'تم حفظ إعدادات الذكاء الاصطناعي على المتصفح ده.', 'success');
+}
+
+function buildProjectContextText() {
+  if (!currentProject) return 'لا يوجد مشروع محدد حالياً — استخدم بيانات افتراضية معقولة.';
+  const p = currentProject;
+  const dj = p.data_json || {};
+  const lines = [
+    `اسم المشروع: ${p.name || '-'}`,
+    `كود المشروع: ${p.code || '-'}`,
+    `مدير المشروع: ${p.manager || '-'}`,
+    `الجهة المالكة: ${p.client || '-'}`,
+    `نوع الصناعة: ${p.industry_type || '-'}`,
+    `الميزانية التقديرية: $${p.budget ? Number(p.budget).toLocaleString() : '-'}`,
+    `تاريخ البدء: ${p.start_date || '-'}`,
+    `المدة بالأشهر: ${p.duration_months || '-'}`,
+    `العائد السنوي المتوقع: $${dj.expected_revenue ? Number(dj.expected_revenue).toLocaleString() : '-'}`,
+  ];
+  if (dj.payback_years) lines.push(`فترة استرداد رأس المال: ${dj.payback_years} سنة`);
+  if (dj.roi) lines.push(`العائد على الاستثمار (ROI): ${dj.roi}%`);
+  return lines.join('\n');
+}
+
+const AI_RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    needs_clarification: { type: "BOOLEAN" },
+    questions: { type: "ARRAY", items: { type: "STRING" } },
+    purpose: { type: "STRING" },
+    rows: { type: "ARRAY", items: { type: "ARRAY", items: { type: "STRING" } } }
+  },
+  required: ["needs_clarification", "questions", "purpose", "rows"]
+};
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function callGeminiForDoc(doc, extraAnswersText, logFn) {
+  const settings = getGeminiSettings();
+  if (!settings.key) throw new Error('NO_KEY');
+
+  const columnsCount = doc.headers.length;
+  const rowsCount = doc.rows.length;
+
+  const promptParts = [
+    `انت مساعد خبير في إدارة المشاريع باستخدام منهجية PMP. مطلوب منك تولّد محتوى حقيقي ومخصص (مش عام) لوثيقة "${doc.title}" ضمن ملف حوكمة مشروع فعلي.`,
+    `بيانات المشروع الحقيقية:\n${buildProjectContextText()}`,
+    `النص الافتراضي الحالي لهذه الوثيقة (استخدمه كمرجع للأسلوب فقط، والمطلوب منك نص أدق وأكثر تخصيصاً حسب بيانات المشروع):\n${doc.purpose}`,
+    `جدول الوثيقة له ${columnsCount} أعمدة بعناوين: ${doc.headers.join(' | ')}. لازم تولّد ${rowsCount} صفوف بيانات واقعية ومحددة تناسب المشروع (مش نصوص عامة).`,
+  ];
+  if (extraAnswersText) {
+    promptParts.push(`إجابات إضافية من المستخدم على أسئلة استيضاحية سابقة:\n${extraAnswersText}\nاستخدم هذه الإجابات الآن ولا تسأل نفس الأسئلة تاني. ولّد المحتوى النهائي مباشرة (needs_clarification يبقى false).`);
+  } else {
+    promptParts.push(`لو بيانات المشروع المتاحة مش كفاية عشان تكتب محتوى دقيق ومحدد (مش عام)، اسأل لغاية 3 أسئلة توضيحية قصيرة بس بالعربي (needs_clarification=true وقائمة questions). لو البيانات كفاية، ولّد المحتوى النهائي على طول (needs_clarification=false).`);
+  }
+  promptParts.push(`رد فقط بصيغة JSON مطابقة للـ schema المطلوب.`);
+
+  const body = {
+    contents: [{ role: 'user', parts: [{ text: promptParts.join('\n\n') }] }],
+    generationConfig: {
+      responseMimeType: 'application/json',
+      responseSchema: AI_RESPONSE_SCHEMA
+    }
+  };
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model)}:generateContent`;
+
+  const maxRetries = 3;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': settings.key },
+      body: JSON.stringify(body)
+    });
+
+    if (res.status === 429 && attempt < maxRetries) {
+      const waitSec = (attempt + 1) * 15;
+      if (logFn) logFn(`⏳ تجاوزنا عدد الطلبات المسموح بيه في الدقيقة، مستنيين ${waitSec} ثانية وهنكمل تلقائياً...`);
+      await sleep(waitSec * 1000);
+      continue;
+    }
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error('API_ERROR: ' + res.status + ' - ' + errText.slice(0, 300));
+    }
+    const data = await res.json();
+    const textOut = data.candidates && data.candidates[0] && data.candidates[0].content &&
+      data.candidates[0].content.parts && data.candidates[0].content.parts[0] &&
+      data.candidates[0].content.parts[0].text;
+    if (!textOut) throw new Error('EMPTY_RESPONSE');
+
+    let parsed;
+    try { parsed = JSON.parse(textOut); }
+    catch (e) { throw new Error('PARSE_ERROR'); }
+    return parsed;
+  }
+  throw new Error('API_ERROR: 429 - تجاوزت الحصة المسموحة حتى بعد الانتظار، حاول تاني بعد شوية.');
+}
+
+// --- نافذة الأسئلة التوضيحية (Modal) ---
+let _aiModalResolver = null;
+
+function askUserClarification(docTitle, questions) {
+  return new Promise(resolve => {
+    _aiModalResolver = resolve;
+    document.getElementById('ai-modal-doc-title').textContent = 'بخصوص وثيقة: ' + docTitle;
+    const container = document.getElementById('ai-modal-questions');
+    container.innerHTML = questions.map((q, i) => `
+      <div class="modal-q">
+        <label>${escapeHtml(q)}</label>
+        <textarea id="ai-modal-answer-${i}" data-question="${escapeHtml(q)}" style="min-height:60px;"></textarea>
+      </div>
+    `).join('');
+    document.getElementById('ai-modal-msg').innerHTML = '';
+    document.getElementById('ai-modal-overlay').classList.add('active');
+  });
+}
+
+function submitAiClarification(skip) {
+  const container = document.getElementById('ai-modal-questions');
+  const count = container.querySelectorAll('textarea').length;
+  let answersText = '';
+  if (!skip) {
+    for (let i = 0; i < count; i++) {
+      const el = document.getElementById('ai-modal-answer-' + i);
+      const q = el.dataset.question || '';
+      const a = el.value.trim();
+      answersText += `س: ${q}\nج: ${a || '(مفيش إجابة محددة، استخدم أفضل تقدير منطقي)'}\n`;
+    }
+  } else {
+    answersText = 'المستخدم اختار تخطي الأسئلة — استخدم أفضل تقدير منطقي بناءً على بيانات المشروع المتاحة.';
+  }
+  document.getElementById('ai-modal-overlay').classList.remove('active');
+  if (_aiModalResolver) { _aiModalResolver(answersText); _aiModalResolver = null; }
+}
+
+// --- توليد وثيقة واحدة بالذكاء الاصطناعي ---
+async function generateDocWithAI(doc, logFn) {
+  let result = await callGeminiForDoc(doc, undefined, logFn);
+  if (result.needs_clarification && result.questions && result.questions.length) {
+    if (logFn) logFn(`⏸️ الوثيقة "${doc.title}" محتاجة توضيح منك...`);
+    const answersText = await askUserClarification(doc.title, result.questions);
+    result = await callGeminiForDoc(doc, answersText, logFn);
+  }
+  return result;
+}
+
+async function aiGenerateSingleDoc() {
+  const settings = getGeminiSettings();
+  if (!settings.key) { showMsg('msg-edit-texts', 'من فضلك دخّل مفتاح Gemini API الأول من "إعدادات الذكاء الاصطناعي" فوق.', 'error'); return; }
+  if (!currentProject) { showMsg('msg-edit-texts', 'اختر مشروعاً أولاً.', 'error'); return; }
+
+  const num = document.getElementById('doc-select').value;
+  const doc = PMP_DOCUMENTS.find(d => d.num === num);
+  const btn = document.getElementById('ai-gen-single-btn');
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.innerHTML = 'بيولّد... <span class="spinner"></span>';
+
+  try {
+    const result = await generateDocWithAI(doc, msg => showMsg('msg-edit-texts', msg, 'info'));
+    document.getElementById('doc-purpose-text').value = result.purpose || doc.purpose;
+    currentDocRows = (result.rows && result.rows.length) ? result.rows.map(r => r.slice()) : doc.rows.map(r => r.slice());
+    renderRowsTable();
+    await saveDocOverride(true, true);
+    showMsg('msg-edit-texts', '✅ تم توليد الوثيقة بالذكاء الاصطناعي. راجع النص وعدّله يدوياً لو حابب، وبعدين احفظ.', 'success');
+    loadDocText();
+  } catch (e) {
+    showMsg('msg-edit-texts', 'خطأ أثناء التوليد بالذكاء الاصطناعي: ' + explainAiError(e), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+
+function explainAiError(e) {
+  const msg = (e && e.message) || String(e);
+  if (msg === 'NO_KEY') return 'مفيش مفتاح Gemini API متسجل.';
+  if (msg === 'EMPTY_RESPONSE' || msg === 'PARSE_ERROR') return 'الرد من الذكاء الاصطناعي مكنش بصيغة صحيحة، جرب تاني.';
+  if (msg.indexOf('API_ERROR: 429') !== -1) {
+    return 'الخطة المجانية لمفتاح Gemini بتاعك ليها حد أقصى لعدد الطلبات في الدقيقة/اليوم، وتجاوزته. الحل: (1) استنى دقيقة أو دقيقتين وجرب تاني وثيقة واحدة، أو (2) لو بتولّد الـ32 وثيقة مرة واحدة سيب البرنامج يكمل لوحده هو بينتظر تلقائياً دلوقتي، أو (3) لو محتاج تستخدمه بكثافة يومياً، فعّل الفوترة (Billing) على مشروعك في Google AI Studio عشان الحد يرتفع.';
+  }
+  if (msg.indexOf('unexpected model name format') !== -1 || msg.indexOf('NOT_FOUND') !== -1) {
+    const s = getGeminiSettings();
+    return 'اسم الموديل غلط أو مش موجود. القيمة المحفوظة دلوقتي هي: "' + s.model + '" (طولها ' + s.model.length + ' حرف). افتح الإعدادات، امسحها بالكامل، واكتب gemini-3.6-flash يدوي من الكيبورد بدون نسخ/لصق، واحفظ. التفاصيل الكاملة: ' + msg;
+  }
+  return msg;
+}
+
+// --- توليد كل الـ32 وثيقة بالذكاء الاصطناعي ---
+async function aiGenerateAllDocs() {
+  const settings = getGeminiSettings();
+  if (!settings.key) { alert('من فضلك دخّل مفتاح Gemini API الأول من تاب "تعديل النصوص" -> "إعدادات الذكاء الاصطناعي".'); return; }
+  if (!currentProject) { alert('اختر مشروعاً أولاً من صفحة الرئيسية.'); return; }
+
+  const btn = document.getElementById('ai-gen-all-btn');
+  const progressWrap = document.getElementById('ai-progress-wrap');
+  const progressBar = document.getElementById('ai-progress-bar');
+  const progressLabel = document.getElementById('ai-progress-label');
+  const logEl = document.getElementById('ai-log');
+
+  btn.disabled = true;
+  progressWrap.style.display = 'block';
+  logEl.style.display = 'block';
+  logEl.innerHTML = '';
+
+  function log(text) {
+    logEl.innerHTML += `<div>${escapeHtml(text)}</div>`;
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  const total = PMP_DOCUMENTS.length;
+  let done = 0, failed = 0;
+
+  for (const doc of PMP_DOCUMENTS) {
+    progressLabel.textContent = `جاري توليد الوثيقة ${done + failed + 1} من ${total}: ${doc.title}`;
+    try {
+      const result = await generateDocWithAI(doc, log);
+      const overrides = getOverrides();
+      overrides[doc.num] = {
+        purpose: result.purpose || doc.purpose,
+        rows: (result.rows && result.rows.length) ? result.rows : doc.rows,
+        ai: true
+      };
+      await sb.from('projects').update({ data_json: currentProject.data_json }).eq('id', currentProject.id);
+      done++;
+      log(`✅ (${doc.num}/${total}) تم توليد: ${doc.title}`);
+    } catch (e) {
+      failed++;
+      log(`❌ (${doc.num}/${total}) فشل توليد: ${doc.title} — ${explainAiError(e)}`);
+    }
+    progressBar.style.width = Math.round(((done + failed) / total) * 100) + '%';
+    if (done + failed < total) await sleep(3000);
+  }
+
+  progressLabel.textContent = `اكتمل: ${done} وثيقة نجحت${failed ? '، ' + failed + ' فشلت (ممكن تعيد المحاولة لهم من تاب تعديل النصوص)' : ''}.`;
+  btn.disabled = false;
+  loadDocText();
+}
+
+// بدء التطبيق: لو الرابط مشاركة وثيقة نعرضها مباشرة، وإلا نتأكد من الجلسة
+if (location.hash.indexOf('#share=') === 0) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSharedView);
+  else initSharedView();
+} else {
+  checkExistingSession();
+}
+</script>
+<script>
+// ============================================================
+// أدوات مشتركة: حفظ المشروع، حالة المحرر
+// ============================================================
+async function persistProject(project) {
+  const { error } = await sb.from('projects').update({ data_json: project.data_json }).eq('id', project.id);
+  return error;
+}
+
+function ensureDataJson(project) {
+  if (!project.data_json) project.data_json = {};
+  return project.data_json;
+}
+
+function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+// المحتوى الحالي في المحرر (حتى لو لم يُحفظ بعد)
+function getEditorDocState() {
+  const num = document.getElementById('doc-select').value;
+  const doc = PMP_DOCUMENTS.find(d => d.num === num);
+  const override = getOverrides()[num];
+  return {
+    doc,
+    purpose: document.getElementById('doc-purpose-text').value,
+    rows: currentDocRows.map(r => r.slice()).filter(r => r.some(c => (c || '').trim() !== '')),
+    ai: !!(override && override.ai)
+  };
+}
+
+// ============================================================
+// طباعة وثيقة واحدة
+// ============================================================
+async function saveAndPrintCurrentDoc() {
+  if (!currentProject) { showMsg('msg-edit-texts', 'اختر مشروعاً أولاً.', 'error'); return; }
+  const ok = await saveDocOverride(true);
+  if (!ok) { showMsg('msg-edit-texts', 'ماقدرناش نحفظ الوثيقة، فمافتحناش الطباعة. جرب تاني.', 'error'); return; }
+  const st = getEditorDocState();
+  const { manager, client } = getProjectParties(currentProject);
+  openPrintWindow(buildDocPageHtml(st.doc, st, manager, client, currentProject.name), st.doc.title);
+  showMsg('msg-edit-texts', 'تم الحفظ وفتح صفحة الطباعة.', 'success');
+  loadDocText();
+}
+
+// ============================================================
+// الملء بالذكاء الاصطناعي من نص ملصوق
+// ============================================================
+const AI_PASTE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    purpose: { type: "STRING" },
+    rows: { type: "ARRAY", items: { type: "ARRAY", items: { type: "STRING" } } }
+  },
+  required: ["purpose", "rows"]
+};
+
+async function callGeminiJson(promptText, schema, logFn) {
+  const settings = getGeminiSettings();
+  if (!settings.key) throw new Error('NO_KEY');
+  const body = {
+    contents: [{ role: 'user', parts: [{ text: promptText }] }],
+    generationConfig: { responseMimeType: 'application/json', responseSchema: schema }
+  };
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model)}:generateContent`;
+  const maxRetries = 3;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': settings.key },
+      body: JSON.stringify(body)
+    });
+    if (res.status === 429 && attempt < maxRetries) {
+      const waitSec = (attempt + 1) * 15;
+      if (logFn) logFn(`⏳ تجاوزنا حد الطلبات، مستنيين ${waitSec} ثانية وهنكمل تلقائياً...`);
+      await sleep(waitSec * 1000);
+      continue;
+    }
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error('API_ERROR: ' + res.status + ' - ' + errText.slice(0, 300));
+    }
+    const data = await res.json();
+    const textOut = data.candidates && data.candidates[0] && data.candidates[0].content &&
+      data.candidates[0].content.parts && data.candidates[0].content.parts[0] &&
+      data.candidates[0].content.parts[0].text;
+    if (!textOut) throw new Error('EMPTY_RESPONSE');
+    try { return JSON.parse(textOut); } catch (e) { throw new Error('PARSE_ERROR'); }
+  }
+  throw new Error('API_ERROR: 429 - تجاوزت الحصة المسموحة حتى بعد الانتظار، حاول تاني بعد شوية.');
+}
+
+function normalizeRow(row, cols) {
+  const r = Array.isArray(row) ? row.map(c => (c == null ? '' : String(c))) : [];
+  while (r.length < cols) r.push('');
+  return r.slice(0, cols);
+}
+
+function buildPastePrompt(doc, sourceText) {
+  return [
+    `انت مساعد خبير في إدارة المشاريع (PMP). المستخدم لصق نصاً خاماً (قد يكون محضر اجتماع أو إيميل أو ملاحظات أو جدول منسوخ). مطلوب منك استخراج محتوى وثيقة "${doc.title}" منه.`,
+    `بيانات المشروع (للسياق فقط):\n${buildProjectContextText()}`,
+    `عناوين أعمدة جدول الوثيقة (${doc.headers.length} أعمدة بالترتيب): ${doc.headers.join(' | ')}`,
+    `الغرض الافتراضي الحالي للوثيقة (استخدمه كما هو لو النص الملصوق ما فيهوش غرض واضح):\n${doc.purpose}`,
+    `قواعد صارمة:\n- استخدم فقط المعلومات الموجودة في النص الملصوق. لا تخترع أسماء أو أرقام أو تواريخ أو التزامات.\n- كل صف لازم يحتوي بالضبط ${doc.headers.length} خانات بنفس ترتيب العناوين. لو معلومة ناقصة اترك الخانة نصاً فارغاً "".\n- حافظ على لغة النص الأصلية ولا تكرر الصفوف.\n- لو النص ما فيهوش أي بيانات تناسب الجدول، رجّع rows فاضية.`,
+    `النص الملصوق:\n"""\n${sourceText.slice(0, 30000)}\n"""`,
+    `رد فقط بصيغة JSON مطابقة للـ schema المطلوب.`
+  ].join('\n\n');
+}
+
+async function aiFillFromPaste() {
+  const src = document.getElementById('paste-source').value.trim();
+  if (!src) { showMsg('msg-paste', 'الصق النص الأول.', 'error'); return; }
+  if (!getGeminiSettings().key) { showMsg('msg-paste', 'دخّل مفتاح Gemini API الأول من "إعدادات الذكاء الاصطناعي" فوق.', 'error'); return; }
+
+  const num = document.getElementById('doc-select').value;
+  const doc = PMP_DOCUMENTS.find(d => d.num === num);
+  const mode = document.getElementById('paste-mode').value;
+  const btn = document.getElementById('ai-paste-btn');
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = 'بيقرأ النص... <span class="spinner"></span>';
+
+  try {
+    const result = await callGeminiJson(buildPastePrompt(doc, src), AI_PASTE_SCHEMA, m => showMsg('msg-paste', m, 'info'));
+    const cols = doc.headers.length;
+    const newRows = (result.rows || []).map(r => normalizeRow(r, cols)).filter(r => r.some(c => c.trim() !== ''));
+
+    if (!newRows.length) {
+      showMsg('msg-paste', 'مالقيتش في النص بيانات تناسب جدول الوثيقة دي. تأكد إنك مختار الوثيقة الصح أو زوّد تفاصيل في النص.', 'error');
+      return;
+    }
+    if (mode === 'replace') {
+      if (result.purpose && result.purpose.trim()) document.getElementById('doc-purpose-text').value = result.purpose.trim();
+      currentDocRows = newRows;
+    } else {
+      currentDocRows = currentDocRows.filter(r => r.some(c => (c || '').trim() !== '')).concat(newRows);
+    }
+    renderRowsTable();
+    showMsg('msg-paste', `✅ تم ملء ${newRows.length} صف. راجع الخانات، وبعدين دوس "حفظ التعديل" أو "حفظ وطباعة".`, 'success');
+  } catch (e) {
+    showMsg('msg-paste', 'خطأ أثناء الملء بالذكاء الاصطناعي: ' + explainAiError(e), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+
+// ============================================================
+// الأرشيف
+// ============================================================
+function getArchive(project) {
+  const dj = project && project.data_json;
+  return (dj && Array.isArray(dj.archive)) ? dj.archive : [];
+}
+
+function sameContent(a, b) {
+  return JSON.stringify([a.purpose, a.rows]) === JSON.stringify([b.purpose, b.rows]);
+}
+
+function pushArchiveEntry(project, doc, content) {
+  const dj = ensureDataJson(project);
+  if (!Array.isArray(dj.archive)) dj.archive = [];
+  const latest = dj.archive.find(e => e.num === doc.num);
+  if (latest && sameContent(latest, content)) return false;
+  dj.archive.unshift({
+    id: newId(), num: doc.num, title: doc.title,
+    purpose: content.purpose, rows: content.rows, ai: !!content.ai,
+    saved_at: new Date().toISOString()
+  });
+  return true;
+}
+
+async function archiveCurrentDoc() {
+  if (!currentProject) { showMsg('msg-edit-texts', 'اختر مشروعاً أولاً.', 'error'); return; }
+  const st = getEditorDocState();
+  if (!pushArchiveEntry(currentProject, st.doc, st)) {
+    showMsg('msg-edit-texts', 'آخر نسخة مؤرشفة من الوثيقة دي مطابقة للحالية، فما اتضافتش نسخة جديدة.', 'info');
+    return;
+  }
+  const err = await persistProject(currentProject);
+  if (err) { showMsg('msg-edit-texts', 'خطأ في الأرشفة: ' + err.message, 'error'); return; }
+  showMsg('msg-edit-texts', '🗄️ تمت أرشفة النسخة. هتلاقيها في تاب "الأرشيف".', 'success');
+}
+
+async function archiveAllDocs() {
+  if (!currentProject) { showMsg('msg-generate', 'اختر مشروعاً أولاً من صفحة الرئيسية.', 'error'); return; }
+  const overrides = (currentProject.data_json && currentProject.data_json.document_overrides) || {};
+  let added = 0;
+  PMP_DOCUMENTS.forEach(doc => {
+    const o = overrides[doc.num];
+    if (o && pushArchiveEntry(currentProject, doc, { purpose: o.purpose || doc.purpose, rows: (o.rows && o.rows.length) ? o.rows : doc.rows, ai: o.ai })) added++;
+  });
+  if (!added) { showMsg('msg-generate', 'مفيش وثائق معدّلة جديدة للأرشفة (إما ما اتعدّلتش أو متأرشفة بنفس المحتوى).', 'info'); return; }
+  const err = await persistProject(currentProject);
+  if (err) { showMsg('msg-generate', 'خطأ في الأرشفة: ' + err.message, 'error'); return; }
+  showMsg('msg-generate', `🗄️ تمت أرشفة ${added} وثيقة.`, 'success');
+}
+
+function populateArchiveFilter() {
+  const sel = document.getElementById('archive-project-filter');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">كل المشاريع</option>' + allProjects.map(p =>
+    `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (${getArchive(p).length})</option>`).join('');
+  if (prev) sel.value = prev;
+  else if (currentProject) sel.value = String(currentProject.id);
+}
+
+function findArchiveEntry(pid, eid) {
+  const project = allProjects.find(p => String(p.id) === String(pid));
+  if (!project) return {};
+  return { project, entry: getArchive(project).find(e => e.id === eid) };
+}
+
+function renderArchive() {
+  const pf = document.getElementById('archive-project-filter').value;
+  const q = document.getElementById('archive-search').value.trim().toLowerCase();
+  const items = [];
+  allProjects.forEach(p => {
+    if (pf && String(p.id) !== pf) return;
+    getArchive(p).forEach(e => {
+      const hay = (e.title + ' ' + e.purpose + ' ' + (e.rows || []).map(r => r.join(' ')).join(' ')).toLowerCase();
+      if (!q || hay.indexOf(q) !== -1) items.push({ p, e });
+    });
+  });
+  items.sort((a, b) => (b.e.saved_at || '').localeCompare(a.e.saved_at || ''));
+
+  const list = document.getElementById('archive-list');
+  if (!items.length) {
+    list.innerHTML = '<p style="color:#94a3b8;text-align:center;margin-top:16px;">الأرشيف فاضي. من تاب "تعديل النصوص" دوس "🗄️ أرشفة هذه النسخة".</p>';
+    return;
+  }
+  list.innerHTML = items.map(({ p, e }) => {
+    const pid = escapeHtml(p.id), eid = escapeHtml(e.id);
+    const date = e.saved_at ? new Date(e.saved_at).toLocaleString('ar-EG') : '-';
+    const snip = (e.purpose || '').slice(0, 140);
+    return `
+      <div class="arch-item">
+        <div class="arch-main">
+          <b>${escapeHtml(e.num)}. ${escapeHtml(e.title)}</b> ${e.ai ? '<span class="badge-ai">🤖 AI</span>' : ''}<br>
+          <small>مشروع: ${escapeHtml(p.name)} — ${escapeHtml(date)}</small>
+          <div class="arch-snip">${escapeHtml(snip)}${(e.purpose || '').length > 140 ? '…' : ''}</div>
+        </div>
+        <div class="arch-actions">
+          <button onclick="archivePrint('${pid}','${eid}')">🖨️ عرض / طباعة</button>
+          <button onclick="archiveShare('${pid}','${eid}')">📲 باركود</button>
+          <button onclick="archiveRestore('${pid}','${eid}')">↩️ استرجاع للمحرر</button>
+          <button class="danger" onclick="archiveDelete('${pid}','${eid}')">🗑️</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function archivePrint(pid, eid) {
+  const { project, entry } = findArchiveEntry(pid, eid);
+  if (!entry) return;
+  const doc = PMP_DOCUMENTS.find(d => d.num === entry.num);
+  if (!doc) return;
+  const { manager, client } = getProjectParties(project);
+  openPrintWindow(buildDocPageHtml(doc, entry, manager, client, project.name), entry.title);
+}
+
+function archiveShare(pid, eid) {
+  const { project, entry } = findArchiveEntry(pid, eid);
+  if (!entry) return;
+  const { manager, client } = getProjectParties(project);
+  openShareModal({ n: entry.num, p: entry.purpose, r: entry.rows, m: manager, c: client, pn: project.name, a: entry.ai ? 1 : 0 }, entry.title, project.name);
+}
+
+async function archiveRestore(pid, eid) {
+  const { project, entry } = findArchiveEntry(pid, eid);
+  if (!entry) return;
+  if (!confirm(`هيتم استبدال محتوى وثيقة "${entry.title}" الحالي في مشروع "${project.name}" بالنسخة المؤرشفة. متأكد؟`)) return;
+  const overrides = (ensureDataJson(project).document_overrides = project.data_json.document_overrides || {});
+  overrides[entry.num] = { purpose: entry.purpose, rows: entry.rows.map(r => r.slice()), ai: !!entry.ai };
+  const err = await persistProject(project);
+  if (err) { showMsg('msg-archive', 'خطأ في الاسترجاع: ' + err.message, 'error'); return; }
+  currentProject = project;
+  fillProjectForm(project);
+  showView('edit-texts');
+  document.getElementById('doc-select').value = entry.num;
+  loadDocText();
+  showMsg('msg-edit-texts', 'تم استرجاع النسخة المؤرشفة للمحرر.', 'success');
+}
+
+async function archiveDelete(pid, eid) {
+  const { project, entry } = findArchiveEntry(pid, eid);
+  if (!entry) return;
+  if (!confirm(`حذف نسخة "${entry.title}" من الأرشيف نهائياً؟`)) return;
+  project.data_json.archive = getArchive(project).filter(e => e.id !== eid);
+  const err = await persistProject(project);
+  if (err) { showMsg('msg-archive', 'خطأ في الحذف: ' + err.message, 'error'); return; }
+  populateArchiveFilter();
+  renderArchive();
+}
+
+// ============================================================
+// المشاركة: رابط + باركود + واتساب
+// (محتوى الوثيقة نفسه داخل الرابط، بدون تخزين على سيرفر)
+// ============================================================
+function bytesToB64Url(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function b64UrlToBytes(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  const bin = atob(str);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+async function encodeSharePayload(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  if (typeof CompressionStream !== 'undefined') {
+    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+    const buf = new Uint8Array(await new Response(stream).arrayBuffer());
+    return 'z.' + bytesToB64Url(buf);
+  }
+  return 'p.' + bytesToB64Url(bytes);
+}
+
+async function decodeSharePayload(token) {
+  const kind = token.slice(0, 2);
+  const bytes = b64UrlToBytes(token.slice(2));
+  let raw = bytes;
+  if (kind === 'z.') {
+    if (typeof DecompressionStream === 'undefined') throw new Error('متصفحك قديم ومش بيدعم فك الضغط.');
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    raw = new Uint8Array(await new Response(stream).arrayBuffer());
+  } else if (kind !== 'p.') {
+    throw new Error('رابط غير صالح.');
+  }
+  return JSON.parse(new TextDecoder().decode(raw));
+}
+
+let _shareCtx = null;
+
+async function buildShareUrl(payload) {
+  payload.d = new Date().toISOString().slice(0, 10);
+  return location.href.split('#')[0] + '#share=' + await encodeSharePayload(payload);
+}
+
+function makeQr(text) {
+  if (typeof qrcode === 'undefined') throw new Error('مكتبة الباركود ما اتحملتش (تأكد من الإنترنت).');
+  for (const level of ['M', 'L']) {
+    try { const qr = qrcode(0, level); qr.addData(text, 'Byte'); qr.make(); return qr; }
+    catch (e) { if (level === 'L') throw e; }
+  }
+}
+
+function qrToSvg(qr) {
+  const n = qr.getModuleCount(), m = 4;
+  let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c + m},${r + m}h1v1h-1z`;
+  const size = n + m * 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" style="width:320px;max-width:100%;height:auto;"><rect width="${size}" height="${size}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+}
+
+function qrToCanvas(qr) {
+  const n = qr.getModuleCount(), m = 4;
+  const scale = Math.max(4, Math.floor(900 / (n + m * 2)));
+  const size = (n + m * 2) * scale;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#000';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) ctx.fillRect((c + m) * scale, (r + m) * scale, scale, scale);
+  return canvas;
+}
+
+async function openShareModal(payload, title, projectName) {
+  const wrap = document.getElementById('share-qr-wrap');
+  const note = document.getElementById('share-note');
+  document.getElementById('share-doc-title').textContent = title + (projectName ? ' — ' + projectName : '');
+  wrap.innerHTML = '<span class="spinner" style="border-color:#94a3b8;border-top-color:#0284c7;"></span>';
+  note.innerHTML = '';
+  document.getElementById('share-modal-overlay').classList.add('active');
+
+  try {
+    const url = await buildShareUrl(payload);
+    _shareCtx = { url, title, projectName, qr: null };
+    const notes = [];
+    if (location.protocol === 'file:') {
+      notes.push('⚠️ الملف مفتوح من جهازك (file://) فالرابط مش هيفتح عند اللي هتبعتله. ارفع الملف على استضافة (زي GitHub Pages أو Netlify أو Supabase) وافتحه من هناك قبل ما تشارك.');
+    }
+    try {
+      _shareCtx.qr = makeQr(url);
+      wrap.innerHTML = qrToSvg(_shareCtx.qr);
+      if (url.length > 1800) notes.push('الوثيقة كبيرة فالباركود كثيف؛ قرّب الكاميرا وخلي الشاشة منوّرة، أو ابعت الرابط على واتساب.');
+    } catch (e) {
+      wrap.innerHTML = '';
+      notes.push('الوثيقة كبيرة على الباركود. استخدم زر واتساب أو نسخ الرابط.');
+    }
+    note.innerHTML = notes.map(t => `<div class="msg info" style="text-align:right;">${escapeHtml(t)}</div>`).join('');
+  } catch (e) {
+    wrap.innerHTML = '';
+    note.innerHTML = `<div class="msg error">تعذّر إنشاء رابط المشاركة: ${escapeHtml(e.message || e)}</div>`;
+  }
+}
+
+function closeShareModal() { document.getElementById('share-modal-overlay').classList.remove('active'); }
+
+function shareText() {
+  return `${_shareCtx.title}${_shareCtx.projectName ? '\nالمشروع: ' + _shareCtx.projectName : ''}\n${_shareCtx.url}`;
+}
+
+function shareToWhatsApp() {
+  if (!_shareCtx) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent(shareText()), '_blank');
+}
+
+async function shareQrImage() {
+  if (!_shareCtx || !_shareCtx.qr) { alert('مفيش باركود متاح للوثيقة دي.'); return; }
+  const canvas = qrToCanvas(_shareCtx.qr);
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+  const file = new File([blob], 'document-qr.png', { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: _shareCtx.title, text: shareText() }); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'document-qr.png';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+async function copyShareLink() {
+  if (!_shareCtx) return;
+  try { await navigator.clipboard.writeText(_shareCtx.url); alert('تم نسخ الرابط.'); }
+  catch (e) { prompt('انسخ الرابط:', _shareCtx.url); }
+}
+
+async function shareCurrentDoc() {
+  if (!currentProject) { showMsg('msg-edit-texts', 'اختر مشروعاً أولاً.', 'error'); return; }
+  const st = getEditorDocState();
+  const { manager, client } = getProjectParties(currentProject);
+  openShareModal({ n: st.doc.num, p: st.purpose, r: st.rows, m: manager, c: client, pn: currentProject.name, a: st.ai ? 1 : 0 }, st.doc.title, currentProject.name);
+}
+
+// ============================================================
+// عرض وثيقة مُشارَكة (بدون تسجيل دخول، للقراءة والطباعة فقط)
+// ============================================================
+async function initSharedView() {
+  try {
+    const o = await decodeSharePayload(location.hash.slice('#share='.length));
+    const doc = PMP_DOCUMENTS.find(d => d.num === String(o.n));
+    if (!doc) throw new Error('الوثيقة غير موجودة.');
+    const str = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
+    const rows = (Array.isArray(o.r) ? o.r.slice(0, 60) : []).map(r => normalizeRow((Array.isArray(r) ? r : []).map(c => str(c, 2000)), doc.headers.length));
+    const content = { purpose: str(o.p, 5000), rows, ai: !!o.a };
+    const page = buildDocPageHtml(doc, content, str(o.m, 200) || getProjectParties().manager, str(o.c, 200) || getProjectParties().client, str(o.pn, 200));
+    const note = `<div style="max-width:794px;margin:8px auto;text-align:center;font-size:12px;color:#64748b;">نسخة للقراءة والطباعة فقط — تمت مشاركتها من PMP Master Studio${o.d ? ' بتاريخ ' + escapeHtml(str(o.d, 10)) : ''}</div>`;
+    const html = buildReportShell(page + note, doc.title);
+    document.open(); document.write(html); document.close();
+  } catch (e) {
+    document.body.innerHTML = '<div style="font-family:Tahoma,sans-serif;text-align:center;margin-top:60px;direction:rtl;">تعذّر فتح الوثيقة المُشارَكة: الرابط غير صالح أو ناقص. اطلب من المُرسِل إعادة إرسال الرابط كاملاً.</div>';
+  }
+}
+</script>
+</body>
+</html>
