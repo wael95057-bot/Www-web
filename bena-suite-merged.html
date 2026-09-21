@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BENA | موسوعة بناء والتحول الرقمي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEEBE1; --blueprint:#12324A; --blueprint-2:#1E4B6D;
+  --line:#D8D3C4; --orange:#D65A2C; --ink:#1B2A33; --card:#FFFFFF;
+  --green:#1E8E5A; --red:#B23A2C;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'Tajawal',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+[dir="ltr"] body, .ltr{ font-family:'Tajawal',sans-serif; }
+.app{ max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; background:var(--paper); position:relative; }
+
+/* App bar */
+.appbar{
+  background:var(--blueprint); color:#fff;
+  padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:20;
+}
+.appbar .brand{ display:flex; align-items:center; gap:8px; }
+.appbar .brand .mark{ width:26px;height:26px;border:2px solid var(--orange); border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; }
+.appbar h1{ font-family:'Cairo',sans-serif; font-size:15px; font-weight:700; margin:0; }
+.langbtn{
+  background:transparent; border:1px solid #ffffff55; color:#fff; border-radius:14px;
+  padding:6px 12px; font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer;
+}
+
+/* Views */
+main{ flex:1; padding:18px 16px 96px; }
+.view{ display:none; animation:fade .18s ease; }
+.view.active{ display:block; }
+@keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+/* Cards */
+.card{ background:var(--card); border:1px solid var(--line); border-top:3px solid var(--orange); border-radius:6px; padding:18px; margin-bottom:14px; }
+.eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; color:var(--orange); text-transform:uppercase; margin-bottom:6px; }
+h2.title{ font-family:'Cairo',sans-serif; font-weight:800; font-size:19px; color:var(--blueprint); margin:0 0 4px; }
+p.desc{ font-size:13.5px; color:var(--blueprint-2); margin:0 0 14px; line-height:1.6; }
+label{ display:block; font-size:12.5px; font-weight:600; color:var(--blueprint-2); margin:12px 0 5px; }
+input[type=text], input[type=number], input[type=date]{
+  width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:5px;
+  font-family:'IBM Plex Mono',monospace; font-size:14px; background:#FBFAF6; color:var(--ink);
+}
+textarea, select{
+  width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:5px;
+  font-family:'Tajawal',sans-serif; font-size:13.5px; background:#FBFAF6; color:var(--ink);
+}
+textarea{ min-height:70px; resize:vertical; }
+input:focus, textarea:focus, select:focus{ outline:2px solid var(--orange); outline-offset:1px; }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+button.btn{ border:none; border-radius:6px; padding:11px 16px; font-family:'Cairo',sans-serif; font-weight:700; font-size:13.5px; cursor:pointer; }
+.btn-primary{ background:var(--orange); color:#fff; }
+.btn-outline{ background:transparent; border:1.5px solid var(--blueprint); color:var(--blueprint); }
+.btn-ghost{ background:var(--paper); color:var(--blueprint-2); border:1px solid var(--line); }
+.btn-danger{ background:transparent; color:#B23A2C; border:1px solid #B23A2C55; }
+.btn-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+.btn-row button{ flex:1; min-width:90px; }
+
+/* Home / profile */
+.profile-line{ display:flex; justify-content:space-between; padding:9px 0; border-top:1px solid var(--line); font-size:13px; }
+.profile-line:first-child{ border-top:none; }
+.profile-line b{ color:var(--blueprint); font-family:'Cairo',sans-serif; font-weight:700; }
+a.site{ color:var(--orange); text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:13px; }
+
+/* Project list */
+.proj-item{ background:#fff; border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.proj-item.active{ border-color:var(--orange); background:#FFF6F1; }
+.proj-info b{ font-family:'Cairo',sans-serif; font-size:14px; color:var(--blueprint); display:block; }
+.proj-info span{ font-size:11.5px; color:var(--blueprint-2); font-family:'IBM Plex Mono',monospace; }
+.proj-actions{ display:flex; gap:6px; }
+.icon-btn{ background:transparent; border:1px solid var(--line); border-radius:5px; padding:6px 9px; font-size:12px; cursor:pointer; color:var(--blueprint-2); }
+.empty{ text-align:center; padding:30px 10px; color:var(--blueprint-2); font-size:13.5px; }
+
+/* Notes / DT pager */
+.pager-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.pager-dots{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--blueprint-2); }
+.active-proj-tag{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:var(--blueprint); color:#fff; padding:4px 10px; border-radius:12px; display:inline-block; margin-bottom:12px; }
+.warn{ background:#FFF3CD; border:1px solid #FFE29A; padding:10px 12px; border-radius:6px; font-size:12.5px; color:#8a6d00; margin-bottom:12px; }
+.out-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid var(--line); }
+.out-row:first-child{ border-top:none; }
+.out-row .lbl{ font-size:13px; color:var(--blueprint-2); }
+.out-row .val{ font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--orange); font-size:14px; direction:ltr; }
+.nav-arrows{ display:flex; justify-content:space-between; margin-top:16px; }
+.nav-arrows button{ background:var(--blueprint); color:#fff; border:none; border-radius:6px; padding:10px 18px; font-family:'Cairo',sans-serif; font-weight:700; font-size:13px; cursor:pointer; }
+.nav-arrows button:disabled{ opacity:.35; }
+
+/* DT-9 extras */
+.output-box{ background:#FBFAF6; border-right:3px solid var(--orange); border-radius:6px; padding:12px; margin-top:12px; font-size:13px; line-height:1.85; white-space:pre-wrap; }
+.checklist label{ display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:6px; font-weight:normal; color:var(--ink); }
+.checklist input{ width:auto; }
+.kpi-cards{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+.kpi-card{ background:#fff; border:1px solid var(--line); border-right:3px solid var(--orange); border-radius:6px; padding:10px; }
+.kpi-card .lbl{ font-size:11px; color:var(--blueprint-2); }
+.kpi-card .val{ font-size:17px; font-weight:800; color:var(--blueprint); font-family:'IBM Plex Mono',monospace; }
+.kpi-card .delta{ font-size:11px; }
+.delta.good{ color:var(--green); } .delta.bad{ color:var(--red); }
+table.dtt{ width:100%; border-collapse:collapse; margin-top:8px; font-size:11.5px; }
+table.dtt th, table.dtt td{ border:1px solid var(--line); padding:5px; text-align:center; }
+table.dtt th{ background:var(--blueprint); color:#fff; font-size:10.5px; }
+table.dtt input, table.dtt select{ padding:4px; font-size:11.5px; }
+
+/* Bottom tabs */
+.tabbar{
+  position:fixed; bottom:0; left:0; right:0; z-index:30;
+  background:#fff; border-top:1px solid var(--line);
+  max-width:480px; margin:0 auto;
+  display:flex;
+}
+.tabbar button, .tabbar label{
+  flex:1; background:none; border:none; padding:9px 2px 7px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  color:var(--blueprint-2); font-family:'Cairo',sans-serif; font-size:10px; font-weight:600;
+}
+.tabbar button .dot, .tabbar label .dot{ width:6px; height:6px; border-radius:50%; background:transparent; }
+.tabbar button.active, .tabbar label.active{ color:var(--orange); }
+.tabbar button.active .dot, .tabbar label.active .dot{ background:var(--orange); }
+
+/* No-JS / CSS-only fallback navigation (radio-driven tabs) */
+.jsnav{ position:absolute; opacity:0; pointer-events:none; width:0; height:0; }
+#nav-home:checked ~ main #view-home,
+#nav-projects:checked ~ main #view-projects,
+#nav-dtsteps:checked ~ main #view-dtsteps,
+#nav-notes:checked ~ main #view-notes,
+#nav-report:checked ~ main #view-report{ display:block; }
+#nav-home:checked ~ .tabbar label[for="nav-home"],
+#nav-projects:checked ~ .tabbar label[for="nav-projects"],
+#nav-dtsteps:checked ~ .tabbar label[for="nav-dtsteps"],
+#nav-notes:checked ~ .tabbar label[for="nav-notes"],
+#nav-report:checked ~ .tabbar label[for="nav-report"]{ color:var(--orange); }
+#nav-home:checked ~ .tabbar label[for="nav-home"] .dot,
+#nav-projects:checked ~ .tabbar label[for="nav-projects"] .dot,
+#nav-dtsteps:checked ~ .tabbar label[for="nav-dtsteps"] .dot,
+#nav-notes:checked ~ .tabbar label[for="nav-notes"] .dot,
+#nav-report:checked ~ .tabbar label[for="nav-report"] .dot{ background:var(--orange); }
+.nojs-warn{ display:none; }
+.no-js .nojs-warn{ display:block; }
+
+/* Print scoping */
+.print-only{ display:none; }
+@media print{
+  .tabbar, .appbar, .no-print{ display:none !important; }
+  main{ padding:0; }
+  .view{ display:none !important; }
+  .view.printing{ display:block !important; }
+  body{ background:#fff; }
+  .print-only{ display:block; }
+  .card{ border:1px solid #999; box-shadow:none; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- CSS-only fallback tab switches (work even if JavaScript is disabled) -->
+  <input class="jsnav" type="radio" name="navtab" id="nav-home" checked>
+  <input class="jsnav" type="radio" name="navtab" id="nav-projects">
+  <input class="jsnav" type="radio" name="navtab" id="nav-dtsteps">
+  <input class="jsnav" type="radio" name="navtab" id="nav-notes">
+  <input class="jsnav" type="radio" name="navtab" id="nav-report">
+
+  <div class="appbar">
+    <div class="brand">
+      <div class="mark">B</div>
+      <h1 id="appTitle">BENA</h1>
+    </div>
+    <button class="langbtn no-print" onclick="setLang(state.lang==='ar'?'en':'ar')" id="langBtn">EN</button>
+  </div>
+
+  <main>
+
+    <!-- HOME / ABOUT -->
+    <section class="view active" id="view-home">
+      <div class="card">
+        <div class="eyebrow" data-t="eyebrowProfile"></div>
+        <h2 class="title" data-t="appNameFull"></h2>
+        <p class="desc" data-t="appTagline"></p>
+        <div class="profile-line"><b data-t="lblProgram"></b><span data-t="valProgram"></span></div>
+        <div class="profile-line"><b data-t="lblConsultant"></b><span data-t="valConsultant"></span></div>
+        <div class="profile-line"><b data-t="lblCreds"></b><span data-t="valCreds"></span></div>
+        <div class="profile-line"><b data-t="lblScope"></b><span data-t="valScope"></span></div>
+        <div class="profile-line"><b data-t="lblSite"></b><a class="site" href="https://www.bena-blackbox.com" target="_blank">bena-blackbox.com</a></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow" data-t="eyebrowHow"></div>
+        <h2 class="title" data-t="howTitle" style="font-size:16px;"></h2>
+        <p class="desc" data-t="howDesc" style="margin-bottom:0;"></p>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="view" id="view-projects">
+      <noscript><div class="warn">⚠️ لتفعيل تسجيل المشروعات وحفظها، يجب تشغيل JavaScript في إعدادات WebView الخاصة بالتطبيق. / To register and save projects, JavaScript must be enabled in the app's WebView settings.</div></noscript>
+      <div class="card">
+        <div class="eyebrow" data-t="eyebrowNewProj"></div>
+        <h2 class="title" data-t="newProjTitle" style="font-size:17px;"></h2>
+        <label data-t="fldProjName"></label>
+        <input type="text" id="pName">
+        <div class="row2">
+          <div><label data-t="fldClient"></label><input type="text" id="pClient"></div>
+          <div><label data-t="fldLocation"></label><input type="text" id="pLocation"></div>
+        </div>
+        <label data-t="fldDate"></label>
+        <input type="date" id="pDate">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="createProject()" data-t="btnCreate"></button>
+        </div>
+      </div>
+
+      <div class="eyebrow" style="margin:18px 0 8px;" data-t="eyebrowRegistry"></div>
+      <div id="projList"></div>
+    </section>
+
+    <!-- DIGITAL TRANSFORMATION 9-STEPS PAGER -->
+    <section class="view" id="view-dtsteps">
+      <noscript><div class="warn">⚠️ لعرض خطوات التحول الرقمي، يجب تشغيل JavaScript. / JavaScript must be enabled to view the transformation steps.</div></noscript>
+      <div id="dtActiveProjTagWrap"></div>
+      <div id="dtNoProjWarn" class="warn no-print" style="display:none;" data-t="warnNoProject"></div>
+
+      <div class="pager-head no-print">
+        <span class="pager-dots" id="dtPagerDots"></span>
+      </div>
+
+      <div id="dtStepCard"></div>
+
+      <div class="nav-arrows no-print">
+        <button id="dtPrevBtn" onclick="changeDT(-1)">‹</button>
+        <button id="dtNextBtn" onclick="changeDT(1)">›</button>
+      </div>
+    </section>
+
+    <!-- NOTES PAGER (10 INITIATIVES) -->
+    <section class="view" id="view-notes">
+      <noscript><div class="warn">⚠️ لعرض النوت الحسابية وحساب النتائج، يجب تشغيل JavaScript في إعدادات WebView الخاصة بالتطبيق. / To display calculation notes and compute results, JavaScript must be enabled in the app's WebView settings.</div></noscript>
+      <div id="activeProjTagWrap"></div>
+      <div id="noProjWarn" class="warn no-print" style="display:none;" data-t="warnNoProject"></div>
+
+      <div class="pager-head no-print">
+        <span class="pager-dots" id="pagerDots"></span>
+      </div>
+
+      <div id="noteCard"></div>
+
+      <div class="nav-arrows no-print">
+        <button id="prevBtn" onclick="changeNote(-1)">‹</button>
+        <button id="nextBtn" onclick="changeNote(1)">›</button>
+      </div>
+    </section>
+
+    <!-- FINAL REPORT -->
+    <section class="view" id="view-report">
+      <noscript><div class="warn">⚠️ لعرض التقرير النهائي، يجب تشغيل JavaScript في إعدادات WebView الخاصة بالتطبيق. / To display the final report, JavaScript must be enabled in the app's WebView settings.</div></noscript>
+      <div class="card no-print">
+        <div class="eyebrow" data-t="reportEyebrow"></div>
+        <h2 class="title" data-t="reportTitle" style="font-size:17px;"></h2>
+        <p class="desc" data-t="reportDesc"></p>
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="printReport()" data-t="btnPrint"></button>
+          <button class="btn btn-ghost" onclick="copyReport()" data-t="btnCopy"></button>
+        </div>
+        <div class="eyebrow" id="reportMsg" style="margin-top:10px;color:var(--blueprint-2);"></div>
+      </div>
+      <div id="reportWarn" class="warn no-print" style="display:none;" data-t="noProjForReport"></div>
+      <div id="reportBody"></div>
+    </section>
+
+  </main>
+
+  <div class="tabbar no-print">
+    <label for="nav-home" data-view="home" onclick="showView('home')"><span class="dot"></span><span data-t="tabHome"></span></label>
+    <label for="nav-projects" data-view="projects" onclick="showView('projects')"><span class="dot"></span><span data-t="tabProjects"></span></label>
+    <label for="nav-dtsteps" data-view="dtsteps" onclick="showView('dtsteps')"><span class="dot"></span><span data-t="tabDT"></span></label>
+    <label for="nav-notes" data-view="notes" onclick="showView('notes')"><span class="dot"></span><span data-t="tabNotes"></span></label>
+    <label for="nav-report" data-view="report" onclick="showView('report')"><span class="dot"></span><span data-t="tabReport"></span></label>
+  </div>
+
+</div>
+
+<script>
+/* ============ TRANSLATIONS ============ */
+const T = {
+  ar:{
+    eyebrowProfile:"صفحة تعريفية — Project Profile",
+    appNameFull:"موسوعة بناء للتحول الرقمي",
+    appTagline:"منظومة متكاملة: منهجية التحول الرقمي بـ9 خطوات + 10 مبادرات ونوت حسابية جاهزة — سجل مشروعات موحّد وتقرير نهائي شامل.",
+    lblProgram:"اسم البرنامج", valProgram:"موسوعة بناء — منهجية 9 خطوات + 10 مبادرات",
+    lblConsultant:"الاستشاري والمعد", valConsultant:"م. وائل علي عويس محمود",
+    lblCreds:"المؤهلات", valCreds:"PMP · FIDIC · QAI · ماجستير سالفورد",
+    lblScope:"نطاق التطبيق", valScope:"مصر · الإمارات · المنطقة",
+    lblSite:"الموقع",
+    eyebrowHow:"طريقة الاستخدام", howTitle:"3 خطوات بسيطة",
+    howDesc:"1) سجّل بيانات مشروعك من تبويب «المشروعات». 2) افتح تبويب «التحول الرقمي» لتنفيذ المنهجية بخطواتها التسع، أو تبويب «النوت الحسابية» لحساب المبادرات العشر — لنفس المشروع النشط. 3) افتح «التقرير النهائي» لعرض كل شيء في مستند واحد قابل للطباعة أو النسخ.",
+    eyebrowNewProj:"تسجيل مشروع جديد", newProjTitle:"بيانات المشروع",
+    fldProjName:"اسم المشروع", fldClient:"العميل / الجهة", fldLocation:"الموقع",
+    fldDate:"تاريخ البدء", btnCreate:"➕ إنشاء وتفعيل المشروع",
+    eyebrowRegistry:"سجل المشروعات",
+    emptyProjects:"لا توجد مشروعات مسجلة بعد",
+    btnActivate:"تفعيل", btnDelete:"حذف", tagActive:"نشط",
+    tabHome:"تعريف", tabProjects:"المشروعات", tabDT:"9 خطوات", tabNotes:"النوت الحسابية", tabReport:"التقرير النهائي",
+    reportEyebrow:"التقرير الشامل", reportTitle:"التقرير النهائي — المنهجية والمبادرات",
+    reportDesc:"يجمع هذا التقرير خطوات التحول الرقمي التسع ومخرجات المبادرات العشر للمشروع النشط في مستند واحد قابل للطباعة أو النسخ.",
+    noProjForReport:"⚠️ لا يوجد مشروع نشط. فعّل مشروعاً من تبويب «المشروعات» لعرض التقرير النهائي.",
+    reportFieldNote:"* البنود التي لم تُحفظ بياناتها بعد تظهر بالقيم الافتراضية أو فارغة.",
+    warnNoProject:"⚠️ لا يوجد مشروع نشط. من فضلك أنشئ أو فعّل مشروعاً من تبويب «المشروعات» لحفظ البيانات.",
+    activeProjPrefix:"المشروع النشط: ",
+    noProjSelected:"— لا يوجد —",
+    pageOf:"نوتة", ofWord:"من",
+    btnPrint:"🖨️ طباعة", btnCopy:"📋 نسخ", btnSave:"💾 حفظ",
+    savedMsg:"تم الحفظ ✓", copiedMsg:"تم النسخ ✓",
+    secInputs:"المدخلات", secOutputs:"المخرجات المحسوبة",
+    unitCurrency:"عملة", unitDays:"يوم", unitPercent:"%", unitHours:"ساعة",
+    printedFor:"تقرير — إعداد: م. وائل علي عويس محمود | bena-blackbox.com",
+    confirmDelete:"هل تريد حذف هذا المشروع وكل بياناته؟",
+    dtStepOfWord:"خطوة", dtReportHeading:"1️⃣ منهجية التحول الرقمي (9 خطوات)", initReportHeading:"2️⃣ المبادرات والنوت الحسابية (10 مبادرات)",
+    dtNotDone:"لم تُستكمل هذه الخطوة بعد"
+  },
+  en:{
+    eyebrowProfile:"Project Profile",
+    appNameFull:"BENA Digital Transformation Encyclopedia",
+    appTagline:"An integrated suite: the 9-step digital transformation methodology + 10 initiatives with ready calculation notes — a unified project registry and one consolidated final report.",
+    lblProgram:"Program Name", valProgram:"BENA — 9-Step Methodology + 10 Initiatives",
+    lblConsultant:"Consultant & Developer", valConsultant:"Eng. Wael Ali Ewis Mahmoud",
+    lblCreds:"Credentials", valCreds:"PMP · FIDIC · QAI · MSc Candidate, Salford UK",
+    lblScope:"Application Scope", valScope:"Egypt · UAE · MENA Region",
+    lblSite:"Website",
+    eyebrowHow:"How To Use", howTitle:"3 Simple Steps",
+    howDesc:"1) Register your project under the Projects tab. 2) Open the Digital Transformation tab to run the 9-step methodology, or the Calc Notes tab for the 10 initiatives — both use the same active project. 3) Open the Final Report to see everything in one printable or copyable document.",
+    eyebrowNewProj:"Register New Project", newProjTitle:"Project Data",
+    fldProjName:"Project Name", fldClient:"Client / Entity", fldLocation:"Location",
+    fldDate:"Start Date", btnCreate:"➕ Create & Activate Project",
+    eyebrowRegistry:"Project Registry",
+    emptyProjects:"No projects registered yet",
+    btnActivate:"Activate", btnDelete:"Delete", tagActive:"Active",
+    tabHome:"Home", tabProjects:"Projects", tabDT:"9 Steps", tabNotes:"Calc Notes", tabReport:"Final Report",
+    reportEyebrow:"Consolidated Report", reportTitle:"Final Report — Methodology & Initiatives",
+    reportDesc:"This report compiles the 9 digital transformation steps and the 10 initiatives' outputs for the active project into one printable or copyable document.",
+    noProjForReport:"⚠️ No active project. Activate a project from the Projects tab to view the final report.",
+    reportFieldNote:"* Items with no saved data yet are shown with default or blank values.",
+    warnNoProject:"⚠️ No active project. Please create or activate a project from the Projects tab to save data.",
+    activeProjPrefix:"Active project: ",
+    noProjSelected:"— none —",
+    pageOf:"Note", ofWord:"of",
+    btnPrint:"🖨️ Print", btnCopy:"📋 Copy", btnSave:"💾 Save",
+    savedMsg:"Saved ✓", copiedMsg:"Copied ✓",
+    secInputs:"Inputs", secOutputs:"Calculated Outputs",
+    unitCurrency:"currency", unitDays:"days", unitPercent:"%", unitHours:"hrs",
+    printedFor:"Report — Prepared by: Eng. Wael Ali Ewis Mahmoud | bena-blackbox.com",
+    confirmDelete:"Delete this project and all its data?",
+    dtStepOfWord:"Step", dtReportHeading:"1️⃣ Digital Transformation Methodology (9 Steps)", initReportHeading:"2️⃣ Initiatives & Calculation Notes (10 Initiatives)",
+    dtNotDone:"This step has not been completed yet"
+  }
+};
+
+function L(ar, en){ return state && state.lang==='en' ? en : ar; }
+
+/* ============ INITIATIVES CONFIG (10) ============ */
+const INITIATIVES = [
+  { code:"edai", nameAr:"EDAI — الإدارة بالبيانات والذكاء الاصطناعي", nameEn:"EDAI — Data & AI-Driven Management",
+    fields:[
+      {id:"acv", ar:"قيمة العقد السنوي", en:"Annual Contract Value", unit:"unitCurrency", def:5000000},
+      {id:"decisionTimeDays", ar:"زمن اتخاذ القرار الحالي", en:"Current Decision Time", unit:"unitDays", def:10},
+      {id:"inaccuracyRate", ar:"معدل عدم دقة البيانات الحالي", en:"Current Data Inaccuracy Rate", unit:"unitPercent", def:25}
+    ],
+    compute:(v)=>{
+      const newTime=v.decisionTimeDays*0.65;
+      const newAcc=100-v.inaccuracyRate*0.6;
+      const savings=v.acv*0.015;
+      return [
+        {ar:"زمن القرار الجديد", en:"New Decision Time", val:newTime.toFixed(1), unit:"unitDays"},
+        {ar:"دقة البيانات المتوقعة", en:"Expected Data Accuracy", val:newAcc.toFixed(1), unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"hptg", nameAr:"HPTG — حوكمة الفرق عالية الأداء", nameEn:"HPTG — High-Performance Team Governance",
+    fields:[
+      {id:"headcount", ar:"عدد أعضاء الفريق", en:"Team Headcount", unit:"", def:50},
+      {id:"avgMonthlyCost", ar:"متوسط التكلفة الشهرية للموظف", en:"Avg Monthly Cost per Employee", unit:"unitCurrency", def:15000},
+      {id:"conflictLossRate", ar:"نسبة هدر الوقت بسبب النزاعات", en:"Conflict & Duplication Loss Rate", unit:"unitPercent", def:15}
+    ],
+    compute:(v)=>{
+      const newLoss=v.conflictLossRate*0.4;
+      const savings=v.headcount*v.avgMonthlyCost*12*((v.conflictLossRate-newLoss)/100);
+      return [
+        {ar:"نسبة هدر الوقت الجديدة", en:"New Time-Loss Rate", val:newLoss.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة إنتاجية الفريق", en:"Team Productivity Gain", val:"35.0", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"insiyab", nameAr:"INSIYAB — ذكاء إدارة الاجتماعات", nameEn:"INSIYAB — Meeting Intelligence",
+    fields:[
+      {id:"attendees", ar:"عدد الحاضرين", en:"Attendees", unit:"", def:40},
+      {id:"meetingsPerWeek", ar:"اجتماعات أسبوعياً لكل موظف", en:"Meetings per Employee/Week", unit:"", def:5},
+      {id:"avgDurationHrs", ar:"متوسط مدة الاجتماع", en:"Avg Meeting Duration", unit:"unitHours", def:1.5},
+      {id:"hourlyRate", ar:"التكلفة الساعية للموظف", en:"Avg Hourly Rate", unit:"unitCurrency", def:100}
+    ],
+    compute:(v)=>{
+      const weeklyHours=v.attendees*v.meetingsPerWeek*v.avgDurationHrs;
+      const wastedBefore=weeklyHours*0.45;
+      const wastedAfter=wastedBefore*0.4;
+      const savings=(wastedBefore-wastedAfter)*v.hourlyRate*52;
+      return [
+        {ar:"إجمالي ساعات الاجتماعات أسبوعياً", en:"Total Weekly Meeting Hours", val:weeklyHours.toFixed(1), unit:"unitHours"},
+        {ar:"الساعات المهدرة بعد التطبيق (أسبوعياً)", en:"Wasted Hours After (weekly)", val:wastedAfter.toFixed(1), unit:"unitHours"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"bena", nameAr:"BENA — نظام التدقيق الداخلي", nameEn:"BENA — Internal Audit System",
+    fields:[
+      {id:"annualAudits", ar:"عدد عمليات التدقيق السنوية", en:"Annual Audits", unit:"", def:12},
+      {id:"ncrCount", ar:"عدد حالات عدم المطابقة (NCR)", en:"Non-Conformances (NCRs)", unit:"", def:50},
+      {id:"avgNcrDelayCost", ar:"متوسط تكلفة تأخير الحالة الواحدة", en:"Avg Cost per NCR Delay", unit:"unitCurrency", def:5000}
+    ],
+    compute:(v)=>{
+      const savings=v.ncrCount*v.avgNcrDelayCost*0.5;
+      return [
+        {ar:"الجاهزية الكاملة للتدقيق", en:"Full Audit Readiness", val:"90", unit:"unitDays"},
+        {ar:"نسبة تتبع حالات عدم المطابقة", en:"NCR Traceability", val:"100", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"iqan", nameAr:"IQAN — شبكة التأهيل وتطوير المواهب", nameEn:"IQAN — Talent Development Network",
+    fields:[
+      {id:"headcount2", ar:"إجمالي القوى العاملة", en:"Workforce Headcount", unit:"", def:100},
+      {id:"turnoverRate", ar:"معدل دوران الموظفين الحالي", en:"Current Turnover Rate", unit:"unitPercent", def:15},
+      {id:"replacementCost", ar:"تكلفة استبدال الموظف الواحد", en:"Replacement Cost per Hire", unit:"unitCurrency", def:30000}
+    ],
+    compute:(v)=>{
+      const newTurnover=v.turnoverRate*0.6;
+      const savings=v.headcount2*((v.turnoverRate-newTurnover)/100)*v.replacementCost;
+      return [
+        {ar:"معدل الدوران الجديد", en:"New Turnover Rate", val:newTurnover.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة الإنتاجية", en:"Productivity Increase", val:"25.0", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"iso9001", nameAr:"ISO 9001 — نظام إدارة الجودة", nameEn:"ISO 9001 — Quality Management System",
+    fields:[
+      {id:"annualContractValue", ar:"حجم الأعمال السنوي", en:"Annual Contract Value", unit:"unitCurrency", def:50000000},
+      {id:"reworkRate", ar:"معدل إعادة العمل الحالي", en:"Current Rework Rate", unit:"unitPercent", def:10},
+      {id:"inspectionCost", ar:"تكلفة الفحص التقليدية", en:"Current Inspection Cost", unit:"unitCurrency", def:500000}
+    ],
+    compute:(v)=>{
+      const newRework=v.reworkRate*0.6;
+      const savings=v.annualContractValue*((v.reworkRate-newRework)/100);
+      return [
+        {ar:"معدل إعادة العمل الجديد", en:"New Rework Rate", val:newRework.toFixed(1), unit:"unitPercent"},
+        {ar:"مدة الجاهزية للاعتماد", en:"Certification Readiness", val:"6", unit:""},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"raseen", nameAr:"RASEEN — البناء الرشيق بالذكاء الاصطناعي", nameEn:"RASEEN — AI-Driven Lean Construction",
+    fields:[
+      {id:"annualProjectValue", ar:"قيمة المشروع السنوية", en:"Annual Project Value", unit:"unitCurrency", def:50000000},
+      {id:"siteWasteRate", ar:"نسبة الهدر الميداني الحالي", en:"Current Site Waste Rate", unit:"unitPercent", def:12},
+      {id:"laydownCost", ar:"تكلفة إدارة مواد التشوين", en:"Laydown & Material Mgmt Cost", unit:"unitCurrency", def:1000000}
+    ],
+    compute:(v)=>{
+      const newWaste=v.siteWasteRate*0.6;
+      const savings=v.annualProjectValue*((v.siteWasteRate-newWaste)/100);
+      return [
+        {ar:"نسبة الهدر الميداني الجديدة", en:"New Site Waste Rate", val:newWaste.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة الإنتاجية الميدانية", en:"Field Productivity Increase", val:"30.0", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"ssl", nameAr:"SSL — الربط الذكي لأصحاب المصلحة", nameEn:"SSL — Stakeholder Smart-Link",
+    fields:[
+      {id:"stakeholders", ar:"عدد أصحاب المصلحة الرئيسيين", en:"Key Stakeholders", unit:"", def:25},
+      {id:"annualDisputes", ar:"عدد النزاعات السنوية الحالية", en:"Current Annual Disputes", unit:"", def:10},
+      {id:"avgDisputeCost", ar:"متوسط تكلفة النزاع الواحد", en:"Avg Cost per Dispute", unit:"unitCurrency", def:100000}
+    ],
+    compute:(v)=>{
+      const newDisputes=v.annualDisputes*0.3;
+      const savings=(v.annualDisputes-newDisputes)*v.avgDisputeCost;
+      return [
+        {ar:"عدد النزاعات المتوقع", en:"Expected Disputes", val:newDisputes.toFixed(1), unit:""},
+        {ar:"نسبة الالتزامات الموثقة", en:"Documented Commitments", val:"100", unit:"unitPercent"},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"dbb", nameAr:"DBB — الصندوق الأسود الرقمي", nameEn:"DBB — Digital Black Box",
+    fields:[
+      {id:"projectDurationDays", ar:"مدة المشروع", en:"Project Duration", unit:"unitDays", def:500},
+      {id:"claimFrequency", ar:"عدد المطالبات القانونية السنوية", en:"Disputed Claim Frequency", unit:"", def:5},
+      {id:"avgClaimCost", ar:"متوسط تكلفة المطالبة الواحدة", en:"Avg Cost per Claim", unit:"unitCurrency", def:250000},
+      {id:"currentCoverage", ar:"نسبة التغطية الميدانية الحالية", en:"Current Site Coverage", unit:"unitPercent", def:40}
+    ],
+    compute:(v)=>{
+      const newClaims=v.claimFrequency*0.1;
+      const savings=(v.claimFrequency-newClaims)*v.avgClaimCost;
+      return [
+        {ar:"نسبة التغطية الجديدة", en:"New Site Coverage", val:"100", unit:"unitPercent"},
+        {ar:"عدد المطالبات المتوقع", en:"Expected Claims", val:newClaims.toFixed(1), unit:""},
+        {ar:"الوفر المالي السنوي المقدر", en:"Estimated Annual Savings", val:fmt(savings), unit:"unitCurrency"}
+      ];
+    }},
+  { code:"sixsigma", nameAr:"6σ — دراسات السيجما الستة", nameEn:"6σ — Six Sigma Studies (DMAIC)",
+    fields:[
+      {id:"annualMaterialCost", ar:"تكلفة المواد السنوية", en:"Annual Material Cost", unit:"unitCurrency", def:20000000},
+      {id:"copqRate", ar:"معدل تكلفة سوء الجودة (COPQ)", en:"Cost of Poor Quality Rate", unit:"unitPercent", def:10},
+      {id:"productivityIndex", ar:"مؤشر الإنتاجية الحالي", en:"Current Productivity Index", unit:"unitPercent", def:100}
+    ],
+    compute:(v)=>{
+      const materialSavings=v.annualMaterialCost*0.15;
+      const newCopq=v.copqRate*0.5;
+      return [
+        {ar:"الوفر في تكلفة المواد", en:"Material Cost Savings", val:fmt(materialSavings), unit:"unitCurrency"},
+        {ar:"معدل COPQ الجديد", en:"New COPQ Rate", val:newCopq.toFixed(1), unit:"unitPercent"},
+        {ar:"زيادة الإنتاجية الميدانية", en:"Field Productivity Increase", val:"25.0", unit:"unitPercent"}
+      ];
+    }}
+];
+
+function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+
+/* ============ SAFE STORAGE (falls back to memory if DOM Storage is disabled) ============ */
+const memoryStore = {};
+const Store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return (k in memoryStore) ? memoryStore[k] : null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){ memoryStore[k]=v; } },
+  remove(k){ try{ localStorage.removeItem(k); }catch(e){ delete memoryStore[k]; } }
+};
+
+/* ============ STATE ============ */
+const state = {
+  lang: Store.get('bena_lang') || 'ar',
+  projects: JSON.parse(Store.get('bena_projects') || '[]'),
+  activeId: Store.get('bena_active') || null,
+  noteIndex: 0,
+  dtIndex: 0
+};
+
+function saveProjects(){ Store.set('bena_projects', JSON.stringify(state.projects)); }
+
+function getActiveProject(){ return state.projects.find(p=>p.id===state.activeId) || null; }
+
+/* ============ LANG ============ */
+function setLang(lang){
+  state.lang = lang;
+  Store.set('bena_lang', lang);
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('htmlRoot').setAttribute('dir', lang==='ar' ? 'rtl':'ltr');
+  document.getElementById('langBtn').textContent = lang==='ar' ? 'EN' : 'AR';
+  applyTranslations();
+  renderProjects();
+  renderDT();
+  renderNote();
+  renderReport();
+}
+function applyTranslations(){
+  const dict = T[state.lang];
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key = el.getAttribute('data-t');
+    if(dict[key]) el.textContent = dict[key];
+  });
+}
+
+/* ============ VIEWS / TABS ============ */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.tabbar button, .tabbar label').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  const radio = document.getElementById('nav-'+name);
+  if(radio) radio.checked = true;
+  if(name==='notes'){ renderNote(); }
+  if(name==='projects'){ renderProjects(); }
+  if(name==='dtsteps'){ renderDT(); }
+  if(name==='report'){ renderReport(); }
+}
+
+/* ============ PROJECTS ============ */
+function createProject(){
+  const name = document.getElementById('pName').value.trim();
+  if(!name){ document.getElementById('pName').focus(); return; }
+  const p = {
+    id: 'p_' + Date.now(),
+    name,
+    client: document.getElementById('pClient').value.trim(),
+    location: document.getElementById('pLocation').value.trim(),
+    date: document.getElementById('pDate').value || new Date().toISOString().slice(0,10),
+    data: {}, dt: {}
+  };
+  state.projects.unshift(p);
+  state.activeId = p.id;
+  Store.set('bena_active', p.id);
+  saveProjects();
+  document.getElementById('pName').value='';
+  document.getElementById('pClient').value='';
+  document.getElementById('pLocation').value='';
+  document.getElementById('pDate').value='';
+  renderProjects();
+  renderNote();
+  renderDT();
+}
+function activateProject(id){
+  state.activeId = id;
+  Store.set('bena_active', id);
+  renderProjects();
+  renderNote();
+  renderDT();
+}
+function deleteProject(id){
+  const dict = T[state.lang];
+  if(!confirm(dict.confirmDelete)) return;
+  state.projects = state.projects.filter(p=>p.id!==id);
+  if(state.activeId===id){ state.activeId=null; Store.remove('bena_active'); }
+  saveProjects();
+  renderProjects();
+  renderNote();
+  renderDT();
+}
+function renderProjects(){
+  const dict = T[state.lang];
+  const wrap = document.getElementById('projList');
+  if(state.projects.length===0){
+    wrap.innerHTML = '<div class="empty">'+dict.emptyProjects+'</div>';
+    return;
+  }
+  wrap.innerHTML = state.projects.map(p=>{
+    const isActive = p.id===state.activeId;
+    return '<div class="proj-item '+(isActive?'active':'')+'">'
+      + '<div class="proj-info"><b>'+escapeHtml(p.name)+'</b><span>'+escapeHtml(p.client||'')+(p.location?' · '+escapeHtml(p.location):'')+' · '+p.date+'</span></div>'
+      + '<div class="proj-actions">'
+      + (isActive ? '<span class="icon-btn" style="color:var(--orange);border-color:var(--orange);">'+dict.tagActive+'</span>' : '<button class="icon-btn" onclick="activateProject(\''+p.id+'\')">'+dict.btnActivate+'</button>')
+      + '<button class="icon-btn" onclick="deleteProject(\''+p.id+'\')">'+dict.btnDelete+'</button>'
+      + '</div></div>';
+  }).join('');
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ============ NOTES (10 INITIATIVES) ============ */
+function changeNote(delta){
+  state.noteIndex = Math.min(INITIATIVES.length-1, Math.max(0, state.noteIndex+delta));
+  renderNote();
+}
+function getInputValues(init){
+  const proj = getActiveProject();
+  const saved = proj && proj.data[init.code] ? proj.data[init.code] : {};
+  const v = {};
+  init.fields.forEach(f=>{ v[f.id] = (saved[f.id] !== undefined) ? saved[f.id] : f.def; });
+  return v;
+}
+function renderNote(){
+  const dict = T[state.lang];
+  const init = INITIATIVES[state.noteIndex];
+  const proj = getActiveProject();
+
+  document.getElementById('pagerDots').textContent = dict.pageOf+' '+(state.noteIndex+1)+' '+dict.ofWord+' '+INITIATIVES.length;
+  document.getElementById('prevBtn').disabled = state.noteIndex===0;
+  document.getElementById('nextBtn').disabled = state.noteIndex===INITIATIVES.length-1;
+  document.getElementById('prevBtn').textContent = state.lang==='ar' ? '›' : '‹';
+  document.getElementById('nextBtn').textContent = state.lang==='ar' ? '‹' : '›';
+
+  document.getElementById('activeProjTagWrap').innerHTML = proj
+    ? '<div class="active-proj-tag">'+dict.activeProjPrefix+escapeHtml(proj.name)+'</div>'
+    : '';
+  document.getElementById('noProjWarn').style.display = proj ? 'none' : 'block';
+
+  const v = getInputValues(init);
+  const outputs = init.compute(v);
+
+  const fieldsHtml = init.fields.map(f=>{
+    return '<label>'+(state.lang==='ar'?f.ar:f.en)+(f.unit?' ('+dict[f.unit]+')':'')+'</label>'
+      +'<input type="number" step="any" data-field="'+f.id+'" value="'+v[f.id]+'" oninput="onFieldInput()">';
+  }).join('');
+
+  const outputsHtml = outputs.map(o=>{
+    return '<div class="out-row"><span class="lbl">'+(state.lang==='ar'?o.ar:o.en)+'</span><span class="val">'+o.val+(o.unit?' '+dict[o.unit]:'')+'</span></div>';
+  }).join('');
+
+  document.getElementById('noteCard').innerHTML =
+    '<div class="card" id="printableNote">'
+    + '<div class="eyebrow">'+String(state.noteIndex+1).padStart(2,'0')+' / '+INITIATIVES.length+'</div>'
+    + '<h2 class="title">'+(state.lang==='ar'?init.nameAr:init.nameEn)+'</h2>'
+    + '<p class="desc print-only">'+dict.printedFor+(proj?' — '+escapeHtml(proj.name):'')+'</p>'
+    + '<div class="eyebrow" style="margin-top:10px;">'+dict.secInputs+'</div>'
+    + fieldsHtml
+    + '<div class="eyebrow" style="margin-top:16px;">'+dict.secOutputs+'</div>'
+    + outputsHtml
+    + '<div class="btn-row no-print">'
+    +   '<button class="btn btn-primary" onclick="saveNote()">'+dict.btnSave+'</button>'
+    +   '<button class="btn btn-outline" onclick="printNote()">'+dict.btnPrint+'</button>'
+    +   '<button class="btn btn-ghost" onclick="copyNote()">'+dict.btnCopy+'</button>'
+    + '</div>'
+    + '<div class="eyebrow" id="noteMsg" style="margin-top:10px;color:var(--blueprint-2);"></div>'
+    + '</div>';
+}
+function onFieldInput(){
+  const init = INITIATIVES[state.noteIndex];
+  const v = {};
+  document.querySelectorAll('#noteCard input[data-field]').forEach(inp=>{
+    v[inp.dataset.field] = parseFloat(inp.value) || 0;
+  });
+  const outputs = init.compute(v);
+  const dict = T[state.lang];
+  const rows = document.querySelectorAll('#noteCard .out-row .val');
+  outputs.forEach((o,i)=>{ if(rows[i]) rows[i].textContent = o.val+(o.unit?' '+dict[o.unit]:''); });
+}
+function collectCurrentValues(){
+  const v = {};
+  document.querySelectorAll('#noteCard input[data-field]').forEach(inp=>{
+    v[inp.dataset.field] = parseFloat(inp.value) || 0;
+  });
+  return v;
+}
+function saveNote(){
+  const dict = T[state.lang];
+  const proj = getActiveProject();
+  const msg = document.getElementById('noteMsg');
+  if(!proj){ msg.textContent = dict.warnNoProject; return; }
+  const init = INITIATIVES[state.noteIndex];
+  proj.data[init.code] = collectCurrentValues();
+  saveProjects();
+  msg.textContent = dict.savedMsg;
+  setTimeout(()=>{ if(msg) msg.textContent=''; }, 2000);
+}
+function printNote(){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('printing'));
+  document.getElementById('view-notes').classList.add('printing');
+  window.print();
+}
+function copyNote(){
+  const dict = T[state.lang];
+  const init = INITIATIVES[state.noteIndex];
+  const proj = getActiveProject();
+  const v = collectCurrentValues();
+  const outputs = init.compute(v);
+  let text = (state.lang==='ar'?init.nameAr:init.nameEn) + '\n';
+  if(proj) text += (dict.activeProjPrefix)+proj.name+'\n';
+  text += '\n'+dict.secInputs+':\n';
+  init.fields.forEach(f=>{ text += '- '+(state.lang==='ar'?f.ar:f.en)+': '+v[f.id]+'\n'; });
+  text += '\n'+dict.secOutputs+':\n';
+  outputs.forEach(o=>{ text += '- '+(state.lang==='ar'?o.ar:o.en)+': '+o.val+(o.unit?' '+dict[o.unit]:'')+'\n'; });
+  text += '\n'+dict.printedFor;
+  navigator.clipboard.writeText(text).then(()=>{
+    const msg = document.getElementById('noteMsg');
+    if(msg){ msg.textContent = dict.copiedMsg; setTimeout(()=>{ if(msg) msg.textContent=''; }, 2000); }
+  });
+}
+
+/* ============ DIGITAL TRANSFORMATION — 9 STEPS ============ */
+const DT_TITLES = [
+  {ar:"الرؤية والأهداف التشغيلية", en:"Vision & Operational Objectives"},
+  {ar:"تحليل الفجوات (الأفراد والعمليات)", en:"Gap Analysis (People & Process)"},
+  {ar:"نشر الثقافة الرقمية وإدارة التغيير", en:"Digital Culture & Change Management"},
+  {ar:"البرنامج التدريبي وجدول الكوادر", en:"Training & Capacity Building"},
+  {ar:"النموذج الأولي (Pilot) بمنهجية أجايل", en:"Pilot Project (Agile)"},
+  {ar:"تنقية العمليات والأتمتة (Digital Lean)", en:"Digital Lean & Process Automation"},
+  {ar:"البنية التحتية والسحابة والميزانية", en:"Infrastructure, Cloud & Budget"},
+  {ar:"مؤشرات الأداء الرقمية (KPIs)", en:"Digital Transformation KPIs"},
+  {ar:"التحسين المستمر والحوكمة", en:"Continuous Improvement & Governance"}
+];
+
+function getDT(){
+  const proj = getActiveProject();
+  if(!proj) return null;
+  if(!proj.dt) proj.dt = {};
+  return proj.dt;
+}
+function changeDT(delta){
+  state.dtIndex = Math.min(8, Math.max(0, state.dtIndex+delta));
+  renderDT();
+}
+function dtEsc(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+function renderDT(){
+  const dict = T[state.lang];
+  const proj = getActiveProject();
+  const idx = state.dtIndex;
+
+  document.getElementById('dtPagerDots').textContent = dict.dtStepOfWord+' '+(idx+1)+' '+dict.ofWord+' 9';
+  document.getElementById('dtPrevBtn').disabled = idx===0;
+  document.getElementById('dtNextBtn').disabled = idx===8;
+  document.getElementById('dtPrevBtn').textContent = state.lang==='ar' ? '›' : '‹';
+  document.getElementById('dtNextBtn').textContent = state.lang==='ar' ? '‹' : '›';
+  document.getElementById('dtActiveProjTagWrap').innerHTML = proj
+    ? '<div class="active-proj-tag">'+dict.activeProjPrefix+escapeHtml(proj.name)+'</div>' : '';
+  document.getElementById('dtNoProjWarn').style.display = proj ? 'none' : 'block';
+
+  document.getElementById('dtStepCard').innerHTML = buildDTCard(idx);
+  fillDTValues(idx);
+}
+
+function buildDTCard(idx){
+  const title = state.lang==='ar' ? DT_TITLES[idx].ar : DT_TITLES[idx].en;
+  const head = '<div class="eyebrow">'+String(idx+1).padStart(2,'0')+' / 9</div><h2 class="title">'+title+'</h2>';
+  let body = '';
+  switch(idx){
+    case 0: body = dtStep1Body(); break;
+    case 1: body = dtStep2Body(); break;
+    case 2: body = dtStep3Body(); break;
+    case 3: body = dtStep4Body(); break;
+    case 4: body = dtStep5Body(); break;
+    case 5: body = dtStep6Body(); break;
+    case 6: body = dtStep7Body(); break;
+    case 7: body = dtStep8Body(); break;
+    case 8: body = dtStep9Body(); break;
+  }
+  return '<div class="card" id="printableDT">'+head+body+'<div class="eyebrow" id="dtMsg" style="margin-top:10px;color:var(--blueprint-2);"></div></div>';
+}
+function dtMsgShow(txt){
+  const el = document.getElementById('dtMsg'); if(el){ el.textContent = txt; setTimeout(()=>{ if(el) el.textContent=''; },2000); }
+}
+function dtRequireProject(){
+  const d = getDT();
+  if(!d){ dtMsgShow(L('⚠️ لا يوجد مشروع نشط','⚠️ No active project')); return null; }
+  return d;
+}
+
+/* ---- Step 1: Vision ---- */
+function dtStep1Body(){
+  return '<label>'+L('اسم المؤسسة وطبيعة نشاطها','Organization name & activity')+'</label><input type="text" id="dt1_org">'
+    + '<label>'+L('الوضع الحالي والتحديات الرئيسية','Current status & key challenges')+'</label><textarea id="dt1_challenges"></textarea>'
+    + '<label>'+L('الأهداف (سطر لكل هدف)','Goals (one per line)')+'</label><textarea id="dt1_goals"></textarea>'
+    + '<label>'+L('المدى الزمني للتنفيذ','Implementation timeframe')+'</label>'
+    + '<select id="dt1_timeline"><option>'+L('سنة واحدة','1 year')+'</option><option>'+L('سنتان','2 years')+'</option><option>'+L('3 سنوات','3 years')+'</option></select>'
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen1()">'+L('⚙️ توليد ميثاق الرؤية','⚙️ Generate Vision Charter')+'</button></div>'
+    + '<div id="dt1_out"></div>';
+}
+function dtGen1(){
+  const d = dtRequireProject(); if(!d) return;
+  const org = val('dt1_org'), ch = val('dt1_challenges'), goalsRaw = val('dt1_goals'), tl = val('dt1_timeline');
+  const goals = goalsRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+  const smart = goals.map((g,i)=> (i+1)+') '+g+' — '+L('خلال','within')+' '+tl+'.').join('\n');
+  const doc = L('ميثاق الرؤية الرقمية','Digital Vision Charter')+'\n===========================\n'
+    + L('المؤسسة: ','Organization: ')+(org||'-')+'\n\n'
+    + L('الرؤية:\nتحويل ','Vision:\nTransform ')+(org||L('المؤسسة','the organization'))+L(' إلى منظومة عمل رقمية متكاملة خلال ',' into a fully integrated digital operation within ')+tl+'.\n\n'
+    + L('التحديات الحالية:\n','Current Challenges:\n')+(ch||'-')+'\n\n'
+    + L('الأهداف التشغيلية المقيسة (SMART):\n','SMART Operational Goals:\n')+(smart||'-');
+  d.s1 = {org,challenges:ch,goals,timeline:tl};
+  saveProjects();
+  document.getElementById('dt1_out').innerHTML = '<div class="output-box">'+dtEsc(doc)+'</div>';
+}
+
+/* ---- Step 2: Gap Analysis ---- */
+function dtStep2Body(){
+  return '<label>'+L('العمليات الحالية والمهام الكبرى','Current processes & major tasks')+'</label><textarea id="dt2_proc"></textarea>'
+    + '<label>'+L('الأدوات المستخدمة حالياً','Tools currently used')+'</label><textarea id="dt2_tools"></textarea>'
+    + '<div class="row2">'
+    +   '<div><label>'+L('جاهزية الموظفين الرقمية %','Staff digital readiness %')+'</label><input type="number" id="dt2_ready" value="50"></div>'
+    +   '<div><label>'+L('نسبة العمليات اليدوية %','Manual/repetitive process %')+'</label><input type="number" id="dt2_manual" value="50"></div>'
+    + '</div>'
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen2()">'+L('⚙️ توليد تقرير الفجوات','⚙️ Generate Gap Report')+'</button></div>'
+    + '<div id="dt2_out"></div>';
+}
+function dtGen2(){
+  const d = dtRequireProject(); if(!d) return;
+  const proc=val('dt2_proc'), tools=val('dt2_tools');
+  const ready=parseFloat(val('dt2_ready'))||0, manual=parseFloat(val('dt2_manual'))||0;
+  const peopleGap = 100-ready;
+  const peopleLevel = peopleGap>60?L('فجوة كبيرة','large gap'):(peopleGap>30?L('فجوة متوسطة','medium gap'):L('فجوة محدودة','small gap'));
+  const procLevel = manual>60?L('هدر مرتفع','high waste'):(manual>30?L('هدر متوسط','medium waste'):L('هدر منخفض','low waste'));
+  const doc = L('تقرير تحليل الفجوات (As-Is vs To-Be)','Gap Analysis Report (As-Is vs To-Be)')+'\n=================================\n\n'
+    + L('1) فجوة الأفراد:\n','1) People Gap:\n')+L('الجاهزية الحالية: ','Current readiness: ')+ready+'% | '+L('الفجوة: ','Gap: ')+peopleGap+'% — '+peopleLevel+'\n\n'
+    + L('2) فجوة العمليات:\n','2) Process Gap:\n')+(proc||'-')+'\n'+L('نسبة العمليات اليدوية: ','Manual process rate: ')+manual+'% — '+procLevel+'\n\n'
+    + L('3) فجوة التقنية:\n','3) Technology Gap:\n')+(tools||L('لا توجد أدوات مذكورة','No tools mentioned'));
+  d.s2 = {proc,tools,ready,manual};
+  saveProjects();
+  document.getElementById('dt2_out').innerHTML = '<div class="output-box">'+dtEsc(doc)+'</div>';
+}
+
+/* ---- Step 3: Digital Culture ---- */
+function dtStep3Body(){
+  return '<label>'+L('طبيعة نشاط المؤسسة','Organization sector/activity')+'</label><input type="text" id="dt3_sector">'
+    + '<label>'+L('المقاومة المتوقعة من الموظفين','Expected staff resistance')+'</label><textarea id="dt3_res"></textarea>'
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen3()">'+L('⚙️ توليد دليل الثقافة الرقمية','⚙️ Generate Culture Guide')+'</button></div>'
+    + '<div id="dt3_out"></div>';
+}
+function dtGen3(){
+  const d = dtRequireProject(); if(!d) return;
+  const sector=val('dt3_sector'), res=val('dt3_res');
+  const doc = L('دليل الثقافة الرقمية','Digital Culture Guide')+'\n======================\n'
+    + L('القطاع: ','Sector: ')+(sector||'-')+'\n\n'
+    + L('رسائل توعوية:\n- التحول الرقمي أداة لتسهيل عملك.\n- كل خطوة رقمية تقلل وقت الانتظار وتزيد الدقة.\n\n',
+        'Awareness Messages:\n- Digital transformation is here to support your work.\n- Every digital step reduces wait time and improves accuracy.\n\n')
+    + L('مقاومة التغيير المتوقعة:\n','Expected Change Resistance:\n')+(res||'-')+'\n\n'
+    + L('حوافز التبني: تكريم أول الفرق المستخدمة + ربط الاستخدام بالتقييم الدوري.',
+        'Adoption incentives: recognize early-adopter teams + link usage to periodic evaluation.');
+  d.s3 = {sector,res};
+  saveProjects();
+  document.getElementById('dt3_out').innerHTML = '<div class="output-box">'+dtEsc(doc)+'</div>';
+}
+
+/* ---- Step 4: Training ---- */
+function dtStep4Body(){
+  return '<table class="dtt" id="dt4_table"><thead><tr>'
+    + '<th>'+L('الفئة','Category')+'</th><th>'+L('البرنامج','Program')+'</th><th>'+L('ساعات','Hrs')+'</th><th>'+L('الحالة','Status')+'</th><th></th></tr></thead>'
+    + '<tbody id="dt4_tbody"></tbody></table>'
+    + '<div class="btn-row">'
+    +   '<button class="btn btn-ghost" onclick="dt4AddRow()">'+L('➕ إضافة صف','➕ Add row')+'</button>'
+    +   '<button class="btn btn-primary" onclick="dtGen4()">'+L('💾 حفظ الجدول','💾 Save Table')+'</button>'
+    + '</div>'
+    + '<div id="dt4_out"></div>';
+}
+function dt4AddRow(cat,prog,hrs,status){
+  const tbody = document.getElementById('dt4_tbody');
+  const st1=L('مخطط','Planned'), st2=L('جاري','In progress'), st3=L('مكتمل','Completed');
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="text" value="'+(cat||'')+'" style="width:70px"></td>'
+    + '<td><input type="text" value="'+(prog||'')+'" style="width:90px"></td>'
+    + '<td><input type="number" value="'+(hrs||0)+'" style="width:50px"></td>'
+    + '<td><select><option'+(status===st1?' selected':'')+'>'+st1+'</option><option'+(status===st2?' selected':'')+'>'+st2+'</option><option'+(status===st3?' selected':'')+'>'+st3+'</option></select></td>'
+    + '<td><button class="icon-btn" style="color:var(--red);" onclick="this.closest(\'tr\').remove()">✕</button></td>';
+  tbody.appendChild(tr);
+}
+function dtGen4(){
+  const d = dtRequireProject(); if(!d) return;
+  const rows=[];
+  document.querySelectorAll('#dt4_tbody tr').forEach(tr=>{
+    const inputs = tr.querySelectorAll('input'); const sel = tr.querySelector('select');
+    rows.push({cat:inputs[0].value, prog:inputs[1].value, hrs:inputs[2].value, status:sel.value});
+  });
+  d.s4 = {rows};
+  saveProjects();
+  const total = rows.reduce((s,r)=>s+(parseFloat(r.hrs)||0),0);
+  const txt = L('إجمالي ساعات التدريب: ','Total training hours: ')+total;
+  document.getElementById('dt4_out').innerHTML = '<div class="output-box">'+dtEsc(txt)+'</div>';
+}
+
+/* ---- Step 5: Pilot ---- */
+function dtStep5Body(){
+  return '<label>'+L('العملية المرشحة للتجربة','Candidate pilot process')+'</label><input type="text" id="dt5_proc">'
+    + '<div class="row2">'
+    +   '<div><label>'+L('مدة Sprint (أسابيع)','Sprint length (weeks)')+'</label><input type="number" id="dt5_sprint" value="2"></div>'
+    +   '<div><label>'+L('الميزانية المبدئية ($)','Initial budget ($)')+'</label><input type="number" id="dt5_budget" value="5000"></div>'
+    + '</div>'
+    + '<label>'+L('الرعاة والداعمون','Sponsors')+'</label><input type="text" id="dt5_sponsors">'
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen5()">'+L('⚙️ توليد خطة Pilot','⚙️ Generate Pilot Plan')+'</button></div>'
+    + '<div id="dt5_out"></div>';
+}
+function dtGen5(){
+  const d = dtRequireProject(); if(!d) return;
+  const proc=val('dt5_proc'), sprint=val('dt5_sprint'), budget=val('dt5_budget'), sponsors=val('dt5_sponsors');
+  const weeks = (parseFloat(sprint)||0)*4;
+  const doc = L('خطة النموذج الأولي (Pilot)','Pilot Project Plan')+'\n========================\n'
+    + L('النطاق: ','Scope: ')+(proc||'-')+'\n'
+    + L('مدة كل Sprint: ','Sprint length: ')+sprint+' '+L('أسبوع','weeks')+' | '+L('المدة الإجمالية التقريبية: ','Approx. total: ')+weeks+' '+L('أسبوع','weeks')+'\n'
+    + L('الميزانية: $','Budget: $')+budget+'\n'
+    + L('الرعاة: ','Sponsors: ')+(sponsors||'-');
+  d.s5 = {proc,sprint,budget,sponsors};
+  saveProjects();
+  document.getElementById('dt5_out').innerHTML = '<div class="output-box">'+dtEsc(doc)+'</div>';
+}
+
+/* ---- Step 6: Digital Lean ---- */
+function dtStep6Body(){
+  const wastes = [L('وقت الانتظار','Waiting time'),L('التكرار اليدوي','Manual duplication'),L('المعاملات الورقية','Paper transactions'),L('تأخير الاعتمادات','Approval delays')];
+  return '<label>'+L('العملية الحالية (As-Is)','Current process (As-Is)')+'</label><textarea id="dt6_asis"></textarea>'
+    + '<label>'+L('العملية المحسّنة (To-Be)','Improved process (To-Be)')+'</label><textarea id="dt6_tobe"></textarea>'
+    + '<label>'+L('أشكال الهدر المستهدفة','Targeted waste types')+'</label>'
+    + '<div class="checklist">'+wastes.map(w=>'<label><input type="checkbox" value="'+w+'"> '+w+'</label>').join('')+'</div>'
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen6()">'+L('⚙️ توليد مخطط العملية','⚙️ Generate Process Map')+'</button></div>'
+    + '<div id="dt6_out"></div>';
+}
+function dtGen6(){
+  const d = dtRequireProject(); if(!d) return;
+  const asis=val('dt6_asis'), tobe=val('dt6_tobe');
+  const wastes = Array.prototype.slice.call(document.querySelectorAll('#dtStepCard .checklist input:checked')).map(c=>c.value);
+  const doc = L('مخطط العملية الرقمي','Digitalized Process Map')+'\n=========================\n'
+    + 'As-Is:\n'+(asis||'-')+'\n\nTo-Be:\n'+(tobe||'-')+'\n\n'
+    + L('الهدر المستبعد: ','Waste removed: ')+(wastes.length?wastes.join('، '):'-');
+  d.s6 = {asis,tobe,wastes};
+  saveProjects();
+  document.getElementById('dt6_out').innerHTML = '<div class="output-box">'+dtEsc(doc)+'</div>';
+}
+
+/* ---- Step 7: Infrastructure ---- */
+function dtStep7Body(){
+  return '<div class="row2">'
+    +   '<div><label>'+L('البيانات (جيجا/شهر)','Data (GB/month)')+'</label><input type="number" id="dt7_data" value="50"></div>'
+    +   '<div><label>'+L('عدد المستخدمين','Active users')+'</label><input type="number" id="dt7_users" value="20"></div>'
+    + '</div>'
+    + '<label>'+L('نوع البنية السحابية','Cloud architecture type')+'</label>'
+    + '<select id="dt7_cloud"><option>Public Cloud (SaaS)</option><option>Private Cloud</option><option>Hybrid Cloud</option></select>'
+    + '<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="dt7_sec" checked style="width:auto;"> '+L('الالتزام بمعايير الأمن السيبراني','Cybersecurity compliance')+'</label>'
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen7()">'+L('⚙️ توليد وثيقة الميزانية','⚙️ Generate Budget Doc')+'</button></div>'
+    + '<div id="dt7_out"></div>';
+}
+function dtGen7(){
+  const d = dtRequireProject(); if(!d) return;
+  const data=parseFloat(val('dt7_data'))||0, users=parseFloat(val('dt7_users'))||0;
+  const cloud=val('dt7_cloud'); const sec=document.getElementById('dt7_sec').checked;
+  const storage=data*2, license=users*15, security=sec?300:0;
+  const monthly=storage+license+security, annual=monthly*12;
+  const doc = L('وثيقة التوريدات والميزانية','Procurement & Budget Document')+'\n=================================\n'
+    + L('البنية السحابية: ','Cloud type: ')+cloud+'\n'
+    + L('التخزين: $','Storage: $')+storage.toFixed(0)+' | '+L('التراخيص: $','Licenses: $')+license.toFixed(0)+' | '+L('الأمن: $','Security: $')+security.toFixed(0)+'\n'
+    + L('الإجمالي الشهري: $','Monthly total: $')+monthly.toFixed(0)+' | '+L('الإجمالي السنوي: $','Annual total: $')+annual.toFixed(0);
+  d.s7 = {data,users,cloud,sec,monthly,annual};
+  saveProjects();
+  document.getElementById('dt7_out').innerHTML = '<div class="output-box">'+dtEsc(doc)+'</div>';
+}
+
+/* ---- Step 8: KPIs ---- */
+function dtStep8Body(){
+  const pairs = [
+    ['activity', L('الأنشطة (Activity) %','Activity %'), 20, 70],
+    ['flow', L('التدفق (Flow) %','Flow %'), 40, 75],
+    ['eff', L('الكفاءة (Efficiency) %','Efficiency %'), 30, 65],
+    ['effect', L('الفاعلية (Effectiveness) %','Effectiveness %'), 60, 90],
+    ['cycle', L('زمن التشغيل (ساعات)','Cycle Time (hrs)'), 24, 4]
+  ];
+  return pairs.map(p=>'<div class="row2"><div><label>'+p[1]+' — '+L('قبل','Before')+'</label><input type="number" id="dt8_'+p[0]+'_b" value="'+p[2]+'"></div>'
+    + '<div><label>'+p[1]+' — '+L('بعد','After')+'</label><input type="number" id="dt8_'+p[0]+'_a" value="'+p[3]+'"></div></div>').join('')
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen8()">'+L('⚙️ عرض لوحة KPIs','⚙️ Show KPI Dashboard')+'</button></div>'
+    + '<div id="dt8_out"></div>';
+}
+function dtKpiCard(label, before, after, higherBetter){
+  const delta = after-before;
+  const good = higherBetter ? delta>=0 : delta<=0;
+  const deltaTxt = higherBetter ? ((delta>=0?'+':'')+delta.toFixed(1)+'%') : (L('من ','from ')+before);
+  return '<div class="kpi-card"><div class="lbl">'+label+'</div><div class="val">'+after+(higherBetter?'%':'')+'</div>'
+    + '<div class="delta '+(good?'good':'bad')+'">'+deltaTxt+'</div></div>';
+}
+function dtGen8(){
+  const d = dtRequireProject(); if(!d) return;
+  const g = id => parseFloat(val(id))||0;
+  const vals = {
+    activity_b:g('dt8_activity_b'), activity_a:g('dt8_activity_a'),
+    flow_b:g('dt8_flow_b'), flow_a:g('dt8_flow_a'),
+    eff_b:g('dt8_eff_b'), eff_a:g('dt8_eff_a'),
+    effect_b:g('dt8_effect_b'), effect_a:g('dt8_effect_a'),
+    cycle_b:g('dt8_cycle_b'), cycle_a:g('dt8_cycle_a')
+  };
+  d.s8 = vals; saveProjects();
+  const cards = '<div class="kpi-cards">'
+    + dtKpiCard(L('الأنشطة','Activity'), vals.activity_b, vals.activity_a, true)
+    + dtKpiCard(L('التدفق','Flow'), vals.flow_b, vals.flow_a, true)
+    + dtKpiCard(L('الكفاءة','Efficiency'), vals.eff_b, vals.eff_a, true)
+    + dtKpiCard(L('الفاعلية','Effectiveness'), vals.effect_b, vals.effect_a, true)
+    + dtKpiCard(L('زمن التشغيل','Cycle Time'), vals.cycle_b, vals.cycle_a, false)
+    + '</div>';
+  document.getElementById('dt8_out').innerHTML = cards;
+}
+
+/* ---- Step 9: Continuous Improvement ---- */
+function dtStep9Body(){
+  return '<label>'+L('نتائج التقييم وملاحظات الموظفين/العملاء','Evaluation results & feedback')+'</label><textarea id="dt9_fb"></textarea>'
+    + '<label>'+L('خطة التوسع لبقية الأقسام','Expansion plan to other departments')+'</label><textarea id="dt9_exp"></textarea>'
+    + '<div class="btn-row"><button class="btn btn-primary" onclick="dtGen9()">'+L('⚙️ توليد خطة التحسين المستمر','⚙️ Generate Improvement Plan')+'</button></div>'
+    + '<div id="dt9_out"></div>';
+}
+function dtGen9(){
+  const d = dtRequireProject(); if(!d) return;
+  const fb=val('dt9_fb'), exp=val('dt9_exp');
+  const doc = L('خطة التحسين المستمر','Continuous Improvement Plan')+'\n============================\n'
+    + L('الملاحظات:\n','Feedback:\n')+(fb||'-')+'\n\n'+L('خطة التوسع:\n','Expansion Plan:\n')+(exp||'-');
+  d.s9 = {fb,exp};
+  saveProjects();
+  document.getElementById('dt9_out').innerHTML = '<div class="output-box">'+dtEsc(doc)+'</div>';
+}
+
+/* ---- Fill saved values when a step renders ---- */
+function val(id){ const el=document.getElementById(id); return el?el.value:''; }
+function fillDTValues(idx){
+  const d = getDT(); if(!d) return;
+  if(idx===0 && d.s1){
+    if(document.getElementById('dt1_org')) document.getElementById('dt1_org').value = d.s1.org||'';
+    document.getElementById('dt1_challenges').value = d.s1.challenges||'';
+    document.getElementById('dt1_goals').value = (d.s1.goals||[]).join('\n');
+    if(d.s1.timeline) document.getElementById('dt1_timeline').value = d.s1.timeline;
+    if(d.s1.org) dtGen1();
+  }
+  if(idx===1 && d.s2){
+    document.getElementById('dt2_proc').value = d.s2.proc||'';
+    document.getElementById('dt2_tools').value = d.s2.tools||'';
+    document.getElementById('dt2_ready').value = d.s2.ready!=null?d.s2.ready:50;
+    document.getElementById('dt2_manual').value = d.s2.manual!=null?d.s2.manual:50;
+    if(d.s2.proc!==undefined) dtGen2();
+  }
+  if(idx===2 && d.s3){
+    document.getElementById('dt3_sector').value = d.s3.sector||'';
+    document.getElementById('dt3_res').value = d.s3.res||'';
+    if(d.s3.sector!==undefined) dtGen3();
+  }
+  if(idx===3){
+    const rows = (d.s4 && d.s4.rows && d.s4.rows.length) ? d.s4.rows : [
+      {cat:L('الإدارة العليا','Top Mgmt'), prog:L('القيادة الرقمية','Digital Leadership'), hrs:10, status:L('مخطط','Planned')},
+      {cat:L('مدراء المشاريع','PMs'), prog:'Agile', hrs:25, status:L('مخطط','Planned')},
+      {cat:L('التنفيذيون','Staff'), prog:L('الأدوات الرقمية','Digital Tools'), hrs:40, status:L('مخطط','Planned')}
+    ];
+    rows.forEach(r=>dt4AddRow(r.cat,r.prog,r.hrs,r.status));
+  }
+  if(idx===4 && d.s5){
+    document.getElementById('dt5_proc').value = d.s5.proc||'';
+    document.getElementById('dt5_sprint').value = d.s5.sprint||2;
+    document.getElementById('dt5_budget').value = d.s5.budget||5000;
+    document.getElementById('dt5_sponsors').value = d.s5.sponsors||'';
+    if(d.s5.proc!==undefined) dtGen5();
+  }
+  if(idx===5 && d.s6){
+    document.getElementById('dt6_asis').value = d.s6.asis||'';
+    document.getElementById('dt6_tobe').value = d.s6.tobe||'';
+    if(d.s6.wastes){
+      document.querySelectorAll('#dtStepCard .checklist input').forEach(c=>{ c.checked = d.s6.wastes.indexOf(c.value)>-1; });
+    }
+    if(d.s6.asis!==undefined) dtGen6();
+  }
+  if(idx===6 && d.s7){
+    document.getElementById('dt7_data').value = d.s7.data;
+    document.getElementById('dt7_users').value = d.s7.users;
+    document.getElementById('dt7_cloud').value = d.s7.cloud;
+    document.getElementById('dt7_sec').checked = d.s7.sec;
+    if(d.s7.data!==undefined) dtGen7();
+  }
+  if(idx===7 && d.s8){
+    Object.keys(d.s8).forEach(k=>{
+      const parts = k.split('_'); const el = document.getElementById('dt8_'+parts[0]+'_'+parts[1]);
+      if(el) el.value = d.s8[k];
+    });
+    if(d.s8.activity_b!==undefined) dtGen8();
+  }
+  if(idx===8 && d.s9){
+    document.getElementById('dt9_fb').value = d.s9.fb||'';
+    document.getElementById('dt9_exp').value = d.s9.exp||'';
+    if(d.s9.fb!==undefined) dtGen9();
+  }
+}
+
+/* ============ FINAL REPORT ============ */
+function renderReport(){
+  const dict = T[state.lang];
+  const proj = getActiveProject();
+  document.getElementById('reportWarn').style.display = proj ? 'none' : 'block';
+
+  if(!proj){
+    document.getElementById('reportBody').innerHTML = '';
+    return;
+  }
+
+  const projInfoHtml =
+      '<div class="eyebrow">'+dict.reportEyebrow+'</div>'
+    + '<h2 class="title">'+dict.reportTitle+'</h2>'
+    + '<div class="profile-line"><b>'+dict.fldProjName+'</b><span>'+escapeHtml(proj.name)+'</span></div>'
+    + '<div class="profile-line"><b>'+dict.fldClient+'</b><span>'+escapeHtml(proj.client||'—')+'</span></div>'
+    + '<div class="profile-line"><b>'+dict.fldLocation+'</b><span>'+escapeHtml(proj.location||'—')+'</span></div>'
+    + '<div class="profile-line"><b>'+dict.fldDate+'</b><span>'+proj.date+'</span></div>';
+
+  // --- 9-step section ---
+  const dt = proj.dt || {};
+  const dtSections = DT_TITLES.map((t, i)=>{
+    const key = 's'+(i+1);
+    const has = dt[key] !== undefined;
+    let rowsHtml = '<p class="desc" style="margin:0;">'+dict.dtNotDone+'</p>';
+    if(has){
+      const s = dt[key];
+      const lines = Object.keys(s).map(k=>{
+        let v = s[k];
+        if(Array.isArray(v)) v = v.join('، ');
+        if(k==='rows' && Array.isArray(v)===false && Array.isArray(s.rows)){ return ''; }
+        return '<div class="out-row"><span class="lbl">'+escapeHtml(k)+'</span><span class="val" style="color:var(--blueprint-2);">'+escapeHtml(String(v))+'</span></div>';
+      }).filter(Boolean).join('');
+      rowsHtml = lines || rowsHtml;
+    }
+    return '<div class="card"><div class="eyebrow">'+String(i+1).padStart(2,'0')+' / 9</div>'
+      + '<h2 class="title" style="font-size:15px;">'+(state.lang==='ar'?t.ar:t.en)+'</h2>'
+      + rowsHtml + '</div>';
+  }).join('');
+
+  // --- 10 initiatives section ---
+  const initSections = INITIATIVES.map((init, idx)=>{
+    const saved = proj.data[init.code] || {};
+    const v = {};
+    init.fields.forEach(f=>{ v[f.id] = (saved[f.id] !== undefined) ? saved[f.id] : f.def; });
+    const outputs = init.compute(v);
+
+    const fieldsHtml = init.fields.map(f=>{
+      return '<div class="out-row"><span class="lbl">'+(state.lang==='ar'?f.ar:f.en)+'</span><span class="val" style="color:var(--blueprint-2);">'+v[f.id]+(f.unit?' '+dict[f.unit]:'')+'</span></div>';
+    }).join('');
+    const outputsHtml = outputs.map(o=>{
+      return '<div class="out-row"><span class="lbl">'+(state.lang==='ar'?o.ar:o.en)+'</span><span class="val">'+o.val+(o.unit?' '+dict[o.unit]:'')+'</span></div>';
+    }).join('');
+
+    return '<div class="card">'
+      + '<div class="eyebrow">'+String(idx+1).padStart(2,'0')+' / '+INITIATIVES.length+'</div>'
+      + '<h2 class="title" style="font-size:16px;">'+(state.lang==='ar'?init.nameAr:init.nameEn)+'</h2>'
+      + '<div class="eyebrow" style="margin-top:8px;">'+dict.secInputs+'</div>'
+      + fieldsHtml
+      + '<div class="eyebrow" style="margin-top:12px;">'+dict.secOutputs+'</div>'
+      + outputsHtml
+      + '</div>';
+  }).join('');
+
+  document.getElementById('reportBody').innerHTML =
+    '<div class="card">'+projInfoHtml+'</div>'
+    + '<div class="eyebrow" style="margin:16px 0 8px;font-size:13px;">'+dict.dtReportHeading+'</div>'
+    + dtSections
+    + '<div class="eyebrow" style="margin:16px 0 8px;font-size:13px;">'+dict.initReportHeading+'</div>'
+    + initSections
+    + '<p class="desc print-only" style="text-align:center;">'+dict.reportFieldNote+'<br>'+dict.printedFor+'</p>';
+}
+function printReport(){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('printing'));
+  document.getElementById('view-report').classList.add('printing');
+  window.print();
+}
+function copyReport(){
+  const dict = T[state.lang];
+  const proj = getActiveProject();
+  if(!proj) return;
+  let text = dict.reportTitle+'\n';
+  text += dict.fldProjName+': '+proj.name+'\n';
+  text += dict.fldClient+': '+(proj.client||'—')+'\n';
+  text += dict.fldLocation+': '+(proj.location||'—')+'\n';
+  text += dict.fldDate+': '+proj.date+'\n';
+
+  text += '\n'+dict.dtReportHeading+'\n';
+  const dt = proj.dt || {};
+  DT_TITLES.forEach((t,i)=>{
+    const key='s'+(i+1); const s = dt[key];
+    text += '\n'+String(i+1).padStart(2,'0')+'. '+(state.lang==='ar'?t.ar:t.en)+'\n';
+    if(!s){ text += '  '+dict.dtNotDone+'\n'; return; }
+    Object.keys(s).forEach(k=>{
+      let v = s[k]; if(Array.isArray(v)) v = v.join('، ');
+      text += '  - '+k+': '+v+'\n';
+    });
+  });
+
+  text += '\n'+dict.initReportHeading+'\n';
+  INITIATIVES.forEach((init, idx)=>{
+    const saved = proj.data[init.code] || {};
+    const v = {};
+    init.fields.forEach(f=>{ v[f.id] = (saved[f.id] !== undefined) ? saved[f.id] : f.def; });
+    const outputs = init.compute(v);
+    text += '\n'+String(idx+1).padStart(2,'0')+'. '+(state.lang==='ar'?init.nameAr:init.nameEn)+'\n';
+    text += ' '+dict.secInputs+':\n';
+    init.fields.forEach(f=>{ text += '  - '+(state.lang==='ar'?f.ar:f.en)+': '+v[f.id]+'\n'; });
+    text += ' '+dict.secOutputs+':\n';
+    outputs.forEach(o=>{ text += '  - '+(state.lang==='ar'?o.ar:o.en)+': '+o.val+(o.unit?' '+dict[o.unit]:'')+'\n'; });
+  });
+  text += '\n'+dict.printedFor;
+  navigator.clipboard.writeText(text).then(()=>{
+    const msg = document.getElementById('reportMsg');
+    if(msg){ msg.textContent = dict.copiedMsg; setTimeout(()=>{ if(msg) msg.textContent=''; }, 2000); }
+  });
+}
+
+/* ============ INIT ============ */
+document.getElementById('pDate').value = new Date().toISOString().slice(0,10);
+setLang(state.lang);
+renderProjects();
+renderDT();
+renderNote();
+</script>
+</body>
+</html>
