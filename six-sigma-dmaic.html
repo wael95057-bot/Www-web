@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Six Sigma DMAIC — Eng. Wael Oweis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="appcss">
+:root{--bg:#EDF1F5;--sf:#fff;--sf2:#F5F7FA;--ink:#12263F;--mu:#5B6B7F;--ln:#D3DBE5;--ac:#0E7C86;--acs:#DCF0F1;--onac:#fff;--am:#A86A00;--ams:#FBF0D6;--rd:#B93A2C;--rds:#FAE3DF;--gn:#1B7F52;--gns:#DAF1E5;--ff:'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1520;--sf:#152130;--sf2:#1B2A3B;--ink:#E4ECF4;--mu:#93A5B9;--ln:#2A3B50;--ac:#3DBFCB;--acs:#123A44;--onac:#04222A;--am:#EDB24A;--ams:#3A2E12;--rd:#F07563;--rds:#3D1D1A;--gn:#4CC38A;--gns:#12362A}}
+:root[data-theme="dark"]{--bg:#0D1520;--sf:#152130;--sf2:#1B2A3B;--ink:#E4ECF4;--mu:#93A5B9;--ln:#2A3B50;--ac:#3DBFCB;--acs:#123A44;--onac:#04222A;--am:#EDB24A;--ams:#3A2E12;--rd:#F07563;--rds:#3D1D1A;--gn:#4CC38A;--gns:#12362A}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.65 var(--ff)}
+h1,h2,h3,h4{margin:0 0 8px;line-height:1.35}
+h1{font-size:23px}h2{font-size:19px}h3{font-size:16px}h4{font-size:14.5px;margin-top:14px}
+p{margin:0 0 8px}
+.mu{color:var(--mu)}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.rail{background:var(--sf);border-inline-end:1px solid var(--ln);position:sticky;top:env(safe-area-inset-top,0px);height:calc(100vh - env(safe-area-inset-top,0px));overflow:auto;padding:14px 10px;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;gap:10px;align-items:center;padding:2px 6px 14px}
+.brand b{display:block;font-size:15px}
+.brand small{display:block;color:var(--mu);font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sig{width:40px;height:40px;border-radius:10px;background:var(--ac);color:var(--onac);display:grid;place-items:center;font-size:24px;font-weight:700;flex:none}
+.rail nav{display:flex;flex-direction:column;gap:2px}
+.nv{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;cursor:pointer;color:var(--mu);border:0;background:none;width:100%;text-align:start;font:inherit}
+.nv:hover{background:var(--sf2)}
+.nv.on{background:var(--acs);color:var(--ink);font-weight:600}
+.nv small{margin-inline-start:auto;font-size:12px}
+.lt{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;position:relative;flex:none;background:conic-gradient(var(--ac) calc(var(--p,0) * 1%),var(--ln) 0);font-weight:700;font-size:13px;color:var(--ink)}
+.lt::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--sf)}
+.nv.on .lt::after{background:var(--acs)}
+.lt b{position:relative;z-index:1}
+.maker{margin-top:auto;padding:12px;border:1px solid var(--ln);border-radius:10px;background:var(--sf2);font-size:13px}
+.maker small{display:block;color:var(--mu)}
+.maker b{font-size:15px}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:14px;padding:8px 20px;flex-wrap:wrap}
+.tp-l{display:flex;gap:8px;align-items:center;min-width:0}
+.tp-name{font-weight:600;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-mid{flex:1;min-width:200px;max-width:380px}
+.tp-r{display:flex;gap:6px;align-items:center;margin-inline-start:auto}
+.dd{position:relative}
+.menu{position:absolute;inset-inline-end:0;top:110%;background:var(--sf);border:1px solid var(--ln);border-radius:10px;min-width:250px;padding:6px;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.menu[hidden]{display:none}
+.menu button{display:block;width:100%;text-align:start;background:none;border:0;padding:8px 10px;border-radius:7px;font:inherit;color:var(--ink);cursor:pointer}
+.menu button:hover{background:var(--sf2)}
+.menu small{display:block;color:var(--mu);padding:6px 10px 2px;font-size:12px}
+main{padding:20px;max-width:1120px}
+.foot{padding:10px 20px 24px;color:var(--mu);font-size:12.5px}
+.phead{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.ph-badge{width:52px;height:52px;border-radius:12px;background:var(--ac);color:var(--onac);display:grid;place-items:center;font-size:26px;font-weight:700;flex:none}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:16px;margin-bottom:14px}
+.card.fm{border-style:dashed}
+.g2,.g3{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g5{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+label.f{display:block;margin-bottom:10px}
+label.f>span{display:block;font-size:13.5px;font-weight:500;margin-bottom:3px}
+label.f small{display:block;color:var(--mu);font-size:12.5px;margin-top:2px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--sf2);border:1px solid var(--ln);border-radius:7px;padding:7px 10px}
+input[type=range]{padding:0;accent-color:var(--ac);background:none;border:0}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+input[type=number],input[type=date]{direction:ltr;text-align:start}
+textarea{min-height:64px;resize:vertical}
+.btn{font:inherit;border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer;display:inline-block}
+.btn:hover{border-color:var(--ac)}
+.btn.pri{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+.btn.sm{padding:4px 11px;font-size:13.5px}
+.btn.bad{background:var(--rds);color:var(--rd);border-color:var(--rd)}
+.ib{border:0;background:none;color:var(--rd);font-size:20px;cursor:pointer;line-height:1}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.seg{display:inline-flex;border:1px solid var(--ln);border-radius:9px;overflow:hidden;margin-bottom:12px;flex-wrap:wrap}
+.seg button{border:0;background:var(--sf2);color:var(--mu);font:inherit;padding:7px 14px;cursor:pointer}
+.seg button.on{background:var(--ac);color:var(--onac)}
+.upl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.tw{overflow-x:auto}
+.dt{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0}
+.dt th,.dt td{border:1px solid var(--ln);padding:6px 9px;vertical-align:top;text-align:start}
+.dt th{background:var(--sf2);font-weight:600}
+.dt.kv th{width:28%}
+.dt ul{margin:0;padding-inline-start:18px}
+.ed td{padding:3px;border:0;border-bottom:1px solid var(--ln)}
+.ed th{border:0;border-bottom:1px solid var(--ln)}
+.rg{display:flex;gap:6px;align-items:center;min-width:110px}
+.rg output{min-width:16px;font-weight:600}
+.chip{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12.5px;background:var(--sf2);border:1px solid var(--ln);margin:1px}
+.chip.ok{background:var(--gns);color:var(--gn);border-color:transparent}
+.chip.warn{background:var(--ams);color:var(--am);border-color:transparent}
+.chip.bad{background:var(--rds);color:var(--rd);border-color:transparent}
+.banner{border-radius:10px;padding:9px 12px;margin:8px 0 14px;font-size:14px}
+.banner.ok{background:var(--gns);color:var(--gn)}
+.banner.warn{background:var(--ams);color:var(--ink);border:1px solid var(--am)}
+.banner.bad{background:var(--rds);color:var(--rd)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:8px 0 12px}
+.tile{border:1px solid var(--ln);border-radius:10px;padding:9px 12px;background:var(--sf2)}
+.tile b{display:block;font-size:21px;font-variant-numeric:tabular-nums;line-height:1.3}
+.tile span{color:var(--mu);font-size:12.5px}
+.tile.hero{border-color:var(--ac);background:var(--acs)}
+.tile.hero b{font-size:28px}
+.bar{height:8px;background:var(--ln);border-radius:4px;overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;background:var(--ac)}
+.bar.rd i{background:var(--rd)}.bar.gn i{background:var(--gn)}
+.rk{display:grid;grid-template-columns:minmax(0,3fr) 60px minmax(80px,2fr);gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--ln);font-size:14px}
+.ruler{direction:ltr;position:relative;height:44px;margin:4px 8px 0}
+.ruler.big{height:64px;margin:10px 14px 4px}
+.rl-trk{position:absolute;top:22px;left:0;right:0;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--rd) 0 50%,var(--am) 50% 66.66%,var(--gn) 66.66% 100%);opacity:.85}
+.big .rl-trk{top:30px;height:12px;border-radius:6px}
+.rl-t{position:absolute;top:32px;transform:translateX(-50%);font-size:11px;color:var(--mu)}
+.big .rl-t{top:46px;font-size:12px}
+.mk{position:absolute;top:0;transform:translateX(-50%);text-align:center;font-size:11.5px;font-weight:700;line-height:1.1;color:var(--ink)}
+.mk em{display:block;font-style:normal}
+.mk i{display:block;font-style:normal;font-size:12px}
+.mk.a{color:var(--ac)}.mk.b{color:var(--rd)}
+.big .mk{font-size:14px}
+.rl-lg{display:flex;gap:14px;justify-content:center;font-size:12.5px;color:var(--mu);direction:inherit}
+.svgw{overflow-x:auto}
+svg{max-width:100%;height:auto}
+.s-t{fill:var(--ink);font:12.5px var(--ff)}
+.s-m{fill:var(--mu);font:11px var(--ff)}
+.s-ln{stroke:var(--ink);fill:none;stroke-width:1.4}
+.s-gr{stroke:var(--ln);fill:none;stroke-width:1}
+.s-ac{fill:var(--ac);stroke:none}
+.s-acl{stroke:var(--ac);fill:none;stroke-width:2}
+.s-rd{stroke:var(--rd);fill:none;stroke-width:1.4;stroke-dasharray:5 3}
+.s-rdf{fill:var(--rd)}
+.s-hot{fill:var(--rd);font-weight:700}
+.fc-s{fill:var(--acs);stroke:var(--ac);stroke-width:1.5}
+.fc-p{fill:var(--sf2);stroke:var(--ink);stroke-width:1.3}
+.fc-d{fill:var(--ams);stroke:var(--am);stroke-width:1.5}
+.qd{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.qd>div{border:1px solid var(--ln);border-radius:10px;padding:8px 10px;min-height:88px}
+.qd h5{margin:0 0 5px;font-size:13.5px}
+.qd .q1{background:var(--rds)}.qd .q2{background:var(--gns)}.qd .q3{background:var(--sf2)}.qd .q4{background:var(--acs)}
+.swot{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.swot>div{border:1px solid var(--ln);border-radius:10px;padding:8px 12px}
+.swot ul{margin:4px 0;padding-inline-start:18px}
+.swot .s{background:var(--gns)}.swot .w{background:var(--rds)}.swot .o{background:var(--acs)}.swot .t{background:var(--ams)}
+.chain{display:flex;flex-direction:column;gap:6px}
+.chain>div{border:1px solid var(--ln);border-radius:9px;padding:7px 12px;background:var(--sf2)}
+.chain>div.root{background:var(--rds);border-color:var(--rd);font-weight:600}
+.pager{display:flex;justify-content:space-between;gap:10px;margin:18px 0}
+.printhead{display:none;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:12px}
+.printhead .ph-t{font-size:18px;font-weight:700}
+.saved .printhead{display:block}
+.saved main{padding:20px}
+.rep-head{border:2px solid var(--ac);border-radius:12px;padding:16px;margin-bottom:14px;background:var(--sf)}
+.sign{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:20px}
+.sign>div{border-top:1px solid var(--ink);padding-top:6px;font-size:13px}
+.pb{break-before:page}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));inset-inline:0;margin-inline:auto;width:max-content;max-width:90%;background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+.toast.on{opacity:1}
+@media (max-width:860px){
+.app{display:block}
+.rail{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:8px;border-inline-end:0;border-bottom:1px solid var(--ln);align-items:center}
+.brand,.maker{display:none}
+.rail nav{flex-direction:row}
+.nv{width:auto;white-space:nowrap;padding:6px 9px}
+.nv small{display:none}
+.g2,.g3,.qd,.swot,.sign{grid-template-columns:1fr}
+.topbar{padding:8px 12px;position:static}.tp-l .chip{display:none}
+.tp-mid{order:3;max-width:none;flex-basis:100%}
+main{padding:14px 12px}
+.ed thead,.stack thead{display:none}
+.ed tr,.stack tr{display:block;border:1px solid var(--ln);border-radius:9px;margin-bottom:8px;padding:4px}
+.ed td,.stack td{display:block;border:0}
+.stack td{border:0;padding:3px 6px}
+.ed td::before,.stack td::before{content:attr(data-l);display:block;font-size:12px;color:var(--mu)}
+.ed td:last-child::before{content:none}
+}
+@media print{
+:root:root:root{--bg:#fff;--sf:#fff;--sf2:#f3f4f6;--ink:#111;--mu:#555;--ln:#bbb;--ac:#0E7C86;--acs:#e3f3f4;--am:#8a5600;--ams:#fbf0d6;--rd:#b93a2c;--rds:#fbe5e2;--gn:#1b7f52;--gns:#dff3e8}
+.rail,.topbar,.fm,.pager,.noprint,.toast,.banner,.foot{display:none!important}
+.app{display:block}
+body{background:#fff}
+main{padding:0;max-width:none}
+.card{break-inside:avoid;box-shadow:none}
+.printhead{display:block}
+.tw{overflow:visible}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="rail" id="rail"></aside>
+<div>
+<header class="topbar" id="top"></header>
+<main id="main"></main>
+<footer class="foot">Six Sigma DMAIC Platform — Eng. Wael Oweis | المهندس وائل عويس</footer>
+</div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){'use strict';
+/* ===== helpers ===== */
+const $=s=>document.querySelector(s);
+let lang='ar';
+const L=(a,e)=>lang==='ar'?a:e;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toNum(v){if(typeof v==='number')return isFinite(v)?v:null;let s=String(v==null?'':v).trim();if(!s)return null;s=s.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.').replace(/[٬\s]/g,'');if(/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s))s=s.replace(/,/g,'');else s=s.replace(',','.');if(!/^-?\d*\.?\d+(e[-+]?\d+)?$/i.test(s))return null;const n=parseFloat(s);return isFinite(n)?n:null;}
+const num=v=>(v===''||v==null)?null:toNum(v);
+const fmt=(n,d)=>{d=d==null?2:d;return n==null||isNaN(n)?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});};
+const fmt0=n=>fmt(n,0);
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const lines=s=>String(s||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const uid=()=>'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const dstr=t=>new Date(t).toLocaleDateString(lang==='ar'?'ar-EG-u-nu-latn':'en-GB');
+const getP=(o,path)=>path.split('.').reduce((a,k)=>a==null?a:a[k],o);
+function setP(o,path,v){const ks=path.split('.');let a=o;for(let i=0;i<ks.length-1;i++)a=a[ks[i]];a[ks[ks.length-1]]=v;}
+function parseNums(t){return String(t||'').split(/[\n\r;\t ,،]+/).map(toNum).filter(x=>x!=null);}
+/* ===== statistics ===== */
+function erfc(x){const z=Math.abs(x),t=1/(1+0.5*z);const r=t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(0.37409196+t*(0.09678418+t*(-0.18628806+t*(0.27886807+t*(-1.13520398+t*(1.48851587+t*(-0.82215223+t*0.17087277)))))))));return x>=0?r:2-r;}
+const normCdf=x=>0.5*erfc(-x/Math.SQRT2);
+const normUpper=x=>0.5*erfc(x/Math.SQRT2);
+function invNorm(p){if(p<=0)return -Infinity;if(p>=1)return Infinity;
+const a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00];
+const b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01];
+const c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00];
+const d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,3.754408661907416e+00];
+const pl=0.02425;let q,r;
+if(p<pl){q=Math.sqrt(-2*Math.log(p));return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+if(p>1-pl){q=Math.sqrt(-2*Math.log(1-p));return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+q=p-0.5;r=q*q;return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}
+function sigmaFromDpo(dpo,shift){if(dpo<=0)return{s:6,c:true};if(dpo>=1)return{s:0,c:false};const z=-invNorm(dpo)+(shift?1.5:0);return z>6?{s:6,c:true}:{s:Math.max(0,z),c:false};}
+const dpoFromSigma=(s,shift)=>normUpper(s-(shift?1.5:0));
+function stats(arr){const n=arr.length;if(!n)return null;const mean=sum(arr)/n;const sd=n>1?Math.sqrt(sum(arr.map(x=>(x-mean)**2))/(n-1)):0;let mn=arr[0],mx=arr[0];arr.forEach(x=>{if(x<mn)mn=x;if(x>mx)mx=x;});return{n,mean,sd,min:mn,max:mx};}
+const lvl=s=>s==null?['—','']:s<2?[L('ضعيف جداً','Very poor'),'bad']:s<3?[L('ضعيف','Poor'),'bad']:s<4?[L('متوسط','Average'),'warn']:s<5?[L('جيد','Good'),'ok']:s<6?[L('ممتاز','Excellent'),'ok']:[L('عالمي المستوى','World class'),'ok'];
+const riskLvl=v=>v==null?['—','']:v<34?[L('منخفض','Low'),'ok']:v<67?[L('متوسط','Medium'),'warn']:[L('مرتفع','High'),'bad'];
+/* ===== state ===== */
+const KEY='sixsigma_dmaic_v1';
+let DB={projects:[],cur:null,lang:'ar',page:'registry',appx:true,cmp:{a:'',b:''}};
+let storeOK=true,armed=null,tSave,tOut;
+const TMP={};
+const P=()=>DB.projects.find(p=>p.id===DB.cur);
+const SECT={construction:['المقاولات والإنشاءات','Construction'],manufacturing:['التصنيع','Manufacturing'],it:['البرمجيات وتقنية المعلومات','Software & IT'],services:['الخدمات والمشتريات','Services & Procurement']};
+const PH={define:['التعريف','Define','D'],measure:['القياس','Measure','M'],analyze:['التحليل','Analyze','A'],improve:['التطوير','Improve','I'],control:['التحكم','Control','C']};
+const PHK=['define','measure','analyze','improve','control'];
+const CAT={P:['سياسي','Political'],Ec:['اقتصادي','Economic'],S:['اجتماعي','Social'],T:['تقني','Technological'],En:['بيئي','Environmental'],L:['قانوني','Legal']};
+const FRC={ri:['المنافسة بين الشركات القائمة','Competitive rivalry','المنافسة','Rivalry'],ne:['تهديد الداخلين الجدد','Threat of new entrants','الداخلون الجدد','New entrants'],su:['تهديد البدائل','Threat of substitutes','البدائل','Substitutes'],bu:['قوة تفاوض العملاء','Buyer power','العملاء','Buyers'],sp:['قوة تفاوض الموردين','Supplier power','الموردون','Suppliers']};
+const FSH={man:['الإنسان','Man'],machine:['الآلات والمعدات','Machine'],material:['المواد','Material'],method:['الطرق والإجراءات','Method'],env:['البيئة','Environment'],meas:['القياس','Measurement']};
+const cname=(M,k)=>M[k][lang==='ar'?0:1];
+function blank(name,sector){return{id:uid(),name:name||L('مشروع جديد','New project'),sector:sector||'construction',created:Date.now(),updated:Date.now(),
+define:{sponsor:'',leader:'',start:'',end:'',problem:'',goal:'',scopeIn:'',scopeOut:'',business:'',team:[{n:'',r:''}],voc:[{v:'',n:'',c:'',m:'',t:''}],sipoc:{s:'',i:'',p:'',o:'',c:''},sh:[{n:'',inf:3,sup:3}],flow:[{k:'start',t:'',no:''},{k:'step',t:'',no:''},{k:'end',t:'',no:''}]},
+measure:{metric:'',unit:'',plan:'',annualVol:'',costPer:'',shift:true,mode:'attr',units:'',defects:'',opps:1,usl:'',lsl:'',dataText:'',fileName:''},
+analyze:{pestel:[],porter:[],fish:[],whys:['','','','',''],rootText:'',swot:{s:'',w:'',o:'',t:''},fmea:[{f:'',e:'',c:'',s:5,o:5,d:5,a:''}],ovOn:false,ovSigma:'',ovNote:''},
+improve:{plan:[{a:'',rc:'',o:'',d:'',x:''}],do:[{a:'',w:'',o:'',s:'todo',n:''}],check:[{m:'',t:'',ac:'',res:''}],act:[{dec:'std',a:'',o:''}],sim:30},
+signoff:{rows:[{role:L('أعدّه','Prepared by'),name:L('المهندس وائل عويس','Eng. Wael Oweis'),note:'',at:0,h:'',q:0,sn:''},{role:L('اعتماد مدير الجودة','Quality manager approval'),name:'',note:'',at:0,h:'',q:0,sn:''},{role:L('اعتماد الراعي','Sponsor approval'),name:'',note:'',at:0,h:'',q:0,sn:''}]},
+control:{kpis:[{n:'',f:'',t:'',fr:'',o:''}],sop:{title:'',code:'',ver:'1.0',purpose:'',scope:'',resp:'',steps:[{s:'',r:'',rec:''}],refs:''},after:{mode:'attr',units:'',defects:'',opps:1,usl:'',lsl:'',dataText:'',fileName:''}}};}
+function deepFill(t,d){Object.keys(d).forEach(k=>{if(t[k]===undefined)t[k]=clone(d[k]);else if(d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k])&&typeof t[k]==='object')deepFill(t[k],d[k]);});}
+function loadDB(){try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);if(o&&Array.isArray(o.projects))DB=Object.assign(DB,o);}}catch(e){storeOK=false;}
+const b=blank();DB.projects.forEach(p=>deepFill(p,b));
+if(!DB.projects.length){const p=blank();DB.projects.push(p);DB.cur=p.id;}
+if(!P())DB.cur=DB.projects[0].id;lang=DB.lang==='en'?'en':'ar';}
+function saveDB(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){storeOK=false;}}
+function withProj(p,fn){const old=DB.cur;DB.cur=p.id;try{return fn();}finally{DB.cur=old;}}
+/* ===== templates ===== */
+const TPL={
+construction:{
+pe:[['P','تغيّر اشتراطات الجهات الحكومية والتراخيص','Changing authority requirements and permits',3,3,-1],['Ec','تذبذب أسعار المواد وتكاليف التمويل','Volatile material prices and financing costs',4,4,-1],['S','نقص العمالة الفنية المؤهلة','Shortage of skilled technical labor',3,4,-1],['T','توفر أدوات رقمية لإدارة الوثائق والمتابعة','Availability of digital document-control tools',3,3,1],['En','ظروف الطقس واشتراطات الاستدامة','Weather conditions and sustainability requirements',2,3,-1],['L','شروط العقد والغرامات التأخيرية','Contract terms and delay penalties',4,4,-1]],
+po:[['ri','تنافس المقاولين على الموارد والسمعة','Contractors competing for resources and reputation',3,3],['ne','سهولة دخول مقاولين جدد للسوق المحلي','Easy entry of new contractors',2,2],['su','بدائل مواد وأساليب إنشاء أسرع','Alternative materials and faster construction methods',2,3],['bu','المالك والاستشاري يفرضان مواصفات صارمة','Owner and consultant impose strict specifications',4,4],['sp','الاعتماد على عدد محدود من الموردين المعتمدين','Reliance on few approved suppliers',4,4]],
+fi:[['man','ضعف خبرة معدّي الملفات بمتطلبات الاعتماد','Preparers lack experience with approval requirements',4],['machine','غياب نظام إلكتروني لتتبع الطلبات','No electronic system to track requests',3],['material','كتالوجات وشهادات مطابقة غير محدثة من الموردين','Outdated supplier catalogs and compliance certificates',4],['method','لا توجد قائمة تدقيق موحدة قبل الإرسال','No standard pre-submission checklist',5],['env','ضغط الجدول الزمني وتعدد المشاريع','Schedule pressure and multiple projects',3],['meas','لا تُقاس نسبة الرفض ولا زمن الدورة','Rejection rate and cycle time are not measured',3]]},
+manufacturing:{
+pe:[['P','قيود الاستيراد والرسوم الجمركية','Import restrictions and customs duties',3,3,-1],['Ec','ارتفاع أسعار الخامات والطاقة','Rising raw material and energy prices',4,4,-1],['S','دوران العمالة وقلة التدريب','Labor turnover and limited training',3,4,-1],['T','أتمتة وخطوط فحص آلية متاحة','Available automation and inline inspection',3,3,1],['En','اشتراطات الانبعاثات وإدارة المخلفات','Emission and waste-management requirements',3,3,-1],['L','معايير الجودة والمواصفات الإلزامية','Mandatory quality standards and specifications',4,3,-1]],
+po:[['ri','منافسة سعرية شديدة','Intense price competition',4,4],['ne','دخول منتجين مستوردين','Entry of importers',3,3],['su','منتجات بديلة','Substitute products',2,3],['bu','عملاء كبار يفرضون الأسعار','Large customers dictate prices',4,4],['sp','اعتماد على مورد رئيسي للخامات','Dependence on one main raw-material supplier',4,3]],
+fi:[['man','تفاوت مهارة المشغلين','Variation in operator skill',4],['machine','تآكل الأدوات وقلة الصيانة الوقائية','Tool wear and weak preventive maintenance',4],['material','تباين جودة الخامة بين الدفعات','Raw-material variation between batches',4],['method','تعليمات تشغيل غير موحدة بين الورديات','Work instructions differ between shifts',5],['env','حرارة ورطوبة واهتزازات خط الإنتاج','Temperature, humidity and vibration on the line',2],['meas','أجهزة قياس غير معايرة','Uncalibrated measuring instruments',4]]},
+it:{
+pe:[['P','سياسات حماية البيانات والامتثال','Data-protection policies and compliance',3,3,-1],['Ec','ضغط الميزانيات وتكلفة الكفاءات','Budget pressure and talent cost',4,4,-1],['S','توقعات المستخدمين لتجربة سريعة','User expectations for fast experience',3,4,-1],['T','تطور سريع في الأدوات والمنصات','Rapid evolution of tools and platforms',4,3,1],['En','ضغط الاستدامة على مراكز البيانات','Sustainability pressure on data centers',2,2,-1],['L','التراخيص واتفاقيات مستوى الخدمة SLA','Licensing and SLA obligations',3,4,-1]],
+po:[['ri','منافسة كثيفة من منتجات مشابهة','Heavy competition from similar products',4,4],['ne','سهولة دخول شركات ناشئة','Easy entry of startups',3,3],['su','حلول جاهزة ومفتوحة المصدر','Off-the-shelf and open-source alternatives',3,4],['bu','عملاء يبدّلون المزوّد بسهولة','Customers switch vendors easily',4,3],['sp','اعتماد على منصات سحابية محددة','Reliance on specific cloud platforms',3,3]],
+fi:[['man','نقص خبرة الفريق بالاختبار الآلي','Team lacks automated-testing experience',4],['machine','بيئات اختبار غير مطابقة للإنتاج','Test environments differ from production',4],['material','متطلبات غير مكتملة وغامضة','Incomplete and ambiguous requirements',5],['method','غياب مراجعة الكود ومعايير القبول','No code review or acceptance criteria',4],['env','ضغط مواعيد الإصدار','Release deadline pressure',3],['meas','لا تُقاس الأخطاء لكل إصدار','Defects per release are not measured',3]]},
+services:{
+pe:[['P','تغيّر لوائح التعاقد والمشتريات','Changing contracting and procurement regulations',3,3,-1],['Ec','تقلب أسعار الموردين وتأخر السداد','Supplier price swings and late payments',4,3,-1],['S','توقعات العملاء العالية للسرعة والشفافية','High customer expectations for speed and transparency',3,4,-1],['T','أنظمة ERP ومتابعة متاحة','ERP and tracking systems available',3,3,1],['En','متطلبات التوريد المستدام','Sustainable sourcing requirements',2,2,-1],['L','شروط العقود وسياسات الامتثال','Contract terms and compliance policies',4,3,-1]],
+po:[['ri','منافسة على العملاء والعقود','Competition for clients and contracts',3,3],['ne','سهولة دخول مزودي خدمة جدد','Easy entry of new service providers',3,2],['su','خدمات بديلة أو داخلية','Alternative or in-house services',2,3],['bu','عملاء يطلبون خفض الأسعار','Clients push prices down',4,4],['sp','موردون محدودون لتوريدات حرجة','Few suppliers for critical items',4,3]],
+fi:[['man','عدم وضوح المسؤوليات بين الأقسام','Unclear responsibilities between departments',4],['machine','أنظمة متابعة غير متكاملة','Non-integrated tracking systems',3],['material','مستندات وطلبات ناقصة عند الاستلام','Incomplete documents and requests at intake',4],['method','خطوات موافقة متعددة غير موحدة','Multiple non-standard approval steps',5],['env','ضغط الأحمال في مواسم الذروة','Workload peaks in busy seasons',3],['meas','غياب مؤشرات زمن الدورة','No cycle-time indicators',3]]}};
+const tpl=()=>TPL[P().sector]||TPL.services;
+const TM={sg:()=>({role:'',name:'',note:'',at:0,h:'',q:0,sn:''}),fmea:()=>({f:'',e:'',c:'',s:5,o:5,d:5,a:''}),team:()=>({n:'',r:''}),voc:()=>({v:'',n:'',c:'',m:'',t:''}),sh:()=>({n:'',inf:3,sup:3}),flow:()=>({k:'step',t:'',no:''}),pestel:()=>({c:'P',t:'',w:3,r:3,d:-1}),fish:()=>({c:'man',t:'',s:3}),plan:()=>({a:'',rc:'',o:'',d:'',x:''}),do:()=>({a:'',w:'',o:'',s:'todo',n:''}),check:()=>({m:'',t:'',ac:'',res:''}),act:()=>({dec:'std',a:'',o:''}),kpi:()=>({n:'',f:'',t:'',fr:'',o:''}),step:()=>({s:'',r:'',rec:''})};
+/* ===== sample calculation ===== */
+function calcSample(m,fb){const shift=P().measure.shift!==false;const r={mode:m.mode,ok:false,warn:[],err:[]};
+if(m.mode==='var'){const arr=parseNums(m.dataText),st=stats(arr);r.arr=arr;r.st=st;
+if(!st||st.n<2){r.err.push(L('أدخل أو ارفع قياسات (٢ على الأقل)','Enter or upload at least 2 measurements'));return r;}
+const usl=num(m.usl)!=null?num(m.usl):num(fb&&fb.usl),lsl=num(m.lsl)!=null?num(m.lsl):num(fb&&fb.lsl);r.usl=usl;r.lsl=lsl;
+if(usl==null&&lsl==null){r.err.push(L('حدد USL أو LSL على الأقل','Set at least one of USL / LSL'));return r;}
+if(usl!=null&&lsl!=null&&usl<=lsl){r.err.push(L('يجب أن يكون USL أكبر من LSL','USL must be greater than LSL'));return r;}
+const s=st.sd;let p;
+if(s>0)p=(usl!=null?normUpper((usl-st.mean)/s):0)+(lsl!=null?normCdf((lsl-st.mean)/s):0);else p=((usl!=null&&st.mean>usl)||(lsl!=null&&st.mean<lsl))?1:0;
+const obs=r.arr.filter(x=>(usl!=null&&x>usl)||(lsl!=null&&x<lsl)).length;
+const cpu=usl!=null&&s>0?(usl-st.mean)/(3*s):null,cpl=lsl!=null&&s>0?(st.mean-lsl)/(3*s):null;
+r.cp=(usl!=null&&lsl!=null&&s>0)?(usl-lsl)/(6*s):null;const cs=[cpu,cpl].filter(x=>x!=null);r.cpk=cs.length?Math.min.apply(null,cs):null;
+r.units=st.n;r.defects=obs;r.opps=1;r.dpo=Math.min(1,p);r.dpu=r.dpo;r.observed=obs;
+if(st.n<30)r.warn.push(L('عدد القياسات أقل من 30 — النتائج تقريبية','Fewer than 30 measurements — results are approximate'));
+const out=s>0?arr.filter(x=>Math.abs(x-st.mean)>3*s).length:0;if(out)r.warn.push(L(`يوجد ${out} قيمة شاذة محتملة (أبعد من 3σ) — راجع صحة البيانات`,`${out} possible outlier(s) beyond 3σ — check the data`));
+}else{const u=num(m.units),d=num(m.defects),o=num(m.opps)||1;
+if(!u||u<=0){r.err.push(L('أدخل عدد الوحدات','Enter the number of units'));return r;}
+if(d==null||d<0){r.err.push(L('أدخل عدد العيوب','Enter the number of defects'));return r;}
+if(d>u*o){r.err.push(L('عدد العيوب أكبر من إجمالي الفرص — راجع المدخلات','Defects exceed total opportunities — check the inputs'));return r;}
+r.units=u;r.defects=d;r.opps=o;r.dpo=d/(u*o);r.dpu=d/u;
+if(u<30)r.warn.push(L('عدد الوحدات أقل من 30 — النتائج تقريبية','Fewer than 30 units — results are approximate'));}
+r.dpmo=r.dpo*1e6;r.yield=(1-r.dpo)*100;const sg=sigmaFromDpo(r.dpo,shift);r.sigma=sg.s;r.capped=sg.c;r.z=r.dpo<=0?null:-invNorm(r.dpo);r.ok=true;return r;}
+const beforeCalc=()=>calcSample(P().measure);
+const afterCalc=()=>calcSample(P().control.after,P().measure);
+function sigmaBefore(){const a=P().analyze;if(a.ovOn&&num(a.ovSigma)!=null)return Math.max(0,Math.min(6,num(a.ovSigma)));const c=beforeCalc();return c.ok?c.sigma:null;}
+function sigmaAfter(){const c=afterCalc();return c.ok?c.sigma:null;}
+function dpmoBefore(){const a=P().analyze,b=beforeCalc();if(a.ovOn&&num(a.ovSigma)!=null)return dpoFromSigma(sigmaBefore(),P().measure.shift!==false)*1e6;return b.ok?b.dpmo:null;}
+function fin(){const m=P().measure,b=beforeCalc(),a=afterCalc(),vol=num(m.annualVol),cost=num(m.costPer);if(!b.ok||!vol||!cost)return null;return{vol,cost,copqB:b.dpu*vol*cost,copqA:a.ok?a.dpu*vol*cost:null,save:a.ok?(b.dpu-a.dpu)*vol*cost:null};}
+function rootMain(){const a=P().analyze;if(a.rootText.trim())return a.rootText.trim();const w=a.whys.filter(x=>x.trim());return w.length?w[w.length-1].trim():'';}
+function rootCauses(){const a=P().analyze,out=[];const r=rootMain();if(r)out.push(r);a.fish.filter(c=>c.t.trim()&&c.s>=4).sort((x,y)=>y.s-x.s).forEach(c=>{if(!out.includes(c.t.trim()))out.push(c.t.trim());});return out;}
+const has=(arr,k)=>arr.filter(r=>String(r[k]==null?'':r[k]).trim()).length;
+function checks(k){const p=P(),d=p.define,m=p.measure,a=p.analyze,i=p.improve,c=p.control;const T=(l,ok)=>({l,ok:!!ok});
+if(k==='define')return[T(L('بيان المشكلة','Problem statement'),d.problem.trim()),T(L('بيان الهدف (املأ الفراغات __)','Goal statement (fill the __ blanks)'),d.goal.trim()&&!d.goal.includes('__')),T(L('نطاق المشروع','Scope'),d.scopeIn.trim()),T(L('أعضاء الفريق','Team members'),has(d.team,'n')),T(L('المبرر الاستثماري','Business case'),d.business.trim()),T(L('CTQ واحد على الأقل','At least one CTQ'),has(d.voc,'c')),T(L('جدول SIPOC كاملاً','Complete SIPOC'),[d.sipoc.s,d.sipoc.i,d.sipoc.p,d.sipoc.o,d.sipoc.c].every(x=>x.trim())),T(L('أصحاب المصلحة','Stakeholders'),has(d.sh,'n')),T(L('مخطط انسياب (٣ خطوات)','Flowchart (3 steps)'),has(d.flow,'t')>=3)];
+if(k==='measure')return[T(L('بيانات عينات صالحة','Valid sample data'),beforeCalc().ok),T(L('وصف المؤشر المقاس','Measured metric'),m.metric.trim()),T(L('الحجم السنوي وتكلفة العيب (للأثر المالي)','Annual volume and defect cost'),num(m.annualVol)&&num(m.costPer))];
+if(k==='analyze')return[T(L('عوامل PESTEL','PESTEL factors'),has(a.pestel,'t')>=3),T(L('قوى بورتر الخمس','Porter five forces'),has(a.porter,'t')>=5),T(L('SWOT','SWOT'),[a.swot.s,a.swot.w,a.swot.o,a.swot.t].every(x=>x.trim())),T(L('أسباب Fishbone (٣+)','Fishbone causes (3+)'),has(a.fish,'t')>=3),T(L('٥ لماذا (٣+)','5 Whys (3+)'),a.whys.filter(x=>x.trim()).length>=3),T(L('السبب الجذري','Root cause'),rootMain()),T(L('مستوى السيجما الأولي','Initial sigma'),sigmaBefore()!=null)];
+if(k==='improve')return[T(L('خطة Plan','Plan actions'),has(i.plan,'a')),T(L('تنفيذ Do','Do activities'),has(i.do,'a')),T(L('قياس Check','Check metrics'),has(i.check,'m')),T(L('اعتماد Act','Act decisions'),has(i.act,'a'))];
+if(k==='control')return[T(L('مؤشرات KPIs','KPIs'),has(c.kpis,'n')),T(L('عنوان الـ SOP','SOP title'),c.sop.title.trim()),T(L('خطوات الـ SOP','SOP steps'),has(c.sop.steps,'s')),T(L('عينات ما بعد التحسين','After-improvement sample'),afterCalc().ok)];
+return[];}
+const pctDone=k=>{const c=checks(k);return c.length?Math.round(c.filter(x=>x.ok).length/c.length*100):0;};
+const qScore=()=>Math.round(sum(PHK.map(pctDone))/5);
+function h53(s){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<s.length;i++){const ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (4294967296*(2097151&h2)+(h1>>>0)).toString(16).toUpperCase().padStart(14,'0').slice(0,10);}
+const snapHash=()=>{const p=P();return h53(JSON.stringify([p.name,p.sector,p.define,p.measure,p.analyze,Object.assign({},p.improve,{sim:0}),p.control]));};
+const signState=r=>!r.at?'pending':r.h===snapHash()?'signed':'stale';
+const signRows=()=>P().signoff.rows.filter(r=>r.role.trim()||r.name.trim());
+const approvedAll=()=>{const r=signRows();return r.length>0&&r.every(x=>signState(x)==='signed');};
+/* ===== generators ===== */
+function addLines(cur,arr){const ex=lines(cur);const add=arr.filter(x=>x&&!ex.includes(x));return ex.concat(add).join('\n');}
+function genFactors(){const a=P().analyze,t=tpl();a.pestel=a.pestel.filter(x=>x.t.trim());const have=a.pestel.map(x=>x.t);t.pe.forEach(x=>{const tx=L(x[1],x[2]);if(!have.includes(tx))a.pestel.push({c:x[0],t:tx,w:x[3],r:x[4],d:x[5]});});
+Object.keys(FRC).forEach(k=>{const tx=t.po.find(x=>x[0]===k);let row=a.porter.find(x=>x.f===k);if(!row){row={f:k,t:'',w:3,r:3};a.porter.push(row);}if(!row.t.trim()&&tx){row.t=L(tx[1],tx[2]);row.w=tx[3];row.r=tx[4];}});}
+function genFish(){const a=P().analyze,t=tpl();t.fi.forEach(x=>{const tx=L(x[1],x[2]);if(!a.fish.some(f=>f.t===tx))a.fish.push({c:x[0],t:tx,s:x[3]});});a.fish=a.fish.filter(f=>f.t.trim());}
+function genSWOT(){const p=P(),a=p.analyze,d=p.define,S=[],W=[],O=[],T=[];const sg=sigmaBefore(),b=beforeCalc();
+d.sh.filter(x=>x.n.trim()&&x.inf>=4&&x.sup>=4).forEach(x=>S.push(L('دعم قوي من: ','Strong support from: ')+x.n));
+if(sg!=null&&sg>=4)S.push(L(`قدرة عملية جيدة (${fmt(sg)}σ)`,`Good process capability (${fmt(sg)}σ)`));
+if(has(d.team,'n')>=3)S.push(L('فريق مشروع متعدد التخصصات','Cross-functional project team'));
+if(has(d.voc,'c'))S.push(L('احتياجات العميل محددة ومحوّلة إلى CTQs','Customer needs translated into CTQs'));
+if(sg!=null&&sg<4)W.push(L(`مستوى سيجما منخفض (${fmt(sg)}σ) ومعدل عيوب ${fmt0(dpmoBefore())} DPMO`,`Low sigma level (${fmt(sg)}σ) with ${fmt0(dpmoBefore())} DPMO`));
+a.fish.filter(c=>c.t.trim()&&c.s>=4).sort((x,y)=>y.s-x.s).slice(0,4).forEach(c=>W.push(c.t.trim()));
+d.sh.filter(x=>x.n.trim()&&x.inf>=4&&x.sup<=2).forEach(x=>W.push(L('مقاومة محتملة من: ','Potential resistance from: ')+x.n));
+const ps=a.pestel.filter(x=>x.t.trim()).map(x=>({x,s:x.w*x.r})).sort((u,v)=>v.s-u.s);
+ps.filter(o=>o.x.d>0).slice(0,3).forEach(o=>O.push(o.x.t));ps.filter(o=>o.x.d<0).slice(0,3).forEach(o=>T.push(o.x.t));
+a.porter.filter(x=>x.t.trim()&&x.r>=4).sort((u,v)=>v.w*v.r-u.w*u.r).slice(0,2).forEach(x=>T.push(x.t));
+a.porter.filter(x=>x.t.trim()&&x.r<=2).slice(0,2).forEach(x=>O.push(L('ضغط منخفض: ','Low pressure: ')+x.t));
+a.swot.s=addLines(a.swot.s,S);a.swot.w=addLines(a.swot.w,W);a.swot.o=addLines(a.swot.o,O);a.swot.t=addLines(a.swot.t,T);}
+function genPDCA(){const p=P(),i=p.improve,d=p.define;i.plan=i.plan.filter(x=>x.a.trim()||x.rc.trim());rootCauses().forEach(rc=>{if(!i.plan.some(x=>x.rc===rc))i.plan.push({a:L('إجراء تصحيحي لمعالجة: ','Corrective action for: ')+rc,rc,o:'',d:'',x:''});});
+P().analyze.fmea.filter(x=>x.f.trim()&&x.s*x.o*x.d>=100&&x.a.trim()).forEach(x=>{if(!i.plan.some(y=>y.rc===x.f))i.plan.push({a:x.a,rc:x.f,o:'',d:'',x:L('خفض RPN (الحالي '+x.s*x.o*x.d+')','Lower RPN (now '+x.s*x.o*x.d+')')});});i.check=i.check.filter(x=>x.m.trim());d.voc.filter(v=>v.c.trim()).forEach(v=>{if(!i.check.some(x=>x.m===v.c))i.check.push({m:v.c,t:v.t,ac:'',res:''});});
+if(!i.plan.length)i.plan.push(TM.plan());if(!i.check.length)i.check.push(TM.check());}
+function genFMEA(){const a=P().analyze;a.fmea=a.fmea.filter(x=>x.f.trim());rootCauses().forEach(rc=>{if(!a.fmea.some(x=>x.f===rc))a.fmea.push({f:rc,e:'',c:'',s:7,o:5,d:5,a:''});});a.fish.filter(c=>c.t.trim()&&c.s>=3&&c.s<4).slice(0,3).forEach(c=>{if(!a.fmea.some(x=>x.f===c.t))a.fmea.push({f:c.t,e:'',c:'',s:5,o:5,d:5,a:''});});if(!a.fmea.length)a.fmea.push(TM.fmea());}
+function genKPI(){const c=P().control,d=P().define;c.kpis=c.kpis.filter(x=>x.n.trim());d.voc.filter(v=>v.c.trim()).forEach(v=>{if(!c.kpis.some(k=>k.n===v.c))c.kpis.push({n:v.c,f:v.m,t:v.t,fr:L('أسبوعي','Weekly'),o:d.leader});});
+const sn=L('مستوى السيجما','Sigma level');if(!c.kpis.some(k=>k.n===sn))c.kpis.push({n:sn,f:'DPMO → σ',t:'≥ 4',fr:L('شهري','Monthly'),o:d.leader});if(!c.kpis.length)c.kpis.push(TM.kpi());}
+function genSOP(){const p=P(),s=p.control.sop,d=p.define;if(!s.title.trim())s.title=L('إجراء التشغيل المعياري: ','Standard operating procedure: ')+p.name;if(!s.code.trim())s.code='SOP-001';if(!s.purpose.trim())s.purpose=d.goal;if(!s.scope.trim())s.scope=d.scopeIn;
+if(!s.resp.trim())s.resp=d.team.filter(x=>x.n.trim()).map(x=>x.n+(x.r?' — '+x.r:'')).join('\n');if(!s.refs.trim())s.refs=L('ميثاق المشروع، خطة PDCA، مؤشرات الأداء','Project charter, PDCA plan, KPIs');
+s.steps=s.steps.filter(x=>x.s.trim());d.flow.filter(f=>f.t.trim()&&f.k!=='start'&&f.k!=='end').forEach(f=>{const tx=(f.k==='decision'?L('تحقق: ','Check: '):'')+f.t.trim();if(!s.steps.some(x=>x.s===tx))s.steps.push({s:tx,r:'',rec:''});});if(!s.steps.length)s.steps.push(TM.step());}
+/* ===== file parsing ===== */
+function parseCSV(text){const first=text.split(/\r?\n/,1)[0]||'';const dl=[',',';','\t'].map(d=>[d,first.split(d).length-1]).sort((a,b)=>b[1]-a[1])[0][0];const rows=[];let row=[],cur='',q=false;
+for(let i=0;i<text.length;i++){const ch=text[i];if(q){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=ch;}else if(ch==='"')q=true;else if(ch===dl){row.push(cur);cur='';}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cur);rows.push(row);row=[];cur='';}else cur+=ch;}
+if(cur!==''||row.length){row.push(cur);rows.push(row);}return rows;}
+const isFlag=v=>/^(1|true|yes|y|fail|failed|defect|defective|reject|rejected|ng|x|نعم|رفض|مرفوض|معيب|فشل|غير مطابق)$/i.test(String(v==null?'':v).trim());
+function applyFile(pre){const T=TMP[pre],m=getP(P(),pre);const vals=T.rows.map(r=>r[T.col]);
+if(m.mode==='var'){m.dataText=vals.map(toNum).filter(x=>x!=null).join('\n');}
+else if(T.def==='count'){const n=vals.map(toNum).filter(x=>x!=null);m.units=n.length;m.defects=sum(n);}
+else{m.units=vals.filter(v=>String(v==null?'':v).trim()!=='').length;m.defects=vals.filter(isFlag).length;}}
+/* ===== charts ===== */
+function ruler(b,a,big){const pos=v=>Math.max(0,Math.min(100,v/6*100));
+if(b==null&&a==null)return `<div class="mu" style="font-size:13px">${L('أدخل بيانات القياس لعرض مستوى السيجما','Enter measure data to see the sigma level')}</div>`;
+let h=`<div class="ruler${big?' big':''}"><div class="rl-trk"></div>${[1,2,3,4,5,6].map(i=>`<span class="rl-t" style="left:${pos(i)}%">${i}σ</span>`).join('')}`;
+const near=b!=null&&a!=null&&Math.abs(a-b)<0.45;
+if(b!=null)h+=`<span class="mk b" style="left:${pos(b)}%;${near?'transform:translateX(-100%)':''}"><em>${fmt(b,1)}</em><i>▼</i></span>`;
+if(a!=null)h+=`<span class="mk a" style="left:${pos(a)}%;${near?'transform:translateX(0)':''}"><em>${fmt(a,1)}</em><i>▼</i></span>`;
+h+='</div>';if(big&&(b!=null&&a!=null))h+=`<div class="rl-lg"><span style="color:var(--rd)">▼ ${L('قبل التحسين','Before')}</span><span style="color:var(--ac)">▼ ${L('بعد التحسين','After')}</span></div>`;return h;}
+function histSVG(r){const arr=r.arr,st=r.st,W=560,H=240,ml=30,mr=10,mt=12,mb=28;let lo=Math.min(st.min,r.lsl!=null?r.lsl:st.min),hi=Math.max(st.max,r.usl!=null?r.usl:st.max);const pad=(hi-lo)*0.08||1;lo-=pad;hi+=pad;
+const k=Math.min(20,Math.max(6,Math.ceil(Math.log2(st.n))+1)),bw=(hi-lo)/k,cnt=Array(k).fill(0);arr.forEach(x=>{cnt[Math.min(k-1,Math.max(0,Math.floor((x-lo)/bw)))]++;});
+let ymax=Math.max.apply(null,cnt)*1.2||1;const X=x=>ml+(x-lo)/(hi-lo)*(W-ml-mr),Y=c=>H-mb-c/ymax*(H-mt-mb);
+let curve='';if(st.sd>0){const pts=[];for(let i=0;i<=80;i++){const x=lo+(hi-lo)*i/80,z=(x-st.mean)/st.sd,d=Math.exp(-z*z/2)/(st.sd*Math.sqrt(2*Math.PI))*st.n*bw;pts.push(X(x).toFixed(1)+','+Y(Math.min(d,ymax)).toFixed(1));}curve=`<polyline class="s-acl" points="${pts.join(' ')}"/>`;}
+let g=`<line class="s-gr" x1="${ml}" y1="${H-mb}" x2="${W-mr}" y2="${H-mb}"/>`;
+cnt.forEach((c,i)=>{const x0=X(lo+i*bw),x1=X(lo+(i+1)*bw);g+=`<rect x="${x0+1}" y="${Y(c)}" width="${Math.max(1,x1-x0-2)}" height="${H-mb-Y(c)}" style="fill:var(--ac);opacity:.35"/>`;});
+[['usl',r.usl,'USL'],['lsl',r.lsl,'LSL']].forEach(([n,v,t])=>{if(v!=null)g+=`<line class="s-rd" x1="${X(v)}" y1="${mt}" x2="${X(v)}" y2="${H-mb}"/><text class="s-t s-rdf" x="${X(v)+3}" y="${mt+10}" style="font-size:11px">${t}</text>`;});
+g+=`<line class="s-ln" x1="${X(st.mean)}" y1="${mt}" x2="${X(st.mean)}" y2="${H-mb}" stroke-dasharray="3 3"/>`;
+for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;g+=`<text class="s-m" x="${X(v)}" y="${H-10}" text-anchor="middle">${fmt(v,Math.abs(hi-lo)<10?2:0)}</text>`;}
+return `<div class="svgw"><svg viewBox="0 0 ${W} ${H}" style="direction:ltr;min-width:420px">${g}${curve}</svg></div>`;}
+function iSVG(r){const arr=r.arr,st=r.st;if(arr.length<3)return '';const W=560,H=220,ml=40,mr=10,mt=12,mb=22;let mr_=0;for(let i=1;i<arr.length;i++)mr_+=Math.abs(arr[i]-arr[i-1]);mr_/=arr.length-1;const ucl=st.mean+2.66*mr_,lcl=st.mean-2.66*mr_;
+let lo=Math.min(st.min,lcl),hi=Math.max(st.max,ucl);const pad=(hi-lo)*0.06||1;lo-=pad;hi+=pad;const X=i=>ml+i/(arr.length-1)*(W-ml-mr),Y=v=>H-mb-(v-lo)/(hi-lo)*(H-mt-mb);
+const pts=arr.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');let g=`<line class="s-gr" x1="${ml}" y1="${H-mb}" x2="${W-mr}" y2="${H-mb}"/>`;
+[[ucl,'UCL',1],[st.mean,'CL',0],[lcl,'LCL',1]].forEach(([v,t,d])=>{g+=`<line class="${d?'s-rd':'s-ln'}" x1="${ml}" y1="${Y(v)}" x2="${W-mr}" y2="${Y(v)}"/><text class="s-m" x="${ml-4}" y="${Y(v)+4}" text-anchor="end">${t}</text>`;});
+g+=`<polyline class="s-acl" style="stroke-width:1.3" points="${pts}"/>`;let ooc=0;arr.forEach((v,i)=>{const bad=v>ucl||v<lcl;if(bad)ooc++;g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="${bad?4:2.4}" class="${bad?'s-rdf':'s-ac'}"/>`;});
+return `<div class="svgw"><svg viewBox="0 0 ${W} ${H}" style="direction:ltr;min-width:420px">${g}</svg></div><p class="mu" style="font-size:13px">UCL ${fmt(ucl)} · CL ${fmt(st.mean)} · LCL ${fmt(lcl)} — ${ooc?`<span class="chip bad">${L(ooc+' نقطة خارج حدود الضبط','' +ooc+' point(s) out of control')}</span>`:`<span class="chip ok">${L('العملية مستقرة إحصائياً','Process is in statistical control')}</span>`}</p>`;}
+const wrap=(t,n,max)=>{const w=String(t).split(/\s+/),o=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>n&&c){o.push(c);c=x;}else c=(c+' '+x).trim();});if(c)o.push(c);if(max&&o.length>max){o.length=max;o[max-1]=o[max-1].slice(0,n-1)+'…';}return o;};
+function flowSVG(){const fl=P().define.flow.map((f,i)=>Object.assign({},f,{i:i+1})).filter(f=>String(f.t).trim());if(!fl.length)return '';
+const bw=210,cx=125,gap=34;let y=12;fl.forEach(f=>{f.ln=wrap(f.t,24,3);f.h=f.k==='decision'?Math.max(70,f.ln.length*16+42):Math.max(f.k==='step'?40:36,f.ln.length*16+18);f.y=y;f.cy=y+f.h/2;y+=f.h+gap;});
+const loops=fl.filter(f=>f.k==='decision'&&num(f.no)&&fl.some(g=>g.i===num(f.no)));let g='';
+fl.forEach((f,i)=>{const t=f.ln.map((s,j)=>`<text class="s-t" x="${cx}" y="${f.cy-(f.ln.length-1)*8+j*16+4}" text-anchor="middle">${esc(s)}</text>`).join('');
+if(f.k==='decision')g+=`<polygon class="fc-d" points="${cx},${f.y} ${cx+bw/2},${f.cy} ${cx},${f.y+f.h} ${cx-bw/2},${f.cy}"/>`;else g+=`<rect class="${f.k==='step'?'fc-p':'fc-s'}" x="${cx-bw/2}" y="${f.y}" width="${bw}" height="${f.h}" rx="${f.k==='step'?6:f.h/2}"/>`;g+=t;
+g+=`<text class="s-m" x="${cx-bw/2-6}" y="${f.cy+4}" text-anchor="end">${f.i}</text>`;
+const nx=fl[i+1];if(nx){g+=`<line class="s-ln" x1="${cx}" y1="${f.y+f.h}" x2="${cx}" y2="${nx.y-1}" marker-end="url(#ar)"/>`;if(f.k==='decision')g+=`<text class="s-m" x="${cx+6}" y="${f.y+f.h+14}">${L('نعم','Yes')}</text>`;}});
+loops.forEach((f,k)=>{const tg=fl.find(x=>x.i===num(f.no)),x1=cx+bw/2+30+k*16;g+=`<path class="s-ln" d="M${cx+bw/2} ${f.cy} H${x1} V${tg.cy} H${cx+bw/2+1}" marker-end="url(#ar)" style="stroke-dasharray:4 3"/><text class="s-m" x="${cx+bw/2+4}" y="${f.cy-5}">${L('لا','No')}</text>`;});
+const W=cx+bw/2+60+loops.length*16;return `<div class="svgw"><svg viewBox="0 0 ${W} ${y}" style="direction:ltr;width:${Math.min(W,520)}px"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--ink)"/></marker></defs>${g}</svg></div>`;}
+function radarSVG(vals,labels){const cx=190,cy=150,R=95,n=vals.length;const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/n;return[cx+Math.cos(a)*r,cy+Math.sin(a)*r];};let g='';
+for(let r=1;r<=5;r++)g+=`<polygon class="s-gr" points="${vals.map((_,i)=>pt(i,R*r/5).join(',')).join(' ')}"/>`;
+vals.forEach((_,i)=>{const [x,y]=pt(i,R),[lx,ly]=pt(i,R+16);g+=`<line class="s-gr" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/><text class="s-t" x="${lx}" y="${ly+4}" text-anchor="${Math.abs(lx-cx)<8?'middle':lx>cx?'start':'end'}">${esc(labels[i])}</text>`;});
+g+=`<polygon points="${vals.map((v,i)=>pt(i,R*v/5).join(',')).join(' ')}" style="fill:var(--ac);fill-opacity:.25;stroke:var(--ac);stroke-width:2"/>`;
+vals.forEach((v,i)=>{const [x,y]=pt(i,R*v/5);g+=`<circle cx="${x}" cy="${y}" r="3.5" class="s-ac"/>`;});
+return `<div class="svgw"><svg viewBox="0 0 380 300" style="direction:ltr;max-width:380px">${g}</svg></div>`;}
+function fishSVG(){const p=P(),a=p.analyze,W=960,H=440,sy=220;const tr=(s,n)=>s.length>n?s.slice(0,n-1)+'…':s;
+let g=`<line class="s-ln" style="stroke-width:2.5" x1="30" y1="${sy}" x2="790" y2="${sy}"/><rect class="fc-s" x="790" y="165" width="165" height="110" rx="10"/>`;
+wrap(p.define.problem||L('المشكلة','Problem'),20,5).forEach((s,i,ar)=>{g+=`<text class="s-t" x="872" y="${220-(ar.length-1)*8+i*16+4}" text-anchor="middle">${esc(s)}</text>`;});
+[['man',200,0],['machine',420,0],['material',640,0],['method',200,1],['env',420,1],['meas',640,1]].forEach(([k,bx,bot])=>{const y0=bot?H-30:30;
+g+=`<line class="s-ln" x1="${bx}" y1="${y0}" x2="${bx+110}" y2="${sy}"/><rect class="fc-p" x="${bx-58}" y="${bot?H-28:4}" width="116" height="24" rx="5"/><text class="s-t" x="${bx}" y="${bot?H-11:21}" text-anchor="middle" style="font-weight:700">${esc(cname(FSH,k))}</text>`;
+a.fish.filter(c=>c.c===k&&c.t.trim()).slice(0,5).forEach((c,i)=>{const y=bot?y0-34-i*32:y0+34+i*32,xb=bx+(y-y0)/(sy-y0)*110;const wl=wrap(c.t,25,2);g+=`<line class="s-gr" x1="${xb-40}" y1="${y}" x2="${xb}" y2="${y}"/>`+wl.map((w,j)=>`<text class="s-t${c.s>=4?' s-hot':''}" x="${xb-44}" y="${y-3-(wl.length-1-j)*13}" text-anchor="end" style="font-size:11.5px">${esc(w)}</text>`).join('');});});
+return `<div class="svgw"><svg viewBox="0 0 ${W} ${H}" style="direction:ltr;min-width:760px">${g}</svg></div>`;}
+/* ===== outputs ===== */
+const OUT={};
+const card=(t,b,c)=>`<section class="card out${c?' '+c:''}"><h3>${t}</h3>${b}</section>`;
+const mu=t=>`<p class="mu">${t}</p>`;
+const dash='<span class="mu">—</span>';
+const tx=v=>v&&String(v).trim()?esc(v).replace(/\n/g,'<br>'):dash;
+const tile=(l,v,c)=>`<div class="tile${c?' '+c:''}"><b><bdi dir="ltr">${v}</bdi></b><span>${l}</span></div>`;
+OUT.banner=k=>{const c=checks(k),miss=c.filter(x=>!x.ok);if(!miss.length)return `<div class="banner ok">✓ ${L('المرحلة مكتملة — يمكنك الانتقال للتالية','Phase complete — ready for the next one')}</div>`;return `<div class="banner warn"><b>${L('قبل الانتقال أكمل:','Before moving on, complete:')}</b> ${miss.map(x=>`<span class="chip warn">${x.l}</span>`).join(' ')}</div>`;};
+OUT.charter=()=>{const p=P(),d=p.define;const row=(l,v)=>`<tr><th>${l}</th><td>${tx(v)}</td></tr>`;
+const team=d.team.filter(x=>x.n.trim());
+return card(L('١) ميثاق المشروع (Project Charter)','1) Project Charter'),`<table class="dt kv"><tbody>${row(L('اسم المشروع','Project'),p.name)}${row(L('القطاع','Sector'),cname(SECT,p.sector))}${row(L('الراعي / القائد','Sponsor / Leader'),[d.sponsor,d.leader].filter(Boolean).join(' / '))}${row(L('المدة','Timeline'),[d.start,d.end].filter(Boolean).join(' → '))}${row(L('بيان المشكلة','Problem statement'),d.problem)}${row(L('بيان الهدف','Goal statement'),d.goal)}${row(L('داخل النطاق','In scope'),d.scopeIn)}${row(L('خارج النطاق','Out of scope'),d.scopeOut)}${row(L('المبرر الاستثماري','Business case'),d.business)}</tbody></table><h4>${L('أعضاء الفريق','Team members')}</h4>${team.length?`<table class="dt"><thead><tr><th>${L('الاسم','Name')}</th><th>${L('الدور','Role')}</th></tr></thead><tbody>${team.map(x=>`<tr><td>${esc(x.n)}</td><td>${tx(x.r)}</td></tr>`).join('')}</tbody></table>`:mu(L('لم يُضف أعضاء بعد','No members yet'))}`);};
+OUT.voc=()=>{const r=P().define.voc.filter(x=>x.v.trim()||x.c.trim());return card(L('٢) صوت العميل و CTQs','2) VOC & CTQs'),r.length?`<div class="tw"><table class="dt stack"><thead><tr><th>${L('صوت العميل (VOC)','Voice of customer')}</th><th>${L('الاحتياج','Need')}</th><th>CTQ</th><th>${L('وحدة القياس','Measure')}</th><th>${L('المستهدف','Target')}</th></tr></thead><tbody>${r.map(x=>`<tr><td data-l="VOC">${tx(x.v)}</td><td data-l="${L('الاحتياج','Need')}">${tx(x.n)}</td><td data-l="CTQ"><b>${tx(x.c)}</b></td><td data-l="${L('القياس','Measure')}">${tx(x.m)}</td><td data-l="${L('المستهدف','Target')}">${tx(x.t)}</td></tr>`).join('')}</tbody></table></div>`:mu(L('أدخل أصوات العملاء أعلاه','Enter customer voices above')));};
+OUT.sipoc=()=>{const s=P().define.sipoc;const col=v=>{const l=lines(v);return l.length?`<ul>${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:dash;};
+return card(L('٣) مخطط SIPOC','3) SIPOC diagram'),`<div class="tw"><table class="dt"><thead><tr><th>S — ${L('الموردون','Suppliers')}</th><th>I — ${L('المدخلات','Inputs')}</th><th>P — ${L('العملية','Process')}</th><th>O — ${L('المخرجات','Outputs')}</th><th>C — ${L('العملاء','Customers')}</th></tr></thead><tbody><tr><td>${col(s.s)}</td><td>${col(s.i)}</td><td>${col(s.p)}</td><td>${col(s.o)}</td><td>${col(s.c)}</td></tr></tbody></table></div>`);};
+const shStrat=x=>x.inf>=4&&x.sup<=2?L('إدارة عن قرب ومعالجة المخاوف','Manage closely; resolve concerns'):x.inf>=4&&x.sup>=4?L('شريك رئيسي: استثمار الدعم','Key champion: leverage support'):x.inf>=4?L('إقناع وتعزيز الدعم','Persuade and build support'):x.sup>=4?L('إبقاؤه على اطلاع','Keep informed'):L('مراقبة','Monitor');
+OUT.stake=()=>{const r=P().define.sh.filter(x=>x.n.trim());if(!r.length)return card(L('٤) تحليل أصحاب المصلحة','4) Stakeholder analysis'),mu(L('أضف أصحاب المصلحة أعلاه','Add stakeholders above')));
+const q=(inf,sup)=>r.filter(x=>(x.inf>=4)===inf&&(x.sup>=4)===sup).map(x=>`<span class="chip">${esc(x.n)}</span>`).join('')||dash;
+return card(L('٤) تحليل أصحاب المصلحة','4) Stakeholder analysis'),`<div class="qd"><div class="q1"><h5>${L('نفوذ عالٍ · دعم منخفض/محايد','High influence · low/neutral support')}</h5>${q(true,false)}</div><div class="q2"><h5>${L('نفوذ عالٍ · دعم مرتفع','High influence · high support')}</h5>${q(true,true)}</div><div class="q3"><h5>${L('نفوذ منخفض · دعم منخفض','Low influence · low support')}</h5>${q(false,false)}</div><div class="q4"><h5>${L('نفوذ منخفض · دعم مرتفع','Low influence · high support')}</h5>${q(false,true)}</div></div><div class="tw"><table class="dt stack"><thead><tr><th>${L('الجهة','Stakeholder')}</th><th>${L('النفوذ','Influence')}</th><th>${L('الدعم','Support')}</th><th>${L('استراتيجية التعامل','Engagement strategy')}</th></tr></thead><tbody>${r.map(x=>`<tr><td data-l="${L('الجهة','Stakeholder')}">${esc(x.n)}</td><td data-l="${L('النفوذ','Influence')}">${x.inf}/5</td><td data-l="${L('الدعم','Support')}">${x.sup}/5</td><td data-l="${L('الاستراتيجية','Strategy')}">${shStrat(x)}</td></tr>`).join('')}</tbody></table></div>`);};
+OUT.flow=()=>{const s=flowSVG();return card(L('٥) مخطط انسياب العملية (Flowchart)','5) Process flowchart'),s||mu(L('أضف خطوات العملية أعلاه','Add process steps above')));};
+OUT.sample=pre=>{const m=getP(P(),pre),after=pre!=='measure',r=after?calcSample(m,P().measure):calcSample(m);
+const title=after?L('نتائج العينات بعد التحسين','After-improvement sample results'):L('نتائج القياس — الوضع الحالي','Measure results — current state');
+if(!r.ok)return card(title,`<div class="banner warn">${r.err.map(esc).join('<br>')}</div>`);
+const sg=r.sigma,lv=lvl(sg);let t=`<div class="tiles">${tile(L('مستوى السيجما','Sigma level'),fmt(sg)+(r.capped?'+':'')+' σ','hero')}${tile('DPMO',fmt0(r.dpmo))}${tile(L('نسبة الجودة (Yield)','Yield'),fmt(r.yield)+'%')}`;
+if(r.mode==='var'){t+=tile(L('عدد القياسات','Samples'),r.st.n)+tile(L('المتوسط','Mean'),fmt(r.st.mean))+tile(L('الانحراف المعياري','Std dev'),fmt(r.st.sd,3))+tile('Cp',fmt(r.cp))+tile('Cpk',fmt(r.cpk))+tile(L('خارج المواصفات فعلياً','Observed out-of-spec'),r.observed);}
+else t+=tile(L('الوحدات','Units'),fmt0(r.units))+tile(L('العيوب','Defects'),fmt0(r.defects))+tile(L('فرص/وحدة','Opps/unit'),fmt0(r.opps))+tile('DPO',fmt(r.dpo*100)+'%')+tile('Z',fmt(r.z));
+t+='</div>';const w=r.warn.map(x=>`<span class="chip warn">${x}</span>`).join(' ');
+let ch='';if(r.mode==='var')ch=`<h4>${L('التوزيع والمواصفات','Distribution vs specification')}</h4>${histSVG(r)}<h4>${L('مخطط الضبط (I-Chart)','Control chart (I-Chart)')}</h4>${iSVG(r)}`;
+return card(title,`<p><span class="chip ${lv[1]}">${lv[0]}</span> ${w}</p>${t}${ruler(sg,null)}${ch}`);};
+OUT.pestel=()=>{const a=P().analyze.pestel.filter(x=>x.t.trim());const T=L('تحليل PESTEL بالأوزان','Weighted PESTEL analysis');if(!a.length)return card(T,mu(L('أضف عوامل أو اضغط «توليد من بيانات المشروع»','Add factors or press “Generate from project data”')));
+const tw=sum(a.map(x=>x.w)),it=a.map(x=>Object.assign({},x,{sc:x.w*x.r/25*100,sh:x.w/tw*100})).sort((u,v)=>v.sc-u.sc);
+const idx=arr=>{const den=sum(arr.map(x=>x.w*5));return den?sum(arr.map(x=>x.w*x.r))/den*100:null;};
+const tI=idx(a.filter(x=>x.d<0)),oI=idx(a.filter(x=>x.d>0)),rl=riskLvl(tI);
+const cats=Object.keys(CAT).map(k=>{const s=a.filter(x=>x.c===k);return s.length?[k,idx(s)]:null;}).filter(Boolean);
+return card(T,`<div class="tiles">${tile(L('مؤشر ضغط التهديدات','Threat pressure index'),tI==null?'—':fmt(tI,0)+'%')}${tile(L('مؤشر الفرص','Opportunity index'),oI==null?'—':fmt(oI,0)+'%')}${tile(L('مستوى المخاطر الخارجية','External risk level'),`<span class="chip ${rl[1]}">${rl[0]}</span>`)}</div>
+<h4>${L('حسب الفئة','By category')}</h4>${cats.map(([k,v])=>`<div class="rk"><span>${cname(CAT,k)}</span><b>${fmt(v,0)}%</b><div class="bar"><i style="width:${v}%"></i></div></div>`).join('')}
+<h4>${L('العوامل مرتبة حسب الأثر المرجّح','Factors ranked by weighted impact')}</h4>${it.map(x=>`<div class="rk"><span><span class="chip">${cname(CAT,x.c)}</span> ${esc(x.t)} <span class="mu">(${L('وزن','w')} ${fmt(x.sh,0)}%)</span></span><b style="color:var(--${x.d>0?'gn':'rd'})">${x.d>0?'▲':'▼'} ${fmt(x.sc,0)}%</b><div class="bar ${x.d>0?'gn':'rd'}"><i style="width:${x.sc}%"></i></div></div>`).join('')}<p class="mu" style="font-size:12.5px;margin-top:8px">▲ ${L('فرصة','Opportunity')} · ▼ ${L('تهديد','Threat')} — ${L('الأثر المرجّح = الوزن × الشدة ÷ 25','Weighted impact = weight × intensity ÷ 25')}</p>`);};
+OUT.porter=()=>{const a=P().analyze.porter;const T=L('قوى بورتر الخمس بالأوزان','Weighted Porter five forces');if(!has(a,'t'))return card(T,mu(L('اضغط «توليد من بيانات المشروع»','Press “Generate from project data”')));
+const den=sum(a.map(x=>x.w*5)),idx=den?sum(a.map(x=>x.w*x.r))/den*100:null,rl=riskLvl(idx);
+return card(T,`<div class="tiles">${tile(L('مؤشر الضغط التنافسي','Competitive pressure index'),fmt(idx,0)+'%')}${tile(L('المستوى','Level'),`<span class="chip ${rl[1]}">${rl[0]}</span>`)}</div>${radarSVG(a.map(x=>x.r),a.map(x=>FRC[x.f][lang==='ar'?2:3]))}<div class="tw"><table class="dt stack"><thead><tr><th>${L('القوة','Force')}</th><th>${L('الوصف','Description')}</th><th>${L('الوزن','Weight')}</th><th>${L('الشدة','Intensity')}</th><th>${L('الأثر','Score')}</th></tr></thead><tbody>${a.map(x=>`<tr><td data-l="${L('القوة','Force')}">${cname(FRC,x.f)}</td><td data-l="${L('الوصف','Description')}">${tx(x.t)}</td><td data-l="${L('الوزن','Weight')}">${x.w}</td><td data-l="${L('الشدة','Intensity')}">${x.r}</td><td data-l="${L('الأثر','Score')}"><b>${fmt(x.w*x.r/25*100,0)}%</b></td></tr>`).join('')}</tbody></table></div>`);};
+OUT.swot=()=>{const s=P().analyze.swot,ul=v=>{const l=lines(v);return l.length?`<ul>${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:dash;};
+return card(L('تحليل SWOT','SWOT analysis'),`<div class="swot"><div class="s"><b>${L('نقاط القوة','Strengths')}</b>${ul(s.s)}</div><div class="w"><b>${L('نقاط الضعف','Weaknesses')}</b>${ul(s.w)}</div><div class="o"><b>${L('الفرص','Opportunities')}</b>${ul(s.o)}</div><div class="t"><b>${L('التهديدات','Threats')}</b>${ul(s.t)}</div></div>`);};
+OUT.fish=()=>card(L('مخطط عظمة السمكة (Fishbone)','Fishbone diagram'),has(P().analyze.fish,'t')?fishSVG()+`<p class="mu" style="font-size:12.5px">${L('الأسباب الحمراء = درجة تأثير ٤ أو أعلى','Red causes = impact score 4 or higher')}</p>`:mu(L('أضف أسباباً أو اضغط «اقتراح أسباب»','Add causes or press “Suggest causes”')));
+OUT.whys=()=>{const a=P().analyze,w=a.whys.filter(x=>x.trim());return card(L('تحليل ٥ لماذا','5 Whys analysis'),w.length?`<div class="chain"><div><b>${L('المشكلة:','Problem:')}</b> ${tx(P().define.problem)}</div>${a.whys.map((x,i)=>x.trim()?`<div><b>${L('لماذا','Why')} ${i+1}؟</b> ${esc(x)}</div>`:'').join('')}<div class="root">${L('السبب الجذري:','Root cause:')} ${esc(rootMain())}</div></div>`:mu(L('أجب عن الأسئلة أعلاه','Answer the questions above')));};
+OUT.root=()=>{const f=P().analyze.fish.filter(x=>x.t.trim()).sort((u,v)=>v.s-u.s),rc=rootCauses();const tt=sum(f.map(x=>x.s));let cum=0;
+return card(L('الأسباب الجذرية للمشكلة','Root causes'),rc.length?`<h4>${L('الأسباب الجذرية المعتمدة','Confirmed root causes')}</h4><ol>${rc.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:mu(L('أكمل ٥ لماذا وخريطة Fishbone','Complete the 5 Whys and the fishbone'))+(f.length?`<h4>${L('ترتيب الأسباب (باريتو)','Cause ranking (Pareto)')}</h4>${f.map(x=>{cum+=x.s;return `<div class="rk"><span><span class="chip">${cname(FSH,x.c)}</span> ${esc(x.t)}</span><b>${x.s}/5</b><div class="bar${x.s>=4?' rd':''}"><i style="width:${x.s*20}%"></i></div></div>`;}).join('')}<p class="mu" style="font-size:12.5px">${L('مجموع الدرجات','Total score')}: ${tt}</p>`:''));};
+OUT.fmea=()=>{const T='FMEA — '+L('رقم أولوية المخاطر (RPN)','Risk Priority Number (RPN)'),a=P().analyze.fmea.filter(x=>x.f.trim()).map(x=>Object.assign({},x,{rpn:x.s*x.o*x.d})).sort((u,v)=>v.rpn-u.rpn);
+if(!a.length)return card(T,mu(L('أضف بنودًا أو اضغط «توليد البنود من الأسباب الجذرية»','Add items or press “Generate items from root causes”')));
+const hi=a.filter(x=>x.rpn>=200).length,md=a.filter(x=>x.rpn>=100&&x.rpn<200).length,cl=x=>x>=200?'bad':x>=100?'warn':'ok';
+return card(T,`<div class="tiles">${tile(L('أعلى RPN','Highest RPN'),a[0].rpn,a[0].rpn>=200?'hero':'')}${tile(L('مخاطر عالية (≥200)','High (≥200)'),hi)}${tile(L('متوسطة (100–199)','Medium (100–199)'),md)}</div><div class="tw"><table class="dt stack"><thead><tr><th>${L('نمط العطل','Failure mode')}</th><th>${L('الأثر','Effect')}</th><th>${L('السبب','Cause')}</th><th>S</th><th>O</th><th>D</th><th>RPN</th><th>${L('الإجراء الوقائي','Preventive action')}</th></tr></thead><tbody>${a.map(x=>`<tr><td data-l="${L('نمط العطل','Failure mode')}"><b>${esc(x.f)}</b></td><td data-l="${L('الأثر','Effect')}">${tx(x.e)}</td><td data-l="${L('السبب','Cause')}">${tx(x.c)}</td><td data-l="S">${x.s}</td><td data-l="O">${x.o}</td><td data-l="D">${x.d}</td><td data-l="RPN"><span class="chip ${cl(x.rpn)}">${x.rpn}</span></td><td data-l="${L('الإجراء','Action')}">${x.rpn>=100&&!x.a.trim()?`<span class="chip warn">${L('يلزم إجراء وقائي','Action needed')}</span>`:tx(x.a)}</td></tr>`).join('')}</tbody></table></div><p class="mu" style="font-size:12.5px">${L('الأحمر ≥ 200 · الأصفر 100–199 · الأخضر < 100 — البنود ذات الإجراء وRPN ≥ 100 تنتقل إلى خطة PDCA.','Red ≥ 200 · Amber 100–199 · Green < 100 — items with an action and RPN ≥ 100 flow into the PDCA plan.')}</p>`);};
+OUT.cmp=()=>{const T=L('مقارنة مشروعين','Compare two projects'),A=DB.projects.find(p=>p.id===DB.cmp.a),B=DB.projects.find(p=>p.id===DB.cmp.b);
+if(!A||!B||A===B)return card(T,mu(L('اختر مشروعين مختلفين للمقارنة (يلزم مشروعان على الأقل في السجل).','Pick two different projects to compare (at least two are needed).')));
+const g=p=>withProj(p,()=>{const sb=sigmaBefore(),sa=sigmaAfter(),db=dpmoBefore(),ac=afterCalc(),f=fin();return{sb,sa,db,da:ac.ok?ac.dpmo:null,red:db&&ac.ok?(db-ac.dpmo)/db*100:null,q:qScore(),sv:f&&f.save!=null?f.save:null,rc:rootCauses()[0]||''};});
+const a=g(A),b=g(B),win=(x,y)=>x!=null&&y!=null&&x>y?' style="background:var(--gns)"':'';
+const row=(l,x,y,fx,hb)=>`<tr><th>${l}</th><td${hb?win(x,y):''}>${fx(x)}</td><td${hb?win(y,x):''}>${fx(y)}</td></tr>`,s=v=>v==null?'—':fmt(v)+' σ',n0=v=>v==null?'—':fmt0(v),pc=v=>v==null?'—':fmt(v,1)+'%',t=v=>v||'—';
+return card(T,`<div class="tw"><table class="dt kv"><thead><tr><th></th><th>${esc(A.name)}</th><th>${esc(B.name)}</th></tr></thead><tbody>${row(L('السيجما قبل','Sigma before'),a.sb,b.sb,s,1)}${row(L('السيجما بعد','Sigma after'),a.sa,b.sa,s,1)}${row(L('التحسن (σ)','Improvement (σ)'),a.sa!=null&&a.sb!=null?a.sa-a.sb:null,b.sa!=null&&b.sb!=null?b.sa-b.sb:null,s,1)}${row('DPMO '+L('قبل','before'),a.db,b.db,n0)}${row('DPMO '+L('بعد','after'),a.da,b.da,n0)}${row(L('خفض العيوب','Defect reduction'),a.red,b.red,pc,1)}${row(L('الوفر السنوي','Annual saving'),a.sv,b.sv,n0,1)}${row(L('اكتمال DMAIC','DMAIC completeness'),a.q,b.q,v=>v+'%',1)}${row(L('السبب الجذري الرئيسي','Main root cause'),a.rc,b.rc,t)}</tbody></table></div><p class="mu" style="font-size:12.5px">${L('الأخضر = الأفضل في البند','Green = better on that line')}</p>${ruler(a.sb,a.sa,true)}<p class="mu" style="text-align:center;margin:0">${esc(A.name)}</p>${ruler(b.sb,b.sa,true)}<p class="mu" style="text-align:center">${esc(B.name)}</p>`);};
+OUT.sigmarep=()=>{const b=beforeCalc(),a=P().analyze,T=L('تقرير مستوى السيجما الأولي','Initial sigma level report');if(!b.ok)return card(T,`<div class="banner warn">${L('أدخل بيانات العينات في مرحلة القياس أولاً','Enter sample data in the Measure phase first')}</div>`);
+const eff=sigmaBefore(),ov=a.ovOn&&num(a.ovSigma)!=null,lv=lvl(eff),f=fin();
+const ref=[6,5,4,3,2,1].map(s=>`<tr${Math.round(eff)===s?' style="background:var(--acs)"':''}><td>${s}σ</td><td>${fmt(dpoFromSigma(s,true)*1e6,s>=5?1:0)}</td><td>${fmt((1-dpoFromSigma(s,true))*100,4)}%</td></tr>`).join('');
+return card(T,`<div class="tiles">${tile(L('مستوى السيجما المحسوب','Calculated sigma'),fmt(b.sigma)+' σ')}${ov?tile(L('المستوى المعدَّل يدوياً','Manual override'),fmt(eff)+' σ','hero'):tile(L('المستوى المعتمد','Effective sigma'),fmt(eff)+' σ','hero')}${tile('DPMO',fmt0(dpmoBefore()))}${tile(L('نسبة الجودة','Yield'),fmt(b.yield)+'%')}${b.mode==='var'?tile('Cpk',fmt(b.cpk)):tile('Z',fmt(b.z))}</div><p><span class="chip ${lv[1]}">${lv[0]}</span> ${ov?`<span class="chip warn">${L('تعديل يدوي','Manual')}${a.ovNote?': '+esc(a.ovNote):''}</span>`:''}</p>${ruler(eff,null)}${f?`<p><b>${L('تكلفة الجودة الرديئة السنوية (COPQ):','Annual cost of poor quality (COPQ):')}</b> ${fmt0(f.copqB)}</p>`:''}<h4>${L('جدول مرجعي (مع إزاحة 1.5σ)','Reference table (with 1.5σ shift)')}</h4><table class="dt" style="max-width:380px"><thead><tr><th>σ</th><th>DPMO</th><th>Yield</th></tr></thead><tbody>${ref}</tbody></table>`);};
+const stL=()=>({todo:L('لم يبدأ','Not started'),prog:L('قيد التنفيذ','In progress'),done:L('منجز','Done')});
+const resL=()=>({'':'—',met:L('تحقق','Met'),part:L('جزئي','Partial'),not:L('لم يتحقق','Not met')});
+const decL=()=>({std:L('تعميم واعتماد','Standardize'),adj:L('تعديل وإعادة الدورة','Adjust & repeat'),drop:L('إيقاف','Stop')});
+function stTable(h,rows){return rows.length?`<div class="tw"><table class="dt stack"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td data-l="${esc(h[i])}">${c==null||c===''?dash:c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:mu(L('لا توجد بنود بعد','No items yet'));}
+OUT.pdca=()=>{const i=P().improve,S=stL(),R=resL(),D=decL();const pl=i.plan.filter(x=>x.a.trim()),dd=i.do.filter(x=>x.a.trim()),ck=i.check.filter(x=>x.m.trim()),ac=i.act.filter(x=>x.a.trim());
+const dn=dd.filter(x=>x.s==='done').length,met=ck.filter(x=>x.res==='met').length;
+return card(L('خطة التحسين التفصيلية (PDCA)','Detailed PDCA improvement plan'),`<div class="tiles">${tile('Plan',pl.length)}${tile('Do',`${dn}/${dd.length}`)}${tile('Check',`${met}/${ck.length}`)}${tile('Act',ac.length)}</div>
+<h4>Plan — ${L('التخطيط','Plan')}</h4>${stTable([L('الإجراء','Action'),L('السبب الجذري','Root cause'),L('المسؤول','Owner'),L('الموعد','Due'),L('النتيجة المتوقعة','Expected result')],pl.map(x=>[esc(x.a),esc(x.rc),esc(x.o),esc(x.d),esc(x.x)]))}
+<h4>Do — ${L('التنفيذ','Do')}</h4>${stTable([L('النشاط','Activity'),L('النطاق التجريبي','Pilot scope'),L('المسؤول','Owner'),L('الحالة','Status'),L('ملاحظات','Notes')],dd.map(x=>[esc(x.a),esc(x.w),esc(x.o),S[x.s],esc(x.n)]))}
+<h4>Check — ${L('الفحص','Check')}</h4>${stTable([L('المؤشر','Metric'),L('المستهدف','Target'),L('الفعلي','Actual'),L('النتيجة','Result')],ck.map(x=>[esc(x.m),esc(x.t),esc(x.ac),`<span class="chip ${x.res==='met'?'ok':x.res==='not'?'bad':x.res==='part'?'warn':''}">${R[x.res||'']}</span>`]))}
+<h4>Act — ${L('الاعتماد','Act')}</h4>${stTable([L('القرار','Decision'),L('الإجراء','Action'),L('المسؤول','Owner')],ac.map(x=>[D[x.dec],esc(x.a),esc(x.o)]))}`);};
+OUT.sim=()=>{const b=beforeCalc();if(!b.ok)return mu(L('أدخل بيانات القياس لتشغيل المحاكي','Enter measure data to run the simulator'));const m=P().measure,r=P().improve.sim/100,sh=m.shift!==false,d2=b.dpo*(1-r),s2=sigmaFromDpo(d2,sh),vol=num(m.annualVol),cost=num(m.costPer);
+const need=t=>{const dt=dpoFromSigma(t,sh);return b.dpo<=dt?`<span class="chip ok">${L('محقق','Achieved')}</span>`:`<span class="chip">${fmt((1-dt/b.dpo)*100,1)}%</span>`;};
+return `<div class="tiles">${tile(L('السيجما المتوقعة','Projected sigma'),fmt(s2.s)+' σ','hero')}${tile('DPMO',fmt0(d2*1e6))}${vol&&cost?tile(L('وفر سنوي متوقع','Projected annual saving'),fmt0(b.dpu*r*vol*cost)):''}</div><p class="mu">${L('الخفض المطلوب للوصول إلى:','Reduction needed to reach:')} 4σ ${need(4)} · 5σ ${need(5)} · 6σ ${need(6)}</p>${ruler(sigmaBefore(),s2.s)}`;};
+OUT.kpis=()=>{const k=P().control.kpis.filter(x=>x.n.trim());return card(L('لوحة مؤشرات الأداء (KPIs)','KPI dashboard'),stTable([L('المؤشر','KPI'),L('التعريف / المعادلة','Definition / formula'),L('المستهدف','Target'),L('التكرار','Frequency'),L('المسؤول','Owner')],k.map(x=>[`<b>${esc(x.n)}</b>`,esc(x.f),esc(x.t),esc(x.fr),esc(x.o)])));};
+OUT.sop=()=>{const s=P().control.sop,p=P();if(!s.title.trim()&&!has(s.steps,'s'))return card(L('إجراء التشغيل المعياري (SOP)','Standard Operating Procedure (SOP)'),mu(L('أدخل بيانات الـ SOP أعلاه','Enter the SOP details above')));
+return card(L('إجراء التشغيل المعياري (SOP)','Standard Operating Procedure (SOP)'),`<table class="dt kv"><tbody><tr><th>${L('العنوان','Title')}</th><td><b>${tx(s.title)}</b></td></tr><tr><th>${L('الرمز / الإصدار','Code / Version')}</th><td>${esc(s.code)} / ${esc(s.ver)}</td></tr><tr><th>${L('الإعداد','Prepared by')}</th><td>${L('المهندس وائل عويس','Eng. Wael Oweis')} — ${dstr(Date.now())}</td></tr><tr><th>${L('الغرض','Purpose')}</th><td>${tx(s.purpose)}</td></tr><tr><th>${L('النطاق','Scope')}</th><td>${tx(s.scope)}</td></tr><tr><th>${L('المسؤوليات','Responsibilities')}</th><td>${tx(s.resp)}</td></tr></tbody></table><h4>${L('خطوات التنفيذ','Procedure steps')}</h4>${stTable(['#',L('الخطوة','Step'),L('المسؤول','Responsible'),L('السجل / النموذج','Record / form')],s.steps.filter(x=>x.s.trim()).map((x,i)=>[i+1,esc(x.s),esc(x.r),esc(x.rec)]))}<p><b>${L('المراجع:','References:')}</b> ${tx(s.refs)}</p>`);};
+OUT.compare=()=>{const T=L('مقارنة قبل / بعد التحسين','Before / after comparison'),sb=sigmaBefore(),sa=sigmaAfter();if(sb==null||sa==null)return card(T,mu(L('يلزم بيانات القياس وبيانات ما بعد التحسين','Both before and after data are required')));
+const db=dpmoBefore(),da=afterCalc().dpmo,red=db?(db-da)/db*100:null;return card(T,`<div class="tiles">${tile(L('السيجما قبل','Sigma before'),fmt(sb)+' σ')}${tile(L('السيجما بعد','Sigma after'),fmt(sa)+' σ','hero')}${tile(L('التحسن','Improvement'),(sa-sb>=0?'+':'')+fmt(sa-sb)+' σ')}${tile(L('DPMO قبل','DPMO before'),fmt0(db))}${tile(L('DPMO بعد','DPMO after'),fmt0(da))}${tile(L('خفض العيوب','Defect reduction'),fmt(red,1)+'%')}</div>${ruler(sb,sa,true)}`);};
+OUT.finance=()=>{const f=fin();const T=L('الأثر المالي (COPQ)','Financial impact (COPQ)');if(!f)return card(T,mu(L('أدخل الحجم السنوي وتكلفة العيب في مرحلة القياس','Enter annual volume and cost per defect in Measure')));
+return card(T,`<div class="tiles">${tile(L('COPQ قبل (سنوياً)','COPQ before (yearly)'),fmt0(f.copqB))}${tile(L('COPQ بعد (سنوياً)','COPQ after (yearly)'),f.copqA==null?'—':fmt0(f.copqA))}${tile(L('الوفر السنوي','Annual saving'),f.save==null?'—':fmt0(f.save),'hero')}</div>`);};
+OUT.registry=()=>{const rows=[...DB.projects].sort((a,b)=>b.updated-a.updated);
+return card(L('سجل المشاريع','Project registry')+` (${rows.length})`,`<div class="tw"><table class="dt stack"><thead><tr><th>${L('المشروع','Project')}</th><th>${L('القطاع','Sector')}</th><th>${L('آخر تعديل','Updated')}</th><th>${L('الاكتمال','Completion')}</th><th>σ ${L('قبل → بعد','before → after')}</th><th></th></tr></thead><tbody>${rows.map(p=>{const inf=withProj(p,()=>({q:qScore(),b:sigmaBefore(),a:sigmaAfter()}));return `<tr${p.id===DB.cur?' style="background:var(--acs)"':''}><td data-l="${L('المشروع','Project')}"><b>${esc(p.name)}</b>${withProj(p,approvedAll)?` <span class="chip ok">${L('معتمد','Approved')}</span>`:''}</td><td data-l="${L('القطاع','Sector')}">${cname(SECT,p.sector)}</td><td data-l="${L('آخر تعديل','Updated')}">${dstr(p.updated)}</td><td data-l="${L('الاكتمال','Completion')}"><div class="bar"><i style="width:${inf.q}%"></i></div>${inf.q}%</td><td data-l="σ">${inf.b==null?'—':fmt(inf.b,1)} → ${inf.a==null?'—':fmt(inf.a,1)}</td><td><button class="btn sm pri" data-act="popen" data-i="${p.id}">${L('فتح','Open')}</button> <button class="btn sm" data-act="pdup" data-i="${p.id}">${L('نسخ','Copy')}</button> <button class="btn sm${armed===p.id?' bad':''}" data-act="pdel" data-i="${p.id}">${armed===p.id?L('تأكيد الحذف','Confirm delete'):L('حذف','Delete')}</button></td></tr>`;}).join('')}</tbody></table></div>`);};
+const APPX=['charter','voc','sipoc','stake','flow','sample:measure','pestel','porter','swot','fish','whys','root','fmea','sigmarep','pdca','kpis','sop','sample:control.after','compare','finance'];
+function runOut(s){const i=s.indexOf(':'),n=i<0?s:s.slice(0,i),a=i<0?undefined:s.slice(i+1);return OUT[n](a);}
+function signBlock(){const rows=signRows();if(!rows.length)return mu(L('لا توجد بنود اعتماد','No sign-off items'));
+return `<div class="sign">${rows.map(r=>{const st=signState(r),nm=r.at?r.sn:r.name;return `<div><b>${esc(r.role)}</b><br>${nm.trim()?esc(nm):dash}<br>${st==='pending'?`<span class="chip">${L('بانتظار التوقيع','Awaiting signature')}</span>`:`<span class="chip ${st==='signed'?'ok':'warn'}">${st==='signed'?'✓ '+L('وُقّع رقميًا','Digitally signed'):L('تغيّر المشروع بعد التوقيع','Project changed after signing')}</span><br><span class="mu" style="font-size:12px">${new Date(r.at).toLocaleString(lang==='ar'?'ar-EG-u-nu-latn':'en-GB')}<br>${L('البصمة','Fingerprint')}: ${r.h} · ${L('اكتمال DMAIC','DMAIC completeness')}: ${r.q}%</span>`}${r.note.trim()?`<br><span style="font-size:12.5px">${esc(r.note)}</span>`:''}</div>`;}).join('')}</div>`;}
+OUT.report=()=>{const p=P(),d=p.define,sb=sigmaBefore(),sa=sigmaAfter(),db=dpmoBefore(),ac=afterCalc(),f=fin(),q=qScore(),rc=rootCauses(),i=p.improve,c=p.control,b=beforeCalc();
+const red=db&&ac.ok?(db-ac.dpmo)/db*100:null;
+const gl=(d.goal||'—').replace(/[.。\s]+$/,'');let sum1=L(`يهدف المشروع إلى: ${gl}.`,`Project aim: ${gl}.`);
+if(sb!=null)sum1+=L(` بدأ المشروع بمستوى سيجما ${fmt(sb)}σ (${fmt0(db)} DPMO)`,` The baseline sigma level was ${fmt(sb)}σ (${fmt0(db)} DPMO)`);
+if(sa!=null)sum1+=L(` وارتفع بعد التحسين إلى ${fmt(sa)}σ بخفض للعيوب قدره ${fmt(red,1)}%.`,` and rose to ${fmt(sa)}σ after improvement, cutting defects by ${fmt(red,1)}%.`);else sum1+='.';
+if(rc.length)sum1+=L(` السبب الجذري الرئيسي: ${rc[0]}.`,` Main root cause: ${rc[0]}.`);if(f&&f.save!=null)sum1+=L(` الوفر السنوي المتوقع: ${fmt0(f.save)}.`,` Expected annual saving: ${fmt0(f.save)}.`);
+const ph=(k,t)=>`<div class="card" style="margin:0"><h4 style="margin-top:0">${PH[k][2]} — ${L(PH[k][0],PH[k][1])} <span class="chip ${pctDone(k)===100?'ok':'warn'}">${pctDone(k)}%</span></h4>${t}</div>`;
+const li=a=>`<ul style="margin:0;padding-inline-start:18px">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+const pe=p.analyze.pestel.filter(x=>x.t.trim()),th=pe.filter(x=>x.d<0);
+const head=`<div class="rep-head"><h2>${L('التقرير الشامل لمشروع تحسين الجودة — سيجما DMAIC','Comprehensive Six Sigma DMAIC Project Report')}</h2><h3>${esc(p.name)}</h3><p>${L('إعداد واعتماد:','Prepared and approved by:')} <b>${L('المهندس وائل عويس','Eng. Wael Oweis')}</b> — ${dstr(Date.now())} — ${cname(SECT,p.sector)}</p><p><span class="chip ${q>=80?'ok':'warn'}">${L('اكتمال DMAIC','DMAIC completeness')}: ${q}%</span> <span class="chip ${approvedAll()?'ok':'warn'}">${approvedAll()?L('معتمد رقميًا','Digitally approved'):L('بانتظار الاعتماد','Awaiting approval')}</span></p></div>`;
+const exec=card(L('الملخص التنفيذي','Executive summary'),`<p>${esc(sum1)}</p><div class="tiles">${tile(L('السيجما قبل','Sigma before'),sb==null?'—':fmt(sb)+' σ')}${tile(L('السيجما بعد','Sigma after'),sa==null?'—':fmt(sa)+' σ','hero')}${tile(L('خفض العيوب','Defect reduction'),red==null?'—':fmt(red,1)+'%')}${tile(L('الوفر السنوي','Annual saving'),f&&f.save!=null?fmt0(f.save):'—')}</div>${ruler(sb,sa,true)}`);
+const grid=`<div class="g5" style="margin-bottom:14px">${ph('define',li([L('CTQs: '+has(d.voc,'c'),'CTQs: '+has(d.voc,'c')),L('أصحاب المصلحة: '+has(d.sh,'n'),'Stakeholders: '+has(d.sh,'n')),L('خطوات العملية: '+has(d.flow,'t'),'Process steps: '+has(d.flow,'t'))]))}${ph('measure',li([L('الوحدات: '+(b.ok?fmt0(b.units):'—'),'Units: '+(b.ok?fmt0(b.units):'—')),'DPMO: '+(b.ok?fmt0(b.dpmo):'—'),(b.ok&&b.mode==='var'?'Cpk: '+fmt(b.cpk):'Yield: '+(b.ok?fmt(b.yield)+'%':'—'))]))}${ph('analyze',li([L('عوامل PESTEL: '+pe.length+' (تهديدات '+th.length+')','PESTEL factors: '+pe.length+' ('+th.length+' threats)'),L('أسباب جذرية: '+rc.length,'Root causes: '+rc.length),L('أسباب Fishbone: '+has(p.analyze.fish,'t'),'Fishbone causes: '+has(p.analyze.fish,'t'))]))}${ph('improve',li([L('إجراءات الخطة: '+has(i.plan,'a'),'Plan actions: '+has(i.plan,'a')),L('منجز: '+i.do.filter(x=>x.s==='done').length+'/'+has(i.do,'a'),'Done: '+i.do.filter(x=>x.s==='done').length+'/'+has(i.do,'a')),L('محقق: '+i.check.filter(x=>x.res==='met').length+'/'+has(i.check,'m'),'Met: '+i.check.filter(x=>x.res==='met').length+'/'+has(i.check,'m'))]))}${ph('control',li(['KPIs: '+has(c.kpis,'n'),'SOP: '+esc(c.sop.code||'—'),L('السيجما الجديد: '+(sa==null?'—':fmt(sa)+'σ'),'New sigma: '+(sa==null?'—':fmt(sa)+'σ'))]))}</div>`;
+const sign=`<section class="card out"><h3>${L('التوقيع الرقمي والاعتماد','Digital sign-off')} ${approvedAll()?`<span class="chip ok">${L('معتمد بالكامل','Fully approved')}</span>`:`<span class="chip warn">${L('بانتظار الاعتماد','Awaiting approval')}</span>`}</h3>${signBlock()}<p class="mu" style="font-size:12px;margin-top:10px">${L('البصمة الرقمية تتغير إذا تغيّرت بيانات المشروع بعد التوقيع.','The fingerprint changes if the project data changes after signing.')}</p></section>`;
+const ap=DB.appx?`<div class="pb"></div><h2>${L('الملاحق التفصيلية','Detailed appendices')}</h2>`+APPX.map(runOut).join(''):'';
+return head+exec+grid+sign+ap;};
+/* ===== form helpers ===== */
+const V=p=>{if(p==='__appx')return DB.appx;const v=getP(P(),p);return v==null?'':v;};
+function F(label,p,o){o=o||{};const v=esc(V(p));let i;
+if(o.rows)i=`<textarea data-b="${p}" rows="${o.rows}" placeholder="${esc(o.ph||'')}">${v}</textarea>`;
+else i=`<input type="${o.type||(o.num?'number':'text')}"${o.num?' step="any" data-t="n"':''} data-b="${p}" value="${v}" placeholder="${esc(o.ph||'')}">`;
+return `<label class="f"><span>${label}</span>${i}${o.hint?`<small>${o.hint}</small>`:''}</label>`;}
+function SEL(label,p,opts,o){o=o||{};const v=String(V(p));return `<label class="f"><span>${label}</span><select data-b="${p}">${opts.map(([k,l])=>`<option value="${k}"${String(k)===v?' selected':''}>${l}</option>`).join('')}</select>${o.hint?`<small>${o.hint}</small>`:''}</label>`;}
+const CHK=(label,p)=>`<label class="f"><span><input type="checkbox" style="width:auto" data-b="${p}"${V(p)?' checked':''}> ${label}</span></label>`;
+function cell(p,v,c){if(c.lab)return esc(c.lab(v));
+if(c.opts)return `<select data-b="${p}"${c.n?' data-t="n"':''}>${c.opts.map(([k,l])=>`<option value="${k}"${String(v)===String(k)?' selected':''}>${l}</option>`).join('')}</select>`;
+if(c.rng)return `<div class="rg"><input type="range" min="1" max="${c.rng>1?c.rng:5}" step="1" data-t="n" data-b="${p}" value="${v}"><output>${v}</output></div>`;
+if(c.num)return `<input type="number" step="any" data-t="n" data-b="${p}" value="${esc(v)}">`;
+return `<input type="${c.type||'text'}" data-b="${p}" value="${esc(v)}" placeholder="${esc(c.ph||'')}">`;}
+function tbl(path,cols,tm,o){o=o||{};const rows=getP(P(),path)||[];
+return `<div class="tw"><table class="ed"><thead><tr>${cols.map(c=>`<th>${c.h}</th>`).join('')}<th></th></tr></thead><tbody>${rows.map((r,i)=>`<tr>${cols.map(c=>`<td data-l="${esc(c.h)}">${c.idx?`<b>${i+1}</b>`:cell(path+'.'+i+'.'+c.k,r[c.k],c)}</td>`).join('')}<td style="white-space:nowrap">${o.mv?`<button class="ib" style="font-size:15px" data-act="mv" data-p="${path}" data-i="${i}" data-v="-1" aria-label="up">↑</button><button class="ib" style="font-size:15px" data-act="mv" data-p="${path}" data-i="${i}" data-v="1" aria-label="down">↓</button>`:''}${o.nodel?'':`<button class="ib" data-act="del" data-p="${path}" data-i="${i}" aria-label="delete">×</button>`}</td></tr>`).join('')}</tbody></table></div>${o.noadd?'':`<button class="btn sm" data-act="add" data-p="${path}" data-t="${tm}">＋ ${L('إضافة صف','Add row')}</button>`}`;}
+const fc=(t,b)=>`<section class="card fm"><h3>${t}</h3>${b}</section>`;
+const o5=[1,2,3,4,5].map(n=>[n,n]);
+const catOpts=()=>Object.keys(CAT).map(k=>[k,cname(CAT,k)]);
+const fishOpts=()=>Object.keys(FSH).map(k=>[k,cname(FSH,k)]);
+const DESC={define:()=>L('حدّد المشكلة والهدف والنطاق والفريق — وسيولّد التطبيق المخرجات الخمسة فورياً أسفل كل نموذج.','Define the problem, goal, scope and team — the five deliverables are generated live below each form.'),measure:()=>L('ارفع ملف العينات أو أدخل البيانات لقياس الوضع الحالي ومستوى السيجما.','Upload the sample file or enter data to baseline the current sigma level.'),analyze:()=>L('وازن العوامل الخارجية والداخلية بأوزانك، وحدّد الأسباب الجذرية ومستوى السيجما.','Weigh external and internal factors, find root causes and review the sigma level.'),improve:()=>L('ضع خطة PDCA التفصيلية للحلول، وجرّب أثرها قبل التنفيذ.','Build the detailed PDCA plan and test its effect before rollout.'),control:()=>L('ثبّت النتائج بمؤشرات الأداء وإجراء التشغيل المعياري، واحسب مستوى السيجما الجديد.','Sustain results with KPIs and an SOP, then compute the new sigma level.')};
+const ORDER=['registry','define','measure','analyze','improve','control','report'];
+function pageTitle(pg){return PH[pg]?L(`مرحلة ${PH[pg][0]} (${PH[pg][1]})`,`${PH[pg][1]} phase`):pg==='registry'?L('سجل المشاريع','Project registry'):L('التقرير الشامل','Comprehensive report');}
+function head(k){return printHead(pageTitle(k))+`<div class="phead"><div class="ph-badge">${PH[k][2]}</div><div><h1>${pageTitle(k)}</h1><p class="mu">${DESC[k]()}</p></div></div><div data-out="banner:${k}"></div>`;}
+function printHead(t){return `<div class="printhead"><div class="ph-t">${L('منصة سيجما DMAIC لتحسين الجودة','Six Sigma DMAIC Quality Platform')}</div><div>${t} — <b>${esc(P().name)}</b></div><div class="mu">${L('إعداد وتطوير: المهندس وائل عويس','Developed by: Eng. Wael Oweis')} | ${dstr(Date.now())}</div></div>`;}
+function pager(pg){const i=ORDER.indexOf(pg),pv=ORDER[i-1],nx=ORDER[i+1];const nm=k=>k==='registry'?L('سجل المشاريع','Registry'):k==='report'?L('التقرير الشامل','Report'):PH[k][2]+' — '+L(PH[k][0],PH[k][1]);
+return `<div class="pager">${pv?`<button class="btn" data-act="nav" data-v="${pv}">${lang==='ar'?'→':'←'} ${nm(pv)}</button>`:'<span></span>'}${nx?`<button class="btn pri" data-act="nav" data-v="${nx}">${nm(nx)} ${lang==='ar'?'←':'→'}</button>`:''}</div>`;}
+function sampleForm(pre){const m=getP(P(),pre),T=TMP[pre],isVar=m.mode==='var',after=pre!=='measure';
+let h=`<div class="seg"><button class="${isVar?'':'on'}" data-act="mode" data-p="${pre}" data-v="attr">${L('بيانات عيوب (وحدات وعيوب)','Attribute data (units & defects)')}</button><button class="${isVar?'on':''}" data-act="mode" data-p="${pre}" data-v="var">${L('بيانات قياسات (مع حدود المواصفات)','Variable data (with spec limits)')}</button></div>
+<div class="upl"><label class="btn">${L('رفع ملف العينات (Excel / CSV)','Upload sample file (Excel / CSV)')}<input type="file" hidden data-chg="file" data-p="${pre}" accept=".csv,.tsv,.txt,.xlsx,.xls"></label><span class="mu">${m.fileName?esc(m.fileName):L('لم يُرفع ملف — يمكنك الإدخال يدوياً','No file — you can enter data manually')}</span></div>`;
+if(T){h+=`<div class="g2"><label class="f"><span>${L('العمود المستخدم','Column to use')}</span><select data-chg="col" data-p="${pre}">${T.headers.map((x,i)=>`<option value="${i}"${i===T.col?' selected':''}>${esc(x)}</option>`).join('')}</select></label>${isVar?'':`<label class="f"><span>${L('طريقة احتساب العيوب','How defects are counted')}</span><select data-chg="def" data-p="${pre}"><option value="count"${T.def==='count'?' selected':''}>${L('العمود = عدد العيوب لكل وحدة','Column = defects per unit')}</option><option value="flag"${T.def==='flag'?' selected':''}>${L('العمود = علامة (1 / نعم / رفض / Fail)','Column = flag (1 / yes / reject / fail)')}</option></select></label>`}</div>`;}
+if(isVar)h+=`<div class="g2">${F('USL ('+L('الحد الأعلى','upper spec')+')',pre+'.usl',{num:1,ph:after&&P().measure.usl!==''?String(P().measure.usl):''})}${F('LSL ('+L('الحد الأدنى','lower spec')+')',pre+'.lsl',{num:1,ph:after&&P().measure.lsl!==''?String(P().measure.lsl):''})}</div>${F(L('القياسات','Measurements'),pre+'.dataText',{rows:6,hint:L('قيمة في كل سطر (أو مفصولة بفاصلة/مسافة). استخدم النقطة كفاصلة عشرية.','One value per line (or comma/space separated). Use a dot as the decimal mark.')})}`;
+else h+=`<div class="g3">${F(L('عدد الوحدات / العينات','Units / samples'),pre+'.units',{num:1})}${F(L('عدد العيوب','Defects'),pre+'.defects',{num:1})}${F(L('فرص الخطأ لكل وحدة','Opportunities per unit'),pre+'.opps',{num:1})}</div>`;
+return h;}
+/* ===== pages ===== */
+const PG={};
+PG.registry=()=>printHead(L('سجل المشاريع','Project registry'))+`<div class="phead"><div class="ph-badge">☰</div><div><h1>${L('سجل المشاريع','Project registry')}</h1><p class="mu">${L('كل مشاريعك محفوظة تلقائياً في هذا المتصفح — افتح أي مشروع لتعديله أو أنشئ جديداً.','All your projects are auto-saved in this browser — open one to edit or create a new one.')}</p></div></div>`
++fc(L('مشروع جديد','New project'),`<div class="g2"><label class="f"><span>${L('اسم المشروع','Project name')}</span><input id="np-name" type="text"></label><label class="f"><span>${L('القطاع','Sector')}</span><select id="np-sec">${Object.keys(SECT).map(k=>`<option value="${k}">${cname(SECT,k)}</option>`).join('')}</select></label></div><p class="mu">${L('القالب يملأ الميثاق وCTQs وSIPOC وأصحاب المصلحة ومخطط الانسياب وعوامل PESTEL وبورتر وأسباب Fishbone وKPIs حسب القطاع المختار — وأنت تعدّل عليه.','The template pre-fills the charter, CTQs, SIPOC, stakeholders, flowchart, PESTEL, Porter, fishbone causes and KPIs for the chosen sector — you then adapt it.')}</p><div class="rowbtns"><button class="btn" data-act="pnew">${L('إنشاء المشروع','Create project')}</button><button class="btn pri" data-act="pnewtpl">${L('إنشاء من قالب القطاع','Create from sector template')}</button><button class="btn" data-act="demo">${L('تحميل مشروع تجريبي كامل','Load a full demo project')}</button><label class="btn">${L('استيراد (JSON)','Import (JSON)')}<input type="file" hidden accept=".json" data-chg="import"></label><button class="btn" data-act="expall">${L('نسخة احتياطية لكل المشاريع','Back up all projects')}</button></div>${storeOK?'':`<div class="banner warn">${L('الحفظ التلقائي غير متاح في هذا العرض — استخدم النسخة الاحتياطية JSON للاحتفاظ بعملك.','Auto-save is unavailable in this view — use the JSON backup to keep your work.')}</div>`}`)
++'<div data-out="registry"></div>'
++fc(L('مقارنة مشروعين','Compare two projects'),`<div class="g2">${['a','b'].map((k,i)=>`<label class="f"><span>${L('المشروع','Project')} ${k.toUpperCase()}</span><select data-chg="cmp" data-k="${k}">${DB.projects.map(p=>`<option value="${p.id}"${(DB.cmp[k]||DB.projects[i]&&DB.projects[i].id)===p.id?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label>`).join('')}</div>`)
++'<div data-out="cmp"></div>'+pager('registry');
+PG.define=()=>head('define')
++fc(L('بيانات المشروع','Project details'),`<div class="rowbtns"><button class="btn sm pri" data-act="tplapply">${L('تطبيق قالب القطاع على هذا المشروع (يملأ الحقول الفارغة فقط)','Apply the sector template to this project (fills empty fields only)')}</button></div><div class="g3">${F(L('اسم المشروع','Project name'),'name')}${SEL(L('القطاع','Sector'),'sector',Object.keys(SECT).map(k=>[k,cname(SECT,k)]),{hint:L('يحدد القوالب المقترحة في مرحلة التحليل','Drives the suggested templates in Analyze')})}${F(L('راعي المشروع','Sponsor'),'define.sponsor')}${F(L('قائد المشروع','Project leader'),'define.leader')}${F(L('تاريخ البدء','Start date'),'define.start',{type:'date'})}${F(L('تاريخ الانتهاء المستهدف','Target end date'),'define.end',{type:'date'})}</div>`)
++fc(L('ميثاق المشروع','Project charter'),`<div class="g2">${F(L('بيان المشكلة','Problem statement'),'define.problem',{rows:4,hint:L('ما المشكلة؟ أين؟ منذ متى؟ وما حجمها؟','What, where, since when and how big?')})}${F(L('بيان الهدف','Goal statement'),'define.goal',{rows:4,hint:L('محدد وقابل للقياس وله مدة زمنية (SMART)','Specific, measurable and time-bound (SMART)')})}${F(L('داخل النطاق','In scope'),'define.scopeIn',{rows:3})}${F(L('خارج النطاق','Out of scope'),'define.scopeOut',{rows:3})}</div>${F(L('المبرر الاستثماري','Business case'),'define.business',{rows:3})}<h4>${L('أعضاء الفريق','Team members')}</h4>${tbl('define.team',[{h:L('الاسم','Name'),k:'n'},{h:L('الدور','Role'),k:'r'}],'team')}`)
++'<div data-out="charter"></div>'
++fc(L('صوت العميل و CTQs','VOC & CTQs'),tbl('define.voc',[{h:L('صوت العميل (VOC)','Voice of customer'),k:'v'},{h:L('الاحتياج','Need'),k:'n'},{h:'CTQ',k:'c',ph:L('مثال: زمن دورة الاعتماد','e.g. approval cycle time')},{h:L('وحدة القياس','Measure'),k:'m'},{h:L('المستهدف','Target'),k:'t'}],'voc'))
++'<div data-out="voc"></div>'
++fc('SIPOC',`<div class="g5">${[['s',L('الموردون (Suppliers)','Suppliers')],['i',L('المدخلات (Inputs)','Inputs')],['p',L('العملية (Process)','Process')],['o',L('المخرجات (Outputs)','Outputs')],['c',L('العملاء (Customers)','Customers')]].map(x=>F(x[1],'define.sipoc.'+x[0],{rows:5,hint:L('بند في كل سطر','One item per line')})).join('')}</div><button class="btn sm" data-act="gen" data-v="sipocP">${L('ملء «العملية» من مخطط الانسياب','Fill “Process” from the flowchart')}</button>`)
++'<div data-out="sipoc"></div>'
++fc(L('أصحاب المصلحة','Stakeholders'),tbl('define.sh',[{h:L('الجهة','Stakeholder'),k:'n'},{h:L('النفوذ (١–٥)','Influence (1–5)'),k:'inf',rng:1},{h:L('الدعم (١–٥)','Support (1–5)'),k:'sup',rng:1}],'sh'))
++'<div data-out="stake"></div>'
++fc(L('خطوات العملية الحالية','Current process steps'),tbl('define.flow',[{h:'#',idx:1},{h:L('النوع','Type'),k:'k',opts:[['start',L('بداية','Start')],['step',L('خطوة','Step')],['decision',L('قرار','Decision')],['end',L('نهاية','End')]]},{h:L('الوصف','Description'),k:'t'},{h:L('«لا» يعود للخطوة رقم','“No” returns to step #'),k:'no',num:1}],'flow',{mv:1}))
++'<div data-out="flow"></div>'+pager('define');
+PG.measure=()=>head('measure')
++fc(L('معلومات القياس','Measurement information'),`<div class="g2">${F(L('المؤشر المقاس','Measured metric'),'measure.metric',{ph:L('مثال: طلبات رُفضت من أول مرة','e.g. requests rejected first pass')})}${F(L('وحدة القياس','Unit'),'measure.unit')}</div>${F(L('خطة أخذ العينات / الفترة','Sampling plan / period'),'measure.plan')}<div class="g2">${F(L('الحجم السنوي (وحدات)','Annual volume (units)'),'measure.annualVol',{num:1})}${F(L('تكلفة العيب الواحد (بالعملة المحلية)','Cost per defect (local currency)'),'measure.costPer',{num:1})}</div>${CHK(L('احتساب إزاحة 1.5σ (المعيار الشائع لمستوى السيجما)','Apply the 1.5σ shift (common sigma-level convention)'),'measure.shift')}`)
++fc(L('ملف العينات','Sample data'),sampleForm('measure'))
++'<div data-out="sample:measure"></div>'+pager('measure');
+PG.analyze=()=>{const a=P().analyze;if(!a.pestel.length&&!a.porter.length)genFactors();
+return head('analyze')+fc(L('سياق التحليل','Analysis context'),`<p><b>${L('المشكلة:','Problem:')}</b> ${tx(P().define.problem)}</p><p><b>${L('القطاع:','Sector:')}</b> ${cname(SECT,P().sector)}</p><div class="rowbtns"><button class="btn sm pri" data-act="gen" data-v="factors">${L('توليد/استكمال العوامل من بيانات المشروع','Generate / complete factors from project data')}</button></div>`)
++fc(L('PESTEL — اختر الأوزان','PESTEL — set your weights'),`<p class="mu">${L('الوزن = أهمية العامل لمشروعك · الشدة = قوة تأثيره · الاتجاه = تهديد أو فرصة.','Weight = importance to your project · Intensity = strength of effect · Direction = threat or opportunity.')}</p>`+tbl('analyze.pestel',[{h:L('الفئة','Category'),k:'c',opts:catOpts()},{h:L('العامل','Factor'),k:'t'},{h:L('الوزن','Weight'),k:'w',rng:1},{h:L('الشدة','Intensity'),k:'r',rng:1},{h:L('الاتجاه','Direction'),k:'d',n:1,opts:[[-1,L('تهديد','Threat')],[1,L('فرصة','Opportunity')]]}],'pestel'))
++'<div data-out="pestel"></div>'
++fc(L('قوى بورتر الخمس — اختر الأوزان','Porter five forces — set your weights'),tbl('analyze.porter',[{h:L('القوة','Force'),k:'f',lab:v=>cname(FRC,v)},{h:L('الوصف','Description'),k:'t'},{h:L('الوزن','Weight'),k:'w',rng:1},{h:L('الشدة','Intensity'),k:'r',rng:1}],'',{nodel:1,noadd:1}))
++'<div data-out="porter"></div>'
++fc('SWOT',`<div class="rowbtns"><button class="btn sm pri" data-act="gen" data-v="swot">${L('توليد SWOT تلقائياً من البيانات','Auto-generate SWOT from the data')}</button></div><div class="g2">${F(L('نقاط القوة','Strengths'),'analyze.swot.s',{rows:4})}${F(L('نقاط الضعف','Weaknesses'),'analyze.swot.w',{rows:4})}${F(L('الفرص','Opportunities'),'analyze.swot.o',{rows:4})}${F(L('التهديدات','Threats'),'analyze.swot.t',{rows:4})}</div>`)
++'<div data-out="swot"></div>'
++fc('Fishbone',`<div class="rowbtns"><button class="btn sm pri" data-act="gen" data-v="fish">${L('اقتراح أسباب حسب القطاع','Suggest causes for the sector')}</button></div>`+tbl('analyze.fish',[{h:L('الفئة','Category'),k:'c',opts:fishOpts()},{h:L('السبب','Cause'),k:'t'},{h:L('درجة التأثير','Impact'),k:'s',rng:1}],'fish'))
++'<div data-out="fish"></div>'
++fc(L('٥ لماذا','5 Whys'),`<p class="mu">${L('ابدأ من المشكلة واسأل «لماذا» حتى تصل إلى السبب الجذري.','Start from the problem and keep asking “why” until you reach the root cause.')}</p>${[0,1,2,3,4].map(i=>F(L('لماذا '+(i+1)+'؟','Why '+(i+1)+'?'),'analyze.whys.'+i)).join('')}${F(L('صياغة السبب الجذري (اختياري — وإلا يُؤخذ آخر جواب)','Root cause wording (optional — otherwise the last answer is used)'),'analyze.rootText')}`)
++'<div data-out="whys"></div><div data-out="root"></div>'
++fc('FMEA — '+L('تحليل نمط العطل وآثاره','Failure Mode & Effects Analysis'),`<p class="mu">${L('قيّم كل بند من ١ إلى ١٠: الشدة (S) × الاحتمال (O) × صعوبة الاكتشاف (D) = رقم أولوية المخاطر RPN.','Rate each item 1–10: Severity (S) × Occurrence (O) × Detection difficulty (D) = Risk Priority Number.')}</p><button class="btn sm pri" data-act="gen" data-v="fmea">${L('توليد البنود من الأسباب الجذرية','Generate items from root causes')}</button>`+tbl('analyze.fmea',[{h:L('نمط العطل','Failure mode'),k:'f'},{h:L('الأثر','Effect'),k:'e'},{h:L('السبب','Cause'),k:'c'},{h:'S',k:'s',rng:10},{h:'O',k:'o',rng:10},{h:'D',k:'d',rng:10},{h:L('الإجراء الوقائي','Preventive action'),k:'a'}],'fmea'))
++'<div data-out="fmea"></div>'
++fc(L('مستوى السيجما — تعديل يدوي','Sigma level — manual override'),`${CHK(L('تفعيل التعديل اليدوي على مستوى السيجما','Enable manual override of the sigma level'),'analyze.ovOn')}<div class="g2">${F(L('مستوى السيجما المعدَّل (0–6)','Adjusted sigma level (0–6)'),'analyze.ovSigma',{num:1})}${F(L('سبب التعديل','Reason for override'),'analyze.ovNote')}</div>`)
++'<div data-out="sigmarep"></div>'+pager('analyze');};
+PG.improve=()=>head('improve')
++fc(L('الربط من التحليل','Link from Analyze'),`<p class="mu">${L('يولّد التطبيق إجراءات الخطة من الأسباب الجذرية ومقاييس الفحص من CTQs دون إعادة إدخال.','Plan actions come from the root causes and check metrics from the CTQs — no re-entry.')}</p><button class="btn sm pri" data-act="gen" data-v="pdca">${L('توليد خطة PDCA من الأسباب الجذرية والـ CTQs','Generate PDCA from root causes and CTQs')}</button>`)
++fc('Plan — '+L('التخطيط','Plan'),tbl('improve.plan',[{h:L('الإجراء','Action'),k:'a'},{h:L('السبب الجذري','Root cause'),k:'rc'},{h:L('المسؤول','Owner'),k:'o'},{h:L('الموعد','Due'),k:'d',type:'date'},{h:L('النتيجة المتوقعة','Expected result'),k:'x'}],'plan'))
++fc('Do — '+L('التنفيذ','Do'),tbl('improve.do',[{h:L('النشاط / التجربة','Activity / pilot'),k:'a'},{h:L('النطاق التجريبي','Pilot scope'),k:'w'},{h:L('المسؤول','Owner'),k:'o'},{h:L('الحالة','Status'),k:'s',opts:Object.entries(stL())},{h:L('ملاحظات','Notes'),k:'n'}],'do'))
++fc('Check — '+L('الفحص','Check'),tbl('improve.check',[{h:L('المؤشر','Metric'),k:'m'},{h:L('المستهدف','Target'),k:'t'},{h:L('الفعلي','Actual'),k:'ac'},{h:L('النتيجة','Result'),k:'res',opts:Object.entries(resL())}],'check'))
++fc('Act — '+L('الاعتماد','Act'),tbl('improve.act',[{h:L('القرار','Decision'),k:'dec',opts:Object.entries(decL())},{h:L('الإجراء','Action'),k:'a'},{h:L('المسؤول','Owner'),k:'o'}],'act'))
++'<div data-out="pdca"></div>'
++fc(L('محاكي «ماذا لو»','“What-if” simulator'),`<label class="f"><span>${L('نسبة خفض العيوب المتوقعة','Expected defect reduction')}: <output id="simv">${P().improve.sim}</output>%</span><div class="rg"><input type="range" min="0" max="95" step="5" data-t="n" data-b="improve.sim" value="${P().improve.sim}"></div></label><div data-out="sim"></div>`)+pager('improve');
+PG.control=()=>head('control')
++fc(L('مؤشرات الأداء (KPIs)','KPIs'),`<button class="btn sm pri" data-act="gen" data-v="kpi">${L('توليد المؤشرات من CTQs','Generate KPIs from CTQs')}</button>`+tbl('control.kpis',[{h:L('المؤشر','KPI'),k:'n'},{h:L('التعريف / المعادلة','Definition / formula'),k:'f'},{h:L('المستهدف','Target'),k:'t'},{h:L('التكرار','Frequency'),k:'fr'},{h:L('المسؤول','Owner'),k:'o'}],'kpi'))
++'<div data-out="kpis"></div>'
++fc(L('إجراء التشغيل المعياري (SOP)','Standard operating procedure (SOP)'),`<button class="btn sm pri" data-act="gen" data-v="sop">${L('توليد مسودة SOP من المشروع ومخطط الانسياب','Draft the SOP from the project and flowchart')}</button><div class="g3">${F(L('عنوان الإجراء','Title'),'control.sop.title')}${F(L('الرمز','Code'),'control.sop.code')}${F(L('الإصدار','Version'),'control.sop.ver')}</div><div class="g2">${F(L('الغرض','Purpose'),'control.sop.purpose',{rows:3})}${F(L('النطاق','Scope'),'control.sop.scope',{rows:3})}</div>${F(L('المسؤوليات (سطر لكل دور)','Responsibilities (one role per line)'),'control.sop.resp',{rows:3})}<h4>${L('خطوات التنفيذ','Procedure steps')}</h4>`+tbl('control.sop.steps',[{h:L('الخطوة','Step'),k:'s'},{h:L('المسؤول','Responsible'),k:'r'},{h:L('السجل / النموذج','Record / form'),k:'rec'}],'step',{mv:1})+F(L('المراجع','References'),'control.sop.refs'))
++'<div data-out="sop"></div>'
++fc(L('عينات ما بعد التحسين — مستوى السيجما الجديد','After-improvement samples — new sigma level'),sampleForm('control.after'))
++'<div data-out="sample:control.after"></div><div data-out="compare"></div><div data-out="finance"></div>'+pager('control');
+PG.report=()=>printHead(pageTitle('report'))+`<div class="phead"><div class="ph-badge">Σ</div><div><h1>${pageTitle('report')}</h1></div></div><section class="card fm"><div class="rowbtns"><button class="btn pri" data-act="print">${L('طباعة التقرير','Print report')}</button><button class="btn" data-act="sv" data-v="html">${L('حفظ كصفحة HTML','Save as HTML')}</button><button class="btn" data-act="sv" data-v="xlsall">${L('تصدير Excel','Export Excel')}</button><button class="btn" data-act="sv" data-v="json">${L('حفظ المشروع (JSON)','Save project (JSON)')}</button></div>${CHK(L('تضمين الملاحق التفصيلية (كل المخرجات)','Include detailed appendices (all deliverables)'),'__appx')}</section>${signForm()}<div data-out="report"></div>`+pager('report');
+function signForm(){const rows=P().signoff.rows;return fc(L('التوقيع الرقمي والاعتماد','Digital sign-off'),`<p class="mu">${L('اكتب اسم المعتمِد واضغط «توقيع». يُسجَّل الوقت وبصمة رقمية لمحتوى المشروع؛ وإن تغيّر المشروع لاحقًا يظهر تنبيه أن التوقيع لم يعد مطابقًا.','Type the approver name and press “Sign”. The time and a fingerprint of the project content are recorded; if the project changes later, a warning shows that the signature no longer matches.')}</p><div class="tw"><table class="ed"><thead><tr><th>${L('الصفة','Role')}</th><th>${L('الاسم','Name')}</th><th>${L('ملاحظة','Note')}</th><th></th></tr></thead><tbody>${rows.map((r,i)=>{const st=signState(r);return `<tr><td data-l="${L('الصفة','Role')}"><input type="text" data-b="signoff.rows.${i}.role" value="${esc(r.role)}"></td><td data-l="${L('الاسم','Name')}"><input type="text" data-b="signoff.rows.${i}.name" value="${esc(r.name)}"></td><td data-l="${L('ملاحظة','Note')}"><input type="text" data-b="signoff.rows.${i}.note" value="${esc(r.note)}"></td><td style="white-space:nowrap">${st==='pending'?`<button class="btn sm pri" data-act="sign" data-i="${i}">${L('توقيع','Sign')}</button>`:`<span class="chip ${st==='signed'?'ok':'warn'}">${st==='signed'?'✓':'!'}</span> <button class="btn sm" data-act="sign" data-i="${i}">${L('إعادة التوقيع','Re-sign')}</button> <button class="btn sm" data-act="unsign" data-i="${i}">${L('سحب','Revoke')}</button>`}<button class="ib" data-act="del" data-p="signoff.rows" data-i="${i}" aria-label="delete">×</button></td></tr>`;}).join('')}</tbody></table></div><button class="btn sm" data-act="add" data-p="signoff.rows" data-t="sg">＋ ${L('إضافة معتمِد','Add approver')}</button>`);}
+/* ===== rendering ===== */
+function renderRail(){const nav=(k,l,t,pc)=>`<button class="nv${DB.page===k?' on':''}" data-act="nav" data-v="${k}"><span class="lt" style="--p:${pc||0}"><b>${l}</b></span>${t}${pc!=null?`<small>${pc}%</small>`:''}</button>`;
+$('#rail').innerHTML=`<div class="brand"><div class="sig">σ</div><div><b>${L('سيجما DMAIC','Six Sigma DMAIC')}</b><small>${esc(P().name)}</small></div></div><nav>${nav('registry','☰',L('سجل المشاريع','Project registry'))}${PHK.map(k=>nav(k,PH[k][2],L(PH[k][0],PH[k][1]),pctDone(k))).join('')}${nav('report','Σ',L('التقرير الشامل','Final report'),qScore())}</nav><div class="maker"><small>${L('إعداد وتطوير','Developed by')}</small><b>${L('المهندس وائل عويس','Eng. Wael Oweis')}</b></div>`;}
+function renderTop(){const menuOpen=$('#menu')&&!$('#menu').hidden;$('#top').innerHTML=`<div class="tp-l"><span class="tp-name">${esc(P().name)}</span><span class="chip">${cname(SECT,P().sector)}</span></div><div class="tp-mid">${ruler(sigmaBefore(),sigmaAfter())}</div><div class="tp-r"><button class="btn sm" data-act="print">${L('طباعة','Print')}</button><div class="dd"><button class="btn sm pri" data-act="menu">${L('حفظ','Save')} ▾</button><div class="menu" id="menu"${menuOpen?'':' hidden'}><small>${L('هذه الصفحة','This page')}</small><button data-act="sv" data-v="html">${L('حفظ الصفحة كملف HTML','Save page as HTML')}</button><button data-act="sv" data-v="xls">${L('تصدير الصفحة إلى Excel','Export page to Excel')}</button><small>${L('المشروع','Project')}</small><button data-act="sv" data-v="xlsall">${L('تصدير المشروع كاملاً إلى Excel','Export whole project to Excel')}</button><button data-act="sv" data-v="json">${L('نسخة احتياطية (JSON)','Backup (JSON)')}</button><small>${L('لحفظ PDF: اختر «طباعة» ثم «حفظ كـ PDF».','For PDF: press Print, then “Save as PDF”.')}</small></div></div><button class="btn sm" data-act="lang">${lang==='ar'?'EN':'عربي'}</button></div>`;}
+function renderPage(){if(DB.page==='registry'){if(!DB.projects.some(p=>p.id===DB.cmp.a))DB.cmp.a=DB.projects[0].id;if(!DB.projects.some(p=>p.id===DB.cmp.b))DB.cmp.b=(DB.projects[1]||DB.projects[0]).id;}const y=window.scrollY;$('#main').innerHTML=PG[DB.page]();refresh();window.scrollTo(0,y);}
+function refresh(){document.querySelectorAll('[data-out]').forEach(el=>{try{el.innerHTML=runOut(el.dataset.out);}catch(err){el.innerHTML='<div class="card"><div class="banner bad">'+esc(err.message)+'</div></div>';console.error(err);}});renderRail();renderTop();const o=$('#simv');if(o)o.textContent=P().improve.sim;}
+function renderAll(){document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.title=L('سيجما DMAIC — المهندس وائل عويس','Six Sigma DMAIC — Eng. Wael Oweis');renderPage();}
+function go(pg){DB.page=pg;saveDB();renderPage();window.scrollTo(0,0);}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),3200);}
+function dirty(){P().updated=Date.now();clearTimeout(tSave);tSave=setTimeout(saveDB,350);clearTimeout(tOut);tOut=setTimeout(refresh,130);}
+
+/* ===== industry starter templates ===== */
+function TP(k){const T={
+construction:{name:L('خفض عدم المطابقة (NCR) في أعمال الخرسانة','Reducing NCRs in concrete works'),
+problem:L('ترتفع تقارير عدم المطابقة (NCR) في أعمال الخرسانة الإنشائية، ويتكرر رفض الصبّات عند الفحص أو نتائج المكعبات، مما يسبب إعادة عمل وتأخيرًا في التسليمات خلال آخر 6 أشهر.','NCRs are rising on structural concrete works, with repeated pour rejections at inspection or cube-test failures, causing rework and delayed handovers over the last 6 months.'),
+goal:L('خفض نسبة الصبّات ذات NCR من __% إلى أقل من 5% وتقليل ساعات إعادة العمل بنسبة 50% خلال 4 أشهر.','Reduce the share of pours with an NCR from __% to under 5% and cut rework hours by 50% within 4 months.'),
+scopeIn:L('صبّات الخرسانة الإنشائية: التسليح والشدات والخلط والصب والمعالجة وفحص المكعبات.','Structural concrete pours: rebar, formwork, mixing, placing, curing and cube testing.'),scopeOut:L('الأعمال المعمارية والتشطيبات.','Architectural and finishing works.'),
+business:L('كل NCR يعني إعادة عمل وتأخير المسار الحرج وتكلفة مواد وعمالة إضافية وخطر على سمعة المقاول لدى المالك والاستشاري.','Every NCR means rework, critical-path delay, extra material and labor cost, and reputational risk with the owner and consultant.'),
+team:[[L('مدير الجودة','QA/QC manager'),L('قائد المشروع','Project leader')],[L('مهندس الموقع','Site engineer'),L('عضو','Member')],[L('مشرف الخرسانة','Concrete foreman'),L('عضو','Member')],[L('مهندس المختبر','Lab engineer'),L('عضو','Member')]],
+voc:[[L('الاستشاري: الصبّات ترفض عند الفحص','Consultant: pours are rejected at inspection'),L('صبّة مطابقة من أول مرة','Right-first-time pour'),L('نسبة الصبّات المقبولة من أول فحص','First-inspection pour acceptance rate'),'%','≥ 95%'],[L('المالك: تأخر التسليمات','Owner: handovers are late'),L('التزام بالجدول','Schedule adherence'),L('ساعات إعادة العمل لكل صبّة','Rework hours per pour'),L('ساعة','Hours'),'≤ 2'],[L('المقاول: نتائج المكعبات متذبذبة','Contractor: erratic cube results'),L('مقاومة مستقرة','Stable strength'),L('نسبة المكعبات المطابقة للمقاومة المطلوبة','Cubes meeting required strength'),'%','≥ 98%']],
+sipoc:{s:L('محطة الخلط الجاهز\nمورد حديد التسليح\nمقاول الشدات','Ready-mix plant\nRebar supplier\nFormwork subcontractor'),i:L('مخططات التنفيذ\nتصميم الخلطة\nطلب الفحص (RFI)\nالمواد المعتمدة','Shop drawings\nMix design\nInspection request (RFI)\nApproved materials'),o:L('صبّة معتمدة\nتقرير المكعبات\nسجل الجودة','Approved pour\nCube test report\nQuality record'),c:L('الاستشاري\nالمالك\nفريق التنفيذ اللاحق','Consultant\nOwner\nDownstream trades')},
+sh:[[L('المالك','Owner'),5,4],[L('الاستشاري','Consultant'),5,3],[L('مدير المشروع','Project manager'),4,5],[L('مشرفو التنفيذ','Site foremen'),3,3],[L('محطة الخلط','Ready-mix plant'),2,3]],
+flow:[['start',L('طلب فحص الشدات والتسليح','Request formwork and rebar inspection'),''],['step',L('فحص داخلي للتسليح والشدات','Internal rebar and formwork check'),''],['decision',L('مطابق للمخططات؟','Conforms to drawings?'),'2'],['step',L('طلب فحص الاستشاري (RFI)','Consultant inspection (RFI)'),''],['decision',L('تمت الموافقة على الصب؟','Pour approved?'),'2'],['step',L('الصب والمعالجة وأخذ المكعبات','Pour, cure and cast cubes'),''],['end',L('تقرير المكعبات واعتماد الصبّة','Cube report and pour sign-off'),'']],
+metric:L('صبّات صدر عنها NCR','Pours with an NCR'),unit:L('صبّة','Pour')},
+manufacturing:{name:L('خفض العيوب والهالك في خط الإنتاج','Reducing defects and scrap on the line'),
+problem:L('ترتفع نسبة المنتجات المعيبة والهالك في خط الإنتاج الرئيسي، مع تفاوت بين الورديات، مما يرفع التكلفة ويؤخر التسليم للعملاء.','The defect and scrap rate on the main production line is high and varies between shifts, raising cost and delaying customer deliveries.'),
+goal:L('خفض نسبة العيوب من __% إلى أقل من 2% ورفع مستوى السيجما إلى 4σ خلال 4 أشهر.','Reduce the defect rate from __% to under 2% and reach 4σ within 4 months.'),
+scopeIn:L('خط الإنتاج الرئيسي من استلام الخامة حتى الفحص النهائي.','The main production line from raw-material receipt to final inspection.'),scopeOut:L('خطوط التعبئة والتغليف والشحن.','Packaging and shipping lines.'),
+business:L('الهالك وإعادة التشغيل تستهلك الخامات والطاقة ووقت الماكينات، وتؤثر على الالتزام بمواعيد العملاء.','Scrap and rework consume material, energy and machine time, and hurt on-time delivery.'),
+team:[[L('مدير الجودة','Quality manager'),L('قائد المشروع','Project leader')],[L('مهندس العمليات','Process engineer'),L('عضو','Member')],[L('مشرف الإنتاج','Production supervisor'),L('عضو','Member')],[L('فني الصيانة','Maintenance technician'),L('عضو','Member')]],
+voc:[[L('العميل: وصلت دفعات بها عيوب','Customer: batches arrived with defects'),L('منتج مطابق','Conforming product'),L('نسبة القبول من أول مرة (FPY)','First-pass yield (FPY)'),'%','≥ 98%'],[L('الإنتاج: الهالك مرتفع','Production: scrap is high'),L('تقليل الفاقد','Less waste'),L('نسبة الهالك','Scrap rate'),'%','≤ 1.5%'],[L('الجودة: الأبعاد خارج التفاوت','Quality: dimensions out of tolerance'),L('عملية قادرة','Capable process'),L('قدرة العملية Cpk','Process capability Cpk'),'Cpk','≥ 1.33']],
+sipoc:{s:L('موردو الخامات\nقسم الصيانة\nالمخازن','Raw-material suppliers\nMaintenance\nWarehouse'),i:L('الخامات\nتعليمات التشغيل\nالأدوات والقوالب\nأوامر التصنيع','Raw material\nWork instructions\nTools and dies\nWork orders'),o:L('منتج نهائي مطابق\nتقارير الفحص\nسجل الهالك','Conforming product\nInspection reports\nScrap log'),c:L('قسم التعبئة\nالعملاء\nالمبيعات','Packaging\nCustomers\nSales')},
+sh:[[L('الإدارة العليا','Top management'),5,4],[L('العملاء الرئيسيون','Key customers'),4,3],[L('مشرفو الورديات','Shift supervisors'),4,2],[L('المشغلون','Operators'),3,3],[L('الصيانة','Maintenance'),3,4]],
+flow:[['start',L('استلام أمر التصنيع','Receive work order'),''],['step',L('فحص الخامة الواردة','Incoming material inspection'),''],['step',L('تجهيز الماكينة والقالب','Machine and die setup'),''],['step',L('التصنيع','Production run'),''],['decision',L('يجتاز فحص أثناء التشغيل؟','Passes in-process check?'),'3'],['step',L('الفحص النهائي','Final inspection'),''],['end',L('تسليم للتعبئة','Release to packaging'),'']],
+metric:L('وحدات معيبة','Defective units'),unit:L('وحدة','Unit')},
+it:{name:L('خفض الأخطاء المتسربة للإنتاج وزمن الاستجابة','Reducing escaped defects and response time'),
+problem:L('تتسرب أخطاء برمجية إلى بيئة الإنتاج في كل إصدار ويطول زمن حل الحوادث، مما يضعف ثقة المستخدمين ويستهلك وقت الفريق في الإصلاحات العاجلة.','Software defects escape to production in every release and incident resolution takes long, weakening user trust and consuming team time on urgent fixes.'),
+goal:L('خفض الأخطاء المتسربة لكل إصدار من __ إلى أقل من 3 وتقليل زمن الحل MTTR إلى أقل من 4 ساعات خلال 3 أشهر.','Cut escaped defects per release from __ to under 3 and MTTR to under 4 hours within 3 months.'),
+scopeIn:L('دورة التطوير والاختبار والنشر للمنتج الرئيسي.','The develop-test-deploy cycle of the main product.'),scopeOut:L('المنتجات القديمة قيد الإيقاف.','Legacy products being retired.'),
+business:L('كل خطأ متسرب يعني شكاوى ودعمًا فنيًا إضافيًا وإصدارات إصلاح عاجلة وخطر على اتفاقيات مستوى الخدمة SLA.','Each escaped defect means complaints, extra support, hotfix releases and SLA risk.'),
+team:[[L('مدير المنتج','Product manager'),L('راعي','Sponsor')],[L('قائد فريق الهندسة','Engineering lead'),L('قائد المشروع','Project leader')],[L('مهندس ضمان الجودة','QA engineer'),L('عضو','Member')],[L('مهندس DevOps','DevOps engineer'),L('عضو','Member')]],
+voc:[[L('المستخدم: التطبيق يتعطل بعد كل تحديث','User: the app breaks after each update'),L('إصدارات مستقرة','Stable releases'),L('أخطاء متسربة لكل إصدار','Escaped defects per release'),L('عدد','Count'),'≤ 3'],[L('الدعم: الحوادث تطول','Support: incidents drag on'),L('حل سريع','Fast resolution'),L('زمن الحل MTTR','Mean time to restore (MTTR)'),L('ساعة','Hours'),'≤ 4'],[L('الإدارة: نشر بلا مخاطر','Management: risk-free deployments'),L('نشر ناجح','Successful deployment'),L('نسبة النشر الناجح','Deployment success rate'),'%','≥ 98%']],
+sipoc:{s:L('أصحاب المنتج\nفريق التصميم\nخدمات خارجية','Product owners\nDesign team\nThird-party services'),i:L('المتطلبات\nالكود\nحالات الاختبار\nبيئات الاختبار','Requirements\nCode\nTest cases\nTest environments'),o:L('إصدار مستقر\nتقارير الاختبار\nملاحظات الإصدار','Stable release\nTest reports\nRelease notes'),c:L('المستخدمون\nالدعم الفني\nالإدارة','End users\nSupport\nManagement')},
+sh:[[L('مدير المنتج','Product manager'),5,4],[L('العملاء الرئيسيون','Key customers'),4,3],[L('فريق التطوير','Dev team'),4,4],[L('الدعم الفني','Support team'),3,5],[L('الأمن والامتثال','Security & compliance'),3,3]],
+flow:[['start',L('استلام متطلب أو تذكرة','Receive requirement or ticket'),''],['step',L('التطوير ومراجعة الكود','Development and code review'),''],['step',L('اختبار آلي ويدوي','Automated and manual testing'),''],['decision',L('يجتاز معايير القبول؟','Meets acceptance criteria?'),'2'],['step',L('النشر على الإنتاج','Deploy to production'),''],['end',L('مراقبة ما بعد النشر','Post-release monitoring'),'']],
+metric:L('إصدارات بها أخطاء متسربة','Releases with escaped defects'),unit:L('إصدار','Release')},
+services:{name:L('خفض زمن دورة أمر الشراء وتأخر التوريد','Cutting PO cycle time and late deliveries'),
+problem:L('يستغرق اعتماد أوامر الشراء وقتًا طويلًا وتتأخر نسبة من التوريدات عن موعدها، مما يعطّل الأقسام المستفيدة ويرفع تكلفة الطوارئ.','Purchase-order approval takes too long and a share of deliveries arrive late, blocking user departments and raising emergency costs.'),
+goal:L('خفض زمن دورة أمر الشراء من __ إلى 3 أيام ورفع نسبة التوريد في الموعد إلى 95% خلال 4 أشهر.','Cut PO cycle time from __ to 3 days and raise on-time delivery to 95% within 4 months.'),
+scopeIn:L('من طلب الشراء حتى استلام المواد والفاتورة.','From purchase requisition to goods receipt and invoice.'),scopeOut:L('التعاقدات الكبيرة والمناقصات.','Large contracts and tenders.'),
+business:L('التأخر يوقف العمل ويزيد الشراء العاجل بأسعار أعلى ويضعف علاقة الموردين والأقسام.','Delays halt work, push up urgent buying at higher prices and strain supplier and department relations.'),
+team:[[L('مدير المشتريات','Procurement manager'),L('قائد المشروع','Project leader')],[L('محلل مشتريات','Procurement analyst'),L('عضو','Member')],[L('ممثل المالية','Finance representative'),L('عضو','Member')],[L('أمين المخزن','Storekeeper'),L('عضو','Member')]],
+voc:[[L('القسم: الطلب يتأخر أسبوعين','Department: requests take two weeks'),L('شراء سريع','Fast purchasing'),L('زمن دورة أمر الشراء','PO cycle time'),L('أيام','Days'),'≤ 3'],[L('المشروع: المواد تصل بعد الحاجة','Project: goods arrive after need date'),L('التوريد في الموعد','On-time supply'),L('نسبة التوريد في الموعد (OTD)','On-time delivery (OTD)'),'%','≥ 95%'],[L('المالية: فواتير غير مطابقة','Finance: mismatched invoices'),L('مطابقة ثلاثية','Three-way match'),L('نسبة الفواتير المطابقة من أول مرة','Invoices matched first time'),'%','≥ 97%']],
+sipoc:{s:L('الأقسام الطالبة\nالموردون\nالمالية','Requesting departments\nSuppliers\nFinance'),i:L('طلب الشراء\nعروض الأسعار\nقائمة الموردين المعتمدين\nالميزانية','Purchase requisition\nQuotations\nApproved vendor list\nBudget'),o:L('أمر شراء معتمد\nإذن استلام\nفاتورة مطابقة','Approved PO\nGoods receipt\nMatched invoice'),c:L('الأقسام المستفيدة\nالمشروعات\nالمالية','User departments\nProjects\nFinance')},
+sh:[[L('المدير المالي','CFO'),5,3],[L('الأقسام الطالبة','Requesting departments'),4,3],[L('الموردون','Suppliers'),3,3],[L('فريق المشتريات','Procurement team'),4,5],[L('المخازن','Warehouse'),2,4]],
+flow:[['start',L('استلام طلب الشراء','Receive purchase requisition'),''],['step',L('مراجعة المواصفات والميزانية','Check specification and budget'),''],['step',L('طلب عروض الأسعار','Request quotations'),''],['decision',L('العروض مكتملة؟','Quotations complete?'),'3'],['step',L('اعتماد وإصدار أمر الشراء','Approve and issue PO'),''],['step',L('متابعة التوريد والاستلام','Track delivery and receipt'),''],['end',L('مطابقة الفاتورة والسداد','Invoice match and payment'),'']],
+metric:L('أوامر شراء متأخرة أو مرفوضة','Late or rejected POs'),unit:L('أمر شراء','PO')}};
+return T[k]||T.services;}
+function applyTpl(p,k,over){const t=TP(k),d=p.define,set=(o,key,v)=>{if(over||!String(o[key]==null?'':o[key]).trim())o[key]=v;};
+set(d,'problem',t.problem);set(d,'goal',t.goal);set(d,'scopeIn',t.scopeIn);set(d,'scopeOut',t.scopeOut);set(d,'business',t.business);
+if(over||!has(d.team,'n'))d.team=t.team.map(x=>({n:x[0],r:x[1]}));
+if(over||!has(d.voc,'c'))d.voc=t.voc.map(x=>({v:x[0],n:x[1],c:x[2],m:x[3],t:x[4]}));
+if(over||!has(d.sh,'n'))d.sh=t.sh.map(x=>({n:x[0],inf:x[1],sup:x[2]}));
+if(over||has(d.flow,'t')<2)d.flow=t.flow.map(x=>({k:x[0],t:x[1],no:x[2]}));
+set(d.sipoc,'s',t.sipoc.s);set(d.sipoc,'i',t.sipoc.i);set(d.sipoc,'o',t.sipoc.o);set(d.sipoc,'c',t.sipoc.c);
+set(d.sipoc,'p',d.flow.filter(f=>f.k==='step'&&f.t.trim()).map(f=>f.t).join('\n'));
+set(p.measure,'metric',t.metric);set(p.measure,'unit',t.unit);
+p.sector=k;withProj(p,()=>{genFactors();genFish();genKPI();});}
+/* ===== demo ===== */
+function demo(){const p=blank(L('تقليل رفض واعتماد المواد (Material Submittals)','Reducing material submittal rejections'),'construction');DB.projects.push(p);DB.cur=p.id;const d=p.define;
+d.sponsor=L('مدير المشروع','Project manager');d.leader=L('مدير الجودة','QA/QC manager');d.start='2026-01-05';d.end='2026-05-29';
+d.problem=L('يُرفض أو يُعاد تقديم 32% من طلبات اعتماد المواد من المرة الأولى، مما يؤخر التوريد بمتوسط 11 يوم عمل ويهدد المسار الحرج للمشروع خلال آخر 6 أشهر.','32% of material submittals are rejected or resubmitted at first pass, delaying supply by 11 working days on average and threatening the critical path during the last 6 months.');
+d.goal=L('خفض نسبة الرفض من المرة الأولى من 32% إلى أقل من 5% وتقليل زمن دورة الاعتماد من 11 إلى 5 أيام عمل خلال 4 أشهر.','Reduce first-pass rejection from 32% to under 5% and cut approval cycle time from 11 to 5 working days within 4 months.');
+d.scopeIn=L('طلبات اعتماد المواد للأعمال المدنية والميكانيكية، من تجهيز الملف حتى قرار الاستشاري.','Material submittals for civil and mechanical works, from file preparation to the consultant decision.');
+d.scopeOut=L('التعاقد مع الموردين وأعمال المرحلة الثانية.','Supplier contracting and phase-2 works.');
+d.business=L('تأخر الاعتمادات يرفع تكلفة إعادة العمل ويعرّض المشروع لغرامات التأخير ويستنزف وقت الفريق.','Late approvals raise rework cost, expose the project to delay penalties and consume team time.');
+d.team=[{n:L('مدير الجودة','QA/QC manager'),r:L('قائد المشروع','Project leader')},{n:L('مهندس التخطيط','Planning engineer'),r:L('عضو','Member')},{n:L('مهندس الموقع','Site engineer'),r:L('عضو','Member')},{n:L('منسق الوثائق','Document controller'),r:L('عضو','Member')}];
+d.voc=[{v:L('الاستشاري: الملفات ناقصة ومتكررة','Consultant: files are incomplete and repeated'),n:L('ملف كامل من أول مرة','Complete file first time'),c:L('نسبة الاعتماد من المرة الأولى','First-pass approval rate'),m:L('% طلبات معتمدة بلا إعادة','% approved without resubmission'),t:'≥ 95%'},{v:L('المالك: المواد تصل متأخرة','Owner: materials arrive late'),n:L('اعتماد سريع','Fast approval'),c:L('زمن دورة الاعتماد','Approval cycle time'),m:L('أيام عمل','Working days'),t:'≤ 5'},{v:L('المقاول: لا نعرف حالة الطلبات','Contractor: we cannot see request status'),n:L('شفافية المتابعة','Tracking transparency'),c:L('نسبة الطلبات المسجلة في السجل','Requests logged in tracker'),m:'%',t:'100%'}];
+d.sipoc={s:L('المصنعون\nالموردون\nالمقاول من الباطن','Manufacturers\nSuppliers\nSubcontractor'),i:L('كتالوجات\nشهادات المطابقة\nعينات المواد\nالمواصفات','Catalogs\nCompliance certificates\nMaterial samples\nSpecifications'),p:'',o:L('ملف اعتماد مكتمل\nقرار الاستشاري\nأمر شراء','Complete submittal\nConsultant decision\nPurchase order'),c:L('الاستشاري\nالمالك\nإدارة المشروع','Consultant\nOwner\nProject management')};
+d.sh=[{n:L('المالك','Owner'),inf:5,sup:4},{n:L('الاستشاري','Consultant'),inf:5,sup:3},{n:L('إدارة المشروع','Project management'),inf:4,sup:5},{n:L('المشتريات','Procurement'),inf:3,sup:2},{n:L('الموردون','Suppliers'),inf:2,sup:2},{n:L('مهندسو الموقع','Site engineers'),inf:3,sup:4}];
+d.flow=[{k:'start',t:L('استلام طلب المواد من الموقع','Receive material request from site'),no:''},{k:'step',t:L('تجهيز ملف الاعتماد (كتالوج، شهادات، عينات)','Prepare submittal (catalog, certificates, samples)'),no:''},{k:'step',t:L('مراجعة داخلية','Internal review'),no:''},{k:'decision',t:L('الملف مكتمل؟','File complete?'),no:'2'},{k:'step',t:L('إرسال للاستشاري','Send to consultant'),no:''},{k:'decision',t:L('معتمد؟','Approved?'),no:'2'},{k:'step',t:L('إصدار أمر الشراء','Issue purchase order'),no:''},{k:'end',t:L('توريد المادة للموقع','Deliver material to site'),no:''}];
+d.sipoc.p=d.flow.filter(f=>f.k==='step').map(f=>f.t).join('\n');
+Object.assign(p.measure,{metric:L('طلبات اعتماد مرفوضة من أول مرة','Submittals rejected at first pass'),unit:L('طلب','Submittal'),plan:L('كل طلبات آخر 6 أشهر','All submittals of the last 6 months'),annualVol:480,costPer:1500,mode:'attr',units:120,defects:38,opps:4});
+genFactors();genFish();const a=p.analyze;
+a.whys=[L('لأن الاستشاري يرفض الملف ويطلب إعادة التقديم','Because the consultant rejects the file and asks for resubmission'),L('لأن الملف ناقص أو غير مطابق للمواصفات','Because the file is incomplete or non-compliant'),L('لأن المقاول لا يراجع الملف قبل إرساله','Because the contractor does not check the file before sending'),L('لأنه لا توجد قائمة تدقيق موحدة','Because there is no standard checklist'),L('لأن العملية غير موثقة ولا يوجد مسؤول عن جودة الملف','Because the process is undocumented and nobody owns file quality')];
+genSWOT();genPDCA();const i=p.improve;
+i.plan.forEach((x,k)=>{x.o=k?L('مدير الجودة','QA/QC manager'):L('منسق الوثائق','Document controller');x.d='2026-03-15';x.x=L('خفض الرفض','Lower rejection rate');});
+i.do=[{a:L('تطبيق قائمة التدقيق الموحدة على طلبات المواد الميكانيكية','Apply the standard checklist to mechanical submittals'),w:L('20 طلباً تجريبياً','20 pilot submittals'),o:L('مهندس الموقع','Site engineer'),s:'done',n:''},{a:L('تشغيل سجل إلكتروني لتتبع الطلبات','Run an electronic submittal tracker'),w:L('كل الطلبات الجديدة','All new submittals'),o:L('منسق الوثائق','Document controller'),s:'prog',n:''}];
+i.check.forEach((x,k)=>{x.ac=k===0?'96%':k===1?'4.5':'100%';x.res='met';});
+i.act=[{dec:'std',a:L('اعتماد قائمة التدقيق كمعيار إلزامي لكل الطلبات','Adopt the checklist as mandatory for all submittals'),o:L('مدير الجودة','QA/QC manager')}];
+genKPI();genSOP();Object.assign(p.control.after,{mode:'attr',units:120,defects:3,opps:4});DB.page='define';saveDB();renderAll();toast(L('تم تحميل مشروع تجريبي كامل','Full demo project loaded'));}
+/* ===== actions ===== */
+const ACT={
+nav(el){go(el.dataset.v);},
+add(el){getP(P(),el.dataset.p).push(TM[el.dataset.t]());dirty();renderPage();},
+del(el){getP(P(),el.dataset.p).splice(+el.dataset.i,1);dirty();renderPage();},
+mv(el){const a=getP(P(),el.dataset.p),i=+el.dataset.i,j=i+ +el.dataset.v;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];dirty();renderPage();},
+mode(el){getP(P(),el.dataset.p).mode=el.dataset.v;const T=TMP[el.dataset.p];if(T)applyFile(el.dataset.p);dirty();renderPage();},
+gen(el){const v=el.dataset.v;if(v==='factors'){genFactors();}else if(v==='fish')genFish();else if(v==='fmea')genFMEA();else if(v==='swot')genSWOT();else if(v==='pdca')genPDCA();else if(v==='kpi')genKPI();else if(v==='sop')genSOP();else if(v==='sipocP'){const s=P().define;s.sipoc.p=s.flow.filter(f=>f.t.trim()&&f.k==='step').map(f=>f.t.trim()).join('\n');}dirty();renderPage();toast(L('تم التوليد — يمكنك تعديل النتائج','Generated — you can edit the results'));},
+lang(){lang=lang==='ar'?'en':'ar';DB.lang=lang;saveDB();renderAll();},
+print(){try{window.print();}catch(e){toast(L('الطباعة غير متاحة هنا — استخدم «حفظ الصفحة كملف HTML» ثم اطبعه','Printing is unavailable here — save the page as HTML and print it'));}},
+menu(){const m=$('#menu');m.hidden=!m.hidden;},
+sv(el){$('#menu')&&($('#menu').hidden=true);const v=el.dataset.v,pg=DB.page;if(v==='html')saveFile(fname(pageTitle(pg))+'.html',pageDoc(pg),'text/html');else if(v==='xls')exportXls(pg);else if(v==='xlsall')exportXls('all');else if(v==='json')saveFile(fname(P().name)+'.json',JSON.stringify(P(),null,1),'application/json');},
+sign(el){const r=P().signoff.rows[+el.dataset.i];if(!r.name.trim()){toast(L('اكتب اسم المعتمِد أولًا','Enter the approver name first'));return;}r.at=Date.now();r.h=snapHash();r.q=qScore();r.sn=r.name.trim();dirty();saveDB();renderPage();toast(L('تم التوقيع الرقمي','Digitally signed'));},
+unsign(el){const r=P().signoff.rows[+el.dataset.i];r.at=0;r.h='';r.q=0;r.sn='';dirty();saveDB();renderPage();},
+pnew(){const n=$('#np-name').value.trim()||L('مشروع جديد','New project');const p=blank(n,$('#np-sec').value);DB.projects.push(p);DB.cur=p.id;DB.page='define';saveDB();renderAll();},
+demo(){demo();},
+pnewtpl(){const k=$('#np-sec').value,n=$('#np-name').value.trim()||TP(k).name;const p=blank(n,k);DB.projects.push(p);DB.cur=p.id;applyTpl(p,k,true);DB.page='define';saveDB();renderAll();toast(L('تم إنشاء المشروع من قالب القطاع — عدّل الفراغات __ والأرقام','Project created from the sector template — fill the __ blanks and numbers'));},
+tplapply(){applyTpl(P(),P().sector,false);dirty();renderPage();toast(L('تم ملء الحقول الفارغة من قالب القطاع','Empty fields filled from the sector template'));},
+popen(el){DB.cur=el.dataset.i;go('define');},
+pdup(el){const s=DB.projects.find(x=>x.id===el.dataset.i),c=clone(s);c.id=uid();c.name=s.name+L(' (نسخة)',' (copy)');c.created=c.updated=Date.now();DB.projects.push(c);saveDB();refresh();toast(L('تم النسخ','Copied'));},
+pdel(el){const id=el.dataset.i;if(armed!==id){armed=id;refresh();return;}armed=null;DB.projects=DB.projects.filter(x=>x.id!==id);if(!DB.projects.length)DB.projects.push(blank());if(!P())DB.cur=DB.projects[0].id;saveDB();renderAll();},
+expall(){saveFile('sigma-projects-backup.json',JSON.stringify({projects:DB.projects},null,1),'application/json');}};
+const CHG={
+async file(el){const f=el.files[0];if(!f)return;const pre=el.dataset.p;try{let rows;if(/\.(xlsx|xls)$/i.test(f.name)){if(!window.XLSX)throw new Error(L('مكتبة Excel غير محمّلة','Excel library not loaded'));const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:''});}else rows=parseCSV(await f.text());
+rows=rows.filter(r=>r.some(c=>String(c).trim()!==''));if(!rows.length)throw new Error(L('الملف فارغ','The file is empty'));
+const nn=r=>r.filter(c=>String(c).trim()!==''&&toNum(c)==null).length,hdr=rows.length>1&&nn(rows[0])>=Math.ceil(rows[0].filter(c=>String(c).trim()!=='').length/2);
+const headers=hdr?rows[0].map((c,i)=>String(c).trim()||'Col '+(i+1)):rows[0].map((_,i)=>'Col '+(i+1)),body=hdr?rows.slice(1):rows;
+let best=0,bs=-1;headers.forEach((_,c)=>{const sc=body.filter(r=>toNum(r[c])!=null).length;if(sc>bs){bs=sc;best=c;}});
+TMP[pre]={headers,rows:body,col:best,def:bs<body.length*0.5?'flag':'count'};getP(P(),pre).fileName=f.name;applyFile(pre);dirty();renderPage();toast(L('تم تحميل الملف: ','File loaded: ')+body.length+L(' صف',' rows'));}catch(err){toast(L('تعذر قراءة الملف: ','Could not read the file: ')+err.message);}el.value='';},
+cmp(el){DB.cmp[el.dataset.k]=el.value;saveDB();refresh();},
+col(el){const T=TMP[el.dataset.p];T.col=+el.value;applyFile(el.dataset.p);dirty();renderPage();},
+def(el){const T=TMP[el.dataset.p];T.def=el.value;applyFile(el.dataset.p);dirty();renderPage();},
+async import(el){const f=el.files[0];if(!f)return;try{const o=JSON.parse(await f.text());const arr=Array.isArray(o.projects)?o.projects:(o.define?[o]:[]);if(!arr.length)throw new Error('format');const b=blank();arr.forEach(p=>{p.id=uid();deepFill(p,b);DB.projects.push(p);});saveDB();renderAll();toast(L('تم الاستيراد: ','Imported: ')+arr.length);}catch(e){toast(L('ملف غير صالح','Invalid file'));}el.value='';}};
+document.addEventListener('input',e=>{const el=e.target,b=el.dataset&&el.dataset.b;if(b===undefined)return;let v;if(el.type==='checkbox')v=el.checked;else{v=el.value;if(el.dataset.t==='n')v=v===''?'':Number(v);}
+if(b==='__appx'){DB.appx=v;saveDB();refresh();return;}setP(P(),b,v);if(el.type==='range'){const o=el.parentElement.querySelector('output');if(o)o.textContent=v;}dirty();});
+document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.chg&&CHG[el.dataset.chg])CHG[el.dataset.chg](el);});
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!e.target.closest('.dd')){const m=$('#menu');if(m)m.hidden=true;}if(!el)return;const f=ACT[el.dataset.act];if(f){e.preventDefault();f(el);}});
+/* ===== export / save ===== */
+let DL=null;
+async function initDL(){try{if(window.claude&&claude.use)DL=await claude.use('downloads');}catch(e){DL=null;}}
+const fname=s=>String(s).replace(/[^\p{L}\p{N}_-]+/gu,'_').slice(0,60)||'sigma';
+async function saveFile(name,data,mime){if(DL){try{await DL.save({filename:name,data});}catch(e){if(!(e&&e.code==='declined'))toast(L('تعذر الحفظ في هذا العرض','Saving is unavailable in this view'));}return;}
+try{const u=URL.createObjectURL(new Blob([data],{type:mime||'application/octet-stream'})),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);}catch(e){toast(L('تعذر الحفظ','Could not save'));}}
+const PAGE_OUTS={registry:['registry'],define:['charter','voc','sipoc','stake','flow'],measure:['sample:measure'],analyze:['pestel','porter','swot','fish','whys','root','fmea','sigmarep'],improve:['pdca'],control:['kpis','sop','sample:control.after','compare','finance'],report:['report']};
+function pageDoc(pg){const t=pageTitle(pg),body=printHead(t)+(PAGE_OUTS[pg]||[]).map(runOut).join('');
+return `<!doctype html><html lang="${lang}" dir="${lang==='ar'?'rtl':'ltr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(t)} — ${esc(P().name)}</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"><style>${$('#appcss').textContent}</style></head><body class="saved"><main>${body}</main></body></html>`;}
+function sheets(scope){const p=P(),d=p.define,a=p.analyze,i=p.improve,c=p.control,S=[],add=(n,r)=>S.push([n,r]),all=scope==='all'||scope==='report';const r2=x=>x==null?'':+Number(x).toFixed(2);
+if(scope==='registry')add('Registry',[[L('المشروع','Project'),L('القطاع','Sector'),L('الاكتمال %','Completion %')],...DB.projects.map(q=>withProj(q,()=>[q.name,cname(SECT,q.sector),qScore()]))]);
+if(all)add('Summary',[[L('البند','Item'),L('القيمة','Value')],[L('المشروع','Project'),p.name],[L('إعداد','Prepared by'),'Eng. Wael Oweis'],[L('السيجما قبل','Sigma before'),r2(sigmaBefore())],[L('السيجما بعد','Sigma after'),r2(sigmaAfter())],['DPMO '+L('قبل','before'),r2(dpmoBefore())],[L('اكتمال DMAIC %','DMAIC completeness %'),qScore()],[L('الأسباب الجذرية','Root causes'),rootCauses().join(' | ')],...signRows().map(r=>[r.role,(r.at?r.sn:r.name)+' — '+({pending:L('بانتظار التوقيع','Awaiting'),signed:L('موقّع','Signed'),stale:L('تغيّر بعد التوقيع','Changed after signing')})[signState(r)]+(r.at?' ['+r.h+']':'')])]);
+if(all||scope==='define'){add('Charter',[[L('البند','Item'),L('القيمة','Value')],[L('المشكلة','Problem'),d.problem],[L('الهدف','Goal'),d.goal],[L('داخل النطاق','In scope'),d.scopeIn],[L('خارج النطاق','Out of scope'),d.scopeOut],[L('المبرر','Business case'),d.business],[L('الراعي','Sponsor'),d.sponsor],[L('القائد','Leader'),d.leader],[L('البدء','Start'),d.start],[L('الانتهاء','End'),d.end],...d.team.filter(x=>x.n.trim()).map(x=>[L('عضو فريق','Team member'),x.n+(x.r?' — '+x.r:'')])]);
+add('VOC-CTQ',[['VOC',L('الاحتياج','Need'),'CTQ',L('القياس','Measure'),L('المستهدف','Target')],...d.voc.filter(x=>x.v.trim()||x.c.trim()).map(x=>[x.v,x.n,x.c,x.m,x.t])]);
+const sp=['s','i','p','o','c'].map(k=>lines(d.sipoc[k])),mx=Math.max(1,...sp.map(x=>x.length));add('SIPOC',[['Suppliers','Inputs','Process','Outputs','Customers'],...Array.from({length:mx},(_,k)=>sp.map(x=>x[k]||''))]);
+add('Stakeholders',[[L('الجهة','Stakeholder'),L('النفوذ','Influence'),L('الدعم','Support'),L('الاستراتيجية','Strategy')],...d.sh.filter(x=>x.n.trim()).map(x=>[x.n,x.inf,x.sup,shStrat(x)])]);
+add('Flowchart',[['#',L('النوع','Type'),L('الوصف','Description'),L('«لا» إلى','No →')],...d.flow.map((f,k)=>[k+1,f.k,f.t,f.no])]);}
+if(all||scope==='measure'||scope==='analyze'||scope==='control'){const rows=(n,r)=>{if(!r.ok)return[[n,L('لا بيانات صالحة','No valid data')]];const o=[[n,L('القيمة','Value')],[L('مستوى السيجما','Sigma level'),r2(r.sigma)],['DPMO',r2(r.dpmo)],['Yield %',r2(r.yield)],[L('الوحدات','Units'),r.units],[L('العيوب','Defects'),r.defects]];if(r.mode==='var'){o.push(['Mean',r2(r.st.mean)],['Std dev',+r.st.sd.toFixed(4)],['Cp',r2(r.cp)],['Cpk',r2(r.cpk)]);}return o;};
+if(all||scope==='measure'||scope==='analyze')add('Measure',rows(L('القياس','Measure'),beforeCalc()));if(all||scope==='control')add('After',rows(L('بعد التحسين','After'),afterCalc()));}
+if(all||scope==='analyze'){add('PESTEL',[[L('الفئة','Category'),L('العامل','Factor'),L('الوزن','Weight'),L('الشدة','Intensity'),L('الاتجاه','Direction'),L('الأثر %','Score %')],...a.pestel.filter(x=>x.t.trim()).map(x=>[cname(CAT,x.c),x.t,x.w,x.r,x.d>0?L('فرصة','Opportunity'):L('تهديد','Threat'),r2(x.w*x.r/25*100)])]);
+add('Porter',[[L('القوة','Force'),L('الوصف','Description'),L('الوزن','Weight'),L('الشدة','Intensity'),L('الأثر %','Score %')],...a.porter.map(x=>[cname(FRC,x.f),x.t,x.w,x.r,r2(x.w*x.r/25*100)])]);
+add('SWOT',[['Strengths','Weaknesses','Opportunities','Threats'],...(()=>{const l=['s','w','o','t'].map(k=>lines(a.swot[k])),m=Math.max(1,...l.map(x=>x.length));return Array.from({length:m},(_,k)=>l.map(x=>x[k]||''));})()]);
+add('Fishbone',[[L('الفئة','Category'),L('السبب','Cause'),L('التأثير','Impact')],...a.fish.filter(x=>x.t.trim()).map(x=>[cname(FSH,x.c),x.t,x.s])]);
+add('5 Whys',[[L('السؤال','Question'),L('الإجابة','Answer')],...a.whys.map((w,k)=>['Why '+(k+1),w]),[L('السبب الجذري','Root cause'),rootMain()]]);
+add('FMEA',[[L('نمط العطل','Failure mode'),L('الأثر','Effect'),L('السبب','Cause'),'S','O','D','RPN',L('الإجراء','Action')],...a.fmea.filter(x=>x.f.trim()).map(x=>[x.f,x.e,x.c,x.s,x.o,x.d,x.s*x.o*x.d,x.a])]);
+add('Sigma',[[L('البند','Item'),L('القيمة','Value')],[L('السيجما المعتمد','Effective sigma'),r2(sigmaBefore())],[L('تعديل يدوي','Manual override'),a.ovOn?'Yes':'No'],[L('السبب','Reason'),a.ovNote]]);}
+if(all||scope==='improve'){add('Plan',[[L('الإجراء','Action'),L('السبب الجذري','Root cause'),L('المسؤول','Owner'),L('الموعد','Due'),L('النتيجة المتوقعة','Expected')],...i.plan.filter(x=>x.a.trim()).map(x=>[x.a,x.rc,x.o,x.d,x.x])]);
+add('Do',[[L('النشاط','Activity'),L('النطاق','Scope'),L('المسؤول','Owner'),L('الحالة','Status'),L('ملاحظات','Notes')],...i.do.filter(x=>x.a.trim()).map(x=>[x.a,x.w,x.o,stL()[x.s],x.n])]);
+add('Check',[[L('المؤشر','Metric'),L('المستهدف','Target'),L('الفعلي','Actual'),L('النتيجة','Result')],...i.check.filter(x=>x.m.trim()).map(x=>[x.m,x.t,x.ac,resL()[x.res||'']])]);
+add('Act',[[L('القرار','Decision'),L('الإجراء','Action'),L('المسؤول','Owner')],...i.act.filter(x=>x.a.trim()).map(x=>[decL()[x.dec],x.a,x.o])]);}
+if(all||scope==='control'){add('KPIs',[[L('المؤشر','KPI'),L('التعريف','Definition'),L('المستهدف','Target'),L('التكرار','Frequency'),L('المسؤول','Owner')],...c.kpis.filter(x=>x.n.trim()).map(x=>[x.n,x.f,x.t,x.fr,x.o])]);
+add('SOP',[[L('البند','Item'),L('القيمة','Value')],[L('العنوان','Title'),c.sop.title],[L('الرمز','Code'),c.sop.code],[L('الإصدار','Version'),c.sop.ver],[L('الغرض','Purpose'),c.sop.purpose],[L('النطاق','Scope'),c.sop.scope],[L('المسؤوليات','Responsibilities'),c.sop.resp],...c.sop.steps.filter(x=>x.s.trim()).map((x,k)=>[L('خطوة ','Step ')+(k+1),x.s+(x.r?' — '+x.r:'')+(x.rec?' ['+x.rec+']':'')])]);
+const f=fin();if(f)add('COPQ',[[L('البند','Item'),L('القيمة','Value')],[L('COPQ قبل','COPQ before'),r2(f.copqB)],[L('COPQ بعد','COPQ after'),r2(f.copqA)],[L('الوفر','Saving'),r2(f.save)]]);}
+if(!S.length)add('Info',[[L('لا توجد بيانات لهذه الصفحة','No data on this page')]]);return S;}
+async function exportXls(scope){const sh=sheets(scope),nm=fname(P().name)+(scope==='all'?'':'_'+scope);
+if(window.XLSX){try{const wb=XLSX.utils.book_new();sh.forEach(([n,a])=>{const ws=XLSX.utils.aoa_to_sheet(a);ws['!cols']=(a[0]||[]).map((_,c)=>({wch:Math.min(60,Math.max(12,...a.map(r=>String(r[c]==null?'':r[c]).length)))}));XLSX.utils.book_append_sheet(wb,ws,n.replace(/[\\\/?*\[\]:]/g,'').slice(0,31));});if(lang==='ar')wb.Workbook={Views:[{RTL:true}]};saveFile(nm+'.xlsx',XLSX.write(wb,{bookType:'xlsx',type:'array'}));return;}catch(e){console.error(e);}}
+const csv=sh.map(([n,a])=>n+'\n'+a.map(r=>r.map(c=>'"'+String(c==null?'':c).replace(/"/g,'""')+'"').join(',')).join('\n')).join('\n\n');saveFile(nm+'.csv','\ufeff'+csv,'text/csv');}
+/* ===== init ===== */
+loadDB();initDL();
+if(!ORDER.includes(DB.page))DB.page='registry';
+renderAll();
+})();
+</script>
+</body>
+</html>

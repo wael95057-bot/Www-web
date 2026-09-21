@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منظومة إدارة التغيير المؤسسي | Eng. Wael Oweis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="css">
+:root{--ink:#1b2b3a;--ink-2:#273d52;--paper:#f2f5f6;--card:#fff;--line:#c7d0d6;--soft:#e6ebee;--muted:#5b6b78;--teal:#0e7c7b;--teal-d:#0a5f5e;--amber:#b9770e;--red:#b23a3a;--green:#2f7d4f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Arabic","IBM Plex Sans","Segoe UI",Tahoma,Arial,sans-serif;line-height:1.65;font-size:16px}
+button,input,select,textarea{font-family:inherit}
+.app{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+.side{background:var(--ink);color:#e8eef2;display:flex;flex-direction:column;padding:22px 0 16px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{padding:0 20px 18px;border-bottom:1px solid #ffffff24}
+.brand h1{font-size:1.05rem;margin:12px 0 8px;line-height:1.45;font-weight:600}
+.byline{font-size:.82rem;color:#a9b8c4}
+.byline b{display:block;color:#fff;font-size:1.05rem;font-weight:600;margin-top:1px}
+.nav{padding:12px 0;flex:1}
+.nav button{display:block;width:100%;text-align:start;background:none;border:0;color:#cfdae2;padding:10px 20px;font-size:.98rem;cursor:pointer;border-inline-start:3px solid transparent}
+.nav button:hover{background:#ffffff12}
+.nav button.on{background:#ffffff16;color:#fff;font-weight:600;border-inline-start-color:#3ec1bf}
+.sidefoot{padding:12px 20px 0;border-top:1px solid #ffffff24;display:grid;gap:8px}
+.sidefoot p{font-size:.76rem;color:#a9b8c4;margin:4px 0 0;line-height:1.5}
+.btn{border:1px solid var(--ink);background:#fff;color:var(--ink);padding:7px 14px;border-radius:3px;cursor:pointer;font-size:.95rem}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-d)}
+.btn.danger{color:var(--red);border-color:var(--red)}
+.btn.sm{padding:2px 10px;font-size:.84rem}
+.btn.ghost{background:transparent;color:#e8eef2;border-color:#ffffff55}
+.btn.ghost:hover{background:#ffffff18}
+:focus-visible{outline:2px solid #2aa7a5;outline-offset:2px}
+.main{padding:0 28px 48px;min-width:0}
+.tb,.pb{display:grid;grid-template-columns:2fr 1.4fr 1fr 1.2fr;border:1.5px solid var(--ink);background:#fff;margin:22px 0 26px}
+.tb>div,.pb>div{padding:7px 12px;border-inline-start:1px solid var(--ink)}
+.tb>div:first-child{border-inline-start:0}
+.tb small,.pb small{display:block;color:var(--muted);font-size:.76rem;line-height:1.4}
+.tb b,.pb b{font-weight:600}
+.tb select{border:0;background:transparent;font-weight:600;font-size:1rem;width:100%;color:var(--ink);padding:0}
+.pb{display:none}
+.pb>.ttl{grid-column:1/-1;border:0;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--ink);color:#fff;padding:9px 14px}
+.pb>.ttl b{font-size:1.05rem}
+.pb>div:nth-child(2){border-inline-start:0}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.pagehead h1{font-size:1.7rem;margin:0;line-height:1.3}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.lead{color:var(--muted);max-width:72ch;margin:6px 0 20px}
+.pf{margin-top:36px;padding-top:10px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted);text-align:center}
+.panel{background:#fff;border:1px solid var(--line);padding:18px 20px;margin-bottom:18px;border-radius:3px}
+.panel h2{font-size:1.1rem;margin:0 0 12px}
+.cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px;align-items:start}
+.cols.even{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--line);padding:10px 14px;border-radius:3px}
+.stat b{display:block;font-size:1.55rem;line-height:1.3}
+.stat span{color:var(--muted);font-size:.85rem}
+.hint{color:var(--muted);font-size:.85rem}
+.addrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end;background:#fff;border:1px solid var(--line);padding:14px;margin-bottom:16px;border-radius:3px}
+.fld span{display:block;font-size:.82rem;color:var(--muted);margin-bottom:3px}
+.fld.wide{grid-column:1/-1}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;font-size:.95rem;padding:6px 8px;border:1px solid var(--line);border-radius:3px;background:#fff;color:var(--ink)}
+textarea{resize:vertical;line-height:1.55}
+input[type=range]{width:100%;accent-color:var(--teal)}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--teal);vertical-align:middle}
+.tw{overflow-x:auto;background:#fff;border:1px solid var(--line);margin-bottom:18px;border-radius:3px}
+table{border-collapse:collapse;width:100%}
+th{background:var(--ink);color:#fff;text-align:start;padding:8px 10px;font-weight:500;font-size:.88rem;white-space:nowrap}
+td{padding:4px 6px;border-top:1px solid var(--soft);vertical-align:middle}
+td input,td select{border-color:transparent;background:transparent;min-width:90px}
+td input[type=text]{min-width:150px}
+td input:hover,td select:hover,td input:focus,td select:focus{border-color:var(--line);background:#fff}
+td.nw{white-space:nowrap}
+tr.cur td{background:#e5f2f1}
+tr.empty td{padding:22px;text-align:center;color:var(--muted)}
+.badge{display:inline-block;padding:1px 10px;border-radius:10px;font-size:.8rem;font-weight:600;color:#fff;white-space:nowrap}
+.q{margin-bottom:16px}
+.q label{display:flex;justify-content:space-between;gap:12px}
+.q output{font-weight:700;min-width:2.6ch;text-align:end}
+.result{border:1.5px solid var(--ink);background:#fff;padding:16px 20px;margin-bottom:18px}
+.big{font-size:3rem;font-weight:700;line-height:1.1}
+.bar{height:10px;background:var(--soft);border-radius:2px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%}
+.verdict{margin:8px 0 0;font-weight:500}
+.mini{display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:4px 12px;align-items:center;margin-bottom:8px;font-size:.9rem}
+.mini .bar{grid-column:1/-1;margin:0}
+.krow{display:grid;grid-template-columns:34px minmax(0,2fr) minmax(0,2fr);gap:14px;padding:12px 0;border-top:1px solid var(--soft);align-items:start}
+.krow:first-of-type{border-top:0}
+.kn{width:32px;height:32px;border:1.5px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-weight:600}
+.krow.done .kn{background:var(--teal);border-color:var(--teal);color:#fff}
+.chk{display:flex;gap:8px;align-items:center;cursor:pointer}
+.heat{width:auto;margin:6px 0}
+.heat th{background:transparent;color:var(--muted);text-align:center;padding:4px 8px;font-weight:600}
+.hc{width:58px;height:46px;text-align:center;font-weight:700;border:2px solid #fff!important;padding:0}
+.hc.low{background:#cfe8d6}.hc.mod{background:#f4e2a8}.hc.high{background:#f0b98a}.hc.crit{background:#e39088}
+.rec{background:#fff;border:1px solid var(--line);padding:12px 16px;margin-bottom:10px;display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:14px;border-radius:3px}
+.rec .ref{font-weight:600;color:var(--teal-d)}
+.rec p{white-space:pre-wrap;margin:6px 0 0}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.st{white-space:pre-wrap}
+.tplgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.tplgrid .panel{margin:0}
+ul.recs{margin:0;padding-inline-start:20px}
+ul.recs li{margin-bottom:6px}
+svg text{font-family:inherit}
+.toast{position:fixed;inset-inline-start:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 18px;border-radius:3px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+.toast.show{opacity:1}
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}
+ .side{position:static;height:auto}
+ .nav{display:flex;flex-wrap:wrap;padding:8px 12px}
+ .nav button{width:auto;border-inline-start:0;border-bottom:3px solid transparent;padding:8px 12px}
+ .nav button.on{border-bottom-color:#3ec1bf}
+ .main{padding:0 14px 36px}
+ .tb,.pb{grid-template-columns:1fr 1fr}
+ .cols,.cols.even,.filters{grid-template-columns:1fr}
+ .krow{grid-template-columns:34px minmax(0,1fr)}
+ .krow>div:last-child{grid-column:1/-1}
+ .rec{grid-template-columns:1fr}
+}
+@page{size:A4;margin:13mm}
+@media print{
+ body{background:#fff;font-size:12px}
+ .side,.tb,.no-print,.toast{display:none!important}
+ .app{display:block}.main{padding:0}
+ .pb{display:grid!important;margin-top:0}
+ .panel,.stat,.rec,.result,tr,.krow{break-inside:avoid}
+ .tw{overflow:visible}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<noscript>يتطلب هذا التطبيق تفعيل JavaScript. / This app requires JavaScript.</noscript>
+<script>
+(function(){
+'use strict';
+var KEY='wo_change_mgmt_v1';
+
+/* ---------------------------------------------------------
+   الترجمة | Translations
+--------------------------------------------------------- */
+var I={
+ar:{
+ app_title:'منظومة إدارة التغيير المؤسسي',byline:'تطوير وإشراف',owner:'المهندس وائل عويس',lang_btn:'English',nav_label:'الصفحات',
+ nav_registry:'سجل المشاريع',nav_readiness:'تقييم الجاهزية',nav_adkar:'متابعة ADKAR',nav_kotter:'خريطة كوتر',nav_champions:'سفراء التغيير',nav_risks:'مخاطر المقاومة',nav_archive:'الأرشيف والتوثيق',nav_report:'التقرير التنفيذي',
+ tb_project:'المشروع',tb_sup:'الإشراف',tb_date:'التاريخ',tb_page:'الصفحة',
+ print:'طباعة',save_page:'حفظ الصفحة (HTML)',export:'تصدير البيانات',import:'استيراد البيانات',
+ note_backup:'التصدير يشمل بيانات المشاريع والسجلات. أما المرفقات فتبقى محفوظة في هذا المتصفح فقط.',
+ add:'إضافة',del:'حذف',open:'فتح',current:'الحالي',confirm_del:'هل تريد الحذف نهائياً؟',empty:'لا توجد بيانات بعد. أضف أول سجل من النموذج أعلاه.',
+ toast_added:'تمت الإضافة',toast_imp_ok:'تم استيراد البيانات',toast_imp_bad:'الملف غير صالح',toast_last:'لا يمكن حذف المشروع الأخير',toast_file:'تم حفظ الملف',toast_sum:'تم توليد الملخص',
+ footer:'أُعدّ هذا المستند من منظومة إدارة التغيير المؤسسي بإشراف المهندس وائل عويس',
+ lead_registry:'سجّل مشاريع التغيير في المؤسسة وانتقل بينها من شريط المشروع أعلاه أو بزر «فتح». لكل مشروع مؤشراته ومخاطره وأرشيفه المستقل.',
+ lead_readiness:'قيّم استعداد القطاع للتغيير قبل التطبيق. حرّك المؤشرات ويُحسب المؤشر تلقائياً.',
+ lead_adkar:'تابع تقدم الأفراد عبر مراحل ADKAR الخمس وحدّد أين يتعثر التغيير.',
+ lead_kotter:'علّم الخطوات المنجزة ودوّن ما تم في كل خطوة، وسجّل النجاحات السريعة أسفلها.',
+ lead_champions:'سجّل سفراء التغيير في كل قطاع وتابع أنشطتهم وأثرهم.',
+ lead_risks:'سجّل مخاطر المقاومة البشرية مع خطة معالجة ومسؤول لكل منها. تعرض الخريطة المخاطر المفتوحة فقط.',
+ lead_archive:'دوّن المحاضر والقرارات والدروس المستفادة وأرفق الوثائق. يأخذ كل سجل رقماً مرجعياً ثابتاً.',
+ lead_report:'ملخص موحّد لما سُجّل في المشروع، جاهز للطباعة أو الحفظ.',
+ p_name:'اسم المشروع',p_dept:'القطاع المستهدف',p_mgr:'مدير التغيير',p_sponsor:'الراعي',p_start:'تاريخ البدء',p_status:'الحالة',p_ready:'الجاهزية',p_kotter:'كوتر',
+ st_planning:'التخطيط',st_active:'قيد التنفيذ',st_hold:'متوقف مؤقتاً',st_done:'مكتمل',
+ rq1:'مستوى الوعي بأهمية التغيير',rq2:'دعم القيادة والمديرين',rq3:'تخوف الموظفين من التقنية أو فقدان الصلاحيات',rq4:'جاهزية المهارات الحالية',rq5:'مرونة الثقافة التنظيمية',
+ rd_fear_note:'الدرجة الأعلى تعني تخوفاً أكبر، وتُحسب معكوسة في المؤشر.',rd_index:'مؤشر الجاهزية',rd_contrib:'مساهمة كل محور في المؤشر',
+ rdb_high:'جاهزية عالية',rdb_mid:'جاهزية متوسطة',rdb_low:'جاهزية منخفضة',
+ rd_high:'يمكن بدء التطبيق مع متابعة دورية.',rd_mid:'يلزم رفع الوعي والحد من التخوفات قبل التطبيق.',rd_low:'مقاومة مرتفعة متوقعة. أشرك القيادات وأعد التواصل قبل البدء.',
+ ad_A:'الوعي',ad_D:'الرغبة',ad_K:'المعرفة',ad_Ab:'القدرة',ad_R:'التعزيز',
+ ad_thr:'حد التنبيه 50%',ad_chart:'تقدم مراحل ADKAR',ad_update:'تحديث النسب',ad_barrier:'نقطة التعثر',ad_avg:'المتوسط العام',
+ ad_bar_txt:'أول مرحلة دون الحد: {s} ({v}%).',ad_none:'لا توجد مرحلة دون الحد.',
+ ad_rec_A:'نفّذ حملة تواصل توضّح سبب التغيير ولماذا الآن، عبر المديرين المباشرين.',
+ ad_rec_D:'عالج دوافع المقاومة مثل الأمان الوظيفي والفائدة الشخصية، وأشرك سفراء التغيير في الحوار.',
+ ad_rec_K:'صمّم برامج تدريب موجّهة لكل فئة وأتح أدلة استخدام سريعة.',
+ ad_rec_Ab:'وفّر ورش تطبيق عملي وفترة تجريبية آمنة ودعماً فنياً ميدانياً.',
+ ad_rec_R:'ثبّت التغيير بالتقدير والمتابعة وتحديث الإجراءات والوصف الوظيفي.',
+ ad_ok_rec:'واصل التعزيز ومتابعة المؤشرات.',
+ ks1:'خلق الإحساس بالإلحاح',kh1:'اعرض للمعنيين سبب ضرورة التغيير الآن.',
+ ks2:'تشكيل التحالف القيادي',kh2:'اختر قادة مؤثرين من مختلف القطاعات.',
+ ks3:'تطوير الرؤية والاستراتيجية',kh3:'صِف الوضع بعد التغيير وطريق الوصول إليه.',
+ ks4:'نشر الرؤية',kh4:'كرّر الرسالة عبر قنوات متعددة وبقدوة القيادة.',
+ ks5:'إزالة العوائق والتمكين',kh5:'عالج الإجراءات والأنظمة التي تعيق التطبيق.',
+ ks6:'تحقيق نجاحات سريعة',kh6:'خطط لنتائج مبكرة ظاهرة واحتفِ بها.',
+ ks7:'البناء على ما تحقق',kh7:'استثمر الزخم في معالجة تغييرات أكبر.',
+ ks8:'تثبيت التغيير في الثقافة',kh8:'اربط السلوك الجديد بالنجاح وحدّث القيم والإجراءات.',
+ k_note:'ملاحظات الخطوة',k_date:'تاريخ الإنجاز',k_prog:'أُنجزت {n} من 8 خطوات ({p}%)',
+ w_title:'سجل النجاحات السريعة',w_desc:'وصف النجاح',w_impact:'الأثر (وقت / تكلفة / جودة)',w_date:'التاريخ',
+ c_name:'اسم السفير',c_dept:'الإدارة',c_acts:'الأنشطة المنجزة',c_impact:'مستوى الأثر',c_note:'ملاحظات',c_count:'عدد السفراء',c_total:'إجمالي الأنشطة',c_depts:'الإدارات المغطاة',
+ lv_high:'مرتفع',lv_med:'متوسط',lv_low:'منخفض',
+ r_desc:'وصف المخاطرة',r_type:'نوع المقاومة',r_dept:'الإدارة',r_p:'الاحتمالية (1-5)',r_i:'الأثر (1-5)',r_score:'الدرجة',r_mit:'خطة المعالجة',r_owner:'المسؤول',r_status:'الحالة',
+ rt_job:'الأمان الوظيفي',rt_tech:'صعوبة التقنية',rt_skill:'نقص المهارات',rt_culture:'الثقافة التنظيمية',rt_lead:'ضعف دعم القيادة',rt_other:'أخرى',
+ rs_open:'مفتوحة',rs_mit:'قيد المعالجة',rs_closed:'مغلقة',
+ b_low:'منخفضة',b_mod:'متوسطة',b_high:'عالية',b_crit:'حرجة',
+ heat_title:'خريطة حرارة المخاطر',heat_hint:'الصفوف: الأثر (5 في الأعلى). الأعمدة: الاحتمالية. الرقم هو عدد المخاطر المفتوحة.',r_open:'مخاطر مفتوحة',
+ at_doc:'وثيقة',at_minutes:'محضر اجتماع',at_decision:'قرار',at_note:'ملاحظة',at_lesson:'درس مستفاد',at_corr:'مراسلة',at_report:'تقرير',
+ a_form:'تسجيل جديد',a_type:'النوع',a_title:'العنوان',a_date:'التاريخ',a_author:'المدوِّن',a_notes:'التفاصيل والتدوين',a_file:'المرفق (اختياري)',a_save:'حفظ في الأرشيف',
+ a_search:'بحث في العنوان والتفاصيل',a_scope:'النطاق',a_cur:'المشروع الحالي',a_all:'كل المشاريع',a_alltypes:'كل الأنواع',a_dl:'تحميل',a_none:'لا توجد سجلات مطابقة. أضف أول تدوين من النموذج أعلاه.',
+ a_big:'حجم الملف أكبر من 25 ميجابايت.',a_nofile:'تعذر حفظ المرفق في هذا المتصفح. حُفظ السجل بدونه.',a_attach:'المرفق',a_by:'دوّنه',a_nofile2:'تعذر فتح المرفق.',
+ rp_info:'بيانات المشروع',rp_sum:'الملخص التنفيذي',rp_gen:'توليد ملخص تلقائي',rp_recs:'التوصيات',rp_top:'أعلى المخاطر المفتوحة',rp_arch:'آخر سجلات الأرشيف',rp_indic:'المؤشرات',
+ rp_champs:'سفراء التغيير',rp_wins:'نجاحات سريعة',rp_kotter:'خطوات كوتر',rp_archc:'سجلات الأرشيف',
+ sum_tpl:'يتناول هذا التقرير مشروع «{name}» في {dept} بإشراف {mgr}. بلغ مؤشر الجاهزية {score}% ({band}). أعلى مراحل ADKAR إنجازاً هي {max} وأدناها {min}. أُنجزت {k} من 8 خطوات في نموذج كوتر، ويضم المشروع {c} من سفراء التغيير و{r} مخاطر مفتوحة و{a} سجلاً في الأرشيف.',
+ rec_low:'أشرك القيادات وأعد التواصل قبل بدء التطبيق لخفض المقاومة المتوقعة.',rec_mid:'ركّز على رفع الوعي ومعالجة التخوفات قبل التطبيق.',
+ rec_kotter:'الخطوة التالية في نموذج كوتر: {step}.',rec_champ0:'لا يوجد سفراء تغيير مسجلون. رشّح سفيراً على الأقل في كل قطاع مستهدف.',
+ rec_risk:'توجد {n} من المخاطر المفتوحة العالية أو الحرجة وتحتاج خطة معالجة ومسؤولاً.',rec_wins0:'لم تُسجّل نجاحات سريعة بعد. خطط لنتيجة مبكرة ظاهرة.',rec_ok:'لا توجد توصيات عاجلة. واصل المتابعة.',
+ nav_raci:'مصفوفة RACI',nav_roi:'العائد وتكلفة التأخير',
+ lead_raci:'وزّع أدوار أنشطة التغيير بين فريق التغيير والموارد البشرية ومديري القطاعات والإدارة العليا.',
+ lead_roi:'قدّر قيمة التبني وتكلفة التأخير، وحاكِ أثر تأخر القطاعات على الجدول الكلي.',
+ ro1:'فريق إدارة التغيير',ro2:'الموارد البشرية',ro3:'مديرو القطاعات',ro4:'الإدارة العليا',
+ raci_act:'نشاط التغيير',raci_check:'التحقق',raci_ok:'سليم',raci_bad:'يحتاج مراجعة',raci_seed:'تحميل الأنشطة القياسية',
+ raci_legend:'R منفّذ (Responsible)، A محاسِب (Accountable)، A/R محاسِب ومنفّذ معاً، C مُستشار (Consulted)، I مُبلَّغ (Informed). لكل نشاط محاسِب واحد فقط (A) ومنفّذ واحد على الأقل (R).',
+ sa1:'إجراء تقييم الجاهزية والتحليل',sa2:'صياغة رسائل التوعية وإرسالها',sa3:'تنظيم الدورات التدريبية وتنسيقها',sa4:'إزالة عقبات العمل الميدانية',sa5:'تحديث مؤشرات الأداء والوصف الوظيفي',
+ roi_inputs:'المدخلات',roi_cur:'العملة / الوحدة',roi_benefit:'العائد الشهري عند التبني الكامل',roi_cost:'تكلفة برنامج التغيير',roi_n:'أفق الحساب (شهر)',roi_a:'نسبة التبني الحالية %',roi_t:'نسبة التبني المستهدفة %',roi_d:'مدة التأخير (شهر)',
+ roi_lost:'قيمة شهرية مفقودة بسبب فجوة التبني',roi_cod:'تكلفة التأخير',roi_scen:'مقارنة السيناريوهات',roi_ontime:'بدون تأخير',roi_delayed:'مع التأخير',roi_tb:'إجمالي العائد',roi_net:'الصافي بعد التكلفة',roi_roi:'العائد على الاستثمار',roi_pay:'فترة الاسترداد (شهر)',roi_note:'الأرقام تقديرية وتعتمد على مدخلاتك.',
+ sim_title:'محاكاة تأخير القطاعات',sim_mode:'نمط التنفيذ',sim_par:'متوازٍ (القطاعات تعمل معاً)',sim_seq:'متتابع (قطاع بعد قطاع)',sim_dept:'القطاع',sim_plan:'المدة المخططة (أسبوع)',sim_delay:'التأخير المتوقع (أسبوع)',sim_note:'ملاحظات',
+ sim_base:'المدة المخططة الكلية',sim_res:'المدة بعد التأخير',sim_slip:'الانزلاق',sim_crit:'القطاع الحرج',wk:'أسبوع',rp_roi:'العائد والتأخير',
+ rec_delay:'يُتوقع انزلاق الجدول {w} أسبوعاً بسبب قطاع {d}. عالج معوقاته أولاً.',rec_raci:'بعض أنشطة مصفوفة RACI تفتقر إلى محاسِب واحد أو إلى منفّذ.',
+ nav_comms:'التواصل والتدريب',nav_pulse:'استبيانات النبض',
+ lead_comms:'خطّط رسائل التوعية لكل فئة وتابع إتمام برامج التدريب في كل قطاع.',
+ lead_pulse:'سجّل نتائج استبيانات النبض الدورية وتابع اتجاه رضا الفريق عن التغيير.',
+ cm_title:'مصفوفة التواصل',cm_aud:'الفئة المستهدفة',cm_msg:'الرسالة',cm_ch:'القناة',cm_date:'الموعد',cm_owner:'المسؤول',cm_status:'الحالة',
+ ch_email:'بريد إلكتروني',ch_workshop:'ورشة عمل',ch_video:'فيديو توعوي',ch_meeting:'اجتماع',ch_chat:'رسالة فورية',cs_plan:'مخطط',cs_done:'نُفّذ',
+ tr_title:'متابعة التدريب',tr_course:'البرنامج التدريبي',tr_dept:'القطاع',tr_enr:'المسجلون',tr_done:'أتمّوا التدريب',tr_date:'التاريخ',tr_pct:'نسبة الإتمام',
+ ct_msgs:'رسائل مخططة',ct_sent:'رسائل نُفّذت',ct_train:'إتمام التدريب الكلي',
+ pl_date:'تاريخ الجولة',pl_n:'عدد المشاركين',pl_q1:'أفهم سبب التغيير (1-5)',pl_q2:'أثق بقدرتي على التطبيق (1-5)',pl_q3:'أشعر بدعم مديري (1-5)',
+ pl_pos:'تعليقات إيجابية',pl_neu:'تعليقات محايدة',pl_neg:'تعليقات قلِقة أو رافضة',pl_note:'ملاحظات',pl_score:'المتوسط',
+ pl_rounds:'عدد الجولات',pl_latest:'آخر متوسط',pl_change:'التغير عن السابقة',pl_negshare:'نسبة التعليقات القلِقة',pl_trend:'اتجاه المتوسط عبر الجولات',pl_thr:'حد التنبيه 3',pl_empty_chart:'أضف جولة واحدة على الأقل لعرض الاتجاه.',
+ pl_alert_low:'المتوسط الأخير دون 3. راجع أسباب القلق مع سفراء التغيير.',pl_alert_drop:'انخفض المتوسط {d} عن الجولة السابقة.',
+ rp_engage:'التفاعل والتدريب',rec_train:'إتمام التدريب {p}% فقط. أضف جلسات دعم للقطاعات المتأخرة.',rec_comms0:'لا توجد خطة تواصل مسجلة. حدّد الرسائل والقنوات لكل فئة.',rec_pulse:'استبيان النبض يحتاج متابعة: {m}',
+ nav_tpl:'بنك القوالب',lead_tpl:'قوالب جاهزة للتنزيل بصيغة Word أو Excel، بترويسة المشروع واسم المشرف، لتعدّلها وتوزّعها.',
+ tp_fill:'تعبئة القوالب الجدولية ببيانات المشروع الحالي',tp_word:'تنزيل Word',tp_csv:'تنزيل Excel (CSV)',
+ tp_comm:'قالب خطة التواصل',tp_comm_d:'الفئات والرسائل والقنوات والمواعيد والمسؤولون.',
+ tp_train:'قالب خطة التدريب',tp_train_d:'البرامج والقطاعات وأعداد المسجلين ومن أتمّوا التدريب.',
+ tp_risk:'قالب سجل مخاطر المقاومة',tp_risk_d:'وصف المخاطرة واحتمالها وأثرها وخطة المعالجة والمسؤول.',
+ tp_survey:'نموذج استبيان النبض',tp_survey_d:'ثلاثة أسئلة بمقياس من 1 إلى 5 وسؤالان مفتوحان.',
+ tp_minutes:'نموذج محضر اجتماع التغيير',tp_minutes_d:'الحضور والقرارات والمهام والاجتماع القادم.',
+ tp_kickoff:'مخطط عرض إطلاق التغيير',tp_kickoff_d:'ثمانية عناوين لعرض الإطلاق مع توجيه لمحتوى كل شريحة.',
+ tp_s_intro:'شارك برأيك بصراحة. الاستبيان قصير ولا يستغرق أكثر من دقيقتين.',tp_s_scale:'المقياس: 1 لا أوافق إطلاقاً، 5 أوافق تماماً.',tp_s_dept:'القطاع (اختياري)',
+ tp_s_o1:'ما أكثر ما يقلقك بشأن التغيير؟',tp_s_o2:'ما الدعم الذي تحتاجه لتطبيقه بنجاح؟',
+ tp_m_title:'عنوان الاجتماع',tp_m_att:'الحضور',tp_m_agenda:'جدول الأعمال',tp_m_dec:'القرار',tp_m_act:'المهمة',tp_m_due:'الموعد النهائي',tp_m_next:'موعد الاجتماع القادم',tp_m_decs:'القرارات',tp_m_acts:'المهام المطلوبة',
+ tp_k1:'لماذا نتغير الآن: اعرض الضغوط والفرص وأثر عدم التغيير.',tp_k2:'الرؤية: صِف الوضع بعد التغيير بجملة واضحة.',tp_k3:'النطاق: من المتأثر وما الذي سيتغير وما الذي لن يتغير.',tp_k4:'الجدول الزمني: المراحل والمحطات الرئيسية.',
+ tp_k5:'ماذا يعني التغيير لكل فئة: أثره على العمل اليومي.',tp_k6:'الدعم والتدريب: البرامج والمواعيد ومن يساعد.',tp_k7:'سفراء التغيير: من هم وكيف يتواصل الزملاء معهم.',tp_k8:'قنوات الملاحظات: كيف تُسمع آراء الفريق ومتى.'
+},
+en:{
+ app_title:'Enterprise Change Management System',byline:'Developed & supervised by',owner:'Eng. Wael Oweis',lang_btn:'العربية',nav_label:'Pages',
+ nav_registry:'Project registry',nav_readiness:'Readiness assessment',nav_adkar:'ADKAR tracker',nav_kotter:'Kotter roadmap',nav_champions:'Change champions',nav_risks:'Resistance risks',nav_archive:'Archive & records',nav_report:'Executive report',
+ tb_project:'Project',tb_sup:'Supervisor',tb_date:'Date',tb_page:'Page',
+ print:'Print',save_page:'Save page (HTML)',export:'Export data',import:'Import data',
+ note_backup:'Export covers projects and records. Attachments stay stored in this browser only.',
+ add:'Add',del:'Delete',open:'Open',current:'Current',confirm_del:'Delete permanently?',empty:'No data yet. Add the first entry using the form above.',
+ toast_added:'Added',toast_imp_ok:'Data imported',toast_imp_bad:'Invalid file',toast_last:'The last project cannot be deleted',toast_file:'File saved',toast_sum:'Summary generated',
+ footer:'Prepared with the Enterprise Change Management System, supervised by Eng. Wael Oweis',
+ lead_registry:'Register the organization\'s change projects and switch between them from the project bar above or with Open. Each project keeps its own indicators, risks and archive.',
+ lead_readiness:'Assess how ready the department is before rollout. Move the sliders and the index updates automatically.',
+ lead_adkar:'Track how people progress through the five ADKAR stages and find where the change stalls.',
+ lead_kotter:'Tick the steps completed and note what was done in each. Log quick wins below.',
+ lead_champions:'Register change champions in each department and follow their activity and impact.',
+ lead_risks:'Record human resistance risks with a mitigation plan and an owner for each. The heatmap shows open risks only.',
+ lead_archive:'Record minutes, decisions and lessons learned, and attach documents. Each record gets a fixed reference number.',
+ lead_report:'A single summary of everything recorded for the project, ready to print or save.',
+ p_name:'Project name',p_dept:'Target department',p_mgr:'Change lead',p_sponsor:'Sponsor',p_start:'Start date',p_status:'Status',p_ready:'Readiness',p_kotter:'Kotter',
+ st_planning:'Planning',st_active:'In progress',st_hold:'On hold',st_done:'Completed',
+ rq1:'Awareness of why the change matters',rq2:'Leadership and manager support',rq3:'Staff fear of the technology or losing authority',rq4:'Readiness of current skills',rq5:'Flexibility of the organizational culture',
+ rd_fear_note:'A higher score means more fear and is inverted in the index.',rd_index:'Readiness index',rd_contrib:'Contribution of each factor',
+ rdb_high:'High readiness',rdb_mid:'Medium readiness',rdb_low:'Low readiness',
+ rd_high:'Rollout can start with regular follow-up.',rd_mid:'Raise awareness and reduce fears before rollout.',rd_low:'High resistance expected. Engage leaders and re-communicate before starting.',
+ ad_A:'Awareness',ad_D:'Desire',ad_K:'Knowledge',ad_Ab:'Ability',ad_R:'Reinforcement',
+ ad_thr:'Alert threshold 50%',ad_chart:'ADKAR stage progress',ad_update:'Update percentages',ad_barrier:'Barrier point',ad_avg:'Overall average',
+ ad_bar_txt:'First stage below the threshold: {s} ({v}%).',ad_none:'No stage is below the threshold.',
+ ad_rec_A:'Run a communication campaign explaining why the change is needed and why now, delivered through direct managers.',
+ ad_rec_D:'Address the drivers of resistance, such as job security and personal benefit, and involve change champions in the conversation.',
+ ad_rec_K:'Design targeted training for each group and provide quick-reference guides.',
+ ad_rec_Ab:'Provide hands-on workshops, a safe pilot period and on-site technical support.',
+ ad_rec_R:'Sustain the change with recognition, follow-up, and updated procedures and job descriptions.',
+ ad_ok_rec:'Keep reinforcing and monitoring the indicators.',
+ ks1:'Create urgency',kh1:'Show stakeholders why change is needed now.',
+ ks2:'Build the guiding coalition',kh2:'Bring together influential leaders from different areas.',
+ ks3:'Form the vision and strategy',kh3:'Describe the future state and the path to reach it.',
+ ks4:'Communicate the vision',kh4:'Repeat the message through many channels, led by example.',
+ ks5:'Remove barriers and empower action',kh5:'Fix the processes and systems that block adoption.',
+ ks6:'Generate short-term wins',kh6:'Plan visible early results and celebrate them.',
+ ks7:'Consolidate gains',kh7:'Use the momentum to tackle bigger changes.',
+ ks8:'Anchor the change in the culture',kh8:'Link the new behavior to success and update values and procedures.',
+ k_note:'Step notes',k_date:'Completed on',k_prog:'{n} of 8 steps completed ({p}%)',
+ w_title:'Quick wins log',w_desc:'Win description',w_impact:'Impact (time / cost / quality)',w_date:'Date',
+ c_name:'Champion name',c_dept:'Department',c_acts:'Activities done',c_impact:'Impact level',c_note:'Notes',c_count:'Champions',c_total:'Total activities',c_depts:'Departments covered',
+ lv_high:'High',lv_med:'Medium',lv_low:'Low',
+ r_desc:'Risk description',r_type:'Resistance type',r_dept:'Department',r_p:'Likelihood (1-5)',r_i:'Impact (1-5)',r_score:'Score',r_mit:'Mitigation plan',r_owner:'Owner',r_status:'Status',
+ rt_job:'Job security',rt_tech:'Technology difficulty',rt_skill:'Skills gap',rt_culture:'Organizational culture',rt_lead:'Weak leadership support',rt_other:'Other',
+ rs_open:'Open',rs_mit:'Mitigating',rs_closed:'Closed',
+ b_low:'Low',b_mod:'Moderate',b_high:'High',b_crit:'Critical',
+ heat_title:'Risk heatmap',heat_hint:'Rows: impact (5 at the top). Columns: likelihood. The number is the count of open risks.',r_open:'Open risks',
+ at_doc:'Document',at_minutes:'Meeting minutes',at_decision:'Decision',at_note:'Note',at_lesson:'Lesson learned',at_corr:'Correspondence',at_report:'Report',
+ a_form:'New record',a_type:'Type',a_title:'Title',a_date:'Date',a_author:'Recorded by',a_notes:'Details and notes',a_file:'Attachment (optional)',a_save:'Save to archive',
+ a_search:'Search title and details',a_scope:'Scope',a_cur:'Current project',a_all:'All projects',a_alltypes:'All types',a_dl:'Download',a_none:'No matching records. Add the first entry using the form above.',
+ a_big:'The file is larger than 25 MB.',a_nofile:'The attachment could not be stored in this browser. The record was saved without it.',a_attach:'Attachment',a_by:'Recorded by',a_nofile2:'The attachment could not be opened.',
+ rp_info:'Project details',rp_sum:'Executive summary',rp_gen:'Generate summary',rp_recs:'Recommendations',rp_top:'Top open risks',rp_arch:'Latest archive records',rp_indic:'Indicators',
+ rp_champs:'Change champions',rp_wins:'Quick wins',rp_kotter:'Kotter steps',rp_archc:'Archive records',
+ sum_tpl:'This report covers the project "{name}" in {dept}, supervised by {mgr}. The readiness index is {score}% ({band}). The strongest ADKAR stage is {max} and the weakest is {min}. {k} of 8 Kotter steps are complete, and the project has {c} change champions, {r} open risks and {a} archive records.',
+ rec_low:'Engage leaders and re-communicate before rollout to reduce the expected resistance.',rec_mid:'Focus on raising awareness and addressing fears before rollout.',
+ rec_kotter:'Next Kotter step: {step}.',rec_champ0:'No change champions are registered. Nominate at least one in each target department.',
+ rec_risk:'{n} open high or critical risks need a mitigation plan and an owner.',rec_wins0:'No quick wins recorded yet. Plan a visible early result.',rec_ok:'No urgent recommendations. Keep monitoring.',
+ nav_raci:'RACI matrix',nav_roi:'ROI & cost of delay',
+ lead_raci:'Assign change activities between the change team, HR, department managers and senior management.',
+ lead_roi:'Estimate the value of adoption and the cost of delay, and simulate how late departments move the overall schedule.',
+ ro1:'Change team',ro2:'HR',ro3:'Department managers',ro4:'Senior management',
+ raci_act:'Change activity',raci_check:'Check',raci_ok:'OK',raci_bad:'Needs review',raci_seed:'Load standard activities',
+ raci_legend:'R Responsible, A Accountable, A/R both, C Consulted, I Informed. Each activity needs exactly one Accountable (A) and at least one Responsible (R).',
+ sa1:'Run the readiness assessment and analysis',sa2:'Draft and send awareness messages',sa3:'Organize and coordinate training courses',sa4:'Remove field-level obstacles',sa5:'Update KPIs and job descriptions',
+ roi_inputs:'Inputs',roi_cur:'Currency / unit',roi_benefit:'Monthly benefit at full adoption',roi_cost:'Change program cost',roi_n:'Horizon (months)',roi_a:'Current adoption %',roi_t:'Target adoption %',roi_d:'Delay (months)',
+ roi_lost:'Monthly value lost to the adoption gap',roi_cod:'Cost of delay',roi_scen:'Scenario comparison',roi_ontime:'On time',roi_delayed:'With delay',roi_tb:'Total benefit',roi_net:'Net after cost',roi_roi:'ROI',roi_pay:'Payback (months)',roi_note:'Figures are estimates based on your inputs.',
+ sim_title:'Department delay simulation',sim_mode:'Execution mode',sim_par:'Parallel (departments work together)',sim_seq:'Sequential (one after another)',sim_dept:'Department',sim_plan:'Planned (weeks)',sim_delay:'Expected delay (weeks)',sim_note:'Notes',
+ sim_base:'Planned total',sim_res:'Total after delay',sim_slip:'Slippage',sim_crit:'Critical department',wk:'weeks',rp_roi:'ROI and delay',
+ rec_delay:'The schedule is expected to slip {w} weeks because of {d}. Address its barriers first.',rec_raci:'Some RACI activities lack a single Accountable or any Responsible.',
+ nav_comms:'Communication & training',nav_pulse:'Pulse surveys',
+ lead_comms:'Plan awareness messages for each audience and track training completion in each department.',
+ lead_pulse:'Record periodic pulse survey results and follow how the team feels about the change over time.',
+ cm_title:'Communication matrix',cm_aud:'Audience',cm_msg:'Message',cm_ch:'Channel',cm_date:'Date',cm_owner:'Owner',cm_status:'Status',
+ ch_email:'Email',ch_workshop:'Workshop',ch_video:'Awareness video',ch_meeting:'Meeting',ch_chat:'Instant message',cs_plan:'Planned',cs_done:'Done',
+ tr_title:'Training tracker',tr_course:'Training course',tr_dept:'Department',tr_enr:'Enrolled',tr_done:'Completed',tr_date:'Date',tr_pct:'Completion',
+ ct_msgs:'Messages planned',ct_sent:'Messages sent',ct_train:'Overall training completion',
+ pl_date:'Round date',pl_n:'Respondents',pl_q1:'I understand why we are changing (1-5)',pl_q2:'I am confident I can apply it (1-5)',pl_q3:'I feel supported by my manager (1-5)',
+ pl_pos:'Positive comments',pl_neu:'Neutral comments',pl_neg:'Concerned or resistant comments',pl_note:'Notes',pl_score:'Average',
+ pl_rounds:'Rounds',pl_latest:'Latest average',pl_change:'Change vs previous',pl_negshare:'Concerned comment share',pl_trend:'Average trend across rounds',pl_thr:'Alert level 3',pl_empty_chart:'Add at least one round to show the trend.',
+ pl_alert_low:'The latest average is below 3. Review the concerns with change champions.',pl_alert_drop:'The average dropped {d} since the previous round.',
+ rp_engage:'Engagement and training',rec_train:'Training completion is only {p}%. Add support sessions for lagging departments.',rec_comms0:'No communication plan recorded. Define messages and channels for each audience.',rec_pulse:'The pulse survey needs attention: {m}',
+ nav_tpl:'Template library',lead_tpl:'Ready-made templates to download as Word or Excel, with the project header and supervisor name, to edit and distribute.',
+ tp_fill:'Fill the table templates with the current project data',tp_word:'Download Word',tp_csv:'Download Excel (CSV)',
+ tp_comm:'Communication plan template',tp_comm_d:'Audiences, messages, channels, dates and owners.',
+ tp_train:'Training plan template',tp_train_d:'Courses, departments, enrolment and completion counts.',
+ tp_risk:'Resistance risk log template',tp_risk_d:'Risk description, likelihood, impact, mitigation and owner.',
+ tp_survey:'Pulse survey form',tp_survey_d:'Three 1-5 scale questions and two open questions.',
+ tp_minutes:'Change meeting minutes form',tp_minutes_d:'Attendees, decisions, actions and next meeting.',
+ tp_kickoff:'Change kickoff outline',tp_kickoff_d:'Eight slide headings for the kickoff, with guidance on each.',
+ tp_s_intro:'Please answer honestly. This survey takes about two minutes.',tp_s_scale:'Scale: 1 strongly disagree, 5 strongly agree.',tp_s_dept:'Department (optional)',
+ tp_s_o1:'What worries you most about the change?',tp_s_o2:'What support do you need to apply it successfully?',
+ tp_m_title:'Meeting title',tp_m_att:'Attendees',tp_m_agenda:'Agenda',tp_m_dec:'Decision',tp_m_act:'Action',tp_m_due:'Due date',tp_m_next:'Next meeting',tp_m_decs:'Decisions',tp_m_acts:'Action items',
+ tp_k1:'Why we are changing now: show the pressures, the opportunities and the cost of standing still.',tp_k2:'The vision: describe the future state in one clear sentence.',tp_k3:'Scope: who is affected, what will change and what will not.',tp_k4:'Timeline: phases and key milestones.',
+ tp_k5:'What it means for each group: the effect on daily work.',tp_k6:'Support and training: programs, dates and who helps.',tp_k7:'Change champions: who they are and how colleagues reach them.',tp_k8:'Feedback channels: how and when the team is heard.'
+}};
+
+/* ---------------------------------------------------------
+   الحالة | State
+--------------------------------------------------------- */
+var S=null,page='registry',LISTS={},mem={af:{q:'',type:'',scope:'cur'}};
+var NAV=['registry','readiness','adkar','kotter','champions','risks','raci','comms','pulse','roi','tpl','archive','report'];
+var AD=['A','D','K','Ab','R'];
+var BC={low:'#2f7d4f',mod:'#b9770e',high:'#c4622d',crit:'#a12d2d'};
+var $=function(s,r){return (r||document).querySelector(s);};
+var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);};
+var today=function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+function t(k,v){var s=(I[S.lang]&&I[S.lang][k]!==undefined)?I[S.lang][k]:(I.en[k]!==undefined?I.en[k]:k);if(v){Object.keys(v).forEach(function(x){s=s.split('{'+x+'}').join(v[x]);});}return s;}
+function lbl(x){return (typeof x==='string'&&I.en[x]!==undefined)?t(x):x;}
+
+function newProject(o){
+ var p={id:uid(),name:'',dept:'',manager:'',sponsor:'',start:today(),status:'planning',
+  rd:{q1:6,q2:6,q3:5,q4:5,q5:6},ad:{A:50,D:40,K:30,Ab:20,R:10},
+  kotter:[0,1,2,3,4,5,6,7].map(function(){return {done:false,note:'',date:''};}),
+  champions:[],risks:[],wins:[],summary:'',comms:[],training:[],pulse:[],raci:[],roi:{cur:'',benefit:0,cost:0,months:12,adopt:60,target:90,delay:0},depts:[],simMode:'par'};
+ for(var k in o){p[k]=o[k];}
+ return p;
+}
+function fixP(p){
+ if(!p.raci)p.raci=[];if(!p.comms)p.comms=[];if(!p.training)p.training=[];if(!p.pulse)p.pulse=[];if(!p.depts)p.depts=[];if(!p.simMode)p.simMode='par';
+ if(!p.roi)p.roi={cur:'',benefit:0,cost:0,months:12,adopt:60,target:90,delay:0};
+ if(!p.champions)p.champions=[];if(!p.risks)p.risks=[];if(!p.wins)p.wins=[];
+}
+function seed(){
+ var p=newProject({name:'مشروع التحول الرقمي والأتمتة',dept:'إدارة المشاريع',manager:'المهندس وائل عويس',status:'active',
+  rd:{q1:6,q2:8,q3:4,q4:5,q5:7},ad:{A:85,D:60,K:40,Ab:25,R:10}});
+ p.kotter.forEach(function(k,i){if(i<3){k.done=true;k.date=today();}});
+ return {lang:'ar',active:p.id,projects:[p],archive:[],seq:0};
+}
+function load(){
+ try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&Array.isArray(o.projects)&&o.projects.length){o.projects.forEach(fixP);o.archive=o.archive||[];o.seq=o.seq||0;o.lang=o.lang||'ar';return o;}}}catch(e){}
+ return seed();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function P(){return S.projects.filter(function(p){return p.id===S.active;})[0]||S.projects[0];}
+
+/* ---------------------------------------------------------
+   الحسابات | Calculations
+--------------------------------------------------------- */
+function rdScore(p){var q=p.rd;return Math.round(((q.q1+q.q2+(11-q.q3)+q.q4+q.q5)/50)*1000)/10;}
+function rdBand(s){return s>=75?'high':(s>=50?'mid':'low');}
+function rdColor(b){return b==='high'?'#2f7d4f':(b==='mid'?'#b9770e':'#a12d2d');}
+function kDone(p){return p.kotter.filter(function(k){return k.done;}).length;}
+function rBand(s){return s>=15?'crit':(s>=10?'high':(s>=5?'mod':'low'));}
+function openRisks(p){return p.risks.filter(function(r){return r.status!=='closed';});}
+function archCount(p){return S.archive.filter(function(a){return a.pid===p.id;}).length;}
+function fmtSize(n){return n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';}
+function badge(txt,color){return '<span class="badge" style="background:'+color+'">'+esc(txt)+'</span>';}
+
+/* ---------------------------------------------------------
+   تخزين المرفقات | Attachments (IndexedDB)
+--------------------------------------------------------- */
+var dbp=null;
+function db(){if(dbp)return dbp;dbp=new Promise(function(res,rej){try{var r=indexedDB.open('wo_change_files',1);r.onupgradeneeded=function(){r.result.createObjectStore('files');};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};}catch(e){rej(e);}});return dbp;}
+function fput(id,blob){return db().then(function(d){return new Promise(function(res,rej){var tx=d.transaction('files','readwrite');tx.objectStore('files').put(blob,id);tx.oncomplete=res;tx.onerror=function(){rej(tx.error);};});});}
+function fget(id){return db().then(function(d){return new Promise(function(res,rej){var q=d.transaction('files').objectStore('files').get(id);q.onsuccess=function(){res(q.result);};q.onerror=function(){rej(q.error);};});});}
+function fdel(id){return db().then(function(d){return new Promise(function(res){var tx=d.transaction('files','readwrite');tx.objectStore('files').delete(id);tx.oncomplete=res;tx.onerror=res;});}).catch(function(){});}
+
+/* ---------------------------------------------------------
+   عناصر الإدخال | Field helpers
+--------------------------------------------------------- */
+var OPT={
+ status:[['planning','st_planning'],['active','st_active'],['hold','st_hold'],['done','st_done']],
+ level:[['high','lv_high'],['med','lv_med'],['low','lv_low']],
+ rtype:[['job','rt_job'],['tech','rt_tech'],['skill','rt_skill'],['culture','rt_culture'],['lead','rt_lead'],['other','rt_other']],
+ rstat:[['open','rs_open'],['mit','rs_mit'],['closed','rs_closed']],
+ n5:[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']],
+ channel:[['email','ch_email'],['workshop','ch_workshop'],['video','ch_video'],['meeting','ch_meeting'],['chat','ch_chat']],
+ cstat:[['plan','cs_plan'],['done','cs_done']],
+ raci:[['','\u2014'],['R','R'],['A','A'],['AR','A/R'],['C','C'],['I','I']],
+ atype:[['doc','at_doc'],['minutes','at_minutes'],['decision','at_decision'],['note','at_note'],['lesson','at_lesson'],['corr','at_corr'],['report','at_report']]
+};
+function ctl(f,v,extra){
+ extra=extra||'';
+ if(f.type==='select'){return '<select '+extra+'>'+OPT[f.opt].map(function(o){return '<option value="'+o[0]+'"'+(String(o[0])===String(v)?' selected':'')+'>'+esc(lbl(o[1]))+'</option>';}).join('')+'</select>';}
+ if(f.type==='textarea'){return '<textarea rows="3" '+extra+'>'+esc(v)+'</textarea>';}
+ return '<input type="'+(f.type||'text')+'"'+(f.type==='number'?' min="0" step="'+(f.step||'any')+'"'+(f.max?' max="'+f.max+'"':''):'')+' value="'+esc(v)+'" '+extra+'>';
+}
+function listUI(cfg){
+ LISTS[cfg.key]=cfg;
+ var arr=cfg.arr();
+ var add='<form class="addrow no-print" data-add="'+cfg.key+'">'+cfg.fields.map(function(f){
+  var dv=f.type==='date'?today():(f.def!==undefined?f.def:(f.type==='select'?OPT[f.opt][0][0]:''));
+  return '<label class="fld"><span>'+esc(t(f.lab))+'</span>'+ctl(f,dv,'name="'+f.k+'"'+(f.req?' required':''))+'</label>';
+ }).join('')+'<button class="btn primary" type="submit">'+esc(t('add'))+'</button></form>';
+ var extra=cfg.extra||[];
+ var head=cfg.fields.map(function(f){return '<th>'+esc(t(f.lab))+'</th>';}).join('')+extra.map(function(e){return '<th>'+esc(t(e.lab))+'</th>';}).join('')+'<th class="no-print"></th>';
+ var cols=cfg.fields.length+extra.length+1;
+ var rows=arr.length?arr.map(function(row,i){
+  return '<tr class="'+(cfg.rowCls?cfg.rowCls(row):'')+'">'+cfg.fields.map(function(f){return '<td>'+ctl(f,row[f.k],'data-l="'+cfg.key+'" data-i="'+i+'" data-f="'+f.k+'" aria-label="'+esc(t(f.lab))+'"')+'</td>';}).join('')+
+   extra.map(function(e){return '<td class="nw">'+e.html(row)+'</td>';}).join('')+
+   '<td class="no-print nw">'+(cfg.actions?cfg.actions(row):'')+' <button class="btn sm danger" data-del="'+cfg.key+'" data-i="'+i+'">'+esc(t('del'))+'</button></td></tr>';
+ }).join(''):'<tr class="empty"><td colspan="'+cols+'">'+esc(t('empty'))+'</td></tr>';
+ return add+'<div class="tw"><table><thead><tr>'+head+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+/* ---------------------------------------------------------
+   الصفحات | Pages
+--------------------------------------------------------- */
+function lead(){return '<p class="lead">'+esc(t('lead_'+page))+'</p>';}
+
+function pRegistry(){
+ return lead()+listUI({key:'projects',arr:function(){return S.projects;},sync:true,
+  fields:[{k:'name',lab:'p_name',req:1},{k:'dept',lab:'p_dept'},{k:'manager',lab:'p_mgr'},{k:'sponsor',lab:'p_sponsor'},{k:'start',lab:'p_start',type:'date'},{k:'status',lab:'p_status',type:'select',opt:'status'}],
+  extra:[{lab:'p_ready',html:function(r){return rdScore(r)+'%';}},{lab:'p_kotter',html:function(r){return kDone(r)+'/8';}}],
+  rowCls:function(r){return r.id===S.active?'cur':'';},
+  actions:function(r){return r.id===S.active?badge(t('current'),'#0e7c7b'):'<button class="btn sm" data-openp="'+r.id+'">'+esc(t('open'))+'</button>';}
+ });
+}
+
+var RQ=['q1','q2','q3','q4','q5'];
+function rdResult(p){
+ var s=rdScore(p),b=rdBand(s),c=rdColor(b);
+ var contrib=RQ.map(function(k,i){
+  var v=k==='q3'?11-p.rd[k]:p.rd[k];
+  return '<div class="mini"><span>'+esc(t('rq'+(i+1)))+'</span><b>'+v+'/10</b><div class="bar"><i style="width:'+(v*10)+'%;background:'+c+'"></i></div></div>';
+ }).join('');
+ return '<div class="result"><div class="hint">'+esc(t('rd_index'))+'</div><div class="big">'+s+'%</div><div class="bar"><i style="width:'+s+'%;background:'+c+'"></i></div>'+
+  '<p class="verdict" style="color:'+c+'">'+esc(t('rdb_'+b))+'</p><p class="hint" style="margin:2px 0 0">'+esc(t('rd_'+b))+'</p></div>'+
+  '<div class="panel"><h2>'+esc(t('rd_contrib'))+'</h2>'+contrib+'</div>';
+}
+function pReadiness(){
+ var p=P();
+ var sl=RQ.map(function(k,i){return '<div class="q"><label><span>'+esc(t('rq'+(i+1)))+'</span><output id="o_'+k+'">'+p.rd[k]+'</output></label><input type="range" min="1" max="10" step="1" value="'+p.rd[k]+'" data-q="'+k+'" aria-label="'+esc(t('rq'+(i+1)))+'">'+(k==='q3'?'<div class="hint">'+esc(t('rd_fear_note'))+'</div>':'')+'</div>';}).join('');
+ return lead()+'<div class="cols"><div class="panel">'+sl+'</div><div id="rd-result">'+rdResult(p)+'</div></div>';
+}
+
+function adChart(p){
+ var order=S.lang==='ar'?AD.slice().reverse():AD.slice();
+ var W=620,H=290,L=44,B=52,T=22,pw=W-L-14,ph=H-B-T,bw=pw/5;
+ var g='';
+ [0,25,50,75,100].forEach(function(v){var y=T+ph-ph*v/100;g+='<line x1="'+L+'" x2="'+(W-14)+'" y1="'+y+'" y2="'+y+'" stroke="#d8dfe3"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#5b6b78">'+v+'</text>';});
+ var bars=order.map(function(k,i){
+  var v=p.ad[k],h=ph*v/100,x=L+i*bw+bw*.2,w=bw*.6,y=T+ph-h,col=v<50?'#b23a3a':'#0e7c7b';
+  return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+col+'"/><text x="'+(x+w/2)+'" y="'+(y-6)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#1b2b3a">'+v+'%</text><text x="'+(x+w/2)+'" y="'+(H-B+22)+'" text-anchor="middle" font-size="13" fill="#1b2b3a">'+esc(t('ad_'+k))+'</text>';
+ }).join('');
+ var y50=T+ph/2;
+ var thr='<line x1="'+L+'" x2="'+(W-14)+'" y1="'+y50+'" y2="'+y50+'" stroke="#b23a3a" stroke-dasharray="6 4"/><text x="'+(S.lang==='ar'?L+4:W-16)+'" y="'+(y50-5)+'" text-anchor="'+(S.lang==='ar'?'start':'end')+'" font-size="11" fill="#b23a3a" style="paint-order:stroke;stroke:#fff;stroke-width:3px">'+esc(t('ad_thr'))+'</text>';
+ return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="direction:ltr" role="img" aria-label="'+esc(t('ad_chart'))+'">'+g+bars+thr+'</svg>';
+}
+function adResult(p){
+ var bar=AD.filter(function(k){return p.ad[k]<50;})[0];
+ var avg=Math.round(AD.reduce(function(a,k){return a+p.ad[k];},0)/5);
+ var msg=bar?t('ad_bar_txt',{s:t('ad_'+bar),v:p.ad[bar]}):t('ad_none');
+ var rec=bar?t('ad_rec_'+bar):t('ad_ok_rec');
+ return '<div class="stats"><div class="stat"><span>'+esc(t('ad_avg'))+'</span><b>'+avg+'%</b></div><div class="stat"><span>'+esc(t('ad_barrier'))+'</span><b style="color:'+(bar?'#b23a3a':'#2f7d4f')+'">'+esc(bar?t('ad_'+bar):'-')+'</b></div></div>'+
+  '<div class="panel"><p style="margin:0 0 6px"><b>'+esc(msg)+'</b></p><p style="margin:0">'+esc(rec)+'</p></div>';
+}
+function pAdkar(){
+ var p=P();
+ var sl=AD.map(function(k){return '<div class="q"><label><span>'+esc(t('ad_'+k))+'</span><output id="oa_'+k+'">'+p.ad[k]+'%</output></label><input type="range" min="0" max="100" step="5" value="'+p.ad[k]+'" data-a="'+k+'" aria-label="'+esc(t('ad_'+k))+'"></div>';}).join('');
+ return lead()+'<div class="cols"><div class="panel"><h2>'+esc(t('ad_chart'))+'</h2><div id="ad-chart">'+adChart(p)+'</div></div><div class="panel"><h2>'+esc(t('ad_update'))+'</h2>'+sl+'</div></div><div id="ad-res">'+adResult(p)+'</div>';
+}
+
+function pKotter(){
+ var p=P(),n=kDone(p),pc=Math.round(n/8*100);
+ var rows=p.kotter.map(function(k,i){
+  return '<div class="krow'+(k.done?' done':'')+'"><div class="kn">'+(i+1)+'</div><div><label class="chk"><input type="checkbox" data-k="'+i+'"'+(k.done?' checked':'')+'><b>'+esc(t('ks'+(i+1)))+'</b></label><div class="hint">'+esc(t('kh'+(i+1)))+'</div>'+(k.date?'<div class="hint">'+esc(t('k_date'))+': '+esc(k.date)+'</div>':'')+'</div><div><textarea rows="2" data-kn="'+i+'" placeholder="'+esc(t('k_note'))+'" aria-label="'+esc(t('k_note'))+'">'+esc(k.note)+'</textarea></div></div>';
+ }).join('');
+ var wins=listUI({key:'wins',arr:function(){return P().wins;},fields:[{k:'desc',lab:'w_desc',req:1},{k:'impact',lab:'w_impact'},{k:'date',lab:'w_date',type:'date'}]});
+ return lead()+'<div class="panel"><div class="bar"><i style="width:'+pc+'%;background:#0e7c7b"></i></div><b>'+esc(t('k_prog',{n:n,p:pc}))+'</b>'+rows+'</div><h2 style="font-size:1.1rem">'+esc(t('w_title'))+'</h2>'+wins;
+}
+
+function champStats(p){
+ var d={};p.champions.forEach(function(c){if(c.dept)d[c.dept.trim()]=1;});
+ var tot=p.champions.reduce(function(a,c){return a+(+c.acts||0);},0);
+ return '<div class="stats"><div class="stat"><span>'+esc(t('c_count'))+'</span><b>'+p.champions.length+'</b></div><div class="stat"><span>'+esc(t('c_total'))+'</span><b>'+tot+'</b></div><div class="stat"><span>'+esc(t('c_depts'))+'</span><b>'+Object.keys(d).length+'</b></div></div>';
+}
+function pChampions(){
+ return lead()+'<div id="champ-stats">'+champStats(P())+'</div>'+listUI({key:'champions',arr:function(){return P().champions;},after:function(){$('#champ-stats').innerHTML=champStats(P());},
+  fields:[{k:'name',lab:'c_name',req:1},{k:'dept',lab:'c_dept'},{k:'acts',lab:'c_acts',type:'number',def:0},{k:'impact',lab:'c_impact',type:'select',opt:'level'},{k:'note',lab:'c_note'}]});
+}
+
+function heat(p){
+ var open=openRisks(p),h='<table class="heat"><tr><th></th>'+[1,2,3,4,5].map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr>';
+ for(var i=5;i>=1;i--){
+  h+='<tr><th>'+i+'</th>'+[1,2,3,4,5].map(function(pp){var n=open.filter(function(r){return +r.p===pp&&+r.i===i;}).length;return '<td class="hc '+rBand(pp*i)+'">'+(n||'')+'</td>';}).join('')+'</tr>';
+ }
+ return h+'</table>';
+}
+function riskStats(p){
+ var o=openRisks(p),c={low:0,mod:0,high:0,crit:0};
+ o.forEach(function(r){c[rBand(r.p*r.i)]++;});
+ return '<div class="stats"><div class="stat"><span>'+esc(t('r_open'))+'</span><b>'+o.length+'</b></div>'+['crit','high','mod','low'].map(function(b){return '<div class="stat"><span>'+esc(t('b_'+b))+'</span><b style="color:'+BC[b]+'">'+c[b]+'</b></div>';}).join('')+'</div>';
+}
+function pRisks(){
+ var p=P();
+ return lead()+'<div id="risk-top">'+riskStats(p)+'<div class="panel"><h2>'+esc(t('heat_title'))+'</h2>'+heat(p)+'<div class="hint">'+esc(t('heat_hint'))+'</div></div></div>'+
+  listUI({key:'risks',rerender:true,arr:function(){return P().risks;},after:function(){$('#risk-top').innerHTML=riskStats(P())+'<div class="panel"><h2>'+esc(t('heat_title'))+'</h2>'+heat(P())+'<div class="hint">'+esc(t('heat_hint'))+'</div></div>';},
+  fields:[{k:'desc',lab:'r_desc',req:1},{k:'type',lab:'r_type',type:'select',opt:'rtype'},{k:'dept',lab:'r_dept'},{k:'p',lab:'r_p',type:'select',opt:'n5',def:3,num:1},{k:'i',lab:'r_i',type:'select',opt:'n5',def:3,num:1},{k:'mit',lab:'r_mit'},{k:'owner',lab:'r_owner'},{k:'status',lab:'r_status',type:'select',opt:'rstat'}],
+  extra:[{lab:'r_score',html:function(r){var s=r.p*r.i,b=rBand(s);return badge(s+' - '+t('b_'+b),BC[b]);}}]});
+}
+
+function recRows(list,showProj){
+ if(!list.length)return '<p class="hint">'+esc(t('a_none'))+'</p>';
+ return list.map(function(a){
+  var proj=showProj?S.projects.filter(function(p){return p.id===a.pid;})[0]:null;
+  var ty=OPT.atype.filter(function(o){return o[0]===a.type;})[0];
+  return '<article class="rec"><div><div class="ref">REC-'+String(a.n).padStart(4,'0')+'</div><div class="hint">'+esc(a.date)+'</div></div><div><b>'+esc(a.title)+'</b> '+badge(ty?t(ty[1]):a.type,'#273d52')+
+   '<div class="hint">'+(a.author?esc(t('a_by'))+': '+esc(a.author):'')+(proj?' / '+esc(proj.name):'')+'</div>'+(a.notes?'<p>'+esc(a.notes)+'</p>':'')+
+   (a.file?'<div class="hint" style="margin-top:6px">'+esc(t('a_attach'))+': '+esc(a.file.name)+' ('+fmtSize(a.file.size)+') <button class="btn sm no-print" data-dl="'+a.id+'">'+esc(t('a_dl'))+'</button></div>':'')+
+   '</div><div class="no-print"><button class="btn sm danger" data-delarch="'+a.id+'">'+esc(t('del'))+'</button></div></article>';
+ }).join('');
+}
+function archList(){
+ var f=mem.af,q=(f.q||'').toLowerCase().trim(),pid=P().id;
+ var list=S.archive.filter(function(a){
+  if(f.scope!=='all'&&a.pid!==pid)return false;
+  if(f.type&&a.type!==f.type)return false;
+  if(q&&(a.title+' '+a.notes+' '+a.author).toLowerCase().indexOf(q)<0)return false;
+  return true;
+ }).sort(function(a,b){return a.date<b.date?1:(a.date>b.date?-1:b.n-a.n);});
+ return recRows(list,f.scope==='all');
+}
+function pArchive(){
+ var f=mem.af,p=P();
+ var form='<form class="addrow no-print" id="archForm"><label class="fld"><span>'+esc(t('a_type'))+'</span>'+ctl({type:'select',opt:'atype'},'doc','name="type"')+'</label>'+
+  '<label class="fld"><span>'+esc(t('a_title'))+'</span><input type="text" name="title" required></label>'+
+  '<label class="fld"><span>'+esc(t('a_date'))+'</span><input type="date" name="date" value="'+today()+'"></label>'+
+  '<label class="fld"><span>'+esc(t('a_author'))+'</span><input type="text" name="author" value="'+esc(p.manager)+'"></label>'+
+  '<label class="fld wide"><span>'+esc(t('a_notes'))+'</span><textarea name="notes" rows="4"></textarea></label>'+
+  '<label class="fld"><span>'+esc(t('a_file'))+'</span><input type="file" name="file"></label>'+
+  '<button class="btn primary" type="submit">'+esc(t('a_save'))+'</button></form>';
+ var typeOpts='<option value="">'+esc(t('a_alltypes'))+'</option>'+OPT.atype.map(function(o){return '<option value="'+o[0]+'"'+(f.type===o[0]?' selected':'')+'>'+esc(t(o[1]))+'</option>';}).join('');
+ var filters='<div class="filters no-print"><input type="text" data-af="q" placeholder="'+esc(t('a_search'))+'" value="'+esc(f.q)+'" aria-label="'+esc(t('a_search'))+'"><select data-af="type" aria-label="'+esc(t('a_type'))+'">'+typeOpts+'</select>'+
+  '<select data-af="scope" aria-label="'+esc(t('a_scope'))+'"><option value="cur"'+(f.scope==='cur'?' selected':'')+'>'+esc(t('a_cur'))+'</option><option value="all"'+(f.scope==='all'?' selected':'')+'>'+esc(t('a_all'))+'</option></select></div>';
+ return lead()+form+filters+'<div id="arch-list">'+archList()+'</div>';
+}
+
+function genSummary(p){
+ var s=rdScore(p),b=rdBand(s);
+ var mx=AD.reduce(function(a,k){return p.ad[k]>p.ad[a]?k:a;},AD[0]),mn=AD.reduce(function(a,k){return p.ad[k]<p.ad[a]?k:a;},AD[0]);
+ return t('sum_tpl',{name:p.name,dept:p.dept||'-',mgr:p.manager||'-',score:s,band:t('rdb_'+b),max:t('ad_'+mx),min:t('ad_'+mn),k:kDone(p),c:p.champions.length,r:openRisks(p).length,a:archCount(p)});
+}
+function recs(p){
+ var r=[],b=rdBand(rdScore(p));
+ if(b==='low')r.push(t('rec_low'));else if(b==='mid')r.push(t('rec_mid'));
+ var bar=AD.filter(function(k){return p.ad[k]<50;})[0];
+ if(bar)r.push(t('ad_'+bar)+': '+t('ad_rec_'+bar));
+ var nx=p.kotter.map(function(k){return k.done;}).indexOf(false);
+ if(nx>=0)r.push(t('rec_kotter',{step:t('ks'+(nx+1))}));
+ if(!p.champions.length)r.push(t('rec_champ0'));
+ var hc=openRisks(p).filter(function(x){var b2=rBand(x.p*x.i);return b2==='high'||b2==='crit';}).length;
+ if(hc)r.push(t('rec_risk',{n:hc}));
+ if(!p.wins.length)r.push(t('rec_wins0'));
+ var ct=ctStats(p),pl=plState(p);
+ if(!p.comms.length)r.push(t('rec_comms0'));
+ if(ct.pct!==null&&ct.pct<60)r.push(t('rec_train',{p:Math.round(ct.pct)}));
+ if(pl.alerts.length)r.push(t('rec_pulse',{m:pl.alerts.join(' ')}));
+ var sm=simCalc(p);
+ if(sm.slip>0)r.push(t('rec_delay',{w:sm.slip,d:sm.crit}));
+ if(p.raci.some(function(x){return !raciOK(x);}))r.push(t('rec_raci'));
+ return r.length?r:[t('rec_ok')];
+}
+function pReport(){
+ var p=P(),s=rdScore(p),b=rdBand(s),c=rdColor(b);
+ var top=openRisks(p).sort(function(a,b2){return b2.p*b2.i-a.p*a.i;}).slice(0,5);
+ var topT=top.length?'<div class="tw"><table><thead><tr><th>'+esc(t('r_desc'))+'</th><th>'+esc(t('r_score'))+'</th><th>'+esc(t('r_owner'))+'</th></tr></thead><tbody>'+top.map(function(r){var sc=r.p*r.i,bb=rBand(sc);return '<tr><td>'+esc(r.desc)+'</td><td class="nw">'+badge(sc+' - '+t('b_'+bb),BC[bb])+'</td><td>'+esc(r.owner)+'</td></tr>';}).join('')+'</tbody></table></div>':'<p class="hint">'+esc(t('empty'))+'</p>';
+ var latest=S.archive.filter(function(a){return a.pid===p.id;}).sort(function(a,b2){return b2.n-a.n;}).slice(0,5);
+ var st=OPT.status.filter(function(o){return o[0]===p.status;})[0];
+ var info='<div class="panel"><h2>'+esc(t('rp_info'))+'</h2><div class="stats" style="margin:0">'+
+  [['p_name',p.name],['p_dept',p.dept],['p_mgr',p.manager],['p_sponsor',p.sponsor],['p_start',p.start],['p_status',st?t(st[1]):p.status]].map(function(x){return '<div class="stat"><span>'+esc(t(x[0]))+'</span><b style="font-size:1rem">'+esc(x[1]||'-')+'</b></div>';}).join('')+'</div></div>';
+ var ind='<div class="stats"><div class="stat"><span>'+esc(t('rd_index'))+'</span><b style="color:'+c+'">'+s+'%</b></div><div class="stat"><span>'+esc(t('rp_kotter'))+'</span><b>'+kDone(p)+'/8</b></div><div class="stat"><span>'+esc(t('rp_champs'))+'</span><b>'+p.champions.length+'</b></div><div class="stat"><span>'+esc(t('r_open'))+'</span><b>'+openRisks(p).length+'</b></div><div class="stat"><span>'+esc(t('rp_wins'))+'</span><b>'+p.wins.length+'</b></div><div class="stat"><span>'+esc(t('rp_archc'))+'</span><b>'+archCount(p)+'</b></div></div>';
+ var rc=roiCalc(p),sm=simCalc(p),cu=p.roi.cur?' '+esc(p.roi.cur):'';
+ var roiPanel=(num(p.roi.benefit)>0||p.depts.length)?'<div class="panel"><h2>'+esc(t('rp_roi'))+'</h2><div class="stats" style="margin:0"><div class="stat"><span>'+esc(t('roi_cod'))+'</span><b style="color:#b23a3a">'+fmt(rc.cod)+cu+'</b></div><div class="stat"><span>'+esc(t('roi_roi'))+'</span><b>'+pct(rc.s1.roi)+'</b></div><div class="stat"><span>'+esc(t('roi_pay'))+'</span><b>'+(rc.pay===null?'-':r1(rc.pay+rc.d))+'</b></div><div class="stat"><span>'+esc(t('sim_slip'))+'</span><b>'+sm.slip+' <small>'+esc(t('wk'))+'</small></b></div></div></div>':'';
+ var cs=ctStats(p),ps=plState(p);
+ var engage=(p.comms.length||p.training.length||p.pulse.length)?'<div class="panel"><h2>'+esc(t('rp_engage'))+'</h2><div class="stats" style="margin:0"><div class="stat"><span>'+esc(t('ct_msgs'))+'</span><b>'+cs.n+'</b></div><div class="stat"><span>'+esc(t('ct_sent'))+'</span><b>'+cs.sent+'</b></div><div class="stat"><span>'+esc(t('ct_train'))+'</span><b>'+pct(cs.pct)+'</b></div><div class="stat"><span>'+esc(t('pl_latest'))+'</span><b>'+(ps.la===null?'-':r1(ps.la))+'</b></div></div></div>':'';
+ var summary='<div class="panel"><h2>'+esc(t('rp_sum'))+'</h2><textarea rows="6" data-summary aria-label="'+esc(t('rp_sum'))+'">'+esc(p.summary)+'</textarea><p class="no-print" style="margin:10px 0 0"><button class="btn" data-act="gen">'+esc(t('rp_gen'))+'</button></p></div>';
+ return lead()+info+ind+roiPanel+engage+summary+
+  '<div class="cols even"><div class="panel"><h2>'+esc(t('ad_chart'))+'</h2>'+adChart(p)+'</div><div class="panel"><h2>'+esc(t('rp_recs'))+'</h2><ul class="recs">'+recs(p).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div></div>'+
+  '<div class="panel"><h2>'+esc(t('rp_top'))+'</h2>'+topT+'</div><div class="panel"><h2>'+esc(t('rp_arch'))+'</h2>'+recRows(latest,false)+'</div>';
+}
+function num(x){return Number(x)||0;}
+function fmt(n){return Math.round(n).toLocaleString('en-US');}
+function pct(x){return x===null?'-':Math.round(x)+'%';}
+function r1(x){return Math.round(x*10)/10;}
+
+var RC=['r1','r2','r3','r4'];
+var STD=[['AR','C','C','I'],['AR','I','C','I'],['R','A','C','I'],['R','I','A','I'],['R','A','C','I']];
+function raciOK(r){var a=0,rr=0;RC.forEach(function(k){var v=r[k]||'';if(v.indexOf('A')>=0)a++;if(v.indexOf('R')>=0)rr++;});return a===1&&rr>=1;}
+function pRaci(){
+ var fields=[{k:'act',lab:'raci_act',req:1}].concat(RC.map(function(k,i){return {k:k,lab:'ro'+(i+1),type:'select',opt:'raci'};}));
+ return lead()+'<div class="panel"><p style="margin:0">'+esc(t('raci_legend'))+'</p></div><p class="no-print"><button class="btn" data-act="raci-seed">'+esc(t('raci_seed'))+'</button></p>'+
+  listUI({key:'raci',rerender:true,arr:function(){return P().raci;},fields:fields,
+   extra:[{lab:'raci_check',html:function(r){return raciOK(r)?badge(t('raci_ok'),'#2f7d4f'):badge(t('raci_bad'),'#b23a3a');}}]});
+}
+
+function roiCalc(p){
+ var r=p.roi,B=num(r.benefit),C=num(r.cost),N=Math.max(1,num(r.months)),a=num(r.adopt),T=num(r.target),D=Math.min(num(r.delay),N);
+ var mv=B*T/100;
+ var sc=function(tb){return {tb:tb,net:tb-C,roi:C>0?(tb-C)/C*100:null};};
+ return {lost:B*Math.max(0,T-a)/100,cod:mv*D,d:D,pay:(mv>0&&C>0)?C/mv:null,s0:sc(mv*N),s1:sc(mv*(N-D))};
+}
+function roiRes(p){
+ var c=roiCalc(p),u=p.roi.cur?' '+esc(p.roi.cur):'';
+ var row=function(l,a,b){return '<tr><td>'+esc(t(l))+'</td><td class="nw">'+a+'</td><td class="nw">'+b+'</td></tr>';};
+ return '<div class="stats"><div class="stat"><span>'+esc(t('roi_lost'))+'</span><b>'+fmt(c.lost)+u+'</b></div><div class="stat"><span>'+esc(t('roi_cod'))+'</span><b style="color:#b23a3a">'+fmt(c.cod)+u+'</b></div></div>'+
+  '<div class="tw"><table><thead><tr><th>'+esc(t('roi_scen'))+'</th><th>'+esc(t('roi_ontime'))+'</th><th>'+esc(t('roi_delayed'))+'</th></tr></thead><tbody>'+
+  row('roi_tb',fmt(c.s0.tb)+u,fmt(c.s1.tb)+u)+row('roi_net',fmt(c.s0.net)+u,fmt(c.s1.net)+u)+row('roi_roi',pct(c.s0.roi),pct(c.s1.roi))+row('roi_pay',c.pay===null?'-':r1(c.pay),c.pay===null?'-':r1(c.pay+c.d))+
+  '</tbody></table></div><p class="hint">'+esc(t('roi_note'))+'</p>';
+}
+function simCalc(p){
+ var seq=p.simMode==='seq',base=0,tot=0,crit=null,cm=-1;
+ p.depts.forEach(function(x){var pl=num(x.plan),dl=num(x.delay);if(seq){base+=pl;tot+=pl+dl;}else{base=Math.max(base,pl);tot=Math.max(tot,pl+dl);}});
+ p.depts.forEach(function(x){var v=seq?num(x.delay):num(x.plan)+num(x.delay);if(v>cm){cm=v;crit=x;}});
+ return {base:base,tot:tot,slip:tot-base,crit:crit?(crit.dept||'-'):'-'};
+}
+function simRes(p){
+ var s=simCalc(p),w=' <small>'+esc(t('wk'))+'</small>';
+ return '<div class="stats"><div class="stat"><span>'+esc(t('sim_base'))+'</span><b>'+s.base+w+'</b></div><div class="stat"><span>'+esc(t('sim_res'))+'</span><b>'+s.tot+w+'</b></div><div class="stat"><span>'+esc(t('sim_slip'))+'</span><b style="color:'+(s.slip>0?'#b23a3a':'#2f7d4f')+'">'+s.slip+w+'</b></div><div class="stat"><span>'+esc(t('sim_crit'))+'</span><b style="font-size:1.1rem">'+esc(s.slip>0?s.crit:'-')+'</b></div></div>';
+}
+function pRoi(){
+ var p=P(),r=p.roi;
+ var F=[['cur','roi_cur','text'],['benefit','roi_benefit','number'],['cost','roi_cost','number'],['months','roi_n','number'],['adopt','roi_a','number'],['target','roi_t','number'],['delay','roi_d','number']];
+ var inputs='<div class="panel"><h2>'+esc(t('roi_inputs'))+'</h2><div class="addrow" style="border:0;padding:0;margin:0">'+F.map(function(f){return '<label class="fld"><span>'+esc(t(f[1]))+'</span><input type="'+f[2]+'"'+(f[2]==='number'?' min="0"':'')+' data-roi="'+f[0]+'" value="'+esc(r[f[0]])+'"></label>';}).join('')+'</div></div>';
+ var mode='<div class="panel"><label class="fld"><span>'+esc(t('sim_mode'))+'</span><select data-simmode><option value="par"'+(p.simMode==='par'?' selected':'')+'>'+esc(t('sim_par'))+'</option><option value="seq"'+(p.simMode==='seq'?' selected':'')+'>'+esc(t('sim_seq'))+'</option></select></label></div>';
+ return lead()+inputs+'<div id="roi-res">'+roiRes(p)+'</div><h2 style="font-size:1.1rem;margin-top:26px">'+esc(t('sim_title'))+'</h2>'+mode+'<div id="sim-res">'+simRes(p)+'</div>'+
+  listUI({key:'depts',arr:function(){return P().depts;},after:function(){$('#sim-res').innerHTML=simRes(P());},
+   fields:[{k:'dept',lab:'sim_dept',req:1},{k:'plan',lab:'sim_plan',type:'number',def:0},{k:'delay',lab:'sim_delay',type:'number',def:0},{k:'note',lab:'sim_note'}]});
+}
+function ctStats(p){
+ var enr=0,comp=0;p.training.forEach(function(x){enr+=num(x.enr);comp+=num(x.done);});
+ return {n:p.comms.length,sent:p.comms.filter(function(c){return c.status==='done';}).length,enr:enr,comp:comp,pct:enr>0?comp/enr*100:null};
+}
+function ctHTML(p){
+ var s=ctStats(p);
+ return '<div class="stats"><div class="stat"><span>'+esc(t('ct_msgs'))+'</span><b>'+s.n+'</b></div><div class="stat"><span>'+esc(t('ct_sent'))+'</span><b>'+s.sent+'</b></div><div class="stat"><span>'+esc(t('ct_train'))+'</span><b>'+pct(s.pct)+'</b></div></div>';
+}
+function pComms(){
+ var p=P(),after=function(){$('#ct-stats').innerHTML=ctHTML(P());};
+ return lead()+'<div id="ct-stats">'+ctHTML(p)+'</div><h2 style="font-size:1.1rem">'+esc(t('cm_title'))+'</h2>'+
+  listUI({key:'comms',arr:function(){return P().comms;},after:after,
+   fields:[{k:'aud',lab:'cm_aud',req:1},{k:'msg',lab:'cm_msg'},{k:'channel',lab:'cm_ch',type:'select',opt:'channel'},{k:'date',lab:'cm_date',type:'date'},{k:'owner',lab:'cm_owner'},{k:'status',lab:'cm_status',type:'select',opt:'cstat'}]})+
+  '<h2 style="font-size:1.1rem;margin-top:26px">'+esc(t('tr_title'))+'</h2>'+
+  listUI({key:'training',arr:function(){return P().training;},after:after,
+   fields:[{k:'course',lab:'tr_course',req:1},{k:'dept',lab:'tr_dept'},{k:'enr',lab:'tr_enr',type:'number',def:0},{k:'done',lab:'tr_done',type:'number',def:0},{k:'date',lab:'tr_date',type:'date'}],
+   extra:[{lab:'tr_pct',html:function(r){var e=num(r.enr);if(!e)return '-';var v=num(r.done)/e*100;return badge(Math.round(v)+'%',v>=80?'#2f7d4f':(v>=50?'#b9770e':'#b23a3a'));}}]});
+}
+
+function plAvg(r){return (num(r.q1)+num(r.q2)+num(r.q3))/3;}
+function plState(p){
+ var rs=p.pulse.slice().sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+ var last=rs[rs.length-1],prev=rs[rs.length-2],la=last?plAvg(last):null,d=(last&&prev)?la-plAvg(prev):null,neg=0;
+ if(last){var tot=num(last.pos)+num(last.neu)+num(last.neg);neg=tot?num(last.neg)/tot*100:0;}
+ var al=[];if(la!==null&&la<3)al.push(t('pl_alert_low'));if(d!==null&&d<=-0.3)al.push(t('pl_alert_drop',{d:r1(Math.abs(d))}));
+ return {rs:rs,la:la,d:d,neg:neg,alerts:al};
+}
+function plChart(p){
+ var rs=plState(p).rs.slice(-10),n=rs.length;
+ if(!n)return '<p class="hint">'+esc(t('pl_empty_chart'))+'</p>';
+ var W=620,H=270,L=48,B=44,T=30,pw=W-L-48,ph=H-B-T,ar=S.lang==='ar';
+ var xs=function(i){var k=ar?n-1-i:i;return L+(n===1?pw/2:pw*k/(n-1));},ys=function(v){return T+ph-ph*(v-1)/4;};
+ var g='';[1,2,3,4,5].forEach(function(v){g+='<line x1="'+L+'" x2="'+(W-48)+'" y1="'+ys(v)+'" y2="'+ys(v)+'" stroke="#d8dfe3"/><text x="'+(L-8)+'" y="'+(ys(v)+4)+'" text-anchor="end" font-size="11" fill="#5b6b78">'+v+'</text>';});
+ var thr='<line x1="'+L+'" x2="'+(W-48)+'" y1="'+ys(3)+'" y2="'+ys(3)+'" stroke="#b23a3a" stroke-dasharray="6 4"/><line x1="'+L+'" x2="'+(L+26)+'" y1="11" y2="11" stroke="#b23a3a" stroke-dasharray="6 4"/><text x="'+(L+34)+'" y="15" font-size="12" fill="#b23a3a">'+esc(t('pl_thr'))+'</text>';
+ var pts=rs.map(function(r,i){return xs(i)+','+ys(plAvg(r));}).join(' ');
+ var dots=rs.map(function(r,i){var v=plAvg(r);return '<circle cx="'+xs(i)+'" cy="'+ys(v)+'" r="5" fill="'+(v<3?'#b23a3a':'#0e7c7b')+'"/><text x="'+xs(i)+'" y="'+(ys(v)-11)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#1b2b3a">'+r1(v)+'</text><text x="'+xs(i)+'" y="'+(H-B+22)+'" text-anchor="middle" font-size="11" fill="#5b6b78">'+esc(r.date)+'</text>';}).join('');
+ return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="direction:ltr" role="img" aria-label="'+esc(t('pl_trend'))+'">'+g+thr+(n>1?'<polyline points="'+pts+'" fill="none" stroke="#0e7c7b" stroke-width="2.5"/>':'')+dots+'</svg>';
+}
+function plTop(p){
+ var s=plState(p);
+ var stats='<div class="stats"><div class="stat"><span>'+esc(t('pl_rounds'))+'</span><b>'+p.pulse.length+'</b></div><div class="stat"><span>'+esc(t('pl_latest'))+'</span><b>'+(s.la===null?'-':r1(s.la))+'</b></div><div class="stat"><span>'+esc(t('pl_change'))+'</span><b style="color:'+(s.d!==null&&s.d<0?'#b23a3a':'#2f7d4f')+'">'+(s.d===null?'-':(s.d>0?'+':'')+r1(s.d))+'</b></div><div class="stat"><span>'+esc(t('pl_negshare'))+'</span><b>'+(s.la===null?'-':Math.round(s.neg)+'%')+'</b></div></div>';
+ var al=s.alerts.length?'<div class="panel" style="border-color:#b23a3a">'+s.alerts.map(function(a){return '<p style="margin:0;color:#b23a3a"><b>'+esc(a)+'</b></p>';}).join('')+'</div>':'';
+ return stats+al+'<div class="panel"><h2>'+esc(t('pl_trend'))+'</h2>'+plChart(p)+'</div>';
+}
+function pPulse(){
+ var p=P();
+ var qf=function(k,l){return {k:k,lab:l,type:'number',def:3,step:'0.1',max:5};};
+ return lead()+'<div id="pl-top">'+plTop(p)+'</div>'+listUI({key:'pulse',arr:function(){return P().pulse;},after:function(){$('#pl-top').innerHTML=plTop(P());},
+  fields:[{k:'date',lab:'pl_date',type:'date'},{k:'n',lab:'pl_n',type:'number',def:0},qf('q1','pl_q1'),qf('q2','pl_q2'),qf('q3','pl_q3'),{k:'pos',lab:'pl_pos',type:'number',def:0},{k:'neu',lab:'pl_neu',type:'number',def:0},{k:'neg',lab:'pl_neg',type:'number',def:0},{k:'note',lab:'pl_note'}],
+  extra:[{lab:'pl_score',html:function(r){var v=plAvg(r);return badge(r1(v),v>=4?'#2f7d4f':(v>=3?'#b9770e':'#b23a3a'));}}]});
+}
+var TPLS=[
+ {k:'comm',cols:['cm_aud','cm_msg','cm_ch','cm_date','cm_owner','cm_status']},
+ {k:'train',cols:['tr_course','tr_dept','tr_enr','tr_done','tr_date','c_note']},
+ {k:'risk',cols:['r_desc','r_type','r_dept','r_p','r_i','r_mit','r_owner','r_status']},
+ {k:'survey'},{k:'minutes'},{k:'kickoff'}
+];
+function tplRows(k){
+ var p=P(),ol=function(o,v){var f=OPT[o].filter(function(x){return String(x[0])===String(v);})[0];return f?t(f[1]):v;};
+ if(k==='comm')return p.comms.map(function(r){return [r.aud,r.msg,ol('channel',r.channel),r.date,r.owner,ol('cstat',r.status)];});
+ if(k==='train')return p.training.map(function(r){return [r.course,r.dept,r.enr,r.done,r.date,''];});
+ return p.risks.map(function(r){return [r.desc,ol('rtype',r.type),r.dept,r.p,r.i,r.mit,r.owner,ol('rstat',r.status)];});
+}
+function tTable(cols,rows){
+ return '<table><tr>'+cols.map(function(c){return '<th>'+esc(typeof c==='string'&&I.en[c]!==undefined?t(c):c)+'</th>';}).join('')+'</tr>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+esc(c)+'&nbsp;</td>';}).join('')+'</tr>';}).join('')+'</table>';
+}
+function blanks(n,c){var a=[];for(var i=0;i<n;i++)a.push(new Array(c).fill(''));return a;}
+function line(){return '<p>______________________________________________</p>';}
+function bSurvey(){
+ var q=['pl_q1','pl_q2','pl_q3'],sc=[1,2,3,4,5];
+ return '<p>'+esc(t('tp_s_intro'))+'</p><p>'+esc(t('tp_s_dept'))+': ______________________</p><p><b>'+esc(t('tp_s_scale'))+'</b></p><table><tr><th></th>'+sc.map(function(n){return '<th>'+n+'</th>';}).join('')+'</tr>'+
+  q.map(function(k){return '<tr><td>'+esc(t(k))+'</td>'+sc.map(function(){return '<td style="text-align:center">\u2610</td>';}).join('')+'</tr>';}).join('')+'</table>'+
+  ['tp_s_o1','tp_s_o2'].map(function(k){return '<p><b>'+esc(t(k))+'</b></p>'+line()+line();}).join('');
+}
+function bMinutes(){
+ return '<p><b>'+esc(t('tp_m_title'))+':</b> ______________________________</p><p><b>'+esc(t('a_date'))+':</b> ______________ &nbsp; <b>'+esc(t('tp_m_att'))+':</b> ______________________</p>'+
+  '<p><b>'+esc(t('tp_m_agenda'))+'</b></p>'+line()+line()+
+  '<p><b>'+esc(t('tp_m_decs'))+'</b></p>'+tTable(['tp_m_dec','cm_owner','tp_m_due'],blanks(5,3))+
+  '<p><b>'+esc(t('tp_m_acts'))+'</b></p>'+tTable(['tp_m_act','cm_owner','tp_m_due'],blanks(5,3))+
+  '<p><b>'+esc(t('tp_m_next'))+':</b> ______________</p>';
+}
+function bKickoff(){var a=[];for(var i=1;i<=8;i++)a.push('<li>'+esc(t('tp_k'+i))+'</li>');return '<ol>'+a.join('')+'</ol>';}
+function tplDoc(title,body){
+ var p=P(),ar=S.lang==='ar',al=ar?'right':'left';
+ return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>'+esc(title)+'</title><style>body{font-family:Arial,Tahoma,sans-serif;font-size:11pt;line-height:1.6}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #888;padding:6px;text-align:'+al+'}th{background:#1b2b3a;color:#ffffff}h1{font-size:20pt;margin:0 0 4px}.meta{color:#444;border-bottom:2px solid #1b2b3a;padding-bottom:8px;margin-bottom:14px}.foot{margin-top:24px;border-top:1px solid #999;padding-top:6px;font-size:9pt;color:#555;text-align:center}</style></head>'+
+  '<body dir="'+(ar?'rtl':'ltr')+'"><h1>'+esc(title)+'</h1><div class="meta">'+esc(t('app_title'))+'<br>'+esc(t('tb_project'))+': '+esc(p.name)+' &nbsp; | &nbsp; '+esc(t('tb_sup'))+': '+esc(t('owner'))+' &nbsp; | &nbsp; '+esc(t('tb_date'))+': '+today()+'</div>'+body+'<div class="foot">'+esc(t('footer'))+'</div></body></html>';
+}
+function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
+function tplDownload(k,fmt){
+ var T=TPLS.filter(function(x){return x.k===k;})[0],title=t('tp_'+k),base=k+'-template_'+slug(P().name)+'_'+today();
+ var body;
+ if(T.cols){
+  var rows=mem.fill?tplRows(k):[];while(rows.length<8)rows.push(new Array(T.cols.length).fill(''));
+  if(fmt==='csv'){
+   var csv=[T.cols.map(function(c){return csvCell(t(c));}).join(',')].concat(rows.map(function(r){return r.map(csvCell).join(',');})).join('\r\n');
+   download(base+'.csv',new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));toast(t('toast_file'));return;
+  }
+  body=tTable(T.cols,rows);
+ }else body=k==='survey'?bSurvey():(k==='minutes'?bMinutes():bKickoff());
+ download(base+'.doc',new Blob(['\ufeff'+tplDoc(title,body)],{type:'application/msword'}));toast(t('toast_file'));
+}
+function pTpl(){
+ var cards=TPLS.map(function(T){
+  return '<div class="panel"><h2>'+esc(t('tp_'+T.k))+'</h2><p class="hint" style="margin:0 0 12px">'+esc(t('tp_'+T.k+'_d'))+'</p><div class="actions no-print"><button class="btn primary" data-tpl="'+T.k+'" data-fmt="doc">'+esc(t('tp_word'))+'</button>'+(T.cols?'<button class="btn" data-tpl="'+T.k+'" data-fmt="csv">'+esc(t('tp_csv'))+'</button>':'')+'</div></div>';
+ }).join('');
+ return lead()+'<label class="chk no-print" style="margin-bottom:16px"><input type="checkbox" data-fill'+(mem.fill?' checked':'')+'> '+esc(t('tp_fill'))+'</label><div class="tplgrid">'+cards+'</div>';
+}
+var PAGES={registry:pRegistry,readiness:pReadiness,adkar:pAdkar,kotter:pKotter,champions:pChampions,risks:pRisks,raci:pRaci,comms:pComms,pulse:pPulse,roi:pRoi,tpl:pTpl,archive:pArchive,report:pReport};
+
+/* ---------------------------------------------------------
+   الهيكل والعرض | Shell & render
+--------------------------------------------------------- */
+var LOGO='<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" fill="none" stroke="#3ec1bf" stroke-width="2"/><path d="M9 17a8 8 0 0 1 14-5.3M25 17a8 8 0 0 1-14 5.3" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M24.5 7v5.5H19M9.5 27v-5.5H15" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function pbHTML(){
+ var p=P();
+ return '<div class="ttl"><b>'+esc(t('app_title'))+'</b><span>'+esc(t('byline'))+': <b>'+esc(t('owner'))+'</b></span></div>'+
+  '<div><small>'+esc(t('tb_project'))+'</small><b>'+esc(p.name)+'</b></div><div><small>'+esc(t('tb_sup'))+'</small><b>'+esc(t('owner'))+'</b></div><div><small>'+esc(t('tb_date'))+'</small><b>'+today()+'</b></div><div><small>'+esc(t('tb_page'))+'</small><b>'+esc(t('nav_'+page))+'</b></div>';
+}
+function projOpts(){return S.projects.map(function(p){return '<option value="'+p.id+'"'+(p.id===S.active?' selected':'')+'>'+esc(p.name||'-')+'</option>';}).join('');}
+function syncTb(){var s=$('[data-proj]');if(s)s.innerHTML=projOpts();var pb=$('.pb');if(pb)pb.innerHTML=pbHTML();}
+function shell(){
+ return '<div class="app"><aside class="side no-print"><div class="brand">'+LOGO+'<h1>'+esc(t('app_title'))+'</h1><div class="byline">'+esc(t('byline'))+'<b>'+esc(t('owner'))+'</b></div></div>'+
+  '<nav class="nav" aria-label="'+esc(t('nav_label'))+'">'+NAV.map(function(k){return '<button data-nav="'+k+'" class="'+(k===page?'on':'')+'"'+(k===page?' aria-current="page"':'')+'>'+esc(t('nav_'+k))+'</button>';}).join('')+'</nav>'+
+  '<div class="sidefoot"><button class="btn ghost" data-act="lang">'+esc(t('lang_btn'))+'</button><button class="btn ghost" data-act="export">'+esc(t('export'))+'</button><button class="btn ghost" data-act="import">'+esc(t('import'))+'</button><p>'+esc(t('note_backup'))+'</p><input type="file" id="imp" accept="application/json,.json" hidden></div></aside>'+
+  '<main class="main"><header class="tb no-print"><div><small>'+esc(t('tb_project'))+'</small><select data-proj aria-label="'+esc(t('tb_project'))+'">'+projOpts()+'</select></div><div><small>'+esc(t('tb_sup'))+'</small><b>'+esc(t('owner'))+'</b></div><div><small>'+esc(t('tb_date'))+'</small><b>'+today()+'</b></div><div><small>'+esc(t('tb_page'))+'</small><b>'+esc(t('nav_'+page))+'</b></div></header>'+
+  '<section id="sheet"><div class="pb">'+pbHTML()+'</div><div class="pagehead"><h1>'+esc(t('nav_'+page))+'</h1><div class="actions no-print"><button class="btn" data-act="print">'+esc(t('print'))+'</button><button class="btn primary" data-act="savehtml">'+esc(t('save_page'))+'</button></div></div>'+
+  '<div id="content"></div><footer class="pf">'+esc(t('footer'))+'</footer></section></main></div><div class="toast" id="toast" role="status"></div>';
+}
+function renderContent(){$('#content').innerHTML=PAGES[page]();}
+function render(){
+ document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='ar'?'rtl':'ltr';
+ document.title=t('app_title')+' | '+I.en.owner;
+ $('#root').innerHTML=shell();renderContent();
+}
+function go(k){page=k;render();window.scrollTo(0,0);}
+function toast(m){var e=$('#toast');if(!e)return;e.textContent=m;e.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){e.classList.remove('show');},2600);}
+
+/* ---------------------------------------------------------
+   الطباعة والحفظ | Print & save (per page)
+--------------------------------------------------------- */
+function staticDoc(){
+ var src=$('#sheet'),sheet=src.cloneNode(true);
+ sheet.querySelector('.pb').innerHTML=pbHTML();
+ var a=src.querySelectorAll('input,select,textarea'),b=sheet.querySelectorAll('input,select,textarea');
+ for(var i=0;i<a.length;i++){
+  var s=a[i],d=b[i],r;
+  if(s.type==='checkbox'){r=document.createElement('span');r.textContent=s.checked?'\u2611':'\u2610';}
+  else if(s.tagName==='TEXTAREA'){r=document.createElement('div');r.className='st';r.textContent=s.value;}
+  else if(s.tagName==='SELECT'){r=document.createElement('span');r.textContent=s.options[s.selectedIndex]?s.options[s.selectedIndex].text:'';}
+  else{r=document.createElement('span');r.textContent=s.value;}
+  d.parentNode.replaceChild(r,d);
+ }
+ sheet.querySelectorAll('.no-print').forEach(function(n){n.remove();});
+ var css=document.getElementById('css').textContent;
+ return '<!DOCTYPE html><html lang="'+S.lang+'" dir="'+(S.lang==='ar'?'rtl':'ltr')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+esc(t('nav_'+page)+' - '+P().name)+'</title>'+
+  '<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"><style>'+css+'</style><style>.pb{display:grid!important;margin-top:0}body{background:#fff}.wrap{max-width:1000px;margin:0 auto;padding:24px}</style></head><body><div class="wrap">'+sheet.outerHTML+'</div></body></html>';
+}
+function doPrint(){
+ var html=staticDoc(),old=$('#pf');if(old)old.remove();
+ var f=document.createElement('iframe');f.id='pf';f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;width:0;height:0;border:0;inset-inline-end:0;bottom:0';
+ document.body.appendChild(f);
+ var d=f.contentWindow.document;d.open();d.write(html);d.close();
+ setTimeout(function(){try{f.contentWindow.focus();f.contentWindow.print();}catch(e){window.print();}},600);
+}
+function download(name,blob){var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},2000);}
+function slug(s){return String(s||'project').trim().replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'project';}
+function saveHtml(){download(page+'_'+slug(P().name)+'_'+today()+'.html',new Blob([staticDoc()],{type:'text/html;charset=utf-8'}));toast(t('toast_file'));}
+function exportData(){download('change-management-data_'+today()+'.json',new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));toast(t('toast_file'));}
+function importData(file){
+ if(!file)return;
+ var r=new FileReader();
+ r.onload=function(){try{var o=JSON.parse(r.result);if(!o||!Array.isArray(o.projects)||!o.projects.length)throw 0;o.archive=o.archive||[];o.seq=o.seq||0;o.lang=o.lang||S.lang;o.projects.forEach(fixP);S=o;if(!S.projects.some(function(p){return p.id===S.active;}))S.active=S.projects[0].id;save();render();toast(t('toast_imp_ok'));}catch(e){toast(t('toast_imp_bad'));}};
+ r.readAsText(file);
+}
+
+/* ---------------------------------------------------------
+   الأحداث | Events
+--------------------------------------------------------- */
+function cellUpdate(el,commit){
+ var d=el.closest('[data-l]');if(!d)return false;
+ var cfg=LISTS[d.dataset.l];if(!cfg)return true;
+ var f=cfg.fields.filter(function(x){return x.k===d.dataset.f;})[0],row=cfg.arr()[+d.dataset.i];
+ if(!row||!f)return true;
+ var v=d.value;if(f.num||f.type==='number')v=Number(v)||0;
+ row[f.k]=v;save();
+ if(cfg.sync)syncTb();
+ if(commit){
+  if(cfg.rerender&&d.tagName==='SELECT')renderContent();
+  else if(cfg.after)cfg.after();
+ }
+ return true;
+}
+document.addEventListener('input',function(e){
+ var el=e.target;
+ if(el.matches('[data-q]')){P().rd[el.dataset.q]=+el.value;$('#o_'+el.dataset.q).textContent=el.value;save();$('#rd-result').innerHTML=rdResult(P());return;}
+ if(el.matches('[data-a]')){P().ad[el.dataset.a]=+el.value;$('#oa_'+el.dataset.a).textContent=el.value+'%';save();$('#ad-chart').innerHTML=adChart(P());$('#ad-res').innerHTML=adResult(P());return;}
+ if(el.matches('[data-roi]')){var k=el.dataset.roi;P().roi[k]=k==='cur'?el.value:(Number(el.value)||0);save();$('#roi-res').innerHTML=roiRes(P());return;}
+ if(el.matches('[data-simmode]')){P().simMode=el.value;save();$('#sim-res').innerHTML=simRes(P());return;}
+ if(el.matches('[data-kn]')){P().kotter[+el.dataset.kn].note=el.value;save();return;}
+ if(el.matches('[data-summary]')){P().summary=el.value;save();return;}
+ if(el.matches('[data-af]')){mem.af[el.dataset.af]=el.value;$('#arch-list').innerHTML=archList();return;}
+ cellUpdate(el,true);
+});
+document.addEventListener('change',function(e){
+ var el=e.target;
+ if(el.matches('[data-proj]')){S.active=el.value;save();render();return;}
+ if(el.matches('[data-fill]')){mem.fill=el.checked;return;}
+ if(el.matches('[data-k]')){var k=P().kotter[+el.dataset.k];k.done=el.checked;k.date=el.checked?today():'';save();renderContent();return;}
+ if(el.id==='imp'){importData(el.files[0]);el.value='';return;}
+});
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b)return;
+ if(b.dataset.nav){go(b.dataset.nav);return;}
+ if(b.dataset.openp){S.active=b.dataset.openp;save();render();return;}
+ if(b.dataset.del){
+  if(!confirm(t('confirm_del')))return;
+  var key=b.dataset.del,i=+b.dataset.i;
+  if(key==='projects'){
+   if(S.projects.length<2){toast(t('toast_last'));return;}
+   var gone=S.projects[i];S.projects.splice(i,1);
+   S.archive=S.archive.filter(function(a){if(a.pid===gone.id){if(a.file)fdel(a.id);return false;}return true;});
+   if(S.active===gone.id)S.active=S.projects[0].id;
+   save();render();return;
+  }
+  LISTS[key].arr().splice(i,1);save();renderContent();
+  return;
+ }
+ if(b.dataset.delarch){
+  if(!confirm(t('confirm_del')))return;
+  var id=b.dataset.delarch,rec=S.archive.filter(function(a){return a.id===id;})[0];
+  if(rec&&rec.file)fdel(id);
+  S.archive=S.archive.filter(function(a){return a.id!==id;});save();renderContent();return;
+ }
+ if(b.dataset.tpl){tplDownload(b.dataset.tpl,b.dataset.fmt);return;}
+ if(b.dataset.dl){
+  var rid=b.dataset.dl,r=S.archive.filter(function(a){return a.id===rid;})[0];
+  fget(rid).then(function(blob){if(!blob)throw 0;download(r.file.name,blob);}).catch(function(){toast(t('a_nofile2'));});
+  return;
+ }
+ var act=b.dataset.act;
+ if(act==='print')doPrint();
+ else if(act==='savehtml')saveHtml();
+ else if(act==='export')exportData();
+ else if(act==='import')$('#imp').click();
+ else if(act==='lang'){S.lang=S.lang==='ar'?'en':'ar';save();render();}
+ else if(act==='raci-seed'){var pp=P();STD.forEach(function(s,i){pp.raci.push({act:t('sa'+(i+1)),r1:s[0],r2:s[1],r3:s[2],r4:s[3]});});save();renderContent();}
+ else if(act==='gen'){P().summary=genSummary(P());save();renderContent();toast(t('toast_sum'));}
+});
+document.addEventListener('submit',function(e){
+ var f=e.target;
+ if(f.id==='archForm'){e.preventDefault();addRecord(f);return;}
+ if(f.dataset.add){
+  e.preventDefault();
+  var cfg=LISTS[f.dataset.add],row={};
+  cfg.fields.forEach(function(fl){var v=f.elements[fl.k].value;if(fl.num||fl.type==='number')v=Number(v)||0;row[fl.k]=(typeof v==='string')?v.trim():v;});
+  if(cfg.key==='projects'){var np=newProject(row);S.projects.push(np);S.active=np.id;}
+  else cfg.arr().push(row);
+  save();render();toast(t('toast_added'));
+ }
+});
+function addRecord(form){
+ var fd=new FormData(form),file=form.elements.file.files[0];
+ if(file&&file.size>25*1048576){toast(t('a_big'));return;}
+ var rec={id:uid(),pid:P().id,n:++S.seq,type:fd.get('type'),title:String(fd.get('title')).trim(),date:fd.get('date')||today(),author:String(fd.get('author')||'').trim(),notes:String(fd.get('notes')||'').trim(),file:null};
+ var done=function(){S.archive.push(rec);save();renderContent();toast(t('toast_added'));};
+ if(file){fput(rec.id,file).then(function(){rec.file={name:file.name,size:file.size};done();}).catch(function(){toast(t('a_nofile'));done();});}
+ else done();
+}
+
+S=load();
+render();
+})();
+</script>
+</body>
+</html>
