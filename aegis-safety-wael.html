@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aegis HSE — م. وائل علي عويس محمود</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B2540;
+  --navy-2:#123A5E;
+  --navy-3:#1B4C77;
+  --amber:#E8A33D;
+  --amber-2:#C4811F;
+  --red:#C6483A;
+  --green:#2F8F5B;
+  --bg:#F2F4F7;
+  --card:#FFFFFF;
+  --ink:#1B222C;
+  --muted:#66707E;
+  --border:#E1E5EA;
+  --shadow: 0 1px 2px rgba(11,37,64,.06), 0 6px 18px rgba(11,37,64,.06);
+  --radius:10px;
+  padding-top: env(safe-area-inset-top,0px);
+  padding-bottom: env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1620; --card:#122132; --ink:#EAEEF3; --muted:#93A0B2; --border:#223245;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1620; --card:#122132; --ink:#EAEEF3; --muted:#93A0B2; --border:#223245;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Tajawal','Space Grotesk',sans-serif;
+  min-height:100%;
+}
+body[data-lang="en"]{ font-family:'Space Grotesk','Tajawal',sans-serif; }
+[dir="ltr"] body, body[data-lang="en"]{ direction:ltr; }
+
+.hide{ display:none !important; }
+
+/* ===== Layout ===== */
+.app{ display:flex; min-height:100vh; }
+.sidebar{
+  width:250px; flex:0 0 250px; background:var(--navy);
+  color:#EAF1F8; padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
+  display:flex; flex-direction:column; gap:4px;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.brand{ display:flex; align-items:center; gap:10px; padding:6px 8px 18px; border-bottom:1px solid rgba(234,241,248,.12); margin-bottom:12px;}
+.brand-badge{
+  width:42px; height:42px; border-radius:10px; flex:0 0 42px;
+  background:linear-gradient(155deg, var(--amber), var(--amber-2));
+  display:flex; align-items:center; justify-content:center; font-size:20px;
+  box-shadow:0 4px 10px rgba(0,0,0,.25);
+}
+.brand-text b{ display:block; font-size:15px; font-weight:700; line-height:1.3;}
+.brand-text span{ display:block; font-size:11.5px; color:#9FB4CA; }
+.nav-item{
+  display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:8px;
+  color:#C9D8E7; cursor:pointer; font-size:14.5px; font-weight:500; user-select:none;
+  border:1px solid transparent;
+}
+.nav-item .ic{ width:20px; text-align:center; flex:0 0 20px; font-size:16px; }
+.nav-item:hover{ background:rgba(255,255,255,.06); }
+.nav-item.active{ background:rgba(232,163,61,.14); color:#fff; border-color:rgba(232,163,61,.35); }
+.sidebar-footer{ margin-top:auto; padding-top:14px; border-top:1px solid rgba(234,241,248,.12); font-size:11px; color:#7E93A9; line-height:1.6;}
+
+.main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:5; background:var(--card); border-bottom:1px solid var(--border);
+  padding:14px 22px; padding-top:calc(14px + env(safe-area-inset-top,0px));
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+}
+.page-title{ font-size:19px; font-weight:700; margin:0; }
+.page-sub{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+.topbar-actions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+.btn{
+  border:1px solid var(--border); background:var(--card); color:var(--ink);
+  padding:9px 14px; border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px; font-family:inherit; white-space:nowrap;
+}
+.btn:hover{ border-color:var(--navy-3); }
+.btn-primary{ background:var(--navy); color:#fff; border-color:var(--navy); }
+.btn-primary:hover{ background:var(--navy-2); }
+.btn-amber{ background:var(--amber); color:#3A2705; border-color:var(--amber-2); }
+.btn-danger{ background:var(--red); color:#fff; border-color:var(--red); }
+.btn-ghost{ background:transparent; }
+.btn-sm{ padding:6px 10px; font-size:12.5px; }
+.lang-toggle{ display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.lang-toggle button{
+  border:none; background:var(--card); color:var(--muted); padding:8px 12px; font-size:12.5px;
+  font-weight:700; cursor:pointer; font-family:inherit;
+}
+.lang-toggle button.on{ background:var(--navy); color:#fff; }
+
+.content{ padding:20px 22px 60px; max-width:1180px; width:100%; margin:0 auto; }
+.view{ display:none; }
+.view.active{ display:block; }
+
+/* ===== Cards / KPIs ===== */
+.kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+@media (max-width:900px){ .kpi-grid{ grid-template-columns:repeat(2,1fr);} }
+.kpi{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
+.kpi .num{ font-family:'Space Grotesk',sans-serif; font-size:30px; font-weight:700; line-height:1; }
+.kpi .lbl{ font-size:12.5px; color:var(--muted); margin-top:8px; font-weight:600;}
+.kpi.amber .num{ color:var(--amber-2); }
+.kpi.red .num{ color:var(--red); }
+.kpi.green .num{ color:var(--green); }
+.kpi.navy .num{ color:var(--navy-3); }
+
+.card{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:18px; }
+.card-h{ padding:15px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+.card-h h3{ margin:0; font-size:15.5px; font-weight:700; }
+.card-b{ padding:18px; }
+
+/* forms */
+.form-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+@media (max-width:700px){ .form-grid{ grid-template-columns:1fr; } }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field.full{ grid-column:1/-1; }
+.field label{ font-size:12.5px; font-weight:700; color:var(--muted); }
+.field input, .field select, .field textarea{
+  border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:14px;
+  font-family:inherit; background:var(--bg); color:var(--ink);
+}
+.field textarea{ resize:vertical; min-height:70px; }
+.seg{ display:flex; gap:8px; flex-wrap:wrap; }
+.seg-btn{
+  border:1px solid var(--border); background:var(--bg); padding:8px 13px; border-radius:8px;
+  font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; color:var(--ink);
+}
+.seg-btn.on-safe{ background:var(--green); color:#fff; border-color:var(--green); }
+.seg-btn.on-unsafe{ background:var(--red); color:#fff; border-color:var(--red); }
+.seg-btn.on-low{ background:#EFD9A6; border-color:#C79A3D; }
+.seg-btn.on-medium{ background:var(--amber); border-color:var(--amber-2); }
+.seg-btn.on-critical{ background:var(--red); color:#fff; border-color:var(--red); }
+
+/* table */
+.table-wrap{ overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:560px; }
+th, td{ padding:10px 12px; border-bottom:1px solid var(--border); text-align:start; vertical-align:top; }
+th{ color:var(--muted); font-size:12px; text-transform:none; font-weight:700; background:var(--bg); }
+tbody tr:hover{ background:var(--bg); }
+.badge{ display:inline-block; padding:3px 10px; border-radius:100px; font-size:11.5px; font-weight:700; white-space:nowrap;}
+.badge.status-active, .badge.status-safe, .badge.status-closed-good{ background:#DCF3E6; color:#1E6B45; }
+.badge.status-pending, .badge.status-medium, .badge.status-in_progress{ background:#FBEACB; color:#8A5B10; }
+.badge.status-unsafe, .badge.status-critical, .badge.status-open{ background:#F8DCD8; color:#9C3226; }
+.badge.status-completed, .badge.status-low{ background:#E3EAF3; color:#2A4A6B; }
+.empty{ padding:30px 10px; text-align:center; color:var(--muted); font-size:13.5px; }
+.small-muted{ font-size:11.5px; color:var(--muted); }
+.proj-filter{ min-width:160px; }
+.row-actions{ display:flex; gap:6px; }
+.icon-btn{ border:1px solid var(--border); background:var(--bg); border-radius:6px; padding:5px 8px; cursor:pointer; font-size:12px;}
+
+/* dashboard project table */
+.severity-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-inline-end:6px;}
+.sev-low{ background:#C79A3D; } .sev-medium{ background:var(--amber-2);} .sev-critical{ background:var(--red);}
+
+/* search / filter row */
+.filter-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.search-input, .filter-select{
+  border:1px solid var(--border); border-radius:8px; padding:7px 11px; font-size:13px;
+  background:var(--bg); color:var(--ink); font-family:inherit;
+}
+.search-input{ min-width:160px; }
+
+/* photo */
+.photo-preview{ max-width:140px; max-height:100px; border-radius:8px; border:1px solid var(--border); margin-top:8px; display:block; object-fit:cover; }
+.thumb{ width:44px; height:36px; object-fit:cover; border-radius:6px; border:1px solid var(--border); cursor:pointer; }
+input[type="file"]{ font-size:12.5px; color:var(--muted); }
+
+/* banners */
+.banner{
+  background:#FBEACB; border:1px solid #E8A33D; color:#6B4A0C; border-radius:10px;
+  padding:12px 16px; margin-bottom:18px; font-size:13.5px; line-height:1.9;
+}
+.banner b{ display:block; margin-bottom:4px; }
+.badge.status-expiring{ background:#FBEACB; color:#8A5B10; }
+.badge.status-expired{ background:#F8DCD8; color:#9C3226; }
+
+/* modals */
+.modal-overlay{
+  display:none; position:fixed; inset:0; background:rgba(11,37,64,.55); z-index:60;
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.show{ display:flex; }
+.modal-box{
+  background:var(--card); border-radius:12px; padding:22px; max-width:420px; width:100%;
+  max-height:88vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.lightbox-box img{ max-width:100%; border-radius:8px; }
+.passport-card{
+  border:2px solid var(--navy); border-radius:12px; padding:18px; background:linear-gradient(160deg, var(--card), var(--bg));
+}
+.passport-card .ph-head{ display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;}
+.passport-card .ph-head .badge-ic{ font-size:26px; }
+.passport-card .ph-name{ font-size:16px; font-weight:700; }
+.passport-card .ph-role{ font-size:12px; color:var(--muted); }
+.passport-row{ display:flex; justify-content:space-between; font-size:13px; padding:5px 0; border-bottom:1px dashed var(--border); }
+.qr-wrap{ display:flex; justify-content:center; margin:14px 0; }
+
+/* chart */
+.chart-bar-group{ display:flex; align-items:flex-end; gap:14px; height:170px; padding:10px 4px 0; }
+.chart-col{ display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+.chart-bars{ display:flex; align-items:flex-end; gap:3px; height:130px; }
+.chart-bar{ width:14px; border-radius:4px 4px 0 0; }
+.chart-bar.total{ background:var(--navy-3); }
+.chart-bar.unsafe{ background:var(--red); }
+.chart-label{ font-size:11px; color:var(--muted); }
+.chart-legend{ display:flex; gap:16px; font-size:12px; color:var(--muted); margin-top:10px; }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.legend-dot{ width:9px; height:9px; border-radius:2px; display:inline-block; }
+
+/* Report printable */
+#reportRoot{ display:none; }
+.rep-header{ text-align:center; border-bottom:3px solid var(--navy); padding-bottom:14px; margin-bottom:22px; }
+.rep-header .shield{ font-size:34px; }
+.rep-header h1{ color:var(--navy); margin:6px 0 2px; font-size:22px; }
+.rep-header h3{ color:#555; margin:2px 0; font-weight:500; font-size:14px;}
+.rep-header p{ margin:4px 0 0; font-size:12px; color:var(--muted);}
+.rep-section{ margin-bottom:22px; }
+.rep-section-title{ background:var(--navy); color:#fff; padding:8px 12px; font-size:13.5px; font-weight:700; border-radius:6px 6px 0 0;}
+.rep-section table{ min-width:0; }
+.rep-footer{ text-align:center; margin-top:36px; font-size:11px; color:var(--muted); border-top:1px solid var(--border); padding-top:12px;}
+.rep-kpis{ display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.rep-kpi{ border:1px solid var(--border); border-radius:8px; padding:10px 16px; text-align:center; flex:1; min-width:110px;}
+.rep-kpi .n{ font-size:22px; font-weight:700; color:var(--navy);}
+.rep-kpi .l{ font-size:11px; color:var(--muted); margin-top:4px;}
+
+/* toast */
+#toast{
+  position:fixed; bottom:calc(20px + env(safe-area-inset-bottom,0px)); inset-inline-end:20px; background:var(--navy); color:#fff;
+  padding:12px 18px; border-radius:8px; font-size:13.5px; box-shadow:var(--shadow);
+  opacity:0; transform:translateY(10px); transition:.25s; pointer-events:none; z-index:50; max-width:280px;
+}
+#toast.show{ opacity:1; transform:translateY(0); }
+
+/* mobile sidebar */
+.menu-toggle{ display:none; }
+@media (max-width:880px){
+  .sidebar{ position:fixed; inset-inline-start:-270px; z-index:40; transition:.25s; box-shadow:0 0 40px rgba(0,0,0,.35);}
+  .sidebar.open{ inset-inline-start:0; }
+  .menu-toggle{ display:inline-flex; }
+  .overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:35; }
+  .overlay.show{ display:block; }
+}
+
+/* ===== Print ===== */
+@media print{
+  body *{ visibility:hidden; }
+  .sidebar, .topbar, #toast, .overlay, .modal-overlay, .banner, .filter-row{ display:none !important; }
+  #printableStamp{ display:block !important; }
+
+  body.printing-page .view.active, body.printing-page .view.active *{ visibility:visible; }
+  body.printing-page .view.active{ position:absolute; inset-inline-start:0; top:0; width:100%; padding:10px 4px; }
+  body.printing-page .content{ padding:0; max-width:none; }
+  body.printing-page .btn, body.printing-page .row-actions, body.printing-page .card-h .btn{ display:none !important; }
+  body.printing-page .form-grid, body.printing-page form{ display:none !important; }
+
+  body.printing-report #reportRoot, body.printing-report #reportRoot *{ visibility:visible; }
+  body.printing-report #reportRoot{ display:block !important; position:absolute; inset-inline-start:0; top:0; width:100%; padding:10px; }
+  body.printing-report .rep-print-btn{ display:none !important; }
+}
+</style>
+</head>
+<body data-lang="ar">
+
+<div class="overlay" id="overlay"></div>
+
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-badge">🛡️</div>
+      <div class="brand-text">
+        <b data-i18n="brandTitle">Aegis Safety</b>
+        <span data-i18n="brandSub">م. وائل علي عويس محمود</span>
+      </div>
+    </div>
+    <div class="nav-item active" data-view="dashboard"><span class="ic">📊</span><span data-i18n="navDashboard">لوحة المؤشرات</span></div>
+    <div class="nav-item" data-view="projects"><span class="ic">📁</span><span data-i18n="navProjects">سجل المشاريع</span></div>
+    <div class="nav-item" data-view="inspections"><span class="ic">🔍</span><span data-i18n="navInspections">التفتيش الميداني</span></div>
+    <div class="nav-item" data-view="eptw"><span class="ic">📜</span><span data-i18n="navEptw">تصاريح العمل ePTW</span></div>
+    <div class="nav-item" data-view="capa"><span class="ic">⚠️</span><span data-i18n="navCapa">الإجراءات التصحيحية</span></div>
+    <div class="nav-item" data-view="workers"><span class="ic">🪪</span><span data-i18n="navWorkers">جواز السلامة الرقمي</span></div>
+    <div class="nav-item" data-view="archive"><span class="ic">📦</span><span data-i18n="navArchive">الأرشيف والتقرير</span></div>
+    <div class="sidebar-footer">
+      <div data-i18n="footerCompany">بناء للتطوير الاستراتيجي</div>
+      <div data-i18n="footerNote">منصة داخلية للسلامة والصحة المهنية</div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button class="btn btn-ghost menu-toggle" id="menuToggle">☰</button>
+        <div>
+          <p class="page-title" id="pageTitle" data-i18n="navDashboard">لوحة المؤشرات</p>
+          <p class="page-sub" id="pageSub" data-i18n="engineerLine">تطوير وإشراف: م. وائل علي عويس محمود — بناء للتطوير الاستراتيجي</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-sm" id="cloudBtn" title="Cloud Sync">☁️ <span id="cloudStatusLabel" data-i18n="cloudOffline">وضع محلي فقط</span></button>
+        <button class="btn btn-sm" id="printPageBtn">🖨️ <span data-i18n="printPage">طباعة هذه الصفحة</span></button>
+        <div class="lang-toggle">
+          <button id="btnAr" class="on">AR</button>
+          <button id="btnEn">EN</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <section class="view active" id="view-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi navy"><div class="num" id="kpiProjects">0</div><div class="lbl" data-i18n="kpiProjects">إجمالي المشاريع</div></div>
+          <div class="kpi amber"><div class="num" id="kpiPermits">0</div><div class="lbl" data-i18n="kpiPermits">تصاريح العمل النشطة</div></div>
+          <div class="kpi red"><div class="num" id="kpiUnsafe">0</div><div class="lbl" data-i18n="kpiUnsafe">ملاحظات غير آمنة</div></div>
+          <div class="kpi green"><div class="num" id="kpiCapaClosed">0</div><div class="lbl" data-i18n="kpiCapaClosed">إجراءات تصحيحية مغلقة</div></div>
+        </div>
+
+        <div class="banner hide" id="dashExpiryBanner"></div>
+
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="chartTitle">اتجاه الملاحظات خلال 6 أشهر</h3></div>
+          <div class="card-b"><div id="chartHolder"></div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="dashProjectsOverview">نظرة عامة على المشاريع</h3></div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colId">الكود</th><th data-i18n="colName">اسم المشروع</th>
+                <th data-i18n="colLoc">الموقع</th><th data-i18n="colStatus">الحالة</th>
+                <th data-i18n="colOpenCapa">إجراءات مفتوحة</th>
+              </tr></thead>
+              <tbody id="dashProjectsBody"></tbody>
+            </table>
+            <div class="empty hide" id="dashProjectsEmpty" data-i18n="emptyProjects">لا توجد مشاريع مسجلة بعد</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="dashRecentCapa">أحدث الإجراءات التصحيحية</h3></div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colCapaId">الكود</th><th data-i18n="colTitle">العنوان</th>
+                <th data-i18n="colSeverity">الخطورة</th><th data-i18n="colDeadline">الموعد النهائي</th><th data-i18n="colStatus">الحالة</th>
+              </tr></thead>
+              <tbody id="dashCapaBody"></tbody>
+            </table>
+            <div class="empty hide" id="dashCapaEmpty" data-i18n="emptyCapa">لا توجد إجراءات تصحيحية بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PROJECTS ===== -->
+      <section class="view" id="view-projects">
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="addProject">إضافة مشروع جديد</h3></div>
+          <div class="card-b">
+            <form id="formProject" class="form-grid">
+              <div class="field"><label data-i18n="fieldProjectName">اسم المشروع</label><input type="text" id="pjName" required></div>
+              <div class="field"><label data-i18n="fieldLocation">الموقع الجغرافي</label><input type="text" id="pjLoc"></div>
+              <div class="field"><label data-i18n="fieldStatus">الحالة</label>
+                <select id="pjStatus">
+                  <option value="active" data-i18n="statActive">نشط</option>
+                  <option value="pending" data-i18n="statPending">قيد الانتظار</option>
+                  <option value="completed" data-i18n="statCompleted">مكتمل</option>
+                </select>
+              </div>
+              <div class="field"><label data-i18n="fieldManager">مهندس المشروع المسؤول</label><input type="text" id="pjManager" value="م. وائل علي عويس محمود"></div>
+              <div class="field full" style="flex-direction:row; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary" data-i18n="saveBtn">حفظ البيانات</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="projectsList">قائمة المشاريع الحالية</h3></div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colId">الكود</th><th data-i18n="colName">اسم المشروع</th><th data-i18n="colLoc">الموقع</th>
+                <th data-i18n="colManager">المسؤول</th><th data-i18n="colStatus">الحالة</th><th data-i18n="colActions">الإجراءات</th>
+              </tr></thead>
+              <tbody id="projectsBody"></tbody>
+            </table>
+            <div class="empty hide" id="projectsEmpty" data-i18n="emptyProjects">لا توجد مشاريع مسجلة بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== INSPECTIONS ===== -->
+      <section class="view" id="view-inspections">
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="newInspection">تسجيل جولة تفتيش ميدانية جديدة</h3></div>
+          <div class="card-b">
+            <form id="formInspection" class="form-grid">
+              <div class="field"><label data-i18n="fieldProject">المشروع</label><select id="inProject"></select></div>
+              <div class="field"><label data-i18n="fieldCategory">تصنيف الفحص</label>
+                <select id="inCategory">
+                  <option value="heights" data-i18n="catHeights">العمل على ارتفاعات</option>
+                  <option value="electrical" data-i18n="catElectrical">الأعمال الكهربائية</option>
+                  <option value="equipment" data-i18n="catEquipment">المعدات والآليات</option>
+                  <option value="ppe" data-i18n="catPpe">معدات الوقاية الشخصية</option>
+                  <option value="scaffolding" data-i18n="catScaffolding">السقالات</option>
+                  <option value="excavation" data-i18n="catExcavation">أعمال الحفر</option>
+                </select>
+              </div>
+              <div class="field full"><label data-i18n="fieldObservation">تفاصيل الملاحظة الميدانية</label><textarea id="inObservation"></textarea></div>
+              <div class="field">
+                <label data-i18n="fieldResult">نتيجة الفحص</label>
+                <div class="seg" id="inResultSeg">
+                  <button type="button" class="seg-btn on-safe" data-val="safe" data-i18n="resSafe">🟢 آمن</button>
+                  <button type="button" class="seg-btn" data-val="unsafe" data-i18n="resUnsafe">🔴 غير آمن</button>
+                </div>
+              </div>
+              <div class="field">
+                <label data-i18n="fieldSeverity">درجة الخطورة</label>
+                <div class="seg" id="inSeveritySeg">
+                  <button type="button" class="seg-btn on-low" data-val="low" data-i18n="sevLow">منخفضة</button>
+                  <button type="button" class="seg-btn" data-val="medium" data-i18n="sevMedium">متوسطة</button>
+                  <button type="button" class="seg-btn" data-val="critical" data-i18n="sevCritical">حرجة</button>
+                </div>
+              </div>
+              <div class="field full">
+                <label data-i18n="photoEvidence">صورة الملاحظة (اختياري)</label>
+                <input type="file" accept="image/*" id="inPhoto">
+                <img id="inPhotoPreview" class="photo-preview hide">
+              </div>
+              <div class="field full" style="flex-direction:row; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary" data-i18n="submitObservation">تسجيل الملاحظة</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h">
+            <h3 data-i18n="inspectionLog">سجل الملاحظات الميدانية</h3>
+            <div class="filter-row">
+              <input type="text" id="inSearch" class="search-input" data-i18n-ph="searchPlaceholder" placeholder="بحث...">
+              <select id="inFilterResult" class="filter-select">
+                <option value="__all__" data-i18n="allStatuses">كل النتائج</option>
+                <option value="safe" data-i18n="resSafe">🟢 آمن</option>
+                <option value="unsafe" data-i18n="resUnsafe">🔴 غير آمن</option>
+              </select>
+              <select id="inFilterProject" class="filter-select"></select>
+            </div>
+          </div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colId">الكود</th><th data-i18n="colProject">المشروع</th><th data-i18n="colCategory">التصنيف</th>
+                <th data-i18n="colResult">النتيجة</th><th data-i18n="colSeverity">الخطورة</th><th data-i18n="colDate">التاريخ</th>
+                <th data-i18n="colPhoto">الصورة</th><th data-i18n="colActions">الإجراءات</th>
+              </tr></thead>
+              <tbody id="inspectionsBody"></tbody>
+            </table>
+            <div class="empty hide" id="inspectionsEmpty" data-i18n="emptyInspections">لا توجد ملاحظات تفتيش بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ePTW ===== -->
+      <section class="view" id="view-eptw">
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="newPermit">إصدار تصريح عمل رقمي جديد</h3></div>
+          <div class="card-b">
+            <form id="formPermit" class="form-grid">
+              <div class="field"><label data-i18n="fieldProject">المشروع</label><select id="ptProject"></select></div>
+              <div class="field"><label data-i18n="fieldPermitType">نوع التصريح</label>
+                <select id="ptType">
+                  <option value="hot_work" data-i18n="ptHotWork">🔴 أعمال ساخنة</option>
+                  <option value="confined_space" data-i18n="ptConfined">🟡 أماكن مغلقة</option>
+                  <option value="excavation" data-i18n="ptExcavation">🔵 أعمال حفر</option>
+                  <option value="lifting" data-i18n="ptLifting">🟠 رفع وحمولات</option>
+                  <option value="height" data-i18n="ptHeight">⚪ عمل على ارتفاعات</option>
+                </select>
+              </div>
+              <div class="field"><label data-i18n="fieldEngineer">المهندس المسؤول</label><input type="text" id="ptEngineer" value="م. وائل علي عويس محمود"></div>
+              <div class="field"><label data-i18n="fieldValidUntil">صالح حتى تاريخ</label><input type="date" id="ptValidUntil"></div>
+              <div class="field full" style="flex-direction:row; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary" data-i18n="issuePermit">إصدار واعتماد التصريح</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="banner hide" id="permitExpiryBanner"></div>
+
+        <div class="card">
+          <div class="card-h">
+            <h3 data-i18n="permitsList">التصاريح النشطة والمصدرة</h3>
+            <div class="filter-row">
+              <input type="text" id="ptSearch" class="search-input" data-i18n-ph="searchPlaceholder" placeholder="بحث...">
+              <select id="ptFilterStatus" class="filter-select">
+                <option value="__all__" data-i18n="allStatuses">كل الحالات</option>
+                <option value="active" data-i18n="statActive">نشط</option>
+                <option value="closed" data-i18n="statClosed">مغلق</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colPermitNo">رقم التصريح</th><th data-i18n="colProject">المشروع</th><th data-i18n="colType">النوع</th>
+                <th data-i18n="colEngineer">المهندس</th><th data-i18n="colValidUntil">صالح حتى</th><th data-i18n="colStatus">الحالة</th><th data-i18n="colActions">الإجراءات</th>
+              </tr></thead>
+              <tbody id="permitsBody"></tbody>
+            </table>
+            <div class="empty hide" id="permitsEmpty" data-i18n="emptyPermits">لا توجد تصاريح مصدرة بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== WORKER PASSPORT ===== -->
+      <section class="view" id="view-workers">
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="addWorker">إضافة جواز سلامة جديد</h3></div>
+          <div class="card-b">
+            <form id="formWorker" class="form-grid">
+              <div class="field"><label data-i18n="fieldWorkerName">اسم العامل / الموظف</label><input type="text" id="wkName" required></div>
+              <div class="field"><label data-i18n="fieldBadgeNo">رقم الشارة</label><input type="text" id="wkBadge"></div>
+              <div class="field"><label data-i18n="fieldWorkerProject">المشروع</label><select id="wkProject"></select></div>
+              <div class="field"><label data-i18n="fieldRole">المسمى الوظيفي</label><input type="text" id="wkRole"></div>
+              <div class="field"><label data-i18n="fieldMedicalExpiry">تاريخ انتهاء الفحص الطبي</label><input type="date" id="wkMedical"></div>
+              <div class="field"><label data-i18n="fieldCertifications">الشهادات التدريبية</label><input type="text" id="wkCerts" placeholder="HSE Induction, Working at Heights..."></div>
+              <div class="field full" style="flex-direction:row; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary" data-i18n="saveBtn">حفظ البيانات</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h">
+            <h3 data-i18n="workersList">سجل جوازات السلامة</h3>
+            <input type="text" id="wkSearch" class="search-input" data-i18n-ph="searchPlaceholder" placeholder="بحث...">
+          </div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colWorker">الاسم</th><th data-i18n="colBadge">الشارة</th><th data-i18n="colProject">المشروع</th>
+                <th data-i18n="colRole">الوظيفة</th><th data-i18n="colMedical">صلاحية الفحص الطبي</th><th data-i18n="colActions">الإجراءات</th>
+              </tr></thead>
+              <tbody id="workersBody"></tbody>
+            </table>
+            <div class="empty hide" id="workersEmpty" data-i18n="emptyWorkers">لا يوجد عمال مسجلون بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== CAPA ===== -->
+      <section class="view" id="view-capa">
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="newCapa">إصدار أمر إجراء تصحيحي</h3></div>
+          <div class="card-b">
+            <form id="formCapa" class="form-grid">
+              <div class="field"><label data-i18n="fieldProject">المشروع</label><select id="caProject"></select></div>
+              <div class="field full"><label data-i18n="fieldViolationTitle">عنوان المخالفة</label><input type="text" id="caTitle" required></div>
+              <div class="field"><label data-i18n="fieldAssignedTo">المسؤول عن التنفيذ</label><input type="text" id="caAssigned"></div>
+              <div class="field"><label data-i18n="fieldDeadline">الموعد النهائي</label><input type="date" id="caDeadline"></div>
+              <div class="field">
+                <label data-i18n="fieldSeverity">درجة الخطورة</label>
+                <div class="seg" id="caSeveritySeg">
+                  <button type="button" class="seg-btn on-low" data-val="low" data-i18n="sevLow">منخفضة</button>
+                  <button type="button" class="seg-btn" data-val="medium" data-i18n="sevMedium">متوسطة</button>
+                  <button type="button" class="seg-btn" data-val="critical" data-i18n="sevCritical">حرجة</button>
+                </div>
+              </div>
+              <div class="field full">
+                <label data-i18n="photoBefore">صورة قبل التصحيح (اختياري)</label>
+                <input type="file" accept="image/*" id="caPhotoBefore">
+                <img id="caPhotoPreview" class="photo-preview hide">
+              </div>
+              <div class="field full" style="flex-direction:row; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary" data-i18n="issueCapa">إرسال التكليف التصحيحي</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h">
+            <h3 data-i18n="capaTracking">متابعة الإجراءات التصحيحية</h3>
+            <div class="filter-row">
+              <input type="text" id="caSearch" class="search-input" data-i18n-ph="searchPlaceholder" placeholder="بحث...">
+              <select id="caFilterStatus" class="filter-select">
+                <option value="__all__" data-i18n="allStatuses">كل الحالات</option>
+                <option value="open" data-i18n="statOpen">مفتوح</option>
+                <option value="in_progress" data-i18n="statInProgress">قيد التنفيذ</option>
+                <option value="closed" data-i18n="statClosed">مغلق</option>
+              </select>
+              <select id="caFilterSeverity" class="filter-select">
+                <option value="__all__" data-i18n="allSeverities">كل الدرجات</option>
+                <option value="low" data-i18n="sevLow">منخفضة</option>
+                <option value="medium" data-i18n="sevMedium">متوسطة</option>
+                <option value="critical" data-i18n="sevCritical">حرجة</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colCapaId">الكود</th><th data-i18n="colProject">المشروع</th><th data-i18n="colTitle">العنوان</th>
+                <th data-i18n="colAssignedTo">المسؤول</th><th data-i18n="colDeadline">الموعد النهائي</th><th data-i18n="colSeverity">الخطورة</th>
+                <th data-i18n="colPhoto">الصور</th><th data-i18n="colStatus">الحالة</th><th data-i18n="colActions">الإجراءات</th>
+              </tr></thead>
+              <tbody id="capaBody"></tbody>
+            </table>
+            <div class="empty hide" id="capaEmpty" data-i18n="emptyCapa">لا توجد إجراءات تصحيحية بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ARCHIVE / REPORT ===== -->
+      <section class="view" id="view-archive">
+        <div class="card">
+          <div class="card-h">
+            <h3 data-i18n="archiveTitle">الأرشيف الرقمي الموحد</h3>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-sm" id="btnDownloadJson">📥 <span data-i18n="downloadJson">تحميل بيانات JSON</span></button>
+              <button class="btn btn-sm btn-danger" id="btnResetData">🗑️ <span data-i18n="resetData">تفريغ البيانات</span></button>
+            </div>
+          </div>
+          <div class="card-b table-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="colType">النوع</th><th data-i18n="colRef">المرجع</th><th data-i18n="colDate">التاريخ</th><th data-i18n="colDetails">التفاصيل</th>
+              </tr></thead>
+              <tbody id="archiveBody"></tbody>
+            </table>
+            <div class="empty hide" id="archiveEmpty" data-i18n="emptyArchive">الأرشيف فارغ حالياً</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3 data-i18n="masterReport">توليد التقرير التنفيذي الشامل</h3></div>
+          <div class="card-b">
+            <p class="small-muted" data-i18n="masterReportDesc" style="margin:0 0 14px;">
+              يجمع هذا التقرير سجل المشاريع، التفتيش الميداني، تصاريح العمل، والإجراءات التصحيحية في مستند واحد جاهز للطباعة أو الحفظ.
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn btn-primary" id="btnPrintReport">🖨️ <span data-i18n="printReport">طباعة / حفظ التقرير الشامل PDF</span></button>
+              <button class="btn" id="btnDownloadReportHtml">📥 <span data-i18n="downloadReportHtml">تحميل التقرير كملف HTML</span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ===== PRINTABLE MASTER REPORT (built dynamically) ===== -->
+<div id="reportRoot"></div>
+
+<div id="toast"></div>
+
+<!-- ===== MODALS ===== -->
+<div class="modal-overlay" id="passportModalOverlay">
+  <div class="modal-box" id="passportModalBox"></div>
+</div>
+<div class="modal-overlay" id="lightboxOverlay">
+  <div class="modal-box lightbox-box">
+    <img id="lightboxImg" alt="">
+    <div style="text-align:center; margin-top:12px;"><button class="btn" id="lightboxClose" data-i18n="closeModal">إغلاق</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="capaCloseOverlay">
+  <div class="modal-box">
+    <h3 data-i18n="closeCapaModalTitle" style="margin-top:0;">إغلاق الإجراء التصحيحي</h3>
+    <p class="small-muted" data-i18n="attachAfterPhotoOptional">يمكنك إرفاق صورة الموقع بعد التصحيح (اختياري)</p>
+    <input type="file" accept="image/*" id="caPhotoAfter">
+    <img id="caAfterPreview" class="photo-preview hide">
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
+      <button class="btn" id="capaCloseCancel" data-i18n="close">إغلاق</button>
+      <button class="btn btn-primary" id="capaCloseConfirm" data-i18n="confirmClose">تأكيد الإغلاق</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="cloudModalOverlay">
+  <div class="modal-box">
+    <h3 data-i18n="cloudModalTitle" style="margin-top:0;">🔗 ربط بالمزامنة السحابية</h3>
+    <p class="small-muted" data-i18n="cloudModalDesc">أدخل بريد أو معرف شركتك لحفظ بيانات هذا التطبيق في السحابة (بناء) ومزامنتها عبر أي جهاز.</p>
+    <div class="field" style="margin-top:10px;">
+      <label data-i18n="cloudKeyLabel">البريد / معرف الشركة</label>
+      <input type="text" id="cloudKeyInput" placeholder="wael@bena.com">
+    </div>
+    <p class="small-muted" id="cloudModalStatus" style="min-height:16px;"></p>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
+      <button class="btn" id="cloudModalCancel" data-i18n="close">إغلاق</button>
+      <button class="btn btn-amber" id="cloudModalDisconnect" data-i18n="cloudDisconnect">فصل المزامنة</button>
+      <button class="btn btn-primary" id="cloudModalConnect" data-i18n="cloudConnect">ربط ومزامنة</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ============ TRANSLATIONS ============ */
+const I18N = {
+  ar: {
+    brandTitle:"Aegis Safety", brandSub:"م. وائل علي عويس محمود",
+    footerCompany:"بناء للتطوير الاستراتيجي", footerNote:"منصة داخلية للسلامة والصحة المهنية",
+    navDashboard:"لوحة المؤشرات", navProjects:"سجل المشاريع", navInspections:"التفتيش الميداني",
+    navEptw:"تصاريح العمل ePTW", navCapa:"الإجراءات التصحيحية", navArchive:"الأرشيف والتقرير",
+    engineerLine:"تطوير وإشراف: م. وائل علي عويس محمود — بناء للتطوير الاستراتيجي",
+    printPage:"طباعة هذه الصفحة",
+    kpiProjects:"إجمالي المشاريع", kpiPermits:"تصاريح العمل النشطة", kpiUnsafe:"ملاحظات غير آمنة", kpiCapaClosed:"إجراءات تصحيحية مغلقة",
+    dashProjectsOverview:"نظرة عامة على المشاريع", dashRecentCapa:"أحدث الإجراءات التصحيحية",
+    colId:"الكود", colName:"اسم المشروع", colLoc:"الموقع", colStatus:"الحالة", colOpenCapa:"إجراءات مفتوحة",
+    colCapaId:"الكود", colTitle:"العنوان", colSeverity:"الخطورة", colDeadline:"الموعد النهائي",
+    emptyProjects:"لا توجد مشاريع مسجلة بعد", emptyCapa:"لا توجد إجراءات تصحيحية بعد",
+    addProject:"إضافة مشروع جديد", fieldProjectName:"اسم المشروع", fieldLocation:"الموقع الجغرافي",
+    fieldStatus:"الحالة", statActive:"نشط", statPending:"قيد الانتظار", statCompleted:"مكتمل",
+    fieldManager:"مهندس المشروع المسؤول", saveBtn:"حفظ البيانات", projectsList:"قائمة المشاريع الحالية",
+    colManager:"المسؤول", colActions:"الإجراءات",
+    newInspection:"تسجيل جولة تفتيش ميدانية جديدة", fieldProject:"المشروع", fieldCategory:"تصنيف الفحص",
+    catHeights:"العمل على ارتفاعات", catElectrical:"الأعمال الكهربائية", catEquipment:"المعدات والآليات",
+    catPpe:"معدات الوقاية الشخصية", catScaffolding:"السقالات", catExcavation:"أعمال الحفر",
+    fieldObservation:"تفاصيل الملاحظة الميدانية", fieldResult:"نتيجة الفحص", resSafe:"🟢 آمن", resUnsafe:"🔴 غير آمن",
+    fieldSeverity:"درجة الخطورة", sevLow:"منخفضة", sevMedium:"متوسطة", sevCritical:"حرجة",
+    submitObservation:"تسجيل الملاحظة", inspectionLog:"سجل الملاحظات الميدانية",
+    colProject:"المشروع", colCategory:"التصنيف", colResult:"النتيجة", colDate:"التاريخ",
+    emptyInspections:"لا توجد ملاحظات تفتيش بعد", allProjects:"كل المشاريع",
+    newPermit:"إصدار تصريح عمل رقمي جديد", fieldPermitType:"نوع التصريح",
+    ptHotWork:"🔴 أعمال ساخنة", ptConfined:"🟡 أماكن مغلقة", ptExcavation:"🔵 أعمال حفر", ptLifting:"🟠 رفع وحمولات", ptHeight:"⚪ عمل على ارتفاعات",
+    fieldEngineer:"المهندس المسؤول", fieldValidUntil:"صالح حتى تاريخ", issuePermit:"إصدار واعتماد التصريح",
+    permitsList:"التصاريح النشطة والمصدرة", colPermitNo:"رقم التصريح", colType:"النوع", colEngineer:"المهندس",
+    colValidUntil:"صالح حتى", emptyPermits:"لا توجد تصاريح مصدرة بعد",
+    newCapa:"إصدار أمر إجراء تصحيحي", fieldViolationTitle:"عنوان المخالفة", fieldAssignedTo:"المسؤول عن التنفيذ",
+    fieldDeadline:"الموعد النهائي", issueCapa:"إرسال التكليف التصحيحي", capaTracking:"متابعة الإجراءات التصحيحية",
+    colAssignedTo:"المسؤول",
+    archiveTitle:"الأرشيف الرقمي الموحد", downloadJson:"تحميل بيانات JSON", resetData:"تفريغ البيانات",
+    colRef:"المرجع", colDetails:"التفاصيل", emptyArchive:"الأرشيف فارغ حالياً",
+    masterReport:"توليد التقرير التنفيذي الشامل",
+    masterReportDesc:"يجمع هذا التقرير سجل المشاريع، التفتيش الميداني، تصاريح العمل، والإجراءات التصحيحية في مستند واحد جاهز للطباعة أو الحفظ.",
+    printReport:"طباعة / حفظ التقرير الشامل PDF", downloadReportHtml:"تحميل التقرير كملف HTML",
+    reportTitle:"التقرير التنفيذي الشامل — السلامة والصحة المهنية", reportDate:"تاريخ التقرير",
+    reportProjectsSec:"1. سجل المشاريع الحالية", reportInspectionsSec:"2. ملخص التفتيش الميداني",
+    reportPermitsSec:"3. تصاريح العمل الرقمية", reportCapaSec:"4. الإجراءات التصحيحية",
+    reportFooter:"Aegis Safety Standard | منظومة رقمية متكاملة للسلامة والصحة المهنية — جميع الحقوق محفوظة",
+    close:"إغلاق", edit:"تعديل", del:"حذف",
+    confirmDelete:"هل تريد حذف هذا العنصر؟", confirmReset:"سيتم حذف جميع البيانات المخزنة. هل أنت متأكد؟",
+    savedMsg:"تم الحفظ بنجاح", deletedMsg:"تم الحذف", resetMsg:"تم تفريغ البيانات",
+    typeInspection:"تفتيش ميداني", typePermit:"تصريح عمل ePTW", typeCapa:"إجراء تصحيحي CAPA", typeProject:"مشروع جديد",
+    navWorkers:"جواز السلامة الرقمي", addWorker:"إضافة جواز سلامة جديد", fieldWorkerName:"اسم العامل / الموظف",
+    fieldBadgeNo:"رقم الشارة", fieldWorkerProject:"المشروع", fieldRole:"المسمى الوظيفي",
+    fieldMedicalExpiry:"تاريخ انتهاء الفحص الطبي", fieldCertifications:"الشهادات التدريبية",
+    workersList:"سجل جوازات السلامة", colWorker:"الاسم", colBadge:"الشارة", colRole:"الوظيفة",
+    colMedical:"صلاحية الفحص الطبي", emptyWorkers:"لا يوجد عمال مسجلون بعد",
+    viewPassport:"عرض الجواز", passportCardTitle:"جواز السلامة الرقمي", closeModal:"إغلاق", printPassport:"طباعة الجواز",
+    medicalValidUntil:"صالح حتى", certsLabel:"الشهادات",
+    photoEvidence:"صورة الملاحظة (اختياري)", photoBefore:"صورة قبل التصحيح (اختياري)", photoAfter:"صورة بعد التصحيح",
+    colPhoto:"الصورة", viewPhoto:"عرض", noPhoto:"—",
+    searchPlaceholder:"بحث...", allStatuses:"كل الحالات", allSeverities:"كل الدرجات", statClosed:"مغلق", statOpen:"مفتوح", statInProgress:"قيد التنفيذ",
+    statExpiring:"قارب على الانتهاء", statExpired:"منتهي",
+    dashExpiryTitle:"تنبيه: تصاريح عمل قاربت على الانتهاء أو منتهية",
+    noExpiring:"لا توجد تصاريح قاربت على الانتهاء",
+    chartTitle:"اتجاه الملاحظات خلال 6 أشهر", chartTotal:"إجمالي الملاحظات", chartUnsafe:"غير آمن",
+    closeCapaModalTitle:"إغلاق الإجراء التصحيحي", attachAfterPhotoOptional:"يمكنك إرفاق صورة الموقع بعد التصحيح (اختياري)",
+    confirmClose:"تأكيد الإغلاق", addWorkerFirstProjectHint:"أضف مشروعاً أولاً", workerAddedForExpiryAlert:"سيتم تنبيهك تلقائياً عند اقتراب مواعيد الانتهاء",
+    cloudOffline:"وضع محلي فقط", cloudConnected:"متصل بالسحابة", cloudSyncing:"جارٍ المزامنة...", cloudError:"تعذر الاتصال بالسحابة",
+    cloudModalTitle:"🔗 ربط بالمزامنة السحابية", cloudModalDesc:"أدخل بريد أو معرف شركتك لحفظ بيانات هذا التطبيق في السحابة (بناء) ومزامنتها عبر أي جهاز.",
+    cloudKeyLabel:"البريد / معرف الشركة", cloudConnect:"ربط ومزامنة", cloudDisconnect:"فصل المزامنة",
+    cloudConnectedMsg:"تم الربط بنجاح، جاري تحميل بياناتك السحابية", cloudDisconnectedMsg:"تم فصل المزامنة السحابية، البيانات محفوظة محلياً فقط",
+    cloudLoadedRemote:"تم تحميل نسخة سحابية موجودة لهذا الحساب", cloudNoRemote:"لا توجد بيانات سحابية سابقة، سيتم إنشاء نسخة جديدة",
+    cloudMissingTable:"جدول المزامنة غير موجود بعد في Supabase — راجع تعليمات الإعداد",
+  },
+  en: {
+    brandTitle:"Aegis Safety", brandSub:"Eng. Wael Ali Oweis Mahmoud",
+    footerCompany:"Bena Strategic Development Co.", footerNote:"Internal Health & Safety Platform",
+    navDashboard:"Master Dashboard", navProjects:"Projects Registry", navInspections:"Safety Inspections",
+    navEptw:"Permits to Work (ePTW)", navCapa:"Corrective Actions", navArchive:"Archive & Report",
+    engineerLine:"Developed & Supervised by: Eng. Wael Ali Oweis Mahmoud — Bena Strategic Development Co.",
+    printPage:"Print this page",
+    kpiProjects:"Total Projects", kpiPermits:"Active Permits", kpiUnsafe:"Unsafe Observations", kpiCapaClosed:"Closed CAPA Actions",
+    dashProjectsOverview:"Projects Overview", dashRecentCapa:"Recent Corrective Actions",
+    colId:"ID", colName:"Project Name", colLoc:"Location", colStatus:"Status", colOpenCapa:"Open CAPA",
+    colCapaId:"ID", colTitle:"Title", colSeverity:"Severity", colDeadline:"Deadline",
+    emptyProjects:"No projects registered yet", emptyCapa:"No corrective actions yet",
+    addProject:"Add New Project", fieldProjectName:"Project Name", fieldLocation:"Location",
+    fieldStatus:"Status", statActive:"Active", statPending:"Pending", statCompleted:"Completed",
+    fieldManager:"Responsible Engineer", saveBtn:"Save Data", projectsList:"Current Projects",
+    colManager:"Manager", colActions:"Actions",
+    newInspection:"Record New Field Inspection", fieldProject:"Project", fieldCategory:"Category",
+    catHeights:"Working at Heights", catElectrical:"Electrical Works", catEquipment:"Equipment & Machinery",
+    catPpe:"Personal Protective Equipment", catScaffolding:"Scaffolding", catExcavation:"Excavation",
+    fieldObservation:"Field Observation Details", fieldResult:"Result", resSafe:"🟢 Safe", resUnsafe:"🔴 Unsafe",
+    fieldSeverity:"Severity Level", sevLow:"Low", sevMedium:"Medium", sevCritical:"Critical",
+    submitObservation:"Submit Observation", inspectionLog:"Inspection Log",
+    colProject:"Project", colCategory:"Category", colResult:"Result", colDate:"Date",
+    emptyInspections:"No inspections recorded yet", allProjects:"All Projects",
+    newPermit:"Issue New Digital Work Permit", fieldPermitType:"Permit Type",
+    ptHotWork:"🔴 Hot Work", ptConfined:"🟡 Confined Space", ptExcavation:"🔵 Excavation", ptLifting:"🟠 Lifting", ptHeight:"⚪ Working at Heights",
+    fieldEngineer:"Responsible Engineer", fieldValidUntil:"Valid Until", issuePermit:"Issue & Approve Permit",
+    permitsList:"Issued & Active Permits", colPermitNo:"Permit No.", colType:"Type", colEngineer:"Engineer",
+    colValidUntil:"Valid Until", emptyPermits:"No permits issued yet",
+    newCapa:"Issue Corrective Action Order", fieldViolationTitle:"Violation Title", fieldAssignedTo:"Assigned To",
+    fieldDeadline:"Deadline", issueCapa:"Issue Corrective Action", capaTracking:"CAPA Tracking",
+    colAssignedTo:"Assigned To",
+    archiveTitle:"Unified Digital Archive", downloadJson:"Download JSON Data", resetData:"Reset Data",
+    colRef:"Reference", colDetails:"Details", emptyArchive:"Archive is currently empty",
+    masterReport:"Generate Master Executive Report",
+    masterReportDesc:"This report combines the projects registry, field inspections, work permits and corrective actions into one printable document.",
+    printReport:"Print / Save Master Report as PDF", downloadReportHtml:"Download Report as HTML",
+    reportTitle:"Master Executive Report — Health & Safety", reportDate:"Report Date",
+    reportProjectsSec:"1. Current Projects Registry", reportInspectionsSec:"2. Field Inspection Summary",
+    reportPermitsSec:"3. Digital Work Permits", reportCapaSec:"4. Corrective Actions",
+    reportFooter:"Aegis Safety Standard | Integrated Digital HSE Management System — All rights reserved",
+    close:"Close", edit:"Edit", del:"Delete",
+    confirmDelete:"Delete this item?", confirmReset:"All stored data will be deleted. Are you sure?",
+    savedMsg:"Saved successfully", deletedMsg:"Deleted", resetMsg:"Data reset",
+    typeInspection:"Field Inspection", typePermit:"Work Permit ePTW", typeCapa:"Corrective Action CAPA", typeProject:"New Project",
+    navWorkers:"Worker HSE Passport", addWorker:"Add New Worker Passport", fieldWorkerName:"Worker / Staff Name",
+    fieldBadgeNo:"Badge Number", fieldWorkerProject:"Project", fieldRole:"Job Role",
+    fieldMedicalExpiry:"Medical Exam Expiry Date", fieldCertifications:"Training Certifications",
+    workersList:"Worker Passports Registry", colWorker:"Name", colBadge:"Badge", colRole:"Role",
+    colMedical:"Medical Validity", emptyWorkers:"No workers registered yet",
+    viewPassport:"View Passport", passportCardTitle:"Digital HSE Passport", closeModal:"Close", printPassport:"Print Passport",
+    medicalValidUntil:"Valid Until", certsLabel:"Certifications",
+    photoEvidence:"Observation Photo (optional)", photoBefore:"Before Photo (optional)", photoAfter:"After Photo",
+    colPhoto:"Photo", viewPhoto:"View", noPhoto:"—",
+    searchPlaceholder:"Search...", allStatuses:"All Statuses", allSeverities:"All Severities", statClosed:"Closed", statOpen:"Open", statInProgress:"In Progress",
+    statExpiring:"Expiring Soon", statExpired:"Expired",
+    dashExpiryTitle:"Alert: Permits Expiring Soon or Expired",
+    noExpiring:"No permits nearing expiry",
+    chartTitle:"6-Month Observations Trend", chartTotal:"Total Observations", chartUnsafe:"Unsafe",
+    closeCapaModalTitle:"Close Corrective Action", attachAfterPhotoOptional:"You may attach a site photo after correction (optional)",
+    confirmClose:"Confirm Close", addWorkerFirstProjectHint:"Add a project first", workerAddedForExpiryAlert:"You will be alerted automatically as deadlines approach",
+    cloudOffline:"Local Only", cloudConnected:"Cloud Synced", cloudSyncing:"Syncing...", cloudError:"Cloud connection failed",
+    cloudModalTitle:"🔗 Connect Cloud Sync", cloudModalDesc:"Enter your company email or ID to save this app's data to the cloud (Bena) and sync across devices.",
+    cloudKeyLabel:"Email / Company ID", cloudConnect:"Connect & Sync", cloudDisconnect:"Disconnect",
+    cloudConnectedMsg:"Connected successfully, loading your cloud data", cloudDisconnectedMsg:"Cloud sync disconnected, data is now local only",
+    cloudLoadedRemote:"An existing cloud record was loaded for this account", cloudNoRemote:"No previous cloud data found, a new record will be created",
+    cloudMissingTable:"Sync table not found yet in Supabase — check the setup instructions",
+  }
+};
+
+let lang = localStorage.getItem('aegis_lang') || 'ar';
+
+/* ============ DATA ============ */
+const STORE_KEY = 'aegis_wael_data_v1';
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      d.projects = d.projects || []; d.inspections = d.inspections || []; d.permits = d.permits || [];
+      d.capa = d.capa || []; d.archive = d.archive || []; d.workers = d.workers || [];
+      return d;
+    }
+  }catch(e){}
+  return {
+    projects:[
+      {id:"PRJ-001", name:"مشروع العاصمة الإدارية - D01", location:"القطاع A", manager:"م. وائل علي عويس محمود", status:"active"},
+      {id:"PRJ-002", name:"مشروع مركز البيانات - Data Center Tier IV", location:"المنطقة الصناعية", manager:"م. وائل علي عويس محمود", status:"active"}
+    ],
+    inspections:[], permits:[], capa:[], archive:[], workers:[]
+  };
+}
+let DATA = loadData();
+function persist(){ localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); cloudSaveDebounced(); }
+
+/* ============ CLOUD SYNC (Supabase — Bena ecosystem) ============ */
+const SUPABASE_URL = 'https://obwgcylupvnodsciapee.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_GbL-OA-GzAZ_y5wZjjtQ1g_uBw0HqQO';
+const CLOUD_TABLE = 'aegis_safety_records';
+let supabaseClient = null;
+let cloudKey = localStorage.getItem('aegis_cloud_key') || null;
+let cloudStatus = 'offline';
+let cloudSaveTimer = null;
+
+function getSupabaseClient(){
+  if(supabaseClient) return supabaseClient;
+  try{
+    if(window.supabase && window.supabase.createClient){
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+  }catch(e){}
+  return supabaseClient;
+}
+
+function setCloudStatus(status){
+  cloudStatus = status;
+  const label = document.getElementById('cloudStatusLabel');
+  const keyMap = {offline:'cloudOffline', connected:'cloudConnected', syncing:'cloudSyncing', error:'cloudError'};
+  if(label) label.textContent = t(keyMap[status] || 'cloudOffline');
+}
+
+async function cloudLoad(){
+  if(!cloudKey) return;
+  const client = getSupabaseClient();
+  if(!client) { setCloudStatus('error'); return; }
+  setCloudStatus('syncing');
+  try{
+    const { data, error } = await client.from(CLOUD_TABLE).select('data_json').eq('user_key', cloudKey).maybeSingle();
+    if(error){
+      setCloudStatus('error');
+      if(error.code === '42P01') toast(t('cloudMissingTable'));
+      return;
+    }
+    if(data && data.data_json){
+      DATA = data.data_json;
+      DATA.projects = DATA.projects || []; DATA.inspections = DATA.inspections || []; DATA.permits = DATA.permits || [];
+      DATA.capa = DATA.capa || []; DATA.archive = DATA.archive || []; DATA.workers = DATA.workers || [];
+      localStorage.setItem(STORE_KEY, JSON.stringify(DATA));
+      renderProjectSelects(); renderAll();
+      toast(t('cloudLoadedRemote'));
+    } else {
+      toast(t('cloudNoRemote'));
+      await cloudSaveNow();
+    }
+    setCloudStatus('connected');
+  }catch(e){ setCloudStatus('error'); }
+}
+
+async function cloudSaveNow(){
+  if(!cloudKey) return;
+  const client = getSupabaseClient();
+  if(!client) { setCloudStatus('error'); return; }
+  try{
+    setCloudStatus('syncing');
+    const { error } = await client.from(CLOUD_TABLE).upsert(
+      { user_key: cloudKey, data_json: DATA, updated_at: new Date().toISOString() },
+      { onConflict: 'user_key' }
+    );
+    if(error){
+      setCloudStatus('error');
+      if(error.code === '42P01') toast(t('cloudMissingTable'));
+      return;
+    }
+    setCloudStatus('connected');
+  }catch(e){ setCloudStatus('error'); }
+}
+function cloudSaveDebounced(){
+  if(!cloudKey) return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(cloudSaveNow, 900);
+}
+
+function uid(prefix, arr){ return prefix + '-' + String(arr.length + 1).padStart(3,'0') + '-' + Date.now().toString().slice(-4); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(d){ return d || '—'; }
+
+function addArchive(type, ref, details){
+  DATA.archive.unshift({type, ref, date:todayISO(), details});
+}
+
+/* ============ LABEL MAPS ============ */
+const STATUS_LABEL = {
+  active:{ar:'نشط', en:'Active'}, pending:{ar:'قيد الانتظار', en:'Pending'}, completed:{ar:'مكتمل', en:'Completed'},
+  closed:{ar:'مغلق', en:'Closed'}, open:{ar:'مفتوح', en:'Open'}, in_progress:{ar:'قيد التنفيذ', en:'In Progress'}
+};
+const SEV_LABEL = { low:{ar:'منخفضة', en:'Low'}, medium:{ar:'متوسطة', en:'Medium'}, critical:{ar:'حرجة', en:'Critical'} };
+const RESULT_LABEL = { safe:{ar:'🟢 آمن', en:'🟢 Safe'}, unsafe:{ar:'🔴 غير آمن', en:'🔴 Unsafe'} };
+const CAT_LABEL = {
+  heights:{ar:'العمل على ارتفاعات', en:'Working at Heights'}, electrical:{ar:'الأعمال الكهربائية', en:'Electrical Works'},
+  equipment:{ar:'المعدات والآليات', en:'Equipment & Machinery'}, ppe:{ar:'معدات الوقاية الشخصية', en:'PPE'},
+  scaffolding:{ar:'السقالات', en:'Scaffolding'}, excavation:{ar:'أعمال الحفر', en:'Excavation'}
+};
+const PT_LABEL = {
+  hot_work:{ar:'🔴 أعمال ساخنة', en:'🔴 Hot Work'}, confined_space:{ar:'🟡 أماكن مغلقة', en:'🟡 Confined Space'},
+  excavation:{ar:'🔵 أعمال حفر', en:'🔵 Excavation'}, lifting:{ar:'🟠 رفع وحمولات', en:'🟠 Lifting'}, height:{ar:'⚪ عمل على ارتفاعات', en:'⚪ Working at Heights'}
+};
+
+function badge(text, cls){ return `<span class="badge status-${cls}">${text}</span>`; }
+function t(key){ return (I18N[lang] && I18N[lang][key]) || key; }
+
+/* ============ TOAST ============ */
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+/* ============ NAVIGATION ============ */
+const views = ['dashboard','projects','inspections','eptw','capa','workers','archive'];
+function showView(name){
+  views.forEach(v=>{
+    document.getElementById('view-'+v).classList.toggle('active', v===name);
+  });
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.view===name));
+  const titleKeyMap = {dashboard:'navDashboard', projects:'navProjects', inspections:'navInspections', eptw:'navEptw', capa:'navCapa', workers:'navWorkers', archive:'navArchive'};
+  document.getElementById('pageTitle').setAttribute('data-i18n', titleKeyMap[name]);
+  document.getElementById('pageTitle').textContent = t(titleKeyMap[name]);
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=> showView(item.dataset.view));
+});
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+});
+document.getElementById('overlay').addEventListener('click', ()=>{
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+});
+
+/* ============ LANGUAGE ============ */
+function applyLang(){
+  document.body.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang === 'ar' ? 'ar' : 'en');
+  document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('btnAr').classList.toggle('on', lang==='ar');
+  document.getElementById('btnEn').classList.toggle('on', lang==='en');
+
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(I18N[lang][key] !== undefined) el.textContent = I18N[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-ph');
+    if(I18N[lang][key] !== undefined) el.setAttribute('placeholder', I18N[lang][key]);
+  });
+  document.getElementById('pageSub').textContent = t('engineerLine');
+  localStorage.setItem('aegis_lang', lang);
+
+  renderProjectSelects();
+  renderAll();
+  checkPermitExpiry();
+}
+document.getElementById('btnAr').addEventListener('click', ()=>{ lang='ar'; applyLang(); });
+document.getElementById('btnEn').addEventListener('click', ()=>{ lang='en'; applyLang(); });
+
+/* ============ RENDER: PROJECT SELECTS ============ */
+function renderProjectSelects(){
+  const selects = [document.getElementById('inProject'), document.getElementById('ptProject'), document.getElementById('caProject'), document.getElementById('wkProject')];
+  selects.forEach(sel=>{
+    if(!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = DATA.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+    if(prev) sel.value = prev;
+  });
+  const filterSel = document.getElementById('inFilterProject');
+  const prevF = filterSel.value;
+  filterSel.innerHTML = `<option value="__all__">${t('allProjects')}</option>` + DATA.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  filterSel.value = prevF || '__all__';
+}
+document.getElementById('inFilterProject').addEventListener('change', renderInspections);
+document.getElementById('inFilterResult').addEventListener('change', renderInspections);
+document.getElementById('inSearch').addEventListener('input', renderInspections);
+document.getElementById('ptSearch').addEventListener('input', renderPermits);
+document.getElementById('ptFilterStatus').addEventListener('change', renderPermits);
+document.getElementById('caSearch').addEventListener('input', renderCapa);
+document.getElementById('caFilterStatus').addEventListener('change', renderCapa);
+document.getElementById('caFilterSeverity').addEventListener('change', renderCapa);
+document.getElementById('wkSearch').addEventListener('input', renderWorkers);
+
+function projectName(id){ const p = DATA.projects.find(x=>x.id===id); return p ? p.name : id; }
+
+/* ============ RENDER: DASHBOARD ============ */
+function renderDashboard(){
+  document.getElementById('kpiProjects').textContent = DATA.projects.length;
+  document.getElementById('kpiPermits').textContent = DATA.permits.filter(p=>p.status==='active').length;
+  document.getElementById('kpiUnsafe').textContent = DATA.inspections.filter(i=>i.result==='unsafe').length;
+  document.getElementById('kpiCapaClosed').textContent = DATA.capa.filter(c=>c.status==='closed').length;
+
+  const body = document.getElementById('dashProjectsBody');
+  body.innerHTML = DATA.projects.map(p=>{
+    const openCapa = DATA.capa.filter(c=>c.projectId===p.id && c.status!=='closed').length;
+    return `<tr>
+      <td>${p.id}</td><td>${p.name}</td><td>${p.location||'—'}</td>
+      <td>${badge(t('stat'+cap(p.status)), p.status)}</td>
+      <td>${openCapa}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('dashProjectsEmpty').classList.toggle('hide', DATA.projects.length>0);
+
+  const capaBody = document.getElementById('dashCapaBody');
+  const recentCapa = DATA.capa.slice(0,6);
+  capaBody.innerHTML = recentCapa.map(c=>`<tr>
+    <td>${c.id}</td><td>${c.title}</td>
+    <td><span class="severity-dot sev-${c.severity}"></span>${SEV_LABEL[c.severity][lang]}</td>
+    <td>${fmtDate(c.deadline)}</td>
+    <td>${badge(STATUS_LABEL[c.status][lang], c.status)}</td>
+  </tr>`).join('');
+  document.getElementById('dashCapaEmpty').classList.toggle('hide', recentCapa.length>0);
+
+  renderChart();
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+/* ============ CHART: 6-MONTH TREND ============ */
+function renderChart(){
+  const holder = document.getElementById('chartHolder');
+  if(!holder) return;
+  const months = [];
+  const now = new Date();
+  for(let i=5; i>=0; i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    months.push(d);
+  }
+  const counts = months.map(d=>{
+    const ym = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const inMonth = DATA.inspections.filter(ins => (ins.date||'').slice(0,7) === ym);
+    return { total: inMonth.length, unsafe: inMonth.filter(x=>x.result==='unsafe').length };
+  });
+  const maxVal = Math.max(1, ...counts.map(c=>c.total));
+  const localeCode = lang==='ar' ? 'ar' : 'en';
+  const cols = months.map((d,idx)=>{
+    const c = counts[idx];
+    const hTotal = Math.round((c.total/maxVal)*120);
+    const hUnsafe = Math.round((c.unsafe/maxVal)*120);
+    const label = d.toLocaleDateString(localeCode, {month:'short'});
+    return `<div class="chart-col">
+      <div class="chart-bars">
+        <div class="chart-bar total" style="height:${hTotal}px;" title="${t('chartTotal')}: ${c.total}"></div>
+        <div class="chart-bar unsafe" style="height:${hUnsafe}px;" title="${t('chartUnsafe')}: ${c.unsafe}"></div>
+      </div>
+      <div class="chart-label">${label}</div>
+    </div>`;
+  }).join('');
+  holder.innerHTML = `<div class="chart-bar-group">${cols}</div>
+    <div class="chart-legend">
+      <span><i class="legend-dot" style="background:var(--navy-3);"></i>${t('chartTotal')}</span>
+      <span><i class="legend-dot" style="background:var(--red);"></i>${t('chartUnsafe')}</span>
+    </div>`;
+}
+
+/* ============ PERMIT EXPIRY CHECK ============ */
+function daysUntil(dateStr){
+  if(!dateStr) return null;
+  const target = new Date(dateStr + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.round((target - today) / 86400000);
+}
+function permitExpiryState(p){
+  if(p.status !== 'active') return null;
+  const d = daysUntil(p.validUntil);
+  if(d === null) return null;
+  if(d < 0) return 'expired';
+  if(d <= 2) return 'expiring';
+  return null;
+}
+function checkPermitExpiry(){
+  const list = DATA.permits.filter(p => permitExpiryState(p));
+  const dashBanner = document.getElementById('dashExpiryBanner');
+  const ptBanner = document.getElementById('permitExpiryBanner');
+  if(list.length === 0){
+    if(dashBanner) dashBanner.classList.add('hide');
+    if(ptBanner) ptBanner.classList.add('hide');
+    return;
+  }
+  const items = list.map(p=>{
+    const state = permitExpiryState(p);
+    const label = state==='expired' ? t('statExpired') : t('statExpiring');
+    return `${p.id} — ${projectName(p.projectId)} (${label})`;
+  }).join(' · ');
+  const html = `<b>⚠️ ${t('dashExpiryTitle')}</b>${items}`;
+  if(dashBanner){ dashBanner.innerHTML = html; dashBanner.classList.remove('hide'); }
+  if(ptBanner){ ptBanner.innerHTML = html; ptBanner.classList.remove('hide'); }
+}
+
+/* ============ RENDER: PROJECTS ============ */
+function renderProjects(){
+  const body = document.getElementById('projectsBody');
+  body.innerHTML = DATA.projects.map(p=>`<tr>
+    <td>${p.id}</td><td>${p.name}</td><td>${p.location||'—'}</td><td>${p.manager||'—'}</td>
+    <td>${badge(STATUS_LABEL[p.status][lang], p.status)}</td>
+    <td class="row-actions">
+      <button class="icon-btn" onclick="AEGIS.deleteProject('${p.id}')">🗑️</button>
+    </td>
+  </tr>`).join('');
+  document.getElementById('projectsEmpty').classList.toggle('hide', DATA.projects.length>0);
+}
+
+function matchesSearch(record, fields, query){
+  if(!query) return true;
+  const q = query.trim().toLowerCase();
+  return fields.some(f => String(f||'').toLowerCase().includes(q));
+}
+
+/* ============ RENDER: INSPECTIONS ============ */
+function renderInspections(){
+  const filter = document.getElementById('inFilterProject').value || '__all__';
+  const resultFilter = document.getElementById('inFilterResult').value || '__all__';
+  const query = document.getElementById('inSearch').value;
+  const list = DATA.inspections.filter(i=>
+    (filter==='__all__' || i.projectId===filter) &&
+    (resultFilter==='__all__' || i.result===resultFilter) &&
+    matchesSearch(i, [i.id, projectName(i.projectId), i.observation, CAT_LABEL[i.category][lang]], query)
+  );
+  const body = document.getElementById('inspectionsBody');
+  body.innerHTML = list.map(i=>`<tr>
+    <td>${i.id}</td><td>${projectName(i.projectId)}</td><td>${CAT_LABEL[i.category][lang]}</td>
+    <td>${RESULT_LABEL[i.result][lang]}</td>
+    <td><span class="severity-dot sev-${i.severity}"></span>${SEV_LABEL[i.severity][lang]}</td>
+    <td>${fmtDate(i.date)}</td>
+    <td>${i.photo ? `<img class="thumb" src="${i.photo}" onclick="AEGIS.openLightbox('${i.photo}')">` : t('noPhoto')}</td>
+    <td class="row-actions"><button class="icon-btn" onclick="AEGIS.deleteInspection('${i.id}')">🗑️</button></td>
+  </tr>`).join('');
+  document.getElementById('inspectionsEmpty').classList.toggle('hide', list.length>0);
+}
+
+/* ============ RENDER: PERMITS ============ */
+function renderPermits(){
+  const query = document.getElementById('ptSearch').value;
+  const statusFilter = document.getElementById('ptFilterStatus').value || '__all__';
+  const list = DATA.permits.filter(p=>
+    (statusFilter==='__all__' || p.status===statusFilter) &&
+    matchesSearch(p, [p.id, projectName(p.projectId), p.engineer, PT_LABEL[p.type][lang]], query)
+  );
+  const body = document.getElementById('permitsBody');
+  body.innerHTML = list.map(p=>{
+    const state = permitExpiryState(p);
+    const statusBadge = state==='expired' ? badge(t('statExpired'), 'expired')
+      : state==='expiring' ? badge(t('statExpiring'), 'expiring')
+      : badge(STATUS_LABEL[p.status][lang], p.status);
+    return `<tr>
+    <td>${p.id}</td><td>${projectName(p.projectId)}</td><td>${PT_LABEL[p.type][lang]}</td>
+    <td>${p.engineer}</td><td>${fmtDate(p.validUntil)}</td>
+    <td>${statusBadge}</td>
+    <td class="row-actions">
+      ${p.status==='active' ? `<button class="icon-btn" onclick="AEGIS.closePermit('${p.id}')">✔️</button>` : ''}
+      <button class="icon-btn" onclick="AEGIS.deletePermit('${p.id}')">🗑️</button>
+    </td>
+  </tr>`;
+  }).join('');
+  document.getElementById('permitsEmpty').classList.toggle('hide', list.length>0);
+}
+
+/* ============ RENDER: CAPA ============ */
+function renderCapa(){
+  const query = document.getElementById('caSearch').value;
+  const statusFilter = document.getElementById('caFilterStatus').value || '__all__';
+  const sevFilter = document.getElementById('caFilterSeverity').value || '__all__';
+  const list = DATA.capa.filter(c=>
+    (statusFilter==='__all__' || c.status===statusFilter) &&
+    (sevFilter==='__all__' || c.severity===sevFilter) &&
+    matchesSearch(c, [c.id, projectName(c.projectId), c.title, c.assignedTo], query)
+  );
+  const body = document.getElementById('capaBody');
+  body.innerHTML = list.map(c=>{
+    const photos = [
+      c.photoBefore ? `<img class="thumb" src="${c.photoBefore}" onclick="AEGIS.openLightbox('${c.photoBefore}')" title="${t('photoBefore')}">` : '',
+      c.photoAfter ? `<img class="thumb" src="${c.photoAfter}" onclick="AEGIS.openLightbox('${c.photoAfter}')" title="${t('photoAfter')}">` : ''
+    ].filter(Boolean).join(' ') || t('noPhoto');
+    return `<tr>
+    <td>${c.id}</td><td>${projectName(c.projectId)}</td><td>${c.title}</td>
+    <td>${c.assignedTo||'—'}</td><td>${fmtDate(c.deadline)}</td>
+    <td><span class="severity-dot sev-${c.severity}"></span>${SEV_LABEL[c.severity][lang]}</td>
+    <td>${photos}</td>
+    <td>${badge(STATUS_LABEL[c.status][lang], c.status)}</td>
+    <td class="row-actions">
+      ${c.status!=='closed' ? `<button class="icon-btn" onclick="AEGIS.openCapaClose('${c.id}')">✔️</button>` : ''}
+      <button class="icon-btn" onclick="AEGIS.deleteCapa('${c.id}')">🗑️</button>
+    </td>
+  </tr>`;
+  }).join('');
+  document.getElementById('capaEmpty').classList.toggle('hide', list.length>0);
+}
+
+/* ============ RENDER: WORKERS ============ */
+function renderWorkers(){
+  const query = document.getElementById('wkSearch').value;
+  const list = DATA.workers.filter(w => matchesSearch(w, [w.name, w.badge, projectName(w.projectId), w.role], query));
+  const body = document.getElementById('workersBody');
+  body.innerHTML = list.map(w=>{
+    const d = daysUntil(w.medicalExpiry);
+    let medBadge = w.medicalExpiry ? fmtDate(w.medicalExpiry) : '—';
+    if(d !== null){
+      if(d < 0) medBadge = badge(fmtDate(w.medicalExpiry), 'expired');
+      else if(d <= 14) medBadge = badge(fmtDate(w.medicalExpiry), 'expiring');
+    }
+    return `<tr>
+    <td>${w.name}</td><td>${w.badge||'—'}</td><td>${projectName(w.projectId)}</td><td>${w.role||'—'}</td>
+    <td>${medBadge}</td>
+    <td class="row-actions">
+      <button class="icon-btn" onclick="AEGIS.openPassport('${w.id}')">🪪</button>
+      <button class="icon-btn" onclick="AEGIS.deleteWorker('${w.id}')">🗑️</button>
+    </td>
+  </tr>`;
+  }).join('');
+  document.getElementById('workersEmpty').classList.toggle('hide', list.length>0);
+}
+
+/* ============ RENDER: ARCHIVE ============ */
+function renderArchive(){
+  const body = document.getElementById('archiveBody');
+  body.innerHTML = DATA.archive.map(a=>`<tr>
+    <td>${a.type}</td><td>${a.ref}</td><td>${fmtDate(a.date)}</td>
+    <td class="small-muted">${a.details}</td>
+  </tr>`).join('');
+  document.getElementById('archiveEmpty').classList.toggle('hide', DATA.archive.length>0);
+}
+
+function renderAll(){
+  renderDashboard(); renderProjects(); renderInspections(); renderPermits(); renderCapa(); renderWorkers(); renderArchive();
+  checkPermitExpiry();
+}
+
+/* ============ IMAGE HELPERS ============ */
+function resizeImageFile(file, maxW, quality){
+  maxW = maxW || 800; quality = quality || 0.72;
+  return new Promise((resolve, reject)=>{
+    if(!file){ resolve(null); return; }
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const img = new Image();
+      img.onload = function(){
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = ev.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function wirePhotoPreview(inputId, previewId){
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  if(!input || !preview) return;
+  input.addEventListener('change', async ()=>{
+    const file = input.files && input.files[0];
+    if(!file){ preview.classList.add('hide'); return; }
+    const dataUrl = await resizeImageFile(file);
+    preview.src = dataUrl; preview.classList.remove('hide');
+  });
+}
+wirePhotoPreview('inPhoto','inPhotoPreview');
+wirePhotoPreview('caPhotoBefore','caPhotoPreview');
+wirePhotoPreview('caPhotoAfter','caAfterPreview');
+
+/* ============ FORMS ============ */
+document.getElementById('formProject').addEventListener('submit', function(e){
+  e.preventDefault();
+  const p = {
+    id: uid('PRJ', DATA.projects),
+    name: document.getElementById('pjName').value.trim(),
+    location: document.getElementById('pjLoc').value.trim(),
+    status: document.getElementById('pjStatus').value,
+    manager: document.getElementById('pjManager').value.trim()
+  };
+  if(!p.name) return;
+  DATA.projects.push(p);
+  addArchive(t('typeProject'), p.id, `${p.name} — ${p.location||''}`);
+  persist(); renderProjectSelects(); renderAll(); toast(t('savedMsg'));
+  this.reset(); document.getElementById('pjManager').value = "م. وائل علي عويس محمود";
+});
+
+let inResult = 'safe', inSeverity = 'low';
+document.getElementById('inResultSeg').addEventListener('click', e=>{
+  if(e.target.dataset.val){
+    inResult = e.target.dataset.val;
+    [...e.currentTarget.children].forEach(b=>b.classList.remove('on-safe','on-unsafe'));
+    e.target.classList.add(inResult==='safe' ? 'on-safe' : 'on-unsafe');
+  }
+});
+document.getElementById('inSeveritySeg').addEventListener('click', e=>{
+  if(e.target.dataset.val){
+    inSeverity = e.target.dataset.val;
+    [...e.currentTarget.children].forEach(b=>b.classList.remove('on-low','on-medium','on-critical'));
+    e.target.classList.add('on-'+inSeverity);
+  }
+});
+document.getElementById('formInspection').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if(!DATA.projects.length){ toast(lang==='ar' ? 'أضف مشروعاً أولاً' : 'Add a project first'); return; }
+  const photoFile = document.getElementById('inPhoto').files[0];
+  const photo = photoFile ? await resizeImageFile(photoFile) : null;
+  const rec = {
+    id: uid('INSP', DATA.inspections),
+    projectId: document.getElementById('inProject').value,
+    category: document.getElementById('inCategory').value,
+    observation: document.getElementById('inObservation').value.trim(),
+    result: inResult, severity: inSeverity, date: todayISO(), photo
+  };
+  DATA.inspections.unshift(rec);
+  addArchive(t('typeInspection'), rec.id, `${projectName(rec.projectId)} — ${CAT_LABEL[rec.category][lang]} — ${RESULT_LABEL[rec.result][lang]}`);
+  persist(); renderAll(); toast(t('savedMsg'));
+  this.reset(); document.getElementById('inPhotoPreview').classList.add('hide');
+});
+
+document.getElementById('formPermit').addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!DATA.projects.length){ toast(lang==='ar' ? 'أضف مشروعاً أولاً' : 'Add a project first'); return; }
+  const rec = {
+    id: 'PTW-' + new Date().getFullYear() + '-' + String(DATA.permits.length+1).padStart(3,'0'),
+    projectId: document.getElementById('ptProject').value,
+    type: document.getElementById('ptType').value,
+    engineer: document.getElementById('ptEngineer').value.trim() || 'م. وائل علي عويس محمود',
+    validUntil: document.getElementById('ptValidUntil').value,
+    status: 'active'
+  };
+  DATA.permits.unshift(rec);
+  addArchive(t('typePermit'), rec.id, `${projectName(rec.projectId)} — ${PT_LABEL[rec.type][lang]}`);
+  persist(); renderAll(); toast(t('savedMsg'));
+  this.reset(); document.getElementById('ptEngineer').value = "م. وائل علي عويس محمود";
+});
+
+let caSeverity = 'low';
+document.getElementById('caSeveritySeg').addEventListener('click', e=>{
+  if(e.target.dataset.val){
+    caSeverity = e.target.dataset.val;
+    [...e.currentTarget.children].forEach(b=>b.classList.remove('on-low','on-medium','on-critical'));
+    e.target.classList.add('on-'+caSeverity);
+  }
+});
+document.getElementById('formCapa').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const title = document.getElementById('caTitle').value.trim();
+  if(!title) return;
+  const photoFile = document.getElementById('caPhotoBefore').files[0];
+  const photoBefore = photoFile ? await resizeImageFile(photoFile) : null;
+  const rec = {
+    id: uid('CAPA', DATA.capa),
+    projectId: document.getElementById('caProject').value || (DATA.projects[0] && DATA.projects[0].id) || '',
+    title, assignedTo: document.getElementById('caAssigned').value.trim(),
+    deadline: document.getElementById('caDeadline').value, severity: caSeverity, status: 'open',
+    photoBefore, photoAfter: null
+  };
+  DATA.capa.unshift(rec);
+  addArchive(t('typeCapa'), rec.id, `${title} — ${SEV_LABEL[caSeverity][lang]}`);
+  persist(); renderAll(); toast(t('savedMsg'));
+  this.reset(); document.getElementById('caPhotoPreview').classList.add('hide');
+});
+
+document.getElementById('formWorker').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('wkName').value.trim();
+  if(!name) return;
+  const rec = {
+    id: uid('WRK', DATA.workers),
+    name, badge: document.getElementById('wkBadge').value.trim(),
+    projectId: document.getElementById('wkProject').value,
+    role: document.getElementById('wkRole').value.trim(),
+    medicalExpiry: document.getElementById('wkMedical').value,
+    certs: document.getElementById('wkCerts').value.trim()
+  };
+  DATA.workers.unshift(rec);
+  addArchive(lang==='ar' ? 'جواز سلامة' : 'Worker Passport', rec.id, `${name} — ${rec.badge||''}`);
+  persist(); renderAll(); toast(t('savedMsg'));
+  this.reset();
+});
+
+/* ============ ACTIONS (exposed) ============ */
+let pendingCapaCloseId = null;
+window.AEGIS = {
+  deleteProject(id){ if(!confirm(t('confirmDelete'))) return; DATA.projects = DATA.projects.filter(p=>p.id!==id); persist(); renderProjectSelects(); renderAll(); toast(t('deletedMsg')); },
+  deleteInspection(id){ if(!confirm(t('confirmDelete'))) return; DATA.inspections = DATA.inspections.filter(i=>i.id!==id); persist(); renderAll(); toast(t('deletedMsg')); },
+  deletePermit(id){ if(!confirm(t('confirmDelete'))) return; DATA.permits = DATA.permits.filter(p=>p.id!==id); persist(); renderAll(); toast(t('deletedMsg')); },
+  closePermit(id){ const p = DATA.permits.find(x=>x.id===id); if(p){ p.status='closed'; persist(); renderAll(); toast(t('savedMsg')); } },
+  deleteCapa(id){ if(!confirm(t('confirmDelete'))) return; DATA.capa = DATA.capa.filter(c=>c.id!==id); persist(); renderAll(); toast(t('deletedMsg')); },
+  deleteWorker(id){ if(!confirm(t('confirmDelete'))) return; DATA.workers = DATA.workers.filter(w=>w.id!==id); persist(); renderAll(); toast(t('deletedMsg')); },
+  openLightbox(src){
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxOverlay').classList.add('show');
+  },
+  openCapaClose(id){
+    pendingCapaCloseId = id;
+    document.getElementById('caPhotoAfter').value = '';
+    document.getElementById('caAfterPreview').classList.add('hide');
+    document.getElementById('capaCloseOverlay').classList.add('show');
+  },
+  openPassport(id){
+    const w = DATA.workers.find(x=>x.id===id);
+    if(!w) return;
+    const box = document.getElementById('passportModalBox');
+    const qrData = `AEGIS-PASSPORT|${w.id}|${w.name}|${w.badge||''}`;
+    box.innerHTML = `
+      <div class="passport-card" id="passportPrintArea">
+        <div class="ph-head">
+          <div class="badge-ic">🪪</div>
+          <div>
+            <div class="ph-name">${w.name}</div>
+            <div class="ph-role">${w.role || ''}</div>
+          </div>
+        </div>
+        <div class="passport-row"><span>${t('colBadge')}</span><b>${w.badge||'—'}</b></div>
+        <div class="passport-row"><span>${t('colProject')}</span><b>${projectName(w.projectId)}</b></div>
+        <div class="passport-row"><span>${t('medicalValidUntil')}</span><b>${fmtDate(w.medicalExpiry)}</b></div>
+        <div class="passport-row" style="border-bottom:none;"><span>${t('certsLabel')}</span><b>${w.certs||'—'}</b></div>
+        <div class="qr-wrap" id="qrHolder"></div>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px;">
+        <button class="btn" id="passportCloseBtn">${t('closeModal')}</button>
+        <button class="btn btn-primary" id="passportPrintBtn">🖨️ ${t('printPassport')}</button>
+      </div>`;
+    document.getElementById('passportModalOverlay').classList.add('show');
+    const qrHolder = document.getElementById('qrHolder');
+    try{
+      if(window.QRCode){ new QRCode(qrHolder, {text:qrData, width:140, height:140}); }
+      else { qrHolder.textContent = w.id; }
+    }catch(err){ qrHolder.textContent = w.id; }
+    document.getElementById('passportCloseBtn').addEventListener('click', ()=>{
+      document.getElementById('passportModalOverlay').classList.remove('show');
+    });
+    document.getElementById('passportPrintBtn').addEventListener('click', ()=>{
+      const w2 = document.open('', '_blank');
+      w2.document.write(`<html><head><title>${t('passportCardTitle')}</title></head><body>${box.innerHTML}</body></html>`);
+      w2.document.close(); w2.focus(); w2.print();
+    });
+  }
+};
+
+document.getElementById('passportModalOverlay').addEventListener('click', function(e){
+  if(e.target === this) this.classList.remove('show');
+});
+document.getElementById('lightboxOverlay').addEventListener('click', function(e){
+  if(e.target === this) this.classList.remove('show');
+});
+document.getElementById('lightboxClose').addEventListener('click', ()=>{
+  document.getElementById('lightboxOverlay').classList.remove('show');
+});
+document.getElementById('capaCloseCancel').addEventListener('click', ()=>{
+  document.getElementById('capaCloseOverlay').classList.remove('show');
+  pendingCapaCloseId = null;
+});
+document.getElementById('capaCloseOverlay').addEventListener('click', function(e){
+  if(e.target === this){ this.classList.remove('show'); pendingCapaCloseId = null; }
+});
+document.getElementById('capaCloseConfirm').addEventListener('click', async ()=>{
+  if(!pendingCapaCloseId) return;
+  const c = DATA.capa.find(x=>x.id===pendingCapaCloseId);
+  if(c){
+    const file = document.getElementById('caPhotoAfter').files[0];
+    if(file){ c.photoAfter = await resizeImageFile(file); }
+    c.status = 'closed';
+    persist(); renderAll(); toast(t('savedMsg'));
+  }
+  document.getElementById('capaCloseOverlay').classList.remove('show');
+  pendingCapaCloseId = null;
+});
+
+/* ============ CLOUD MODAL WIRING ============ */
+document.getElementById('cloudBtn').addEventListener('click', ()=>{
+  document.getElementById('cloudKeyInput').value = cloudKey || '';
+  document.getElementById('cloudModalStatus').textContent = '';
+  document.getElementById('cloudModalOverlay').classList.add('show');
+});
+document.getElementById('cloudModalOverlay').addEventListener('click', function(e){
+  if(e.target === this) this.classList.remove('show');
+});
+document.getElementById('cloudModalCancel').addEventListener('click', ()=>{
+  document.getElementById('cloudModalOverlay').classList.remove('show');
+});
+document.getElementById('cloudModalConnect').addEventListener('click', async ()=>{
+  const val = document.getElementById('cloudKeyInput').value.trim();
+  if(!val) return;
+  cloudKey = val;
+  localStorage.setItem('aegis_cloud_key', cloudKey);
+  document.getElementById('cloudModalStatus').textContent = t('cloudSyncing');
+  toast(t('cloudConnectedMsg'));
+  document.getElementById('cloudModalOverlay').classList.remove('show');
+  await cloudLoad();
+});
+document.getElementById('cloudModalDisconnect').addEventListener('click', ()=>{
+  cloudKey = null;
+  localStorage.removeItem('aegis_cloud_key');
+  setCloudStatus('offline');
+  toast(t('cloudDisconnectedMsg'));
+  document.getElementById('cloudModalOverlay').classList.remove('show');
+});
+
+/* ============ PRINT: SINGLE PAGE ============ */
+document.getElementById('printPageBtn').addEventListener('click', ()=>{
+  document.body.classList.add('printing-page');
+  window.print();
+});
+window.addEventListener('afterprint', ()=>{
+  document.body.classList.remove('printing-page');
+  document.body.classList.remove('printing-report');
+});
+
+/* ============ MASTER REPORT ============ */
+function buildReportHTML(){
+  const dateStr = todayISO();
+  const rows = (arr, fn) => arr.map(fn).join('') || `<tr><td colspan="8" style="text-align:center;color:#888;">—</td></tr>`;
+
+  const projectsRows = rows(DATA.projects, p=>`<tr><td>${p.id}</td><td>${p.name}</td><td>${p.location||'—'}</td><td>${p.manager||'—'}</td><td>${STATUS_LABEL[p.status][lang]}</td></tr>`);
+  const inspectionsRows = rows(DATA.inspections, i=>`<tr><td>${i.id}</td><td>${projectName(i.projectId)}</td><td>${CAT_LABEL[i.category][lang]}</td><td>${(i.observation||'—')}</td><td>${RESULT_LABEL[i.result][lang]}</td><td>${SEV_LABEL[i.severity][lang]}</td><td>${fmtDate(i.date)}</td></tr>`);
+  const permitsRows = rows(DATA.permits, p=>`<tr><td>${p.id}</td><td>${projectName(p.projectId)}</td><td>${PT_LABEL[p.type][lang]}</td><td>${p.engineer}</td><td>${fmtDate(p.validUntil)}</td><td>${STATUS_LABEL[p.status][lang]}</td></tr>`);
+  const capaRows = rows(DATA.capa, c=>`<tr><td>${c.id}</td><td>${projectName(c.projectId)}</td><td>${c.title}</td><td>${c.assignedTo||'—'}</td><td>${fmtDate(c.deadline)}</td><td>${SEV_LABEL[c.severity][lang]}</td><td>${STATUS_LABEL[c.status][lang]}</td></tr>`);
+  const workersRows = rows(DATA.workers, w=>`<tr><td>${w.name}</td><td>${w.badge||'—'}</td><td>${projectName(w.projectId)}</td><td>${w.role||'—'}</td><td>${fmtDate(w.medicalExpiry)}</td><td>${w.certs||'—'}</td></tr>`);
+
+  return `
+  <div class="rep-header">
+    <div class="shield">🛡️</div>
+    <h1>${t('reportTitle')}</h1>
+    <h3>${t('engineerLine')}</h3>
+    <p>${t('reportDate')}: ${dateStr}</p>
+  </div>
+
+  <div class="rep-kpis">
+    <div class="rep-kpi"><div class="n">${DATA.projects.length}</div><div class="l">${t('kpiProjects')}</div></div>
+    <div class="rep-kpi"><div class="n">${DATA.permits.filter(p=>p.status==='active').length}</div><div class="l">${t('kpiPermits')}</div></div>
+    <div class="rep-kpi"><div class="n">${DATA.inspections.filter(i=>i.result==='unsafe').length}</div><div class="l">${t('kpiUnsafe')}</div></div>
+    <div class="rep-kpi"><div class="n">${DATA.capa.filter(c=>c.status==='closed').length}</div><div class="l">${t('kpiCapaClosed')}</div></div>
+  </div>
+
+  <div class="rep-section">
+    <div class="rep-section-title">${t('reportProjectsSec')}</div>
+    <table><thead><tr><th>${t('colId')}</th><th>${t('colName')}</th><th>${t('colLoc')}</th><th>${t('colManager')}</th><th>${t('colStatus')}</th></tr></thead>
+    <tbody>${projectsRows}</tbody></table>
+  </div>
+
+  <div class="rep-section">
+    <div class="rep-section-title">${t('reportInspectionsSec')}</div>
+    <table><thead><tr><th>${t('colId')}</th><th>${t('colProject')}</th><th>${t('colCategory')}</th><th>${t('fieldObservation')}</th><th>${t('colResult')}</th><th>${t('colSeverity')}</th><th>${t('colDate')}</th></tr></thead>
+    <tbody>${inspectionsRows}</tbody></table>
+  </div>
+
+  <div class="rep-section">
+    <div class="rep-section-title">${t('reportPermitsSec')}</div>
+    <table><thead><tr><th>${t('colPermitNo')}</th><th>${t('colProject')}</th><th>${t('colType')}</th><th>${t('colEngineer')}</th><th>${t('colValidUntil')}</th><th>${t('colStatus')}</th></tr></thead>
+    <tbody>${permitsRows}</tbody></table>
+  </div>
+
+  <div class="rep-section">
+    <div class="rep-section-title">${t('reportCapaSec')}</div>
+    <table><thead><tr><th>${t('colCapaId')}</th><th>${t('colProject')}</th><th>${t('colTitle')}</th><th>${t('colAssignedTo')}</th><th>${t('colDeadline')}</th><th>${t('colSeverity')}</th><th>${t('colStatus')}</th></tr></thead>
+    <tbody>${capaRows}</tbody></table>
+  </div>
+
+  <div class="rep-section">
+    <div class="rep-section-title">${t('navWorkers')}</div>
+    <table><thead><tr><th>${t('colWorker')}</th><th>${t('colBadge')}</th><th>${t('colProject')}</th><th>${t('colRole')}</th><th>${t('colMedical')}</th><th>${t('certsLabel')}</th></tr></thead>
+    <tbody>${workersRows}</tbody></table>
+  </div>
+
+  <div class="rep-footer">
+    <p>${t('reportFooter')}</p>
+    <p>© ${new Date().getFullYear()} — م. وائل علي عويس محمود / Eng. Wael Ali Oweis Mahmoud</p>
+  </div>`;
+}
+
+document.getElementById('btnPrintReport').addEventListener('click', ()=>{
+  document.getElementById('reportRoot').innerHTML = buildReportHTML();
+  document.body.classList.add('printing-report');
+  window.print();
+});
+
+document.getElementById('btnDownloadReportHtml').addEventListener('click', ()=>{
+  const dateStr = todayISO();
+  const bodyHTML = buildReportHTML();
+  const standalone = `<!DOCTYPE html>
+<html lang="${lang}" dir="${lang==='ar'?'rtl':'ltr'}">
+<head>
+<meta charset="UTF-8">
+<title>${t('reportTitle')} — Eng. Wael Ali Oweis Mahmoud</title>
+<style>
+body{ font-family:'Tajawal','Segoe UI',Tahoma,Arial,sans-serif; padding:30px; line-height:1.6; color:#1B222C; }
+.rep-header{ text-align:center; border-bottom:3px solid #0B2540; padding-bottom:14px; margin-bottom:22px; }
+.rep-header .shield{ font-size:34px; }
+.rep-header h1{ color:#0B2540; margin:6px 0 2px; font-size:22px; }
+.rep-header h3{ color:#555; margin:2px 0; font-weight:500; font-size:14px;}
+.rep-header p{ margin:4px 0 0; font-size:12px; color:#66707E;}
+.rep-section{ margin-bottom:22px; }
+.rep-section-title{ background:#0B2540; color:#fff; padding:8px 12px; font-size:13.5px; font-weight:700; border-radius:6px 6px 0 0;}
+table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+th, td{ border:1px solid #E1E5EA; padding:7px 9px; text-align:${lang==='ar'?'right':'left'}; }
+th{ background:#F2F4F7; }
+.rep-footer{ text-align:center; margin-top:36px; font-size:11px; color:#66707E; border-top:1px solid #E1E5EA; padding-top:12px;}
+.rep-kpis{ display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.rep-kpi{ border:1px solid #E1E5EA; border-radius:8px; padding:10px 16px; text-align:center; flex:1; min-width:110px;}
+.rep-kpi .n{ font-size:22px; font-weight:700; color:#0B2540;}
+.rep-kpi .l{ font-size:11px; color:#66707E; margin-top:4px;}
+.print-btn{ padding:10px 20px; background:#2F8F5B; color:#fff; border:none; font-size:15px; cursor:pointer; border-radius:6px; margin-bottom:20px;}
+@media print{ .no-print{ display:none; } }
+</style>
+</head>
+<body>
+<div class="no-print"><button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button></div>
+${bodyHTML}
+</body>
+</html>`;
+  const blob = new Blob([standalone], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `Aegis_Master_Report_${dateStr}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast(t('savedMsg'));
+});
+
+/* ============ JSON EXPORT / RESET ============ */
+document.getElementById('btnDownloadJson').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `Aegis_Safety_Data_${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+document.getElementById('btnResetData').addEventListener('click', ()=>{
+  if(!confirm(t('confirmReset'))) return;
+  localStorage.removeItem(STORE_KEY);
+  DATA = loadData();
+  persist(); renderProjectSelects(); renderAll();
+  toast(t('resetMsg'));
+});
+
+/* ============ INIT ============ */
+renderProjectSelects();
+applyLang();
+setCloudStatus(cloudKey ? 'syncing' : 'offline');
+if(cloudKey){ cloudLoad(); }
+})();
+</script>
+</body>
+</html>
