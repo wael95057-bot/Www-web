@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المطور الاستراتيجي للمدن الذكية · Smart City Strategic Developer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+:root{--ink:#12262c;--paper:#edf0ef;--panel:#fbfcfb;--line:#cdd7d5;--mute:#5b6f75;--teal:#0d6e6e;--tealD:#0a4f52;--ochre:#c98a2b;--brick:#b23b2a;--moss:#3f7d4e;--sea:#1f5d80;--side:#0f2a30;--sideT:#cfdedb}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--paper);color:var(--ink);font:14px/1.6 'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;font-variant-numeric:tabular-nums;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+aside{background:var(--side);color:var(--sideT);position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column}
+.brand{display:flex;gap:10px;align-items:center;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.brand b{display:block;font-size:14px;line-height:1.35;color:#fff}
+.brand small{display:block;font-size:11.5px;color:#93b0ac;line-height:1.35;margin-top:2px}
+.nav{padding:8px 0;flex:1}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 16px;color:var(--sideT);text-decoration:none;cursor:pointer;border-inline-start:3px solid transparent;font-size:13.5px}
+.nav a:hover{background:rgba(255,255,255,.05)}
+.nav a.on{background:rgba(255,255,255,.09);border-inline-start-color:var(--ochre);color:#fff;font-weight:600}
+.nav a.sep{margin-top:10px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px}
+.nav svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.owner{padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:#93b0ac;line-height:1.5}
+.owner b{color:#fff;font-weight:600;display:block}
+.topbar{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px 24px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:18px;font-weight:600}
+.sp{flex:1}
+.menu{display:none}
+main{padding:20px 24px 60px}
+.lede{color:var(--mute);margin:0 0 16px;max-width:90ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;margin-bottom:16px}
+.panel>header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel h3{margin:0;font-size:14px;font-weight:600;flex:1}
+.pb{padding:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));background:var(--panel);border-top:1px solid var(--line);border-inline-start:1px solid var(--line);margin-bottom:16px}
+.kpi{padding:12px 14px;border-inline-end:1px solid var(--line);border-bottom:1px solid var(--line)}
+.kpi small{display:block;color:var(--mute);font-size:12px}
+.kpi b{display:block;font-size:22px;font-weight:600;line-height:1.35}
+.kpi span{font-size:12px;color:var(--mute)}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px;align-items:start}
+.split{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:16px;align-items:start}
+.split.rev{grid-template-columns:minmax(280px,1fr) minmax(0,1.7fr)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.fld{display:block;margin-bottom:12px}
+.fld>span{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#324a51;margin-bottom:4px}
+.fld .val{color:var(--teal)}
+input[type=range]{width:100%;accent-color:var(--teal)}
+.in{width:100%;padding:7px 9px;border:1px solid #b9c7c4;border-radius:5px;background:#fff}
+.in:focus,.btn:focus-visible,.nav a:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+textarea.in{min-height:70px;resize:vertical}
+.btn{padding:6px 12px;border:1px solid #b3c2bf;background:#fff;border-radius:5px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#eef4f3}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.pri:hover{background:var(--tealD)}
+.btn.dng{color:var(--brick);border-color:#dcb1a9}
+.btn.sm{padding:2px 8px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-block;padding:0 9px;border-radius:10px;font-size:12px;line-height:20px;background:#e3eae8;color:#2c4148;white-space:nowrap}
+.chip.ok{background:#dcefe2;color:#1f5a33}.chip.warn{background:#f6e6c8;color:#7a4c0a}.chip.bad{background:#f5d9d3;color:#8a2717}.chip.info{background:#d9e8f0;color:#174a68}.chip.mute{background:#e6ebea;color:#5b6f75}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:start;font-weight:600;font-size:12px;color:var(--mute);padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:8px 10px;border-bottom:1px solid #e3e9e7;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.n,.tbl th.n{text-align:end}
+.tbl .in{padding:4px 6px;min-width:70px}
+.num{direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap}
+.bar{height:6px;background:#dfe7e5;border-radius:3px;overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%}
+.bar i.ok{background:var(--moss)}.bar i.warn{background:var(--ochre)}.bar i.bad{background:var(--brick)}.bar i.info{background:var(--teal)}
+.note{border-inline-start:3px solid var(--ochre);background:#f6efe2;padding:8px 12px;font-size:12.5px;margin:0 0 14px;border-radius:4px}
+.note.info{border-color:var(--sea);background:#e7f0f5}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.kv:last-child{border-bottom:0}
+.kv span:first-child{color:var(--mute)}
+.mapwrap svg{width:100%;height:auto;display:block;direction:ltr;border-radius:4px;background:#e9f0ef}
+.sec{stroke:#fbfcfb;stroke-width:3;cursor:pointer}
+.sec:hover{filter:brightness(.94)}
+.sec.sel{stroke:var(--ochre);stroke-width:4}
+.sl{font-size:14px;font-weight:700;fill:#12262c;pointer-events:none;text-anchor:middle}
+.sv{font-size:12px;fill:#12262c;pointer-events:none;text-anchor:middle}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin-top:8px;align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-inline-end:5px;vertical-align:-2px}
+.tabs{display:inline-flex;border:1px solid #b3c2bf;border-radius:5px;overflow:hidden}
+.tabs button{border:0;background:#fff;padding:4px 12px;cursor:pointer;border-inline-start:1px solid #b3c2bf}
+.tabs button:first-child{border-inline-start:0}
+.tabs button.on{background:var(--teal);color:#fff}
+.chart svg{width:100%;height:auto;display:block;direction:ltr}
+.chart .ax{fill:#5b6f75;font-size:11px}.chart .gl{stroke:#dfe6e4;stroke-width:1}.chart .ref{stroke:var(--brick);stroke-width:1.2;stroke-dasharray:4 4}
+.chart .lg{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin-top:6px}
+.chart .lg i{display:inline-block;width:14px;height:3px;margin-inline-end:5px;vertical-align:3px;border-radius:2px}
+.steps{display:flex;gap:4px;flex-wrap:wrap}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.muted{color:var(--mute)}
+.small{font-size:12px}
+.ov{position:fixed;inset:0;background:rgba(10,25,30,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.dlg{background:#fff;border-radius:8px;max-width:620px;width:100%;max-height:92vh;overflow:auto;padding:20px}
+.dlg.wide{max-width:1000px}
+.dlg h3{margin:0 0 12px;font-size:16px}
+.err{color:var(--brick);font-size:12.5px;margin:6px 0}
+.arch{pointer-events:none;user-select:text}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:6px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+.print-only{display:none}
+.arch .print-only{display:block}
+.phead{border-bottom:2px solid #12262c;margin-bottom:12px;padding-bottom:6px;font-size:12px;line-height:1.6}
+.phead b{font-size:15px}
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}
+ aside{position:fixed;inset-block:0;inset-inline-start:0;width:264px;z-index:40;transform:translateX(100%);transition:transform .2s}
+ [dir=ltr] aside{transform:translateX(-100%)}
+ .nav-open aside{transform:none}
+ .menu{display:inline-block}
+ .split,.split.rev,.fgrid{grid-template-columns:1fr}
+ .g2{grid-template-columns:1fr}
+ main,.topbar{padding-inline:14px}
+}
+@media print{
+ aside,.topbar,.no-print,.toast{display:none!important}
+ .app{display:block}
+ body{background:#fff;font-size:12px}
+ .print-only{display:block}
+ main{padding:0}
+ .panel,.kpis{break-inside:avoid}
+ @page{size:A4;margin:12mm}
+ body.pm .app{display:none}
+ body.pm .ov{position:static;background:none;padding:0;display:block}
+ body.pm .dlg{max-width:none;max-height:none;overflow:visible;padding:0}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+ <aside>
+  <div class="brand">
+   <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="6" fill="#c98a2b"/><path d="M7 26V14h5v12M14 26V8h6v18M22 26V17h5v9" fill="none" stroke="#0f2a30" stroke-width="2" stroke-linejoin="round"/></svg>
+   <div><b id="bn"></b><small id="bs"></small></div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+  <div class="owner" id="owner"></div>
+ </aside>
+ <div>
+  <div class="topbar no-print">
+   <button class="btn menu" data-act="menu" aria-label="menu">&#9776;</button>
+   <h1 id="title"></h1><span class="chip info" id="pchip"></span><span class="sp"></span>
+   <button class="btn" data-act="lang" id="langb"></button>
+   <button class="btn" data-act="print" id="printb"></button>
+   <button class="btn pri" data-act="snap" id="snapb"></button>
+  </div>
+  <main id="main"></main>
+ </div>
+</div>
+<div id="ov"></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+'use strict';
+/* ================= utils ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const N=v=>{const n=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(n)?n:0};
+const fmt=(n,d=0)=>N(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pad=n=>String(n).padStart(2,'0');
+const isoLocal=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const isoU=t=>{const d=new Date(t);return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate())};
+const today=()=>isoLocal(new Date());
+const toU=s=>{const a=String(s).split('-').map(Number);return Date.UTC(a[0],a[1]-1,a[2])};
+const addDays=(s,n)=>isoU(toU(s)+n*864e5);
+const daysBetween=(a,b)=>Math.round((toU(b)-toU(a))/864e5);
+const uid=()=>Math.random().toString(36).slice(2,10);
+const sum=(a,k)=>a.reduce((x,o)=>x+N(o[k]),0);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const seeded=seed=>{let s=seed;return()=>(s=(s*1664525+1013904223)%4294967296)/4294967296};
+
+/* ================= SHA-256 (sync, for the tamper-evident ledger) ================= */
+function sha256(ascii){
+  function rr(v,a){return(v>>>a)|(v<<(32-a))}
+  var mp=Math.pow,mw=mp(2,32),result='',words=[],abl=ascii.length*8,i,j;
+  var hash=sha256.h=sha256.h||[],k=sha256.k=sha256.k||[],pc=k.length,comp={};
+  for(var c=2;pc<64;c++){
+    if(!comp[c]){
+      for(i=0;i<313;i+=c)comp[i]=c;
+      hash[pc]=(mp(c,.5)*mw)|0;
+      k[pc++]=(mp(c,1/3)*mw)|0;
+    }
+  }
+  hash=hash.slice(0,8);var H0=hash.slice(0);
+  ascii+='\x80';
+  while(ascii.length%64-56)ascii+='\x00';
+  for(i=0;i<ascii.length;i++){j=ascii.charCodeAt(i);words[i>>2]|=j<<((3-i)%4)*8}
+  words[words.length]=((abl/mw)|0);
+  words[words.length]=abl;
+  hash=H0.slice(0);
+  for(j=0;j<words.length;){
+    var w=words.slice(j,j+=16),old=hash;
+    hash=hash.slice(0,8);
+    for(i=0;i<64;i++){
+      var w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];
+      var t1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+(rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      var t2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash=[(t1+t2)|0].concat(hash);
+      hash[4]=(hash[4]+t1)|0;
+    }
+    for(i=0;i<8;i++)hash[i]=(hash[i]+old[i])|0;
+  }
+  for(i=0;i<8;i++)for(j=3;j+1;j--){var b=(hash[i]>>(j*8))&255;result+=((b<16)?0:'')+b.toString(16)}
+  return result;
+}
+function hashText(s){const b=new TextEncoder().encode(s);let a='';for(let i=0;i<b.length;i++)a+=String.fromCharCode(b[i]);return sha256(a)}
+
+/* ================= state ================= */
+const KEY='scsd.v1';
+let S=null;
+function loadState(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.projects&&o.projects.length)return o}}catch(e){}return null}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){if(!save.w){save.w=1;toast(L('تعذّر الحفظ المحلي (المساحة ممتلئة). صدّر نسخة JSON.','Local save failed (storage full). Export a JSON copy.'))}}}
+const P=()=>S.projects.find(p=>p.id===S.currentId)||S.projects[0];
+const L=(a,e)=>(S&&S.lang==='en')?e:a;
+function setPath(o,p,v){const k=p.split('.');let c=o;for(let i=0;i<k.length-1;i++)c=c[k[i]];c[k[k.length-1]]=v}
+
+/* ================= money ================= */
+function money(n,short){
+  const f=P().fx,r=f.rates[f.cur]||1,v=N(n)*r,a=Math.abs(v);let s;
+  if(short&&a>=1e6)s=fmt(v/1e6,2)+'M';else if(short&&a>=1e3)s=fmt(v/1e3,0)+'K';else s=fmt(v);
+  return '<span class="num">'+s+' '+esc(f.cur)+'</span>';
+}
+const nn=s=>'<span class="num">'+esc(s)+'</span>';
+const pct=(v,d=0)=>'<span class="num">'+fmt(v,d)+'%</span>';
+
+/* ================= ui helpers ================= */
+const chip=(c,t)=>'<span class="chip '+c+'">'+esc(t)+'</span>';
+const panel=(title,body,right)=>'<section class="panel"><header><h3>'+title+'</h3>'+(right||'')+'</header><div class="pb">'+body+'</div></section>';
+const kpi=(l,v,s)=>'<div class="kpi"><small>'+l+'</small><b>'+v+'</b><span>'+(s||'&nbsp;')+'</span></div>';
+const lvl=p=>p>=90?'bad':p>=75?'warn':'ok';
+const bar=(p,c)=>'<div class="bar"><i class="'+(c||lvl(p))+'" style="width:'+clamp(p,0,100)+'%"></i></div>';
+const tw=h=>'<div class="tw">'+h+'</div>';
+function slider(path,label,min,max,step,unit,val){
+  return '<label class="fld"><span>'+label+' <b class="val">'+fmt(val,step<1?1:0)+unit+'</b></span><input type="range" data-bind="'+path+'" data-unit="'+esc(unit)+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"></label>';
+}
+function numIn(path,label,val,w){return '<label class="fld"><span>'+label+'</span><input class="in" inputmode="decimal" data-num="1" data-bind="'+path+'" value="'+esc(val)+'"'+(w?' style="max-width:'+w+'"':'')+'></label>'}
+function selIn(path,label,opts,val,num){return '<label class="fld"><span>'+label+'</span><select class="in" data-bind="'+path+'"'+(num?' data-num="1"':'')+'>'+opts.map(o=>'<option value="'+esc(o[0])+'"'+(String(o[0])===String(val)?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select></label>'}
+
+/* ================= charts ================= */
+function lineChart(o){
+  const w=o.w||640,h=o.h||250,m={l:48,r:14,t:12,b:26},iw=w-m.l-m.r,ih=h-m.t-m.b,labels=o.labels,series=o.series;
+  let all=[].concat.apply([],series.map(s=>s.data));if(o.ref!=null)all.push(o.ref);
+  let lo=o.yMin!=null?o.yMin:Math.min(0,Math.min.apply(null,all)),hi=o.yMax!=null?o.yMax:(Math.max.apply(null,all)*1.08||1);if(hi<=lo)hi=lo+1;
+  const X=i=>m.l+(labels.length<2?iw/2:i*iw/(labels.length-1)),Y=v=>m.t+ih-(v-lo)/(hi-lo)*ih;
+  let g='';
+  for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4,y=Y(v);g+='<line x1="'+m.l+'" x2="'+(w-m.r)+'" y1="'+y+'" y2="'+y+'" class="gl"/><text x="'+(m.l-6)+'" y="'+(y+4)+'" text-anchor="end" class="ax">'+fmt(v,hi-lo<10?1:0)+'</text>'}
+  const st=Math.max(1,Math.ceil(labels.length/12));
+  labels.forEach((lb,i)=>{if(i%st===0)g+='<text x="'+X(i)+'" y="'+(h-8)+'" text-anchor="middle" class="ax">'+esc(lb)+'</text>'});
+  if(o.ref!=null)g+='<line x1="'+m.l+'" x2="'+(w-m.r)+'" y1="'+Y(o.ref)+'" y2="'+Y(o.ref)+'" class="ref"/>';
+  series.forEach(s=>{g+='<polyline points="'+s.data.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ')+'" fill="none" stroke="'+s.color+'" stroke-width="2.2" stroke-linejoin="round"'+(s.dash?' stroke-dasharray="6 4"':'')+'/>'});
+  return '<div class="chart"><svg viewBox="0 0 '+w+' '+h+'" role="img">'+g+'</svg><div class="lg">'+series.map(s=>'<span><i style="background:'+s.color+'"></i>'+esc(s.name)+'</span>').join('')+(o.ref!=null&&o.refLabel?'<span><i style="background:var(--brick)"></i>'+esc(o.refLabel)+'</span>':'')+'</div></div>';
+}
+function barChart(o){
+  const w=o.w||640,h=o.h||230,m={l:56,r:10,t:12,b:26},iw=w-m.l-m.r,ih=h-m.t-m.b,v=o.values,n=v.length;
+  const hi=(Math.max.apply(null,v.concat([1]))*1.1),lo=Math.min(0,Math.min.apply(null,v))*1.1,Y=x=>m.t+ih-(x-lo)/(hi-lo)*ih,bw=iw/n*.62;
+  let g='';
+  for(let i=0;i<=4;i++){const val=lo+(hi-lo)*i/4,y=Y(val);g+='<line x1="'+m.l+'" x2="'+(w-m.r)+'" y1="'+y+'" y2="'+y+'" class="gl"/><text x="'+(m.l-6)+'" y="'+(y+4)+'" text-anchor="end" class="ax">'+(o.fy?o.fy(val):fmt(val))+'</text>'}
+  v.forEach((x,i)=>{const cx=m.l+iw/n*(i+.5),y0=Y(0),y1=Y(x);g+='<rect x="'+(cx-bw/2)+'" y="'+Math.min(y0,y1)+'" width="'+bw+'" height="'+Math.abs(y1-y0)+'" fill="'+((o.colors&&o.colors[i])||o.color||'#0d6e6e')+'" rx="2"/><text x="'+cx+'" y="'+(h-8)+'" text-anchor="middle" class="ax">'+esc(o.labels[i])+'</text>'});
+  return '<div class="chart"><svg viewBox="0 0 '+w+' '+h+'" role="img">'+g+'</svg></div>';
+}
+
+/* ================= modal / toast ================= */
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2600)}
+function closeModal(){$('#ov').innerHTML='';document.body.classList.remove('pm')}
+function openModal(inner,wide){$('#ov').innerHTML='<div class="ov" data-act="ovbg"><div class="dlg'+(wide?' wide':'')+'" role="dialog" aria-modal="true">'+inner+'</div></div>'}
+function openForm(title,fields,onOk,note){
+  const h=fields.map(f=>{
+    const id='f_'+f.k,req=f.req?' required':'',v=f.v==null?'':f.v;let inp;
+    if(f.t==='select')inp='<select class="in" name="'+f.k+'" id="'+id+'">'+f.o.map(o=>'<option value="'+esc(o[0])+'"'+(String(o[0])===String(v)?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select>';
+    else if(f.t==='area')inp='<textarea class="in" name="'+f.k+'" id="'+id+'"'+req+'>'+esc(v)+'</textarea>';
+    else inp='<input class="in" name="'+f.k+'" id="'+id+'" type="'+(f.t==='date'?'date':'text')+'"'+(f.t==='number'?' inputmode="decimal"':'')+' value="'+esc(v)+'"'+req+'>';
+    return '<label class="fld" style="'+(f.full?'grid-column:1/-1':'')+'"><span>'+f.l+'</span>'+inp+'</label>';
+  }).join('');
+  openModal('<h3>'+title+'</h3>'+(note?'<p class="note info">'+note+'</p>':'')+'<form id="frm"><div class="fgrid">'+h+'</div><div class="err" id="ferr"></div><div class="acts"><button class="btn pri" type="submit">'+L('حفظ','Save')+'</button><button class="btn" type="button" data-act="close">'+L('إلغاء','Cancel')+'</button></div></form>');
+  $('#frm').addEventListener('submit',e=>{
+    e.preventDefault();const o={};
+    fields.forEach(f=>{let v=e.target.elements[f.k].value;if(f.t==='number')v=N(v);if(f.t==='date'&&!v)v=null;o[f.k]=v});
+    const r=onOk(o);if(typeof r==='string'){$('#ferr').textContent=r;return}closeModal();
+  });
+  const first=$('#frm input,#frm select,#frm textarea');if(first)first.focus();
+}
+function confirmBox(msg,yes){
+  openModal('<h3>'+L('تأكيد','Confirm')+'</h3><p>'+msg+'</p><div class="acts"><button class="btn pri" id="cy">'+L('نعم، متابعة','Yes, continue')+'</button><button class="btn" data-act="close">'+L('إلغاء','Cancel')+'</button></div>');
+  $('#cy').onclick=()=>{closeModal();yes()};
+}
+function download(name,text,type){try{const b=new Blob([text],{type:type||'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}catch(e){toast(L('التنزيل غير متاح في هذا العرض','Download is not available in this view'))}}
+
+/* ================= audit ================= */
+const isO=v=>v&&typeof v==='object';
+function diffObj(a,b){const d={};const ks={};Object.keys(a||{}).concat(Object.keys(b||{})).forEach(k=>ks[k]=1);Object.keys(ks).forEach(k=>{const x=a?a[k]:null,y=b?b[k]:null;if(isO(x)||isO(y))return;if(x!==y)d[k]={old:x==null?null:x,new:y==null?null:y}});return d}
+function audit(table,op,rid,a,b){const p=P();p.audit.unshift({ts:new Date().toISOString(),table,op,rid,by:S.user||L('مستخدم محلي','Local user'),role:S.role,diff:diffObj(a,b)});if(p.audit.length>400)p.audit.length=400}
+/* ================= reference data ================= */
+const ROLES={PROJECT_MANAGER:['مدير المشروع','Project Manager'],PROGRAM_DIRECTOR:['مدير البرنامج','Program Director'],CEO:['الرئيس التنفيذي','CEO'],VIEWER:['مشاهدة فقط','View only']};
+const roleName=r=>ROLES[r]?L(ROLES[r][0],ROLES[r][1]):r;
+const SEC_KEYS=['code','ar','en','pts','pop','gfa','occ','target','capP','peakP','capC','peakC','capW','demW','vc','phase','co2','baseCo2','renew','wRec','waste','utilPerM2','designPerM2'];
+const SEC=[
+['A1','الواجهة البحرية','Waterfront','30,88 236,80 240,178 30,182',42000,3.2e6,87,85,210,168,140,112,60,47,.78,'OPERATING',310,420,22,61,58,14.2,16],
+['B2','المركز التجاري','Central Business','250,80 452,86 448,178 250,178',18000,4.1e6,78,85,260,214,190,158,52,38,.86,'RAMP_UP',402,520,18,55,49,19.8,26],
+['C1','السكني الشمالي','North Residential','464,86 612,96 612,178 460,178',56000,3.8e6,91,85,150,138,96,88,72,66,.71,'OPERATING',244,310,15,66,52,9.6,10.5],
+['D1','الابتكار والتعليم','Innovation & Education','30,192 178,190 190,300 30,296',9000,1.6e6,64,80,110,58,70,34,24,11,.42,'RAMP_UP',96,150,34,72,63,11,17],
+['E1','المركز متعدد الاستخدام','Mixed-use Centre','192,190 400,190 396,304 200,304',24000,2.4e6,82,85,130,104,88,71,34,27,.69,'OPERATING',178,235,20,58,54,12.3,15],
+['F1','الضيافة والترفيه','Hospitality & Leisure','412,190 612,190 612,300 408,304',6000,1.9e6,71,75,120,84,92,64,38,24,.55,'OPERATING',198,260,12,49,41,21,29],
+['G1','المرافق واللوجستيات','Utilities & Logistics','30,314 612,314 612,392 30,392',800,.7e6,60,70,90,46,20,9,20,7,.38,'PLANNED',120,140,8,38,35,30,50]
+];
+const PHASES={OPERATING:['قائم','Operating','ok'],RAMP_UP:['قيد الإشغال','Ramp-up','info'],PLANNED:['مخطط','Planned','mute']};
+const DEV_TYPES=[['WATER_LEAK','كاشف تسرب مياه','Water leak sensor'],['ENERGY_METER','عداد طاقة','Energy meter'],['AIR_QUALITY','جودة الهواء','Air quality'],['TRAFFIC','عدّاد مروري','Traffic counter'],['WEATHER','محطة طقس','Weather station']];
+const SVC=[['power','الكهرباء','Power'],['water','المياه','Water'],['cooling','التبريد','Cooling'],['mobility','التنقل','Mobility'],['comms','الاتصالات','Comms']];
+
+/* ================= project builders ================= */
+function ledgerAppend(p,e){
+  const prev=p.ledger.length?p.ledger[p.ledger.length-1].hash:'0'.repeat(64),idx=p.ledger.length+1;
+  const r={idx,ts:e.ts||new Date().toISOString(),asset:e.asset,type:e.type,note:e.note,by:e.by,prev};
+  r.hash=hashText([r.prev,r.idx,r.ts,r.asset,r.type,r.note,r.by].join('|'));
+  p.ledger.push(r);return r;
+}
+function newProject(name,mode){
+  const t=today(),rnd=seeded(11);
+  const p={id:uid(),name:name,city:L('مدينة ساحلية جديدة','New coastal city'),owner:'Eng. Wael Oweis · المهندس وائل عويس',created:new Date().toISOString(),
+    fx:{cur:'USD',rates:{USD:1,AED:3.6725,SAR:3.75,EUR:0.92}},
+    matrix:{t1:50000,t2:500000},
+    sectors:[],devices:[],developers:[],contracts:[],cos:[],claims:[],ledger:[],audit:[],
+    sel:'A1',mapMode:'occ',
+    sim:{twin:{sector:'ALL',dens:10,occT:85,g:2,H:10},
+      cool:{scope:'ALL',T:42,cov:40,cop:4.5,env:30,eff:25,sens:4,tariff:0.09,ef:0.45},
+      esg:{target:2050,price:15,elig:60},
+      fin:{disc:8,newGfa:900000,year:3,g:4,rent:260,opex:30,lead:2},
+      res:{scn:0,iso:true,bak:true,red:false,route:true,x:320,y:230,rad:700}},
+    roi:[
+      {n:'الإنارة الذكية للشوارع|Smart street lighting',capex:4200000,save:900000,life:12},
+      {n:'شبكة مياه IoT وكشف التسرب|IoT water network & leak detection',capex:6500000,save:1400000,life:15},
+      {n:'إشارات مرور تكيفية|Adaptive traffic signals',capex:5000000,save:700000,life:12},
+      {n:'تحسين محطات التبريد المركزي|District cooling optimisation',capex:9800000,save:2600000,life:15},
+      {n:'جمع النفايات الذكي|Smart waste collection',capex:2400000,save:450000,life:10}],
+    capex:[
+      {id:'k1',n:'ربط محطة فرعية D1–B2|Substation link D1–B2',sector:'B2',capex:18e6,qol:6,upl:4,urg:8},
+      {id:'k2',n:'توسعة شبكة TSE إلى C1|TSE network extension to C1',sector:'C1',capex:7.5e6,qol:7,upl:3,urg:6},
+      {id:'k3',n:'حديقة وممشى مظلل (A1)|Shaded park & promenade (A1)',sector:'A1',capex:12e6,qol:9,upl:6,urg:4},
+      {id:'k4',n:'ممر حافلات سريعة E1–B2|BRT corridor E1–B2',sector:'E1',capex:26e6,qol:8,upl:7,urg:7},
+      {id:'k5',n:'توسعة محطة التبريد رقم 3 (B2)|Cooling plant #3 expansion (B2)',sector:'B2',capex:34e6,qol:5,upl:3,urg:9}]
+  };
+  SEC.forEach(r=>{const o={};SEC_KEYS.forEach((k,i)=>o[k]=r[i]);const q=o.pts.split(' ').map(s=>s.split(',').map(Number));
+    o.cx=q.reduce((a,b)=>a+b[0],0)/q.length;o.cy=q.reduce((a,b)=>a+b[1],0)/q.length;
+    o.bb=[Math.min.apply(null,q.map(a=>a[0])),Math.min.apply(null,q.map(a=>a[1])),Math.max.apply(null,q.map(a=>a[0])),Math.max.apply(null,q.map(a=>a[1]))];
+    p.sectors.push(o)});
+  p.sectors.forEach(s=>{for(let i=1;i<=5;i++){const b=s.bb;p.devices.push({sn:'DV-'+s.code+'-'+pad(i),type:DEV_TYPES[(i-1)%5][0],sector:s.code,x:Math.round(b[0]+14+rnd()*(b[2]-b[0]-28)),y:Math.round(b[1]+22+rnd()*(b[3]-b[1]-44)),status:rnd()<.1?'OFFLINE':'ACTIVE'})}});
+  if(mode==='demo'){
+    p.developers=[
+      {id:'d1',ar:'النور للتطوير العمراني',en:'Al Noor Urban Developers',cr:'CR-1001',kpi:96},
+      {id:'d2',ar:'الخليج لأعمال البنية التحتية',en:'Gulf Infrastructure Works',cr:'CR-1002',kpi:78},
+      {id:'d3',ar:'أفق للمرافق الذكية',en:'Horizon Smart Utilities',cr:'CR-1003',kpi:91}];
+    p.contracts=[
+      {id:'c1',code:'CON-2026-A1-01',devId:'d1',sector:'A1',ar:'الفضاء العام والمرافق – الواجهة البحرية',en:'Waterfront public realm & utilities',orig:42.5e6,revised:44.3e6,start:addDays(t,-420),plannedEnd:addDays(t,300),revisedEnd:addDays(t,345),spi:1.04,cpi:1.01,status:'ACTIVE',version:3},
+      {id:'c2',code:'CON-2026-B2-02',devId:'d2',sector:'B2',ar:'شبكة التبريد المركزي – المركز التجاري',en:'Central district cooling network',orig:78e6,revised:81.2e6,start:addDays(t,-300),plannedEnd:addDays(t,200),revisedEnd:addDays(t,260),spi:.86,cpi:.93,status:'ACTIVE',version:2},
+      {id:'c3',code:'CON-2026-D1-03',devId:'d3',sector:'D1',ar:'الشبكة الذكية والعدادات',en:'Smart grid & metering',orig:26.4e6,revised:26.438e6,start:addDays(t,-150),plannedEnd:addDays(t,240),revisedEnd:addDays(t,240),spi:.97,cpi:1,status:'ACTIVE',version:2}];
+    const H=(steps,n,by)=>steps.slice(0,n).map((r,i)=>({step:i+1,role:r,by:by,at:new Date(Date.now()-(20-i)*864e5).toISOString(),act:'APPROVE',comment:''}));
+    const S3=['PROJECT_MANAGER','PROGRAM_DIRECTOR','CEO'],S1=['PROJECT_MANAGER'],S2=['PROJECT_MANAGER','PROGRAM_DIRECTOR'];
+    p.cos=[
+      {id:'o1',code:'CO-A1-001',contractId:'c1',title:'ري إضافي بمياه TSE للمسطحات الخضراء',en:'Additional TSE irrigation for landscaped areas',just:'زيادة المسطحات الخضراء بقرار من الجهة المالكة',cost:620000,days:14,bim:'',by:'م. الموقع',status:'PENDING',step:2,steps:S3,history:H(S3,1,'Project Manager')},
+      {id:'o2',code:'CO-B2-002',contractId:'c2',title:'تحويل مسار خط المياه المبردة الرئيسي',en:'Re-route main chilled-water pipeline',just:'تعارض مع خدمات قائمة اكتُشف أثناء الحفر',cost:1150000,days:45,bim:'',by:'م. الموقع',status:'PENDING',step:1,steps:S3,history:[]},
+      {id:'o3',code:'CO-D1-003',contractId:'c3',title:'إضافة 1,200 عداد ذكي',en:'Add 1,200 smart meters',just:'توسعة نطاق القياس لمباني إضافية',cost:38000,days:0,bim:'',by:'مدير التصميم',status:'APPROVED',step:1,steps:S1,history:H(S1,1,'Project Manager')},
+      {id:'o4',code:'CO-A1-004',contractId:'c1',title:'تعديل تصميم الواجهة المائية',en:'Waterfront edge redesign',just:'استجابة لدراسة الصمود الساحلي',cost:1800000,days:45,bim:'',by:'مدير التصميم',status:'APPROVED',step:3,steps:S3,history:H(S3,3,'Governance')},
+      {id:'o5',code:'CO-B2-005',contractId:'c2',title:'رفع سعة محطة التبريد',en:'Increase cooling plant capacity',just:'ارتفاع الطلب المتوقع في المركز التجاري',cost:3200000,days:60,bim:'',by:'مدير التصميم',status:'APPROVED',step:3,steps:S3,history:H(S3,3,'Governance')}];
+    p.claims=[
+      {id:'m1',code:'CLM-A1-01',contractId:'c1',title:'تأخر تسليم الموقع (نقل خدمات)',en:'Late site access (utility relocation)',edition:'2017',aware:addDays(t,-40),notice:addDays(t,-20),detailed:null,amount:950000,evaluated:0,settled:0,status:'RAISED',nDays:28,dDays:84},
+      {id:'m2',code:'CLM-B2-02',contractId:'c2',title:'تأخر توريد المضخات من المالك',en:'Late owner-supplied pumps',edition:'1999',aware:addDays(t,-33),notice:null,detailed:null,amount:1400000,evaluated:0,settled:0,status:'RAISED',nDays:28,dDays:42},
+      {id:'m3',code:'CLM-D1-03',contractId:'c3',title:'ظروف تربة غير متوقعة',en:'Unforeseen ground conditions',edition:'2017',aware:addDays(t,-22),notice:null,detailed:null,amount:410000,evaluated:0,settled:0,status:'RAISED',nDays:28,dDays:84},
+      {id:'m4',code:'CLM-A1-04',contractId:'c1',title:'أعمال إضافية للأساسات',en:'Additional foundation works',edition:'2017',aware:addDays(t,-200),notice:addDays(t,-185),detailed:addDays(t,-150),amount:300000,evaluated:240000,settled:220000,status:'SETTLED',nDays:28,dDays:84}];
+    [['CHW-PLT-01','COMMISSIONING','تشغيل محطة تبريد مركزي رقم 1 واعتماد الاختبارات','Commissioning of district cooling plant #1 and acceptance tests',-90],
+     ['TRF-B2-07','INSPECTION','فحص دوري لمحول القطاع B2','Periodic inspection of sector B2 transformer',-45],
+     ['WTR-PS-03','MAINTENANCE','استبدال مضخة رئيسية ضمن الصيانة الوقائية','Main pump replacement under preventive maintenance',-12]]
+     .forEach(r=>ledgerAppend(p,{asset:r[0],type:r[1],note:S.lang==='en'?r[3]:r[2],by:'O&M Team',ts:new Date(Date.now()+r[4]*864e5).toISOString()}));
+  }
+  return p;
+}
+
+/* ================= models ================= */
+function openClaims(p,cid){return p.claims.filter(k=>(!cid||k.contractId===cid)&&k.status!=='SETTLED'&&k.status!=='WITHDRAWN')}
+function claimClock(k){
+  const nd=k.edition==='custom'?(N(k.nDays)||28):28,dd=k.edition==='1999'?42:k.edition==='2017'?84:(N(k.dDays)||84);
+  const nDue=addDays(k.aware,nd),dDue=addDays(k.aware,dd),t=today();
+  const r={nDue,dDue,nd,dd,status:'',rem:0,barred:false,closed:false};
+  if(k.status==='SETTLED'||k.status==='WITHDRAWN'){r.status='CLOSED';r.closed=true;return r}
+  if(k.notice){
+    if(k.notice>nDue){r.status='BARRED_NOTICE';r.barred=true;r.rem=-daysBetween(nDue,k.notice)}
+    else if(k.detailed){if(k.detailed>dDue){r.status='BARRED_DETAIL';r.barred=true;r.rem=-daysBetween(dDue,k.detailed)}else r.status='SUBMITTED'}
+    else{r.rem=daysBetween(t,dDue);if(r.rem<0){r.status='BARRED_DETAIL';r.barred=true}else r.status=r.rem<=14?'CRITICAL_DETAIL':'NOTICE_OK'}
+  }else{r.rem=daysBetween(t,nDue);if(r.rem<0){r.status='BARRED_NOTICE';r.barred=true}else r.status=r.rem<=7?'CRITICAL_NOTICE':'NOTICE_DUE'}
+  return r;
+}
+const CLAIM_ST={
+ NOTICE_DUE:['info','مهلة الإخطار سارية','Notice window open'],CRITICAL_NOTICE:['warn','مهلة الإخطار على وشك الانتهاء','Notice deadline near'],
+ NOTICE_OK:['ok','تم الإخطار – بانتظار التفاصيل','Notified – details pending'],CRITICAL_DETAIL:['warn','موعد المطالبة المفصّلة قريب','Detailed-claim deadline near'],
+ SUBMITTED:['ok','قُدّمت كاملة ضمن المهلة','Fully submitted in time'],BARRED_NOTICE:['bad','إخطار متأخر – خطر السقوط','Late notice – time-bar risk'],
+ BARRED_DETAIL:['bad','تفاصيل متأخرة – خطر السقوط','Late details – time-bar risk'],CLOSED:['mute','مغلقة','Closed']};
+function contractRisk(p,c){
+  let s=0;s+=c.spi<.9?2:c.spi<.95?1:0;s+=c.cpi<.9?2:c.cpi<.95?1:0;
+  const oc=sum(openClaims(p,c.id),'amount')/(c.revised||1);s+=oc>.05?2:oc>.02?1:0;
+  const g=(c.revised-c.orig)/(c.orig||1);s+=g>.1?2:g>.05?1:0;
+  if(p.claims.some(k=>k.contractId===c.id&&claimClock(k).barred))s+=1;
+  return {score:s,lvl:s>=6?'CRITICAL':s>=4?'HIGH':s>=2?'MEDIUM':'LOW'};
+}
+const RISK_CH={LOW:['ok','منخفض','Low'],MEDIUM:['info','متوسط','Medium'],HIGH:['warn','مرتفع','High'],CRITICAL:['bad','حرج','Critical']};
+const riskChip=r=>chip(RISK_CH[r][0],L(RISK_CH[r][1],RISK_CH[r][2]));
+function esgScore(s){return .30*Math.min(100,s.renew/50*100)+.25*s.wRec+.20*s.waste+.25*Math.min(100,(s.baseCo2-s.co2)/s.baseCo2/.4*100)}
+function occEst(s){return Math.min(100,s.utilPerM2/s.designPerM2*100)}
+const nm=o=>L(o.ar,o.en||o.ar);
+const bi=s=>{const a=String(s).split('|');return L(a[0],a[1]||a[0])};
+const coTitle=o=>L(o.title,o.en||o.title), clTitle=o=>L(o.title,o.en||o.title);
+function stepsFor(a){const m=P().matrix;a=Math.abs(a);return a<m.t1?['PROJECT_MANAGER']:a<m.t2?['PROJECT_MANAGER','PROGRAM_DIRECTOR']:['PROJECT_MANAGER','PROGRAM_DIRECTOR','CEO']}
+function verifyLedger(p){
+  let prev='0'.repeat(64);
+  for(let i=0;i<p.ledger.length;i++){const r=p.ledger[i];
+    const h=hashText([r.prev,r.idx,r.ts,r.asset,r.type,r.note,r.by].join('|'));
+    if(r.prev!==prev||h!==r.hash||r.idx!==i+1)return i;prev=r.hash}
+  return -1;
+}
+
+function twinCalc(){
+  const p=P(),o=p.sim.twin,secs=o.sector==='ALL'?p.sectors:p.sectors.filter(s=>s.code===o.sector);
+  const g=sum(secs,'gfa')||1,pop=sum(secs,'pop')||1;
+  const occ=secs.reduce((a,s)=>a+s.occ*s.gfa,0)/g,vc=secs.reduce((a,s)=>a+s.vc*s.pop,0)/pop;
+  const U=[['power',L('الكهرباء (MW)','Power (MW)'),sum(secs,'peakP'),sum(secs,'capP'),'#c98a2b'],['cooling',L('التبريد (MW حراري)','Cooling (MWth)'),sum(secs,'peakC'),sum(secs,'capC'),'#1f5d80'],['water',L('المياه (م.م³/يوم)','Water (ML/d)'),sum(secs,'demW'),sum(secs,'capW'),'#3f7d4e']];
+  const sc=y=>(1+o.dens/100)*(o.occT/Math.max(occ,1))*Math.pow(1+o.g/100,y);
+  const years=[];for(let y=0;y<=o.H;y++)years.push(y);
+  const rows=U.map(u=>{const ser=years.map(y=>u[2]*sc(y)/Math.max(u[3],1e-9)*100);const ex=ser.findIndex(v=>v>=100);
+    return {key:u[0],name:u[1],peak:u[2],cap:u[3],color:u[4],now:u[2]/Math.max(u[3],1e-9)*100,ser,exceed:ex,endLoad:u[2]*sc(o.H),gap:u[2]*sc(o.H)-u[3]}});
+  const vcs=years.map(y=>vc*Math.pow(sc(y),.8)),delay=vcs.map(v=>15*.15*Math.pow(v,4));
+  return {secs,occ,vc,years,rows,vcs,delay,vcEx:vcs.findIndex(v=>v>=1)};
+}
+const PROF=[.55,.5,.48,.47,.48,.52,.6,.7,.8,.88,.94,.98,1,1,.98,.95,.92,.88,.82,.76,.7,.66,.62,.58];
+function coolCalc(){
+  const p=P(),o=p.sim.cool,secs=o.scope==='ALL'?p.sectors:p.sectors.filter(s=>s.code===o.scope);
+  const Ld=sum(secs,'peakC'),L0=Ld*(1+o.sens/100*(o.T-38)),k=o.env/100*o.eff/100*o.cov/100;
+  const off=L0*k,L2=L0-off,cop=Math.max(o.cop,.1);
+  const base=[],after=[];let b=0,a=0;
+  for(let h=0;h<24;h++){const sun=h>=6&&h<=18?Math.sin(Math.PI*(h-6)/12):0,bl=L0*PROF[h],of=bl*k*(.4+.6*sun);base.push(bl);after.push(bl-of);b+=bl;a+=bl-of}
+  const dEl=(b-a)/cop;
+  return {Ld,L0,off,L2,el0:L0/cop,el2:L2/cop,kwtr:3.517/cop,base,after,dEl,saveDay:dEl*1000*o.tariff,co2Yr:dEl*o.ef*365,offPct:L0?off/L0*100:0};
+}
+function cashCalc(){
+  const p=P(),f=p.sim.fin,s0=sum(p.sectors,'gfa'),o0=p.sectors.reduce((a,s)=>a+s.gfa*occEst(s)/100,0);
+  const rows=[];for(let y=0;y<=8;y++){const dem=o0*Math.pow(1+f.g/100,y),sup=s0+(y>=f.year?f.newGfa:0),occ=Math.min(sup,dem);rows.push({y,dem,sup,occ,pct:occ/sup*100,noi:occ*f.rent*(1-f.opex/100)})}
+  const tight=rows.findIndex(r=>r.dem>=.92*s0);
+  return {rows,s0,o0,tight,recYear:tight<0?null:Math.max(1,tight-f.lead),minPct:Math.min.apply(null,rows.map(r=>r.pct))};
+}
+const SCN=[
+ ['موجة حر شديدة (+7°م)','Extreme heatwave (+7°C)',{power:.35,water:.25,cooling:.55,mobility:.1,comms:.05}],
+ ['سيول مفاجئة','Flash flood',{power:.3,water:.35,cooling:.1,mobility:.6,comms:.25}],
+ ['هجوم سيبراني على SCADA / الشبكة','Cyber attack on SCADA / grid',{power:.7,water:.3,cooling:.4,mobility:.3,comms:.3}],
+ ['انفجار خط رئيسي للمياه','Water main failure',{power:.05,water:.6,cooling:.35,mobility:.05,comms:0}]];
+function resCalc(){
+  const o=P().sim.res,sev=SCN[o.scn][2],cyber=o.scn===2;
+  const red={power:0,water:0,cooling:0,mobility:0,comms:0};
+  const mul=(k,v)=>{red[k]=1-(1-red[k])*(1-v)};
+  if(o.iso){SVC.forEach(s=>mul(s[0],cyber?.45:.15))}
+  if(o.bak)mul('power',.5);
+  if(o.red){mul('water',.35);mul('cooling',.35)}
+  if(o.route)mul('mobility',.4);
+  const rows=SVC.map(s=>({k:s[0],name:L(s[1],s[2]),raw:100-sev[s[0]]*100,mit:100-sev[s[0]]*(1-red[s[0]])*100}));
+  return {rows,idx0:rows.reduce((a,r)=>a+r.raw,0)/5,idx1:rows.reduce((a,r)=>a+r.mit,0)/5};
+}
+/* ================= icons + map ================= */
+const ICO={
+ overview:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+ twin:'<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>',
+ cooling:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/>',
+ esg:'<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19l8-8"/>',
+ contracts:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+ changes:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>',
+ claims:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ ledger:'<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+ finance:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ resilience:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+ projects:'<path d="M3 6h6l2 2h10v11H3z"/>',
+ archive:'<rect x="3" y="4" width="18" height="4"/><path d="M5 8v12h14V8M10 12h4"/>'};
+const mix=(a,b,t)=>{const h=s=>[1,3,5].map(i=>parseInt(s.substr(i,2),16));const x=h(a),y=h(b);return '#'+x.map((v,i)=>pad(Math.round(v+(y[i]-v)*t).toString(16))).join('')};
+function secRisk(p,code){const cs=p.contracts.filter(c=>c.sector===code);if(!cs.length)return null;const rs=cs.map(c=>contractRisk(p,c));return rs.sort((a,b)=>b.score-a.score)[0].lvl}
+function mapSvg(p,o){
+  const mode=o.mode||'occ';let inten=p.sectors.map(s=>s.co2*1e6/s.gfa),mn=Math.min.apply(null,inten),mx=Math.max.apply(null,inten);
+  const RC={LOW:'#cfe6d5',MEDIUM:'#d3e4ee',HIGH:'#f2d9a6',CRITICAL:'#f1b9ae'};
+  let g='<rect width="640" height="420" fill="#e9f0ef"/><rect width="640" height="66" fill="#b9d5e2"/><path d="M0 60q40-10 80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0V70H0z" fill="#a4c8d9"/>';
+  g+='<text x="16" y="34" fill="#1f5d80" font-size="12">'+L('الخليج','Sea')+'</text>';
+  p.sectors.forEach((s,i)=>{
+    let fill,lab;
+    if(mode==='occ'){fill=mix('#e1efec','#2f8f8b',clamp((s.occ-50)/45,0,1));lab=fmt(s.occ)+'%'}
+    else if(mode==='carbon'){fill=mix('#f3e6cc','#d29a45',(inten[i]-mn)/((mx-mn)||1));lab=fmt(inten[i])+' kg/m²'}
+    else{const r=secRisk(p,s.code);fill=r?RC[r]:'#dfe6e4';lab=r?L(RISK_CH[r][1],RISK_CH[r][2]):'—'}
+    g+='<polygon class="sec'+(o.sel===s.code?' sel':'')+'" data-act="selSec" data-id="'+s.code+'" points="'+s.pts+'" fill="'+fill+'"><title>'+esc(nm(s))+'</title></polygon>';
+    g+='<text class="sl" x="'+s.cx+'" y="'+(s.cy-4)+'">'+s.code+'</text><text class="sv" x="'+s.cx+'" y="'+(s.cy+13)+'">'+esc(lab)+'</text>';
+  });
+  if(o.devices!==false)p.devices.forEach(d=>{g+='<circle cx="'+d.x+'" cy="'+d.y+'" r="'+(d.status==='OFFLINE'?4.5:3)+'" fill="'+(d.status==='OFFLINE'?'#b23b2a':'#12262c')+'" stroke="#fff" stroke-width="1"><title>'+esc(d.sn+' · '+d.status)+'</title></circle>'});
+  if(o.inc){const r=o.inc.r/8;g+='<circle cx="'+o.inc.x+'" cy="'+o.inc.y+'" r="'+r+'" fill="rgba(178,59,42,.18)" stroke="#b23b2a" stroke-width="2" stroke-dasharray="6 4"/><path d="M'+(o.inc.x-9)+' '+o.inc.y+'h18M'+o.inc.x+' '+(o.inc.y-9)+'v18" stroke="#b23b2a" stroke-width="2.5"/>'}
+  return '<div class="mapwrap"><svg viewBox="0 0 640 420" '+(o.pick?'data-pick="1" style="cursor:crosshair" ':'')+'role="img" aria-label="'+L('خريطة القطاعات','Sector map')+'">'+g+'</svg></div>';
+}
+function mapLegend(p,mode){
+  if(mode==='occ')return '<div class="legend"><span><i style="background:#e1efec"></i>50%</span><span><i style="background:#2f8f8b"></i>95%+</span><span>'+L('نسبة الإشغال','Occupancy')+'</span><span><i style="background:#12262c;border-radius:50%"></i>'+L('حساس نشط','Active sensor')+'</span><span><i style="background:#b23b2a;border-radius:50%"></i>'+L('حساس غير متصل','Offline sensor')+'</span></div>';
+  if(mode==='carbon')return '<div class="legend"><span><i style="background:#f3e6cc"></i>'+L('كثافة كربونية أقل','Lower intensity')+'</span><span><i style="background:#d29a45"></i>'+L('أعلى','Higher')+'</span></div>';
+  return '<div class="legend">'+['LOW','MEDIUM','HIGH','CRITICAL'].map(r=>'<span><i style="background:'+({LOW:'#cfe6d5',MEDIUM:'#d3e4ee',HIGH:'#f2d9a6',CRITICAL:'#f1b9ae'})[r]+'"></i>'+L(RISK_CH[r][1],RISK_CH[r][2])+'</span>').join('')+'<span><i style="background:#dfe6e4"></i>'+L('لا عقود','No contracts')+'</span></div>';
+}
+
+/* ================= alerts ================= */
+function alertsList(p){
+  const A=[];
+  const cl=p.claims.map(k=>({k,c:claimClock(k)}));
+  const barred=cl.filter(x=>x.c.barred);
+  if(barred.length)A.push(['bad',L(barred.length+' مطالبة معرّضة للسقوط الزمني بقيمة ',barred.length+' claim(s) at time-bar risk worth ')+money(sum(barred.map(x=>x.k),'amount'),1),'claims']);
+  cl.filter(x=>/^CRITICAL/.test(x.c.status)).forEach(x=>A.push(['warn',L('مهلة قريبة: ','Deadline near: ')+x.k.code+' · '+L('متبقٍ ','left ')+x.c.rem+L(' يوماً',' days'),'claims']));
+  p.contracts.forEach(c=>{if(c.spi<.9||c.cpi<.9)A.push(['warn',c.code+' · SPI '+c.spi.toFixed(2)+' / CPI '+c.cpi.toFixed(2),'contracts'])});
+  const pend=p.cos.filter(o=>o.status==='PENDING');if(pend.length)A.push(['info',L(pend.length+' أوامر تغييرية بانتظار الاعتماد',pend.length+' change order(s) awaiting approval'),'changes']);
+  p.sectors.forEach(s=>{[['peakP','capP',L('الكهرباء','Power')],['peakC','capC',L('التبريد','Cooling')],['demW','capW',L('المياه','Water')]].forEach(u=>{const v=s[u[0]]/s[u[1]]*100;if(v>=90)A.push(['bad',s.code+' · '+u[2]+' '+fmt(v)+'%','twin'])})});
+  const off=p.devices.filter(d=>d.status==='OFFLINE').length;if(off)A.push(['warn',L(off+' حساسات غير متصلة',off+' sensor(s) offline'),'resilience']);
+  if(verifyLedger(p)>=0)A.push(['bad',L('سلسلة سجل الأصول غير سليمة','Asset ledger chain is broken'),'ledger']);
+  p.sectors.forEach(s=>{if(s.target-s.occ>=10)A.push(['info',s.code+' · '+L('الإشغال أقل من المستهدف بـ ','Occupancy below target by ')+fmt(s.target-s.occ)+L(' نقطة',' pts'),'finance'])});
+  return A;
+}
+
+/* ================= pages registry ================= */
+const PAGES={};
+PAGES.overview={ico:'overview',t:()=>L('لوحة القيادة','Executive dashboard'),d:()=>L('صورة واحدة لأداء المدينة: الإشغال، الأداء التعاقدي، الانبعاثات، والمخاطر المفتوحة. اضغط على أي قطاع لعرض تفاصيله.','One view of city performance: occupancy, contract health, emissions and open risks. Select a sector for details.'),
+ r(){
+  const p=P(),g=sum(p.sectors,'gfa'),occ=p.sectors.reduce((a,s)=>a+s.occ*s.gfa,0)/g,tgt=p.sectors.reduce((a,s)=>a+s.target*s.gfa,0)/g;
+  const cv=sum(p.contracts,'revised')||1,spi=p.contracts.reduce((a,c)=>a+c.spi*c.revised,0)/cv,cpi=p.contracts.reduce((a,c)=>a+c.cpi*c.revised,0)/cv;
+  const co2=sum(p.sectors,'co2'),base=sum(p.sectors,'baseCo2'),oc=openClaims(p),bar=p.claims.filter(k=>claimClock(k).barred);
+  const esg=p.sectors.reduce((a,s)=>a+esgScore(s)*s.gfa,0)/g,cc=coolCalc();
+  const A=alertsList(p);
+  const kp='<div class="kpis">'+
+   kpi(L('الإشغال (موزون بالمساحة)','Occupancy (area-weighted)'),pct(occ,1),L('المستهدف ','Target ')+fmt(tgt,1)+'%')+
+   kpi(L('أداء الجدول / التكلفة','Schedule / cost index'),'<span class="num">'+(p.contracts.length?spi.toFixed(2)+' / '+cpi.toFixed(2):'—')+'</span>','SPI / CPI · '+L('موزون بقيمة العقد','contract-value weighted'))+
+   kpi(L('الانبعاثات السنوية','Annual emissions'),'<span class="num">'+fmt(co2)+' kt</span>','−'+fmt((1-co2/base)*100,1)+'% '+L('عن سيناريو الاستمرار','vs business-as-usual'))+
+   kpi(L('مطالبات مفتوحة','Open claims'),money(sum(oc,'amount'),1),(bar.length?L('معرّض للسقوط: ','At risk: ')+money(sum(bar,'amount'),1):L('لا مطالبات مسقطة','None time-barred')))+
+   kpi(L('مؤشر الاستدامة المركّب','Composite ESG index'),'<span class="num">'+fmt(esg,1)+' / 100</span>',L('استرشادي – وليس اعتماداً ISO','Indicative – not ISO certification'))+
+   kpi(L('كفاءة التبريد','Cooling efficiency'),'<span class="num">'+cc.kwtr.toFixed(2)+' kW/TR</span>',L('عند COP ','At COP ')+p.sim.cool.cop)+'</div>';
+  const map='<div class="acts no-print" style="margin:0 0 8px"><div class="tabs">'+[['occ',L('الإشغال','Occupancy')],['carbon',L('الكربون','Carbon')],['risk',L('مخاطر العقود','Contract risk')]].map(m=>'<button data-act="mapMode" data-id="'+m[0]+'" class="'+(p.mapMode===m[0]?'on':'')+'">'+m[1]+'</button>').join('')+'</div></div>'+mapSvg(p,{mode:p.mapMode,sel:p.sel})+mapLegend(p,p.mapMode);
+  const al=A.length?'<div style="display:grid;gap:6px">'+A.slice(0,10).map(a=>'<div style="display:flex;gap:8px;align-items:flex-start">'+chip(a[0],a[0]==='bad'?L('عاجل','Urgent'):a[0]==='warn'?L('انتباه','Watch'):L('معلومة','Info'))+'<a href="#" data-act="go" data-id="'+a[2]+'" style="color:inherit;flex:1">'+a[1]+'</a></div>').join('')+'</div>':'<span class="muted">'+L('لا تنبيهات حالياً.','No alerts right now.')+'</span>';
+  return kp+'<div class="split"><div>'+panel(L('خريطة القطاعات','Sector map'),map)+'</div><div>'+panel(L('تفاصيل القطاع','Sector detail'),'<div id="secd">'+PAGES.overview.det()+'</div>')+panel(L('التنبيهات','Alerts'),al)+'</div></div>';
+ },
+ det(){
+  const p=P(),s=p.sectors.find(x=>x.code===p.sel)||p.sectors[0];if(!s)return '';
+  const u=(a,b)=>{const v=a/b*100;return '<div style="min-width:120px;text-align:end">'+fmt(v)+'%'+bar(v)+'</div>'};
+  const cs=p.contracts.filter(c=>c.sector===s.code),ph=PHASES[s.phase];
+  return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><b style="font-size:16px">'+s.code+' · '+esc(nm(s))+'</b>'+chip(ph[2],L(ph[0],ph[1]))+'</div>'+
+   '<div class="kv"><span>'+L('الإشغال / المستهدف','Occupancy / target')+'</span><span class="num">'+fmt(s.occ)+'% / '+fmt(s.target)+'%</span></div>'+
+   '<div class="kv"><span>'+L('السكان','Population')+'</span><span class="num">'+fmt(s.pop)+'</span></div>'+
+   '<div class="kv"><span>'+L('المساحة المبنية','Built area')+'</span><span class="num">'+fmt(s.gfa/1e6,2)+' M m²</span></div>'+
+   '<div class="kv"><span>'+L('الكهرباء','Power')+'</span>'+u(s.peakP,s.capP)+'</div>'+
+   '<div class="kv"><span>'+L('التبريد','Cooling')+'</span>'+u(s.peakC,s.capC)+'</div>'+
+   '<div class="kv"><span>'+L('المياه','Water')+'</span>'+u(s.demW,s.capW)+'</div>'+
+   '<div class="kv"><span>'+L('نسبة الحجم/السعة للطرق','Road v/c ratio')+'</span><span class="num">'+s.vc.toFixed(2)+'</span></div>'+
+   '<div class="kv"><span>'+L('الانبعاثات','Emissions')+'</span><span class="num">'+fmt(s.co2)+' kt/yr</span></div>'+
+   '<div class="kv"><span>'+L('العقود','Contracts')+'</span><span class="num">'+(cs.length?cs.map(c=>c.code.slice(-5)).join(', '):'—')+'</span></div>'+
+   '<div class="acts no-print"><button class="btn sm" data-act="editSec" data-id="'+s.code+'">'+L('تعديل بيانات القطاع','Edit sector data')+'</button></div>';
+ }};
+
+/* ---------- Digital twin what-if ---------- */
+PAGES.twin={ico:'twin',t:()=>L('المحاكي الاستراتيجي (ماذا لو)','Strategic what-if simulator'),d:()=>L('اختبر أثر قرار كثافة أو إشغال على الكهرباء والتبريد والمياه والازدحام قبل اعتماده. النموذج مبسّط ويعتمد على بيانات القطاع الحالية.','Test the effect of a density or occupancy decision on power, cooling, water and congestion before committing. Simplified model driven by current sector data.'),
+ r(){const p=P(),o=p.sim.twin;
+  const ctl=selIn('sim.twin.sector',L('النطاق','Scope'),[['ALL',L('كل المدينة','Whole city')]].concat(p.sectors.map(s=>[s.code,s.code+' · '+nm(s)])),o.sector)+
+   slider('sim.twin.dens',L('زيادة الكثافة البنائية','Density increase'),0,60,5,'%',o.dens)+
+   slider('sim.twin.occT',L('الإشغال المستهدف','Target occupancy'),50,100,1,'%',o.occT)+
+   slider('sim.twin.g',L('نمو الطلب السنوي','Annual demand growth'),0,6,.5,'%',o.g)+
+   slider('sim.twin.H',L('أفق التوقع (سنوات)','Horizon (years)'),5,15,1,'',o.H)+
+   '<p class="small muted">'+L('السنة 0 = الوضع بعد تطبيق القرار مباشرة. الحمل = الذروة الحالية × (1+الكثافة) × (الإشغال المستهدف ÷ الحالي) × (1+النمو)^السنة. ازدحام الطرق بدالة BPR.','Year 0 = state right after the decision. Load = current peak × (1+density) × (target ÷ current occupancy) × (1+growth)^year. Congestion uses the BPR curve.')+'</p>';
+  return '<div class="split rev"><div>'+panel(L('المدخلات','Inputs'),ctl)+'</div><div id="out">'+this.out()+'</div></div>'},
+ u(){$('#out').innerHTML=this.out()},
+ out(){const c=twinCalc(),o=P().sim.twin,H=o.H;
+  const ex=c.rows.map(r=>r.exceed).filter(v=>v>=0),first=ex.length?Math.min.apply(null,ex):-1;
+  const exl=v=>v<0?'—':v===0?L('فوراً','Immediately'):L('السنة ','Year ')+v;
+  const kp='<div class="kpis">'+kpi(L('أول تجاوز للسعة','First capacity breach'),first<0?L('لا يوجد','None'):exl(first),L('ضمن أفق ','Within ')+H+L(' سنة',' yrs'))+
+   kpi(L('الإشغال الحالي ← المستهدف','Occupancy now → target'),'<span class="num">'+fmt(c.occ)+'% → '+o.occT+'%</span>','')+
+   kpi(L('نسبة الحجم/السعة للطرق','Road v/c at horizon'),'<span class="num">'+c.vcs[H].toFixed(2)+'</span>',c.vcEx<0?L('دون التشبع','Below saturation'):L('تشبع في السنة ','Saturates in year ')+c.vcEx)+
+   kpi(L('تأخير إضافي للرحلة (15 د)','Extra delay per 15-min trip'),'<span class="num">+'+c.delay[H].toFixed(1)+' '+L('د','min')+'</span>',L('عند الأفق','At horizon'))+'</div>';
+  const tb='<table class="tbl"><thead><tr><th>'+L('المرفق','Utility')+'</th><th class="n">'+L('الذروة الحالية','Peak now')+'</th><th class="n">'+L('السعة','Capacity')+'</th><th class="n">'+L('الاستخدام الآن','Use now')+'</th><th class="n">'+L('عند الأفق','At horizon')+'</th><th>'+L('تجاوز السعة','Breach')+'</th><th class="n">'+L('العجز عند الأفق','Gap at horizon')+'</th></tr></thead><tbody>'+
+   c.rows.map(r=>'<tr><td>'+esc(r.name)+'</td><td class="n">'+fmt(r.peak)+'</td><td class="n">'+fmt(r.cap)+'</td><td class="n">'+fmt(r.now)+'%</td><td class="n">'+fmt(r.ser[H])+'%</td><td>'+chip(r.exceed<0?'ok':r.exceed<=3?'bad':'warn',exl(r.exceed))+'</td><td class="n">'+(r.gap>0?'<b style="color:var(--brick)">'+fmt(r.gap)+'</b>':'—')+'</td></tr>').join('')+'</tbody></table>';
+  const ch=lineChart({labels:c.years.map(y=>String(y)),series:c.rows.map(r=>({name:r.name,color:r.color,data:r.ser})),ref:100,refLabel:L('حد السعة 100%','Capacity limit 100%'),yMin:0});
+  const rec=first<0?L('لا حاجة لضخ استثمارات رأسمالية عاجلة ضمن هذا الأفق وفق الافتراضات الحالية.','No urgent capital injection is needed within this horizon under the current assumptions.'):first<=3?L('تجاوز السعة خلال 3 سنوات أو أقل: يُنصح بإدراج توسعة المرافق المعنية في خطة الإنفاق الرأسمالي الحالية قبل اعتماد القرار.','Capacity is breached within 3 years: include the affected utility expansion in the current capex plan before approving the decision.'):L('يوجد هامش زمني للتخطيط، لكن تجاوز السعة متوقع في السنة ','There is planning headroom, but a breach is expected in year ')+first+L('؛ ابدأ الدراسات مبكراً بسبب مدد التنفيذ الطويلة.','; start studies early because delivery lead times are long.');
+  return kp+panel(L('الاستخدام مقابل السعة','Utilisation vs capacity (%)'),ch)+panel(L('ملخص المرافق','Utility summary'),tw(tb))+'<p class="note">'+rec+'</p>'}};
+
+/* ---------- Cooling ---------- */
+PAGES.cooling={ico:'cooling',t:()=>L('محاكي التبريد','Cooling simulator'),d:()=>L('أثر الدهانات العاكسة/الإشعاعية وكفاءة محطات التبريد المركزي على الحمل الحراري والكهرباء والتكلفة والانبعاثات.','Effect of reflective/radiative coatings and district-cooling plant efficiency on thermal load, electricity, cost and emissions.'),
+ r(){const p=P(),o=p.sim.cool;
+  const ctl=selIn('sim.cool.scope',L('النطاق','Scope'),[['ALL',L('كل المدينة','Whole city')]].concat(p.sectors.map(s=>[s.code,s.code+' · '+nm(s)])),o.scope)+
+   slider('sim.cool.T',L('درجة الحرارة المحيطة','Ambient temperature'),30,50,1,' °C',o.T)+
+   slider('sim.cool.cov',L('نسبة الأسطح المعالجة بطلاء إشعاعي','Surfaces with radiative coating'),0,100,5,'%',o.cov)+
+   slider('sim.cool.cop',L('معامل الأداء COP للمحطات','Plant COP'),3,6,.1,'',o.cop);
+  const as='<div class="fgrid">'+numIn('sim.cool.env',L('حصة الغلاف من الحمل %','Envelope share of load %'),o.env)+numIn('sim.cool.eff',L('فعالية الطلاء %','Coating effectiveness %'),o.eff)+numIn('sim.cool.sens',L('حساسية الحمل %/°م','Load sensitivity %/°C'),o.sens)+numIn('sim.cool.tariff',L('تعرفة الكهرباء $/kWh','Tariff $/kWh'),o.tariff)+numIn('sim.cool.ef',L('معامل انبعاث الشبكة kg/kWh','Grid factor kg/kWh'),o.ef)+'</div>';
+  return '<div class="split rev"><div>'+panel(L('معايير التشغيل','Operating parameters'),ctl)+panel(L('الافتراضات (قابلة للتعديل)','Assumptions (editable)'),as+'<p class="small muted">'+L('الحمل التصميمي = مجموع ذروة التبريد للقطاعات عند 38°م. القيم افتراضية استرشادية وتُعدَّل من قياسات المشروع.','Design load = sum of sector cooling peaks at 38°C. Values are indicative defaults; replace with project measurements.')+'</p>')+'</div><div id="out">'+this.out()+'</div></div>'},
+ u(){$('#out').innerHTML=this.out()},
+ out(){const c=coolCalc(),o=P().sim.cool,hrs=[];for(let h=0;h<24;h++)hrs.push(pad(h));
+  const kp='<div class="kpis">'+kpi(L('الحمل الحراري المطلوب','Required thermal load'),'<span class="num">'+fmt(c.L2,1)+' MW</span>',L('قبل المعالجة ','Before: ')+fmt(c.L0,1)+' MW')+
+   kpi(L('وفر الطلاء الإشعاعي (ذروة)','Radiative offset (peak)'),'<span class="num">−'+fmt(c.off,1)+' MW</span>',fmt(c.offPct,1)+'% '+L('من الحمل','of load'))+
+   kpi(L('الطلب الكهربائي للتبريد','Cooling electrical demand'),'<span class="num">'+fmt(c.el2,1)+' MW</span>',L('قبل ','Before: ')+fmt(c.el0,1)+' MW')+
+   kpi(L('كفاءة المحطات','Plant efficiency'),'<span class="num">'+c.kwtr.toFixed(2)+' kW/TR</span>','COP '+o.cop)+
+   kpi(L('الوفر اليومي','Daily saving'),money(c.saveDay),fmt(c.dEl,1)+' MWh/'+L('يوم','day'))+
+   kpi(L('انبعاثات متجنَّبة سنوياً','Avoided emissions / yr'),'<span class="num">'+fmt(c.co2Yr)+' t</span>',L('تقدير تقريبي','Rough estimate'))+'</div>';
+  const ch=lineChart({labels:hrs,series:[{name:L('الحمل قبل المعالجة (MW حراري)','Load before coating (MWth)'),color:'#1f5d80',data:c.base},{name:L('بعد الطلاء الإشعاعي','After radiative coating'),color:'#3f7d4e',data:c.after,dash:1}],yMin:0});
+  return kp+panel(L('منحنى الحمل على 24 ساعة','24-hour load profile'),ch)+'<p class="note info">'+L('ملاحظة: مؤشر PUE مخصص لمراكز البيانات ولا يناسب محطات التبريد المركزي؛ لذلك يعرض المحاكي kW/TR (المكافئ الكهربائي لكل طن تبريد) ومعامل COP.','Note: PUE is a data-centre metric and does not fit district-cooling plants, so this simulator reports kW/TR (electrical input per ton of refrigeration) and COP instead.')+'</p>'}};
+
+/* ---------- ESG ---------- */
+PAGES.esg={ico:'esg',t:()=>L('الاستدامة والكربون','Sustainability & carbon'),d:()=>L('مؤشرات الاستدامة لكل قطاع، مسار الحياد الكربوني، وتقدير الاعتمادات الكربونية وأهلية التمويل الأخضر.','Sector sustainability metrics, net-zero pathway, carbon-credit estimate and green-finance screening.'),
+ r(){const o=P().sim.esg;
+  return this.table()+'<div class="split rev"><div>'+panel(L('الافتراضات','Assumptions'),numIn('sim.esg.target',L('سنة الحياد الكربوني','Net-zero target year'),o.target)+numIn('sim.esg.price',L('سعر الطن $/tCO₂e','Price $/tCO₂e'),o.price)+numIn('sim.esg.elig',L('حصة الاعتمادات القابلة للتوثيق %','Verifiable share of avoided emissions %'),o.elig))+'</div><div id="out">'+this.out()+'</div></div>'},
+ u(){$('#out').innerHTML=this.out()},
+ table(){const p=P(),g=sum(p.sectors,'gfa');
+  const rows=p.sectors.map(s=>'<tr><td><b>'+s.code+'</b> '+esc(nm(s))+'</td><td class="n">'+fmt(s.co2)+' <span class="muted small">/ '+fmt(s.baseCo2)+'</span></td><td class="n">'+fmt((1-s.co2/s.baseCo2)*100,1)+'%</td><td class="n">'+fmt(s.renew)+'%</td><td>'+fmt(s.wRec)+'%'+bar(s.wRec,'info')+'</td><td>'+fmt(s.waste)+'%'+bar(s.waste,'info')+'</td><td class="n"><b>'+fmt(esgScore(s),1)+'</b></td></tr>').join('');
+  const w=k=>p.sectors.reduce((a,s)=>a+s[k]*s.gfa,0)/g;
+  const tot='<tr><td><b>'+L('الإجمالي / المتوسط الموزون','Total / weighted average')+'</b></td><td class="n"><b>'+fmt(sum(p.sectors,'co2'))+'</b></td><td class="n"><b>'+fmt((1-sum(p.sectors,'co2')/sum(p.sectors,'baseCo2'))*100,1)+'%</b></td><td class="n"><b>'+fmt(w('renew'),1)+'%</b></td><td><b>'+fmt(w('wRec'),1)+'%</b></td><td><b>'+fmt(w('waste'),1)+'%</b></td><td class="n"><b>'+fmt(p.sectors.reduce((a,s)=>a+esgScore(s)*s.gfa,0)/g,1)+'</b></td></tr>';
+  return panel(L('مؤشرات القطاعات','Sector metrics'),tw('<table class="tbl"><thead><tr><th>'+L('القطاع','Sector')+'</th><th class="n">'+L('الانبعاثات kt/سنة (خط الأساس)','Emissions kt/yr (baseline)')+'</th><th class="n">'+L('الخفض','Reduction')+'</th><th class="n">'+L('طاقة متجددة','Renewables')+'</th><th>'+L('إعادة استخدام المياه (TSE)','Water reuse (TSE)')+'</th><th>'+L('تحويل النفايات عن المدافن','Landfill diversion')+'</th><th class="n">'+L('المؤشر المركّب','Composite')+'</th></tr></thead><tbody>'+rows+tot+'</tbody></table>')+'<p class="small muted">'+L('المؤشر المركّب: 30% طاقة متجددة (سقف 50%) + 25% إعادة استخدام المياه + 20% تحويل النفايات + 25% خفض الكربون (سقف 40%). مقياس داخلي استرشادي، وليس نتيجة تقييم رسمي وفق ISO 37120/37122.','Composite = 30% renewables (cap 50%) + 25% water reuse + 20% waste diversion + 25% carbon reduction (cap 40%). An internal indicative measure, not an official ISO 37120/37122 assessment.')+'</p>');},
+ out(){const p=P(),o=p.sim.esg,now=sum(p.sectors,'co2'),base=sum(p.sectors,'baseCo2'),y0=new Date().getFullYear(),ty=Math.max(o.target,y0+2),yrs=[];
+  for(let y=y0;y<=ty;y++)yrs.push(y);
+  const path=yrs.map(y=>now*(1-(y-y0)/(ty-y0))),bau=yrs.map(()=>base),cut=now/(ty-y0);
+  const ch=lineChart({labels:yrs.map(String),series:[{name:L('المسار المطلوب للحياد','Required net-zero path'),color:'#0d6e6e',data:path},{name:L('سيناريو الاستمرار','Business as usual'),color:'#b23b2a',data:bau,dash:1}],yMin:0});
+  const av=base-now,cr=av*1000*o.elig/100,val=cr*o.price,g=sum(p.sectors,'gfa'),w=k=>p.sectors.reduce((a,s)=>a+s[k]*s.gfa,0)/g,red=(1-now/base)*100;
+  const crit=[[L('طاقة متجددة ≥ 20%','Renewables ≥ 20%'),w('renew'),20],[L('إعادة استخدام المياه ≥ 50%','Water reuse ≥ 50%'),w('wRec'),50],[L('تحويل النفايات ≥ 50%','Waste diversion ≥ 50%'),w('waste'),50],[L('خفض الكربون ≥ 25%','Carbon reduction ≥ 25%'),red,25]];
+  const chk=crit.map(c=>'<div class="kv"><span>'+c[0]+'</span><span>'+fmt(c[1],1)+'% '+chip(c[1]>=c[2]?'ok':'bad',c[1]>=c[2]?L('مستوفى','Met'):L('غير مستوفى','Not met'))+'</span></div>').join('');
+  return panel(L('مسار الحياد الكربوني','Net-zero pathway'),ch+'<p class="small muted">'+L('الخفض الخطي المطلوب: ','Required linear cut: ')+fmt(cut,1)+' kt/'+L('سنة','yr')+' ('+fmt(cut/now*100,1)+'% '+L('من المستوى الحالي','of today')+').</p>')+
+   panel(L('الاعتمادات الكربونية (تقدير)','Carbon credits (estimate)'),'<div class="kv"><span>'+L('انبعاثات متجنَّبة','Avoided emissions')+'</span><span>'+fmt(av)+' kt/'+L('سنة','yr')+'</span></div><div class="kv"><span>'+L('اعتمادات قابلة للتوثيق','Verifiable credits')+'</span><span>'+fmt(cr)+' tCO₂e</span></div><div class="kv"><span>'+L('القيمة السنوية المقدّرة','Estimated annual value')+'</span><span>'+money(val,1)+'</span></div><p class="small muted">'+L('لا تُعدّ اعتمادات قابلة للتداول إلا بعد التحقق من طرف ثالث وفق معيار معتمد.','Credits are only tradable after third-party verification under a recognised standard.')+'</p>')+
+   panel(L('فحص أهلية التمويل الأخضر (داخلي)','Green-finance screening (internal)'),chk+'<p class="small muted">'+L('معايير داخلية للفرز الأولي وليست تصنيفاً رسمياً؛ يلزم مراجعة رأي طرف ثانٍ قبل أي إصدار.','Internal first-pass criteria, not an official taxonomy; a second-party opinion is required before any issuance.')+'</p>')}};
+const ACT={};
+const devName=(p,id)=>{const d=p.developers.find(x=>x.id===id);return d?nm(d):'—'};
+const conOpts=p=>p.contracts.map(c=>[c.id,c.code+' · '+nm(c)]);
+const ST_CON={ACTIVE:['ok','ساري','Active'],SUSPENDED:['warn','معلّق','Suspended'],COMPLETED:['info','مكتمل','Completed'],TERMINATED:['bad','منتهٍ','Terminated'],DRAFT:['mute','مسودة','Draft']};
+
+/* ---------- Contracts ---------- */
+PAGES.contracts={ico:'contracts',t:()=>L('العقود والمطورون','Contracts & developers'),d:()=>L('سجل العقود الرئيسية مع مؤشرات الجدول والتكلفة، وتقييم مخاطر النزاع بحسب قواعد شفافة (وليس نموذج تعلّم آلي).','Master contract register with schedule and cost indices, plus a transparent rule-based dispute-risk rating (not a machine-learning model).'),
+ r(){
+  const p=P(),o=sum(p.contracts,'orig'),rv=sum(p.contracts,'revised'),rs=p.contracts.map(c=>contractRisk(p,c));
+  const kp='<div class="kpis">'+kpi(L('العقود','Contracts'),String(p.contracts.length),p.developers.length+L(' مطورين/مقاولين',' developers/contractors'))+kpi(L('القيمة الأصلية','Original value'),money(o,1),'')+kpi(L('القيمة المعدّلة','Revised value'),money(rv,1),(o?'+'+fmt((rv-o)/o*100,1)+'% '+L('أوامر تغييرية','change orders'):''))+kpi(L('عقود عالية المخاطر','High-risk contracts'),String(rs.filter(r=>r.lvl==='HIGH'||r.lvl==='CRITICAL').length),L('بحسب قواعد التقييم','By rating rules'))+'</div>';
+  const rows=p.contracts.map((c,i)=>'<tr><td><b>'+nn(c.code)+'</b><div class="small muted">'+esc(nm(c))+'</div></td><td>'+esc(devName(p,c.devId))+'</td><td>'+esc(c.sector)+'</td><td class="n">'+money(c.orig,1)+'</td><td class="n">'+money(c.revised,1)+'<div class="small muted">'+(c.orig?(c.revised>=c.orig?'+':'')+fmt((c.revised-c.orig)/c.orig*100,1)+'%':'')+'</div></td><td class="n"><span class="num" style="color:'+(c.spi<.9?'var(--brick)':'inherit')+'">'+c.spi.toFixed(2)+'</span></td><td class="n"><span class="num" style="color:'+(c.cpi<.9?'var(--brick)':'inherit')+'">'+c.cpi.toFixed(2)+'</span></td><td>'+nn(c.revisedEnd)+'</td><td>'+riskChip(rs[i].lvl)+'<div class="small muted">'+rs[i].score+' '+L('نقاط','pts')+'</div></td><td>'+chip(ST_CON[c.status][0],L(ST_CON[c.status][1],ST_CON[c.status][2]))+'</td><td class="no-print"><button class="btn sm" data-act="editContract" data-id="'+c.id+'">'+L('تحديث','Update')+'</button></td></tr>').join('')||'<tr><td colspan="11" class="muted">'+L('لا عقود بعد. أضف أول عقد.','No contracts yet. Add the first one.')+'</td></tr>';
+  const dev=p.developers.map(d=>{const cs=p.contracts.filter(c=>c.devId===d.id);return '<tr><td>'+esc(nm(d))+'</td><td>'+esc(d.cr)+'</td><td class="n">'+d.kpi+'</td><td class="n">'+cs.length+'</td></tr>'}).join('')||'<tr><td colspan="4" class="muted">—</td></tr>';
+  return kp+panel(L('سجل العقود','Contract register'),tw('<table class="tbl"><thead><tr><th>'+L('العقد','Contract')+'</th><th>'+L('المطور','Developer')+'</th><th>'+L('القطاع','Sector')+'</th><th class="n">'+L('الأصلية','Original')+'</th><th class="n">'+L('المعدّلة','Revised')+'</th><th class="n">SPI</th><th class="n">CPI</th><th>'+L('الإنجاز المعدّل','Revised end')+'</th><th>'+L('مخاطر النزاع','Dispute risk')+'</th><th>'+L('الحالة','Status')+'</th><th class="no-print"></th></tr></thead><tbody>'+rows+'</tbody></table>'),'<div class="no-print acts" style="margin:0"><button class="btn pri sm" data-act="addContract">'+L('عقد جديد','New contract')+'</button></div>')+
+   '<p class="small muted">'+L('قاعدة التقييم: SPI أو CPI أقل من 0.90 (نقطتان) أو أقل من 0.95 (نقطة)؛ المطالبات المفتوحة > 5% من العقد (نقطتان) أو > 2% (نقطة)؛ نمو القيمة بالأوامر التغييرية > 10% (نقطتان) أو > 5% (نقطة)؛ مطالبة معرّضة للسقوط (نقطة). 0–1 منخفض، 2–3 متوسط، 4–5 مرتفع، 6+ حرج.','Rules: SPI or CPI below 0.90 (2 pts) or 0.95 (1 pt); open claims > 5% of contract (2) or > 2% (1); change-order growth > 10% (2) or > 5% (1); any time-barred claim (1). 0–1 low, 2–3 medium, 4–5 high, 6+ critical.')+'</p>'+
+   panel(L('المطورون والمقاولون','Developers & contractors'),tw('<table class="tbl"><thead><tr><th>'+L('الشركة','Company')+'</th><th>'+L('السجل التجاري','Registration')+'</th><th class="n">'+L('تقييم الأداء','KPI rating')+'</th><th class="n">'+L('العقود','Contracts')+'</th></tr></thead><tbody>'+dev+'</tbody></table>'),'<div class="no-print acts" style="margin:0"><button class="btn sm" data-act="addDev">'+L('إضافة شركة','Add company')+'</button></div>');
+ }};
+ACT.addDev=()=>{openForm(L('إضافة مطور / مقاول','Add developer / contractor'),[{k:'ar',l:L('الاسم بالعربية','Arabic name'),t:'text',req:1},{k:'en',l:L('الاسم بالإنجليزية','English name'),t:'text',req:1},{k:'cr',l:L('رقم السجل التجاري','Registration no.'),t:'text',req:1},{k:'kpi',l:L('تقييم الأداء (0–100)','KPI rating (0–100)'),t:'number',v:100}],o=>{
+  const p=P();if(p.developers.some(d=>d.cr===o.cr))return L('رقم السجل موجود مسبقاً.','Registration number already exists.');
+  const d={id:uid(),ar:o.ar,en:o.en,cr:o.cr,kpi:clamp(o.kpi,0,100)};p.developers.push(d);audit('developers','INSERT',d.id,null,d);save();render()})};
+ACT.addContract=()=>{const p=P();if(!p.developers.length)return toast(L('أضف مطوراً أولاً.','Add a developer first.'));
+  openForm(L('عقد جديد','New contract'),[{k:'code',l:L('رمز العقد','Contract code'),t:'text',req:1,v:'CON-'+new Date().getFullYear()+'-'+pad(p.contracts.length+1)},{k:'devId',l:L('المطور','Developer'),t:'select',o:p.developers.map(d=>[d.id,nm(d)])},{k:'sector',l:L('القطاع','Sector'),t:'select',o:p.sectors.map(s=>[s.code,s.code+' · '+nm(s)])},{k:'ar',l:L('العنوان بالعربية','Arabic title'),t:'text',req:1},{k:'en',l:L('العنوان بالإنجليزية','English title'),t:'text',req:1},{k:'orig',l:L('القيمة الأصلية (USD)','Original value (USD)'),t:'number',req:1},{k:'start',l:L('تاريخ البدء','Start date'),t:'date',req:1,v:today()},{k:'end',l:L('تاريخ الإنجاز المخطط','Planned completion'),t:'date',req:1},{k:'spi',l:'SPI',t:'number',v:1},{k:'cpi',l:'CPI',t:'number',v:1}],o=>{
+    if(p.contracts.some(c=>c.code===o.code))return L('رمز العقد مستخدم.','Contract code already used.');
+    if(o.orig<=0)return L('القيمة يجب أن تكون أكبر من صفر.','Value must be greater than zero.');
+    if(o.end<o.start)return L('تاريخ الإنجاز يسبق تاريخ البدء.','Completion date is before start date.');
+    if(o.spi<0||o.cpi<0)return L('المؤشرات لا تقبل قيماً سالبة.','Indices cannot be negative.');
+    const c={id:uid(),code:o.code,devId:o.devId,sector:o.sector,ar:o.ar,en:o.en,orig:o.orig,revised:o.orig,start:o.start,plannedEnd:o.end,revisedEnd:o.end,spi:o.spi,cpi:o.cpi,status:'ACTIVE',version:1};
+    p.contracts.push(c);audit('contracts','INSERT',c.id,null,c);save();render()})};
+ACT.editContract=el=>{const p=P(),c=p.contracts.find(x=>x.id===el.dataset.id);
+  openForm(L('تحديث مؤشرات العقد ','Update contract indices ')+c.code,[{k:'spi',l:'SPI',t:'number',v:c.spi},{k:'cpi',l:'CPI',t:'number',v:c.cpi},{k:'status',l:L('الحالة','Status'),t:'select',o:Object.keys(ST_CON).map(k=>[k,L(ST_CON[k][1],ST_CON[k][2])]),v:c.status}],o=>{
+    if(o.spi<0||o.cpi<0)return L('المؤشرات لا تقبل قيماً سالبة.','Indices cannot be negative.');
+    const b=Object.assign({},c);c.spi=o.spi;c.cpi=o.cpi;c.status=o.status;c.version++;audit('contracts','UPDATE',c.id,b,c);save();render()},
+    L('القيمة المعدّلة وتاريخ الإنجاز يتغيران فقط عبر الأوامر التغييرية المعتمدة.','Revised value and completion date change only through approved change orders.'))};
+
+/* ---------- Change orders ---------- */
+PAGES.changes={ico:'changes',t:()=>L('الأوامر التغييرية','Change orders'),d:()=>L('مسار اعتماد متعدد المستويات حسب القيمة. عند الاعتماد النهائي تُحدَّث قيمة العقد وتاريخ إنجازه مرة واحدة فقط، ويُسجَّل كل تغيير في سجل التدقيق.','Value-based multi-level approval. On final approval the contract value and completion date update exactly once, and every change is written to the audit trail.'),
+ r(){const p=P(),m=p.matrix;
+  const ctl='<div class="fgrid">'+selIn('@role',L('أعمل بصفة (لمحاكاة الصلاحيات)','Acting as (to simulate authority)'),Object.keys(ROLES).map(k=>[k,roleName(k)]),S.role)+'<label class="fld"><span>'+L('اسم المعتمِد','Approver name')+'</span><input class="in" data-bind="@user" value="'+esc(S.user)+'"></label>'+numIn('matrix.t1',L('حد الخطوة الواحدة (USD)','Single-step limit (USD)'),m.t1)+numIn('matrix.t2',L('حد الخطوتين (USD)','Two-step limit (USD)'),m.t2)+'</div><p class="small muted">'+L('أقل من الحد الأول: مدير المشروع. حتى الحد الثاني: + مدير البرنامج. أعلى من ذلك: + الرئيس التنفيذي. تُثبَّت خطوات كل أمر عند إنشائه.','Below the first limit: Project Manager. Up to the second: + Program Director. Above: + CEO. Each order keeps the steps fixed at creation.')+'</p>';
+  return panel(L('الصلاحيات ومصفوفة الاعتماد','Authority & approval matrix'),ctl)+'<div id="out">'+this.out()+'</div>'},
+ u(){$('#out').innerHTML=this.out()},
+ out(){const p=P(),pend=p.cos.filter(o=>o.status==='PENDING');
+  const rows=p.cos.map(o=>{const c=p.contracts.find(x=>x.id===o.contractId),cur=o.status==='PENDING'?o.steps[o.step-1]:null;
+    const stp=o.steps.map((r,i)=>{let cl='mute';if(o.status==='APPROVED'||i<o.step-1)cl='ok';else if(o.status==='PENDING'&&i===o.step-1)cl='warn';else if(o.status==='REJECTED'&&i===o.step-1)cl='bad';return chip(cl,roleName(r))}).join('');
+    const can=o.status==='PENDING'&&S.role===cur;
+    const act=o.status==='PENDING'?'<button class="btn pri sm" data-act="coApprove" data-id="'+o.id+'"'+(can?'':' disabled')+'>'+L('اعتماد','Approve')+'</button> <button class="btn dng sm" data-act="coReject" data-id="'+o.id+'"'+(can?'':' disabled')+'>'+L('رفض','Reject')+'</button> ':'';
+    return '<tr><td><b>'+nn(o.code)+'</b><div class="small muted">'+nn(c?c.code:'—')+'</div></td><td>'+esc(coTitle(o))+'<div class="small muted">'+esc(o.just||'')+(o.bim?' · BIM: '+esc(o.bim):'')+'</div></td><td class="n">'+money(o.cost)+'</td><td class="n">'+o.days+'</td><td><div class="steps">'+stp+'</div></td><td>'+chip(o.status==='APPROVED'?'ok':o.status==='REJECTED'?'bad':'warn',o.status==='APPROVED'?L('معتمد','Approved'):o.status==='REJECTED'?L('مرفوض','Rejected'):L('قيد الاعتماد','Pending'))+'</td><td class="no-print">'+act+'<button class="btn sm" data-act="coHist" data-id="'+o.id+'">'+L('السجل','History')+'</button></td></tr>'}).join('')||'<tr><td colspan="7" class="muted">'+L('لا أوامر تغييرية.','No change orders.')+'</td></tr>';
+  return panel(L('أوامر التغيير','Change orders')+' <span class="muted small">('+pend.length+' '+L('قيد الاعتماد','pending')+')</span>',tw('<table class="tbl"><thead><tr><th>'+L('الرمز / العقد','Code / contract')+'</th><th>'+L('الوصف والمبرر','Description & justification')+'</th><th class="n">'+L('الأثر المالي','Cost impact')+'</th><th class="n">'+L('أيام التمديد','Extension (days)')+'</th><th>'+L('خطوات الاعتماد','Approval steps')+'</th><th>'+L('الحالة','Status')+'</th><th class="no-print"></th></tr></thead><tbody>'+rows+'</tbody></table>'),'<div class="no-print acts" style="margin:0"><button class="btn pri sm" data-act="addCO">'+L('أمر تغيير جديد','New change order')+'</button></div>')}};
+ACT.addCO=()=>{const p=P();if(!p.contracts.length)return toast(L('لا عقود.','No contracts.'));
+  openForm(L('أمر تغيير جديد','New change order'),[{k:'contractId',l:L('العقد','Contract'),t:'select',o:conOpts(p),full:1},{k:'title',l:L('العنوان','Title'),t:'text',req:1,full:1},{k:'just',l:L('المبرر الفني والتشغيلي','Technical / operational justification'),t:'area',req:1,full:1},{k:'cost',l:L('الأثر المالي (USD، سالب للحذف)','Cost impact (USD, negative for omission)'),t:'number',v:0},{k:'days',l:L('التمديد بالأيام','Time extension (days)'),t:'number',v:0},{k:'bim',l:L('معرّف عنصر BIM / الموقع (اختياري)','BIM element GUID / location (optional)'),t:'text'},{k:'by',l:L('مقدِّم الطلب','Requested by'),t:'text',req:1,v:S.user}],o=>{
+    const c=p.contracts.find(x=>x.id===o.contractId),co={id:uid(),code:'CO-'+c.sector+'-'+pad(p.cos.length+1).padStart(3,'0'),contractId:o.contractId,title:o.title,en:o.title,just:o.just,cost:o.cost,days:Math.round(o.days),bim:o.bim,by:o.by,status:'PENDING',step:1,steps:stepsFor(o.cost),history:[]};
+    p.cos.push(co);audit('change_orders','INSERT',co.id,null,co);save();render()})};
+function coDecision(id,approve){
+  const p=P(),co=p.cos.find(o=>o.id===id);if(!co||co.status!=='PENDING')return toast(L('الأمر في حالة نهائية.','Order is already final.'));
+  if(S.role!==co.steps[co.step-1])return toast(L('صلاحيتك لا تطابق الخطوة الحالية.','Your role does not match the current step.'));
+  openForm(approve?L('اعتماد الخطوة ','Approve step ')+co.step+' · '+co.code:L('رفض ','Reject ')+co.code,[{k:'comment',l:L('ملاحظات','Comments')+(approve?'':' *'),t:'area',req:!approve,full:1}],o=>{
+    if(co.status!=='PENDING')return L('تغيّرت حالة الأمر.','Order status changed.');
+    const b=Object.assign({},co);co.history.push({step:co.step,role:S.role,by:S.user||'—',at:new Date().toISOString(),act:approve?'APPROVE':'REJECT',comment:o.comment});
+    if(!approve)co.status='REJECTED';
+    else if(co.step>=co.steps.length){co.status='APPROVED';const c=p.contracts.find(x=>x.id===co.contractId),cb=Object.assign({},c);
+      c.revised+=co.cost;c.revisedEnd=addDays(c.revisedEnd,co.days);c.version++;audit('contracts','UPDATE',c.id,cb,c)}
+    else co.step++;
+    audit('change_orders','UPDATE',co.id,b,co);save();render()});
+}
+ACT.coApprove=el=>coDecision(el.dataset.id,true);
+ACT.coReject=el=>coDecision(el.dataset.id,false);
+ACT.coHist=el=>{const co=P().cos.find(o=>o.id===el.dataset.id);
+  openModal('<h3>'+esc(co.code)+' · '+L('سجل الاعتمادات','Approval history')+'</h3>'+(co.history.length?tw('<table class="tbl"><thead><tr><th>'+L('الخطوة','Step')+'</th><th>'+L('الدور','Role')+'</th><th>'+L('بواسطة','By')+'</th><th>'+L('الإجراء','Action')+'</th><th>'+L('الوقت','Time')+'</th><th>'+L('ملاحظات','Comments')+'</th></tr></thead><tbody>'+co.history.map(h=>'<tr><td>'+h.step+'</td><td>'+esc(roleName(h.role))+'</td><td>'+esc(h.by)+'</td><td>'+chip(h.act==='APPROVE'?'ok':'bad',h.act==='APPROVE'?L('اعتماد','Approve'):L('رفض','Reject'))+'</td><td>'+esc(h.at.slice(0,16).replace('T',' '))+'</td><td>'+esc(h.comment||'')+'</td></tr>').join('')+'</tbody></table>'):'<p class="muted">'+L('لا إجراءات بعد.','No actions yet.')+'</p>')+'<div class="acts"><button class="btn" data-act="close">'+L('إغلاق','Close')+'</button></div>',true)};
+
+/* ---------- Claims / FIDIC ---------- */
+const CL_STATUS=['RAISED','UNDER_EVALUATION','NEGOTIATION','SETTLED','DISPUTED_ARBITRATION','WITHDRAWN'];
+const CL_ST_L={RAISED:['مرفوعة','Raised'],UNDER_EVALUATION:['قيد التقييم','Under evaluation'],NEGOTIATION:['تفاوض','Negotiation'],SETTLED:['مسوّاة','Settled'],DISPUTED_ARBITRATION:['نزاع / تحكيم','Dispute / arbitration'],WITHDRAWN:['مسحوبة','Withdrawn']};
+const clauseOf=e=>e==='1999'?'20.1':e==='2017'?'20.2.1 / 20.2.4':L('الشروط الخاصة','Particular Conditions');
+PAGES.claims={ico:'claims',t:()=>L('المطالبات ومهل FIDIC','Claims & FIDIC time limits'),d:()=>L('تتبّع مهل الإخطار والمطالبة المفصّلة لحظياً من تاريخ العلم بالحدث، مع تنبيه قبل السقوط. تُحسب الحالة عند كل فتح للصفحة وليس عند الحفظ فقط.','Live tracking of notice and fully-detailed-claim deadlines from the date the claimant became aware, with warnings before a bar applies. Status is computed every time the page opens, not only on save.'),
+ r(){const p=P(),cl=p.claims.map(k=>({k,c:claimClock(k)})),op=cl.filter(x=>!x.c.closed),bar=cl.filter(x=>x.c.barred),crit=cl.filter(x=>/^CRITICAL/.test(x.c.status)),clm=sum(p.claims.filter(k=>k.status==='SETTLED'),'amount'),stl=sum(p.claims,'settled');
+  const kp='<div class="kpis">'+kpi(L('مطالبات مفتوحة','Open claims'),String(op.length),money(sum(op.map(x=>x.k),'amount'),1))+kpi(L('معرّضة للسقوط','At time-bar risk'),String(bar.length),money(sum(bar.map(x=>x.k),'amount'),1))+kpi(L('مهل قريبة','Deadlines near'),String(crit.length),L('7 أيام للإخطار / 14 للتفاصيل','7 days notice / 14 detailed'))+kpi(L('المسوّى مقابل المطالَب','Settled vs claimed'),clm?fmt(stl/clm*100)+'%':'—',money(stl,1)+' / '+money(clm,1))+'</div>';
+  const rows=cl.map(x=>{const k=x.k,c=x.c,ct=p.contracts.find(y=>y.id===k.contractId),st=CLAIM_ST[c.status];
+    return '<tr><td><b>'+nn(k.code)+'</b><div class="small muted">'+nn(ct?ct.code:'—')+'</div></td><td>'+esc(clTitle(k))+'</td><td>FIDIC '+k.edition+'<div class="small muted">'+L('البند ','Sub-Cl. ')+clauseOf(k.edition)+'</div></td><td>'+nn(k.aware)+'</td><td>'+nn(k.notice||'—')+'<div class="small muted">'+L('الأقصى ','Due ')+nn(c.nDue)+'</div></td><td>'+nn(k.detailed||'—')+'<div class="small muted">'+L('الأقصى ','Due ')+nn(c.dDue)+'</div></td><td>'+chip(st[0],L(st[1],st[2]))+(c.closed||c.status==='SUBMITTED'?'':'<div class="small muted">'+(c.rem>=0?L('متبقٍ ','Left ')+c.rem+L(' يوماً',' d'):L('متأخر ','Late ')+(-c.rem)+L(' يوماً',' d'))+'</div>')+'</td><td class="n">'+money(k.amount,1)+'</td><td class="no-print"><button class="btn sm" data-act="editClaim" data-id="'+k.id+'">'+L('تحديث','Update')+'</button></td></tr>'}).join('')||'<tr><td colspan="9" class="muted">'+L('لا مطالبات.','No claims.')+'</td></tr>';
+  return '<p class="note">'+L('تنبيه: هذه أداة متابعة إدارية وليست رأياً قانونياً. سقوط الحق بفوات المهلة يتوقف على الشروط الخاصة للعقد والقانون الحاكم؛ راجع مستشاراً قانونياً قبل الاعتماد على أي حالة "سقوط".','Notice: this is an administrative tracking tool, not legal advice. Whether a missed deadline actually bars a claim depends on the Particular Conditions and governing law; consult counsel before relying on any "barred" status.')+'</p>'+kp+
+   panel(L('سجل المطالبات','Claims register'),tw('<table class="tbl"><thead><tr><th>'+L('الرمز','Code')+'</th><th>'+L('الوصف','Description')+'</th><th>'+L('الطبعة / البند','Edition / clause')+'</th><th>'+L('تاريخ العلم','Aware date')+'</th><th>'+L('الإخطار','Notice')+'</th><th>'+L('المطالبة المفصّلة','Detailed claim')+'</th><th>'+L('الحالة','Status')+'</th><th class="n">'+L('المبلغ','Amount')+'</th><th class="no-print"></th></tr></thead><tbody>'+rows+'</tbody></table>'),'<div class="no-print acts" style="margin:0"><button class="btn pri sm" data-act="addClaim">'+L('مطالبة جديدة','New claim')+'</button></div>')+
+   '<p class="small muted">'+L('المهل المستخدمة: طبعة 1999 (كتب أحمر/أصفر/فضي) — إخطار 28 يوماً ومطالبة مفصّلة 42 يوماً وفق البند 20.1. طبعة 2017 — إخطار 28 يوماً (20.2.1) ومطالبة مفصّلة 84 يوماً (20.2.4). كلاهما يُحسب من تاريخ علم المطالِب بالحدث أو من تاريخ كان ينبغي أن يعلم فيه. اختر "مخصص" لمهل مختلفة من الشروط الخاصة.','Deadlines used: 1999 editions (Red/Yellow/Silver) — 28-day notice and 42-day fully detailed claim under Sub-Clause 20.1. 2017 editions — 28-day notice (20.2.1) and 84-day fully detailed claim (20.2.4). Both run from when the claimant became aware, or should have become aware, of the event. Choose "Custom" for different periods in the Particular Conditions.')+'</p>';
+ }};
+function claimForm(k){
+  const p=P(),n=!k;k=k||{edition:'2017',aware:today(),notice:null,detailed:null,amount:0,evaluated:0,settled:0,status:'RAISED',nDays:28,dDays:84,title:'',contractId:p.contracts[0]&&p.contracts[0].id};
+  openForm(n?L('مطالبة جديدة','New claim'):L('تحديث المطالبة ','Update claim ')+k.code,[{k:'contractId',l:L('العقد','Contract'),t:'select',o:conOpts(p),v:k.contractId,full:1},{k:'title',l:L('الوصف / سبب المطالبة','Description / cause'),t:'text',req:1,v:clTitle(k),full:1},{k:'edition',l:L('طبعة FIDIC','FIDIC edition'),t:'select',o:[['2017','2017'],['1999','1999'],['custom',L('مخصص','Custom')]],v:k.edition},{k:'aware',l:L('تاريخ العلم بالحدث','Date became aware'),t:'date',req:1,v:k.aware},{k:'notice',l:L('تاريخ الإخطار الرسمي','Notice date'),t:'date',v:k.notice},{k:'detailed',l:L('تاريخ المطالبة المفصّلة','Detailed claim date'),t:'date',v:k.detailed},{k:'nDays',l:L('مخصص: مهلة الإخطار (أيام)','Custom: notice days'),t:'number',v:k.nDays},{k:'dDays',l:L('مخصص: مهلة المطالبة المفصّلة','Custom: detailed-claim days'),t:'number',v:k.dDays},{k:'amount',l:L('المبلغ المطالَب (USD)','Claimed amount (USD)'),t:'number',v:k.amount,req:1},{k:'evaluated',l:L('المقدَّر من الاستشاري','Evaluated by engineer'),t:'number',v:k.evaluated},{k:'settled',l:L('المبلغ المسوّى','Settled amount'),t:'number',v:k.settled},{k:'status',l:L('الحالة','Status'),t:'select',o:CL_STATUS.map(s=>[s,L(CL_ST_L[s][0],CL_ST_L[s][1])]),v:k.status}],o=>{
+    if(o.amount<0)return L('المبلغ لا يقبل قيمة سالبة.','Amount cannot be negative.');
+    if(o.notice&&o.notice<o.aware)return L('تاريخ الإخطار يسبق تاريخ العلم.','Notice date is before the aware date.');
+    if(o.detailed&&o.notice&&o.detailed<o.notice)return L('المطالبة المفصّلة تسبق الإخطار.','Detailed claim precedes the notice.');
+    if(n){const c=p.contracts.find(x=>x.id===o.contractId),m=Object.assign({id:uid(),code:'CLM-'+c.sector+'-'+pad(p.claims.length+1),en:o.title},o);p.claims.push(m);audit('financial_claims','INSERT',m.id,null,m)}
+    else{const b=Object.assign({},k);Object.assign(k,o,{en:o.title});audit('financial_claims','UPDATE',k.id,b,k)}
+    save();render()});
+}
+ACT.addClaim=()=>{if(!P().contracts.length)return toast(L('لا عقود.','No contracts.'));claimForm(null)};
+ACT.editClaim=el=>claimForm(P().claims.find(x=>x.id===el.dataset.id));
+
+/* ---------- Ledger ---------- */
+const LTYPES=[['MAINTENANCE','صيانة','Maintenance'],['INSPECTION','فحص','Inspection'],['REPLACEMENT','استبدال','Replacement'],['COMMISSIONING','تشغيل تجريبي','Commissioning'],['TEST_CERT','شهادة اختبار','Test certificate']];
+PAGES.ledger={ico:'ledger',t:()=>L('سجل الأصول الموثّق','Verified asset ledger'),d:()=>L('سجل صيانة وتشغيل للأصول الحيوية، كل سطر مرتبط ببصمة SHA-256 للسطر السابق؛ أي تعديل بأثر رجعي يكسر السلسلة ويظهر عند التحقق.','Maintenance and operating log for critical assets. Each row is chained to the previous row with SHA-256, so any retroactive edit breaks the chain and shows up on verification.'),
+ r(){const p=P(),bk=verifyLedger(p);
+  const ban=bk<0?'<p class="note info">'+chip('ok',L('السلسلة سليمة','Chain intact'))+' '+p.ledger.length+L(' سجلاً تم التحقق منها.',' records verified.')+'</p>':'<p class="note" style="border-color:var(--brick);background:#f8e3df">'+chip('bad',L('السلسلة مكسورة','Chain broken'))+' '+L('أول سطر غير مطابق: رقم ','First mismatching row: #')+(bk+1)+'</p>';
+  const rows=p.ledger.slice().reverse().map(r=>'<tr><td class="n">'+r.idx+'</td><td>'+nn(r.ts.slice(0,16).replace('T',' '))+'</td><td><b>'+nn(r.asset)+'</b></td><td>'+esc((LTYPES.find(t=>t[0]===r.type)||[0,r.type,r.type]).slice(1)[S.lang==='en'?1:0])+'</td><td>'+esc(r.note)+'</td><td>'+esc(r.by)+'</td><td><code class="small num" title="'+r.hash+'">'+r.hash.slice(0,12)+'…</code></td></tr>').join('')||'<tr><td colspan="7" class="muted">—</td></tr>';
+  return ban+panel(L('السجل','Ledger'),tw('<table class="tbl"><thead><tr><th class="n">#</th><th>'+L('الوقت','Time')+'</th><th>'+L('الأصل','Asset')+'</th><th>'+L('النوع','Type')+'</th><th>'+L('التفاصيل','Details')+'</th><th>'+L('بواسطة','By')+'</th><th>'+L('البصمة','Hash')+'</th></tr></thead><tbody>'+rows+'</tbody></table>'),'<div class="no-print acts" style="margin:0"><button class="btn pri sm" data-act="addLedger">'+L('إضافة سجل','Add record')+'</button><button class="btn sm" data-act="verify">'+L('تحقق من السلسلة','Verify chain')+'</button><button class="btn sm" data-act="exportLedger">'+L('تصدير JSON','Export JSON')+'</button></div>')+
+   '<p class="small muted">'+L('هذا سجل مقاوم للعبث داخل المتصفح وليس شبكة بلوكتشين موزعة. للحماية الكاملة، صدّر السجل وسجّل آخر بصمة في نظام خارجي مستقل.','This is a tamper-evident log inside the browser, not a distributed blockchain. For full assurance, export the ledger and record the latest hash in an independent external system.')+'</p>'}};
+ACT.addLedger=()=>openForm(L('سجل أصل جديد','New asset record'),[{k:'asset',l:L('رمز الأصل','Asset code'),t:'text',req:1},{k:'type',l:L('النوع','Type'),t:'select',o:LTYPES.map(t=>[t[0],L(t[1],t[2])])},{k:'note',l:L('التفاصيل','Details'),t:'area',req:1,full:1},{k:'by',l:L('المنفّذ','Performed by'),t:'text',req:1,v:S.user}],o=>{ledgerAppend(P(),o);audit('ledger','INSERT',String(P().ledger.length),null,{asset:o.asset,type:o.type});save();render()});
+ACT.verify=()=>{const b=verifyLedger(P());toast(b<0?L('السلسلة سليمة ✓','Chain intact ✓'):L('السلسلة مكسورة عند السطر ','Chain broken at row ')+(b+1));render()};
+ACT.exportLedger=()=>download('asset-ledger-'+today()+'.json',JSON.stringify(P().ledger,null,2));
+/* ---------- Finance ---------- */
+const chk=(path,label,val)=>'<label style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input type="checkbox" data-bind="'+path+'"'+(val?' checked':'')+'> '+label+'</label>';
+const cellIn=(path,val)=>'<input class="in" inputmode="decimal" data-num="1" data-bind="'+path+'" value="'+esc(val)+'">';
+PAGES.finance={ico:'finance',t:()=>L('المالية والإشغال','Finance & occupancy'),d:()=>L('تقدير الإشغال الفعلي من استهلاك المرافق، توقيت طرح المرحلة التالية، عائد التقنيات، وترتيب أولويات الإنفاق الرأسمالي.','Actual occupancy inferred from utility use, timing of the next phase release, technology returns, and capex prioritisation.'),
+ r(){const p=P(),f=p.sim.fin;
+  const a=slider('sim.fin.g',L('نمو الطلب السنوي','Annual demand growth'),0,10,.5,'%',f.g)+slider('sim.fin.year',L('سنة طرح المرحلة الجديدة','New-phase release year'),1,8,1,'',f.year)+slider('sim.fin.lead',L('مدة التنفيذ حتى التسليم (سنوات)','Delivery lead time (years)'),0,4,1,'',f.lead)+'<div class="fgrid">'+numIn('sim.fin.newGfa',L('مساحة المرحلة الجديدة m²','New-phase area m²'),f.newGfa)+numIn('sim.fin.rent',L('الإيجار $/m²/سنة','Rent $/m²/yr'),f.rent)+numIn('sim.fin.opex',L('نسبة المصروفات %','Opex ratio %'),f.opex)+numIn('sim.fin.disc',L('معدل الخصم %','Discount rate %'),f.disc)+'</div>';
+  const roi='<table class="tbl"><thead><tr><th>'+L('الحل','Solution')+'</th><th>'+L('التكلفة الرأسمالية','Capex')+'</th><th>'+L('وفر سنوي','Annual saving')+'</th><th>'+L('العمر (سنة)','Life (yrs)')+'</th></tr></thead><tbody>'+p.roi.map((r,i)=>'<tr><td>'+esc(bi(r.n))+'</td><td>'+cellIn('roi.'+i+'.capex',r.capex)+'</td><td>'+cellIn('roi.'+i+'.save',r.save)+'</td><td>'+cellIn('roi.'+i+'.life',r.life)+'</td></tr>').join('')+'</tbody></table>';
+  const cx='<table class="tbl"><thead><tr><th>'+L('البند','Item')+'</th><th>'+L('التكلفة','Capex')+'</th><th>'+L('جودة الحياة','QoL')+'</th><th>'+L('قيمة عقارية','Value')+'</th><th>'+L('إلحاح','Urgency')+'</th><th></th></tr></thead><tbody>'+p.capex.map((r,i)=>'<tr><td>'+esc(bi(r.n))+'</td><td>'+cellIn('capex.'+i+'.capex',r.capex)+'</td><td>'+cellIn('capex.'+i+'.qol',r.qol)+'</td><td>'+cellIn('capex.'+i+'.upl',r.upl)+'</td><td>'+cellIn('capex.'+i+'.urg',r.urg)+'</td><td><button class="btn sm dng" data-act="delCapex" data-id="'+r.id+'">×</button></td></tr>').join('')+'</tbody></table><div class="acts"><button class="btn sm" data-act="addCapex">'+L('إضافة بند','Add item')+'</button></div><p class="small muted">'+L('الدرجات من 0 إلى 10.','Scores from 0 to 10.')+'</p>';
+  return '<div class="split rev"><div>'+panel(L('افتراضات الطرح والتدفق النقدي','Release & cash-flow assumptions'),a)+panel(L('عائد التقنيات الذكية – مدخلات','Smart-tech returns – inputs'),tw(roi))+panel(L('أولويات الإنفاق الرأسمالي – مدخلات','Capex priorities – inputs'),tw(cx))+'</div><div id="out">'+this.out()+'</div></div>'},
+ u(){$('#out').innerHTML=this.out()},
+ out(){const p=P(),f=p.sim.fin,c=cashCalc(),d=f.disc/100;
+  const occ=p.sectors.map(s=>{const e=occEst(s),dl=e-s.occ;return '<tr><td><b>'+s.code+'</b></td><td class="n">'+fmt(s.occ)+'%</td><td class="n">'+fmt(e,1)+'%</td><td class="n">'+(dl>0?'+':'')+fmt(dl,1)+'</td><td>'+(Math.abs(dl)>5?chip('warn',L('راجع البيانات','Review data')):chip('ok',L('متسق','Consistent')))+'</td></tr>'}).join('');
+  const lab=c.rows.map(r=>String(r.y)),w0=c.rows.map(r=>Math.min(100,r.dem/c.s0*100));
+  let rec;
+  if(c.tight<0)rec=L('الطلب لا يبلغ 92% من المعروض الحالي خلال 8 سنوات؛ لا حاجة لطرح مرحلة جديدة ضمن هذا الأفق.','Demand does not reach 92% of current supply within 8 years; no new phase is needed in this horizon.');
+  else{rec=L('يبلغ الطلب 92% من المعروض الحالي في السنة ','Demand reaches 92% of current supply in year ')+c.tight+L('، ومع مدة التنفيذ يُوصى بالطرح في السنة ','; with the delivery lead time, release in year ')+c.recYear+'. ';
+    if(f.year>c.tight)rec+=L('الطرح المختار متأخر وقد يفوّت الطلب.','Your chosen year is late and may miss demand.');else if(f.year<c.recYear-1)rec+=L('الطرح المختار مبكر؛ أدنى إشغال متوقع ','Your chosen year is early; lowest projected occupancy is ')+fmt(c.minPct)+'%.';else rec+=L('الطرح المختار متوافق مع التوصية.','Your chosen year is consistent with the recommendation.')}
+  const roiR=p.roi.map(r=>{const pb=r.save>0?r.capex/r.save:Infinity,npv=-r.capex+(d>0?r.save*(1-Math.pow(1+d,-r.life))/d:r.save*r.life);return '<tr><td>'+esc(bi(r.n))+'</td><td class="n">'+(isFinite(pb)?fmt(pb,1):'—')+'</td><td class="n">'+money(npv,1)+'</td><td>'+chip(npv>0?'ok':'bad',npv>0?L('مجدٍ','Viable'):L('غير مجدٍ','Not viable'))+'</td></tr>'}).join('');
+  const rk=p.capex.map(r=>Object.assign({score:(0.4*r.qol+0.3*r.upl+0.3*r.urg)/Math.max(r.capex/1e6,.001)*10},r)).sort((a,b)=>b.score-a.score);
+  let cum=0;const rkR=rk.map((r,i)=>{cum+=r.capex;return '<tr><td class="n">'+(i+1)+'</td><td>'+esc(bi(r.n))+'</td><td class="n">'+fmt(r.score,1)+'</td><td class="n">'+money(r.capex,1)+'</td><td class="n">'+money(cum,1)+'</td></tr>'}).join('');
+  return panel(L('الإشغال من استهلاك المرافق','Occupancy from utility use'),tw('<table class="tbl"><thead><tr><th>'+L('القطاع','Sector')+'</th><th class="n">'+L('المُبلَّغ','Reported')+'</th><th class="n">'+L('المقدَّر (kWh/m² ÷ التصميمي)','Estimated (kWh/m² ÷ design)')+'</th><th class="n">Δ</th><th></th></tr></thead><tbody>'+occ+'</tbody></table>'))+
+   panel(L('الإشغال المتوقع للسنوات الثمانية القادمة','Projected occupancy, next 8 years'),lineChart({labels:lab,series:[{name:L('مع طرح المرحلة الجديدة','With new phase'),color:'#0d6e6e',data:c.rows.map(r=>r.pct)},{name:L('بدون طرح','Without release'),color:'#c98a2b',data:w0,dash:1}],ref:92,refLabel:L('سوق مشدود 92%','Tight market 92%'),yMin:0,yMax:100})+'<p class="note" style="margin-top:10px">'+rec+'</p>')+
+   panel(L('صافي الدخل التشغيلي السنوي (تقدير)','Annual net operating income (estimate)'),barChart({labels:lab,values:c.rows.map(r=>r.noi*(P().fx.rates[P().fx.cur]||1)),fy:v=>fmt(v/1e9,1)+'B',color:'#1f5d80'})+'<p class="small muted">'+L('المبالغ بعملة العرض (مليار).','Amounts in display currency (billions).')+'</p>')+
+   panel(L('عائد التقنيات الذكية','Smart-tech returns'),tw('<table class="tbl"><thead><tr><th>'+L('الحل','Solution')+'</th><th class="n">'+L('سنوات الاسترداد','Payback (yrs)')+'</th><th class="n">NPV</th><th></th></tr></thead><tbody>'+roiR+'</tbody></table>'))+
+   panel(L('ترتيب أولويات الإنفاق الرأسمالي','Capex priority ranking'),tw('<table class="tbl"><thead><tr><th class="n">#</th><th>'+L('البند','Item')+'</th><th class="n">'+L('نقاط لكل مليون','Points per $M')+'</th><th class="n">'+L('التكلفة','Capex')+'</th><th class="n">'+L('التراكمي','Cumulative')+'</th></tr></thead><tbody>'+rkR+'</tbody></table>')+'<p class="small muted">'+L('النقاط = (0.4×جودة الحياة + 0.3×القيمة العقارية + 0.3×الإلحاح) ÷ التكلفة بالمليون × 10.','Points = (0.4×QoL + 0.3×property value + 0.3×urgency) ÷ capex in $M × 10.')+'</p>')}};
+ACT.addCapex=()=>{const p=P();openForm(L('بند رأسمالي جديد','New capex item'),[{k:'ar',l:L('الاسم بالعربية','Arabic name'),t:'text',req:1},{k:'en',l:L('الاسم بالإنجليزية','English name'),t:'text',req:1},{k:'sector',l:L('القطاع','Sector'),t:'select',o:p.sectors.map(s=>[s.code,s.code])},{k:'capex',l:L('التكلفة (USD)','Capex (USD)'),t:'number',req:1},{k:'qol',l:L('جودة الحياة (0–10)','QoL (0–10)'),t:'number',v:5},{k:'upl',l:L('القيمة العقارية (0–10)','Property value (0–10)'),t:'number',v:5},{k:'urg',l:L('الإلحاح (0–10)','Urgency (0–10)'),t:'number',v:5}],o=>{if(o.capex<=0)return L('التكلفة يجب أن تكون موجبة.','Capex must be positive.');p.capex.push({id:uid(),n:o.ar+'|'+o.en,sector:o.sector,capex:o.capex,qol:clamp(o.qol,0,10),upl:clamp(o.upl,0,10),urg:clamp(o.urg,0,10)});save();render()})};
+ACT.delCapex=el=>{const p=P();p.capex=p.capex.filter(x=>x.id!==el.dataset.id);save();render()};
+
+/* ---------- Resilience ---------- */
+function pip(x,y,pts){let ins=false;const q=pts.split(' ').map(s=>s.split(',').map(Number));for(let i=0,j=q.length-1;i<q.length;j=i++){if(((q[i][1]>y)!==(q[j][1]>y))&&(x<(q[j][0]-q[i][0])*(y-q[i][1])/(q[j][1]-q[i][1])+q[i][0]))ins=!ins}return ins}
+PAGES.resilience={ico:'resilience',t:()=>L('الصمود والطوارئ','Resilience & emergency'),d:()=>L('اختبر سيناريوهات الأزمات وأثر إجراءات التخفيف على الخدمات الأساسية، ثم حدّد نطاق حادث على الخريطة لمعرفة الحساسات والقطاعات المتأثرة.','Test crisis scenarios and the effect of mitigations on essential services, then place an incident on the map to see affected sensors and sectors.'),
+ r(){const o=P().sim.res;
+  const ctl=selIn('sim.res.scn',L('السيناريو','Scenario'),SCN.map((s,i)=>[i,L(s[0],s[1])]),o.scn,1)+'<b class="small">'+L('إجراءات التخفيف','Mitigations')+'</b><div style="margin-top:6px">'+chk('sim.res.iso',L('عزل تلقائي للشبكات (segmentation)','Automatic network isolation'),o.iso)+chk('sim.res.bak',L('توليد / تخزين احتياطي للطاقة','Backup generation / storage'),o.bak)+chk('sim.res.red',L('حلقات مزدوجة N-1 للمياه والتبريد','N-1 loops for water & cooling'),o.red)+chk('sim.res.route',L('توجيه تكيفي للمرور والإنقاذ','Adaptive traffic & rescue routing'),o.route)+'</div>'+slider('sim.res.rad',L('نصف قطر منطقة الحادث','Incident radius'),100,2000,100,' m',o.rad)+'<p class="small muted">'+L('اضغط على الخريطة لتحديد موقع الحادث.','Click the map to place the incident.')+'</p>';
+  return '<div class="split rev"><div>'+panel(L('المدخلات','Inputs'),ctl)+'</div><div id="out">'+this.out()+'</div></div>'},
+ u(){$('#out').innerHTML=this.out()},
+ out(){const p=P(),o=p.sim.res,r=resCalc(),inc={x:o.x,y:o.y,r:o.rad};
+  const rows=r.rows.map(x=>'<tr><td>'+esc(x.name)+'</td><td style="min-width:150px">'+fmt(x.raw)+'%'+bar(x.raw,'warn')+'</td><td style="min-width:150px">'+fmt(x.mit)+'%'+bar(x.mit,'ok')+'</td></tr>').join('');
+  const dist=d=>Math.hypot(d.x-o.x,d.y-o.y)*8,dv=p.devices.map(d=>Object.assign({dist:dist(d)},d)).filter(d=>d.dist<=o.rad).sort((a,b)=>a.dist-b.dist);
+  const secs=p.sectors.filter(s=>pip(o.x,o.y,s.pts)||s.pts.split(' ').concat([s.cx+','+s.cy]).some(q=>{const a=q.split(',').map(Number);return Math.hypot(a[0]-o.x,a[1]-o.y)*8<=o.rad}));
+  const dl=dv.map(d=>'<tr><td>'+esc(d.sn)+'</td><td>'+esc(L(DEV_TYPES.find(t=>t[0]===d.type)[1],DEV_TYPES.find(t=>t[0]===d.type)[2]))+'</td><td>'+d.sector+'</td><td class="n">'+fmt(d.dist)+' m</td><td>'+chip(d.status==='ACTIVE'?'ok':'bad',d.status)+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">'+L('لا حساسات ضمن النطاق.','No sensors in range.')+'</td></tr>';
+  return '<div class="kpis">'+kpi(L('مؤشر استمرارية الخدمات','Service continuity index'),'<span class="num">'+fmt(r.idx1)+'%</span>',L('بدون تخفيف ','Without mitigation ')+fmt(r.idx0)+'%')+kpi(L('قطاعات متأثرة','Sectors affected'),String(secs.length),secs.map(s=>s.code).join(', ')||'—')+kpi(L('حساسات ضمن النطاق','Sensors in range'),String(dv.length),L('غير متصل: ','Offline: ')+dv.filter(d=>d.status!=='ACTIVE').length)+'</div>'+
+   panel(L('توافر الخدمات أثناء السيناريو','Service availability during the scenario'),tw('<table class="tbl"><thead><tr><th>'+L('الخدمة','Service')+'</th><th>'+L('بدون تخفيف','No mitigation')+'</th><th>'+L('مع التخفيف','With mitigation')+'</th></tr></thead><tbody>'+rows+'</tbody></table>')+'<p class="small muted">'+L('درجات التأثر افتراضات هندسية استرشادية لكل سيناريو، تُستبدل بنتائج دراسات المخاطر الخاصة بالمشروع.','Impact levels are indicative engineering assumptions per scenario; replace with results from project-specific risk studies.')+'</p>')+
+   panel(L('نطاق الحادث (Geofence)','Incident geofence'),mapSvg(p,{mode:'occ',pick:1,inc:inc})+mapLegend(p,'occ')+'<div style="margin-top:12px">'+tw('<table class="tbl"><thead><tr><th>'+L('الحساس','Sensor')+'</th><th>'+L('النوع','Type')+'</th><th>'+L('القطاع','Sector')+'</th><th class="n">'+L('المسافة','Distance')+'</th><th>'+L('الحالة','Status')+'</th></tr></thead><tbody>'+dl+'</tbody></table>')+'</div><p class="small muted">'+L('مقياس الخريطة التخطيطية: 1 وحدة = 8 م.','Schematic map scale: 1 unit = 8 m.')+'</p>')}};
+
+/* ---------- Projects ---------- */
+PAGES.projects={ico:'projects',t:()=>L('سجل المشاريع','Project registry'),d:()=>L('كل مشروع (مدينة أو مرحلة) يحتفظ ببياناته كاملة: القطاعات والعقود والمطالبات والسجل. بدّل بين المشاريع أو انسخها أو صدّرها.','Each project (city or phase) keeps its own complete data: sectors, contracts, claims and ledger. Switch, duplicate or export them.'),
+ r(){const cur=P();
+  const rows=S.projects.map(p=>'<tr><td><b>'+esc(p.name)+'</b>'+(p.id===cur.id?' '+chip('ok',L('الحالي','Current')):'')+'<div class="small muted">'+esc(p.city)+'</div></td><td>'+nn(p.created.slice(0,10))+'</td><td class="n">'+p.sectors.length+'</td><td class="n">'+p.contracts.length+'</td><td class="n">'+p.claims.length+'</td><td class="no-print"><div class="acts" style="margin:0"><button class="btn sm pri" data-act="openProject" data-id="'+p.id+'"'+(p.id===cur.id?' disabled':'')+'>'+L('فتح','Open')+'</button><button class="btn sm" data-act="dupProject" data-id="'+p.id+'">'+L('نسخ','Duplicate')+'</button><button class="btn sm" data-act="exportProject" data-id="'+p.id+'">JSON</button><button class="btn sm dng" data-act="delProject" data-id="'+p.id+'">'+L('حذف','Delete')+'</button></div></td></tr>').join('');
+  const cur2=['USD','AED','SAR','EUR'];
+  const st='<div class="fgrid"><label class="fld"><span>'+L('اسم المشروع','Project name')+'</span><input class="in" data-bind="name" value="'+esc(cur.name)+'"></label><label class="fld"><span>'+L('المدينة / الموقع','City / location')+'</span><input class="in" data-bind="city" value="'+esc(cur.city)+'"></label><label class="fld" style="grid-column:1/-1"><span>'+L('المالك / المهندس المسؤول (يظهر في الطباعة)','Owner / responsible engineer (shown on prints)')+'</span><input class="in" data-bind="owner" value="'+esc(cur.owner)+'"></label>'+selIn('fx.cur',L('عملة العرض','Display currency'),cur2.map(c=>[c,c]),cur.fx.cur)+'<div></div>'+['AED','SAR','EUR'].map(c=>numIn('fx.rates.'+c,c+' '+L('لكل 1 USD','per 1 USD'),cur.fx.rates[c])).join('')+'</div><p class="small muted">'+L('القيم مخزّنة بالدولار وتُعرض بالعملة المختارة. أسعار الصرف استرشادية ويجب تحديثها يدوياً.','Values are stored in USD and shown in the chosen currency. Exchange rates are indicative and must be updated manually.')+'</p>';
+  return panel(L('المشاريع','Projects'),tw('<table class="tbl"><thead><tr><th>'+L('المشروع','Project')+'</th><th>'+L('أُنشئ','Created')+'</th><th class="n">'+L('قطاعات','Sectors')+'</th><th class="n">'+L('عقود','Contracts')+'</th><th class="n">'+L('مطالبات','Claims')+'</th><th class="no-print"></th></tr></thead><tbody>'+rows+'</tbody></table>'),'<div class="no-print acts" style="margin:0"><button class="btn pri sm" data-act="newProject">'+L('مشروع جديد','New project')+'</button><button class="btn sm" data-act="importProject">'+L('استيراد JSON','Import JSON')+'</button><input type="file" id="imp" accept=".json,application/json" hidden></div>')+panel(L('إعدادات المشروع الحالي','Current project settings'),st)}};
+ACT.newProject=()=>openForm(L('مشروع جديد','New project'),[{k:'name',l:L('اسم المشروع','Project name'),t:'text',req:1,full:1},{k:'mode',l:L('البيانات الابتدائية','Starting data'),t:'select',o:[['demo',L('بيانات تجريبية كاملة','Full sample data')],['empty',L('هيكل القطاعات فقط (بلا عقود)','Sector layout only (no contracts)')]],full:1}],o=>{const p=newProject(o.name,o.mode);S.projects.push(p);S.currentId=p.id;save();updateChrome();render()});
+ACT.openProject=el=>{S.currentId=el.dataset.id;save();updateChrome();render()};
+ACT.dupProject=el=>{const s=S.projects.find(x=>x.id===el.dataset.id),c=JSON.parse(JSON.stringify(s));c.id=uid();c.name+=L(' (نسخة)',' (copy)');c.created=new Date().toISOString();S.projects.push(c);save();render();toast(L('تم النسخ','Duplicated'))};
+ACT.delProject=el=>{if(S.projects.length<2)return toast(L('لا يمكن حذف المشروع الوحيد.','You cannot delete the only project.'));const s=S.projects.find(x=>x.id===el.dataset.id);
+  confirmBox(L('حذف المشروع «','Delete project “')+esc(s.name)+L('» نهائياً؟ سيبقى في الأرشيف ما تم حفظه من لقطات.','” permanently? Saved snapshots stay in the archive.'),()=>{S.projects=S.projects.filter(x=>x.id!==s.id);if(S.currentId===s.id)S.currentId=S.projects[0].id;save();updateChrome();render()})};
+ACT.exportProject=el=>{const s=S.projects.find(x=>x.id===el.dataset.id);download('project-'+s.id+'.json',JSON.stringify(s,null,2))};
+ACT.importProject=()=>{const i=$('#imp');if(i)i.click()};
+document.addEventListener('change',e=>{if(e.target.id!=='imp'||!e.target.files[0])return;const fr=new FileReader();fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!o||!Array.isArray(o.sectors)||!Array.isArray(o.contracts))throw 1;o.id=uid();o.name=(o.name||'Imported')+L(' (مستورد)',' (imported)');S.projects.push(o);S.currentId=o.id;save();updateChrome();render();toast(L('تم الاستيراد','Imported'))}catch(x){toast(L('ملف غير صالح','Invalid file'))}};fr.readAsText(e.target.files[0])});
+
+/* ---------- Archive & audit ---------- */
+PAGES.archive={ico:'archive',t:()=>L('الأرشيف وسجل التدقيق','Archive & audit trail'),d:()=>L('لقطات محفوظة من الصفحات للتوثيق والطباعة لاحقاً، وسجل زمني بكل تعديل على العقود والأوامر التغييرية والمطالبات.','Saved page snapshots for later documentation and printing, plus a time-ordered trail of every change to contracts, change orders and claims.'),
+ r(){const p=P(),sn=S.archive.filter(a=>a.pid===p.id);
+  const sr=sn.map(a=>'<tr><td>'+nn(a.ts.slice(0,16).replace('T',' '))+'</td><td>'+esc(a.title)+'</td><td class="no-print"><div class="acts" style="margin:0"><button class="btn sm pri" data-act="viewSnap" data-id="'+a.id+'">'+L('عرض','View')+'</button><button class="btn sm dng" data-act="delSnap" data-id="'+a.id+'">'+L('حذف','Delete')+'</button></div></td></tr>').join('')||'<tr><td colspan="3" class="muted">'+L('لا لقطات بعد. استخدم زر «حفظ في الأرشيف» في أي صفحة.','No snapshots yet. Use “Save to archive” on any page.')+'</td></tr>';
+  const ar=p.audit.slice(0,80).map(a=>'<tr><td>'+nn(a.ts.slice(0,16).replace('T',' '))+'</td><td>'+esc(a.table)+'</td><td>'+chip(a.op==='INSERT'?'ok':'info',a.op)+'</td><td>'+esc(a.by)+'</td><td class="small">'+Object.keys(a.diff).slice(0,4).map(k=>'<div><b>'+esc(k)+'</b>: '+esc(a.diff[k].old==null?'∅':a.diff[k].old)+' → '+esc(a.diff[k].new==null?'∅':a.diff[k].new)+'</div>').join('')+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">'+L('لا تغييرات مسجّلة بعد.','No changes recorded yet.')+'</td></tr>';
+  return panel(L('لقطات الصفحات','Page snapshots')+' <span class="muted small">— '+esc(p.name)+'</span>',tw('<table class="tbl"><thead><tr><th>'+L('الوقت','Time')+'</th><th>'+L('الصفحة','Page')+'</th><th class="no-print"></th></tr></thead><tbody>'+sr+'</tbody></table>'),'<div class="no-print acts" style="margin:0"><button class="btn sm" data-act="exportAll">'+L('تصدير كل البيانات JSON','Export all data JSON')+'</button></div>')+
+   panel(L('سجل التدقيق (آخر 80)','Audit trail (latest 80)'),tw('<table class="tbl"><thead><tr><th>'+L('الوقت','Time')+'</th><th>'+L('الجدول','Table')+'</th><th>'+L('العملية','Operation')+'</th><th>'+L('المستخدم','User')+'</th><th>'+L('الحقول المتغيّرة','Changed fields')+'</th></tr></thead><tbody>'+ar+'</tbody></table>'))}};
+ACT.viewSnap=el=>{const a=S.archive.find(x=>x.id===el.dataset.id);document.body.classList.add('pm');
+  openModal('<div class="acts no-print" style="margin:0 0 10px"><button class="btn pri sm" data-act="print">'+L('طباعة','Print')+'</button><button class="btn sm" data-act="close">'+L('إغلاق','Close')+'</button></div><div class="arch" dir="'+(a.lang==='ar'?'rtl':'ltr')+'">'+a.html+'</div>',true)};
+ACT.delSnap=el=>{S.archive=S.archive.filter(x=>x.id!==el.dataset.id);save();render()};
+ACT.exportAll=()=>download('smart-city-all-data-'+today()+'.json',JSON.stringify({projects:S.projects,archive:S.archive.map(a=>({id:a.id,ts:a.ts,pid:a.pid,pname:a.pname,title:a.title}))},null,2));
+
+/* ---------- shell actions ---------- */
+ACT.go=el=>{S.page=el.dataset.id;save();render();window.scrollTo(0,0);document.body.classList.remove('nav-open')};
+ACT.menu=()=>document.body.classList.toggle('nav-open');
+ACT.lang=()=>{S.lang=S.lang==='ar'?'en':'ar';save();applyLang();render()};
+ACT.print=()=>{if($('#ov').innerHTML)document.body.classList.add('pm');window.print()};
+ACT.close=()=>closeModal();
+ACT.ovbg=(el,e)=>{if(e.target===el)closeModal()};
+ACT.selSec=el=>{const p=P();p.sel=el.dataset.id;save();$$('.sec').forEach(x=>x.classList.toggle('sel',x.dataset.id===p.sel));const d=$('#secd');if(d)d.innerHTML=PAGES.overview.det()};
+ACT.mapMode=el=>{P().mapMode=el.dataset.id;save();render()};
+ACT.editSec=el=>{const p=P(),s=p.sectors.find(x=>x.code===el.dataset.id);
+  const F=[['occ','الإشغال %','Occupancy %'],['target','المستهدف %','Target %'],['pop','السكان','Population'],['gfa','المساحة المبنية m²','Built area m²'],['peakP','ذروة الكهرباء MW','Power peak MW'],['capP','سعة الكهرباء MW','Power capacity MW'],['peakC','ذروة التبريد MW','Cooling peak MW'],['capC','سعة التبريد MW','Cooling capacity MW'],['demW','طلب المياه ML/d','Water demand ML/d'],['capW','سعة المياه ML/d','Water capacity ML/d'],['vc','نسبة v/c للطرق','Road v/c'],['co2','الانبعاثات kt/سنة','Emissions kt/yr'],['baseCo2','خط الأساس kt/سنة','Baseline kt/yr'],['renew','طاقة متجددة %','Renewables %'],['wRec','إعادة استخدام المياه %','Water reuse %'],['waste','تحويل النفايات %','Waste diversion %'],['utilPerM2','استهلاك كهرباء kWh/m²/شهر','Electricity kWh/m²/month'],['designPerM2','الاستهلاك التصميمي kWh/m²/شهر','Design kWh/m²/month']];
+  openForm(s.code+' · '+nm(s),[{k:'phase',l:L('المرحلة','Phase'),t:'select',o:Object.keys(PHASES).map(k=>[k,L(PHASES[k][0],PHASES[k][1])]),v:s.phase,full:1}].concat(F.map(f=>({k:f[0],l:L(f[1],f[2]),t:'number',v:s[f[0]]}))),o=>{
+    for(const f of F)if(o[f[0]]<0)return L('لا تقبل القيم السالبة.','Negative values are not allowed.');
+    if(o.gfa<=0||o.baseCo2<=0||o.designPerM2<=0||o.capP<=0||o.capC<=0||o.capW<=0)return L('المساحة وخط الأساس والسعات والاستهلاك التصميمي يجب أن تكون موجبة.','Area, baseline, capacities and design consumption must be positive.');
+    const b=Object.assign({},s);Object.assign(s,o);audit('sectors','UPDATE',s.code,b,s);save();render()})};
+ACT.snap=()=>{const pg=PAGES[S.page],d=document.createElement('div');d.innerHTML=$('#main').innerHTML;$$('.no-print',d).forEach(n=>n.remove());
+  S.archive.unshift({id:uid(),ts:new Date().toISOString(),pid:P().id,pname:P().name,page:S.page,title:pg.t(),lang:S.lang,html:d.innerHTML});if(S.archive.length>40)S.archive.length=40;save();toast(L('حُفظت لقطة الصفحة في الأرشيف','Page snapshot saved to archive'));if(S.page==='archive')render()};
+
+/* ================= chrome, events, boot ================= */
+const NAV=['overview','twin','cooling','esg','contracts','changes','claims','ledger','finance','resilience','projects','archive'];
+function applyLang(){document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='ar'?'rtl':'ltr';updateChrome()}
+function updateChrome(){
+  const p=P();document.title=L('المطور الاستراتيجي للمدن الذكية','Smart City Strategic Developer')+' · '+p.name;
+  $('#bn').textContent=L('المطور الاستراتيجي للمدن الذكية','Smart City Strategic Developer');$('#bs').textContent=L('منظومة الحوكمة والتنبؤ','Governance & foresight engine');
+  $('#owner').innerHTML='<b>'+esc(p.owner)+'</b>'+L('صاحب التطبيق','Application owner');
+  $('#pchip').textContent=p.name;$('#langb').textContent=S.lang==='ar'?'English':'عربي';$('#printb').textContent=L('طباعة / PDF','Print / PDF');$('#snapb').textContent=L('حفظ في الأرشيف','Save to archive');
+  $('#nav').innerHTML=NAV.map(k=>'<a href="#" data-act="go" data-id="'+k+'" data-p="'+k+'" class="'+(S.page===k?'on':'')+(k==='contracts'||k==='projects'?' sep':'')+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+ICO[PAGES[k].ico]+'</svg>'+esc(PAGES[k].t())+'</a>').join('');
+}
+function printHead(){const p=P();return '<div class="print-only phead"><b>'+esc(p.owner)+'</b> — '+L('المطور الاستراتيجي للمدن الذكية','Smart City Strategic Developer')+'<br>'+esc(p.name)+' · '+esc(p.city)+' · '+esc(PAGES[S.page].t())+' · '+today()+'</div>'}
+function render(){if(!PAGES[S.page])S.page='overview';const pg=PAGES[S.page];$('#title').textContent=pg.t();$('#main').innerHTML=printHead()+'<p class="lede">'+pg.d()+'</p>'+pg.r();$$('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===S.page))}
+
+document.addEventListener('click',e=>{
+  const pk=e.target.closest('svg[data-pick]');
+  if(pk){const r=pk.getBoundingClientRect(),o=P().sim.res;o.x=Math.round((e.clientX-r.left)/r.width*640);o.y=Math.round((e.clientY-r.top)/r.height*420);save();PAGES.resilience.u();return}
+  const a=e.target.closest('[data-act]');if(!a)return;const f=ACT[a.dataset.act];if(f){if(a.tagName==='A')e.preventDefault();f(a,e)}
+});
+document.addEventListener('input',e=>{
+  const el=e.target,b=el.dataset&&el.dataset.bind;if(!b)return;
+  let v;if(el.type==='checkbox')v=el.checked;else if(el.type==='range'||el.dataset.num)v=N(el.value);else v=el.value;
+  const root=b[0]==='@'?S:P(),path=b[0]==='@'?b.slice(1):b;setPath(root,path,v);save();
+  if(el.type==='range'){const vl=el.closest('label').querySelector('.val');if(vl)vl.textContent=fmt(v,N(el.step)<1?1:0)+(el.dataset.unit||'')}
+  if(b==='name'||b==='city'||b==='owner')updateChrome();
+  const pg=PAGES[S.page];if(pg.u)pg.u();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+window.addEventListener('afterprint',()=>{document.body.classList.remove('pm')});
+
+S=loadState();
+if(!S){S={v:1,lang:'ar',role:'PROJECT_MANAGER',user:'',page:'overview',currentId:'',projects:[],archive:[]};const p0=newProject(L('المدينة الذكية – المرحلة الأولى','Smart City – Phase 1'),'demo');S.projects.push(p0);S.currentId=p0.id;save()}
+applyLang();render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CPLMS | منظومة إدارة وتقييم المقاولين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#e9eef2;
+  --ink-dim:#9fb0bd;
+  --ink-faint:#6c7f8c;
+  --blue-950:#081820;
+  --blue-925:#0b222c;
+  --blue-900:#0e2a36;
+  --blue-850:#123544;
+  --blue-800:#17414f;
+  --line:#20505f;
+  --line-soft:#173c48;
+  --cyan:#5fd0e8;
+  --cyan-dim:#3a8fa3;
+  --amber:#e8a33d;
+  --amber-dim:#8a6425;
+  --red:#e35b5b;
+  --red-dim:#7a3030;
+  --green:#5fbf88;
+  --green-dim:#2f5f45;
+  --font-body:'Tajawal',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --radius:3px;
+  --sidebar-w:250px;
+}
+[dir="ltr"]{ }
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:var(--font-body);
+  background:var(--blue-950);
+  color:var(--ink);
+  min-height:100%;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size:34px 34px;
+  background-attachment:fixed;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+::selection{background:var(--cyan-dim); color:#fff;}
+::-webkit-scrollbar{width:9px; height:9px;}
+::-webkit-scrollbar-track{background:var(--blue-925);}
+::-webkit-scrollbar-thumb{background:var(--line); border-radius:5px;}
+a{color:var(--cyan);}
+h1,h2,h3,h4{font-weight:700; letter-spacing:.2px;}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+
+/* ============ APP SHELL ============ */
+#app{display:flex; min-height:100vh;}
+.sidebar{
+  width:var(--sidebar-w); flex-shrink:0;
+  background:linear-gradient(180deg,var(--blue-925),var(--blue-900));
+  border-inline-end:1px solid var(--line-soft);
+  display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding-top:env(safe-area-inset-top,0px);
+  transition:transform .22s ease;
+  z-index:60;
+}
+.sidebar-overlay{
+  display:none; position:fixed; inset:0; background:rgba(4,10,14,.65); z-index:55;
+}
+.sidebar-overlay.show{display:block;}
+.mobile-topbar{display:none;}
+.close-sidebar-btn{display:none;}
+
+@media(max-width:880px){
+  #app{display:block;}
+  .sidebar{
+    position:fixed; top:0; bottom:0; width:min(78vw,290px); height:100dvh;
+  }
+  html[dir="ltr"] .sidebar{ left:0; transform:translateX(-105%); }
+  html[dir="ltr"] .sidebar.open{ transform:translateX(0); }
+  html[dir="rtl"] .sidebar{ right:0; transform:translateX(105%); }
+  html[dir="rtl"] .sidebar.open{ transform:translateX(0); }
+  .close-sidebar-btn{
+    display:flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%; background:var(--blue-850); border:1px solid var(--line);
+    color:var(--ink-dim); font-size:16px; line-height:1; cursor:pointer; margin-inline-start:auto;
+  }
+  .mobile-topbar{
+    display:flex; align-items:center; gap:12px;
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(180deg,var(--blue-925),var(--blue-900));
+    border-bottom:1px solid var(--line-soft);
+    padding:12px 16px; padding-top:calc(12px + env(safe-area-inset-top,0px));
+  }
+  .mobile-topbar .hamburger{
+    width:36px; height:36px; flex-shrink:0; border-radius:var(--radius); background:var(--blue-850);
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--cyan);
+  }
+  .mobile-topbar b{font-size:14px; color:var(--ink);}
+  .mobile-topbar span{font-size:10px; color:var(--ink-faint); font-family:var(--font-mono); display:block;}
+  main.view{padding:18px 14px 60px; max-width:100%;}
+}
+.brand{
+  padding:22px 18px 16px; border-bottom:1px solid var(--line-soft);
+}
+.brand .mark{
+  display:flex; align-items:center; gap:10px; margin-bottom:10px;
+}
+.brand .mark svg{flex-shrink:0;}
+.brand .mark .txt b{display:block; font-size:15px; letter-spacing:.5px; color:var(--ink);}
+.brand .mark .txt span{display:block; font-size:10.5px; color:var(--cyan-dim); font-family:var(--font-mono); letter-spacing:.5px;}
+.brand .sub{font-size:11px; color:var(--ink-faint); line-height:1.6;}
+.brand .sub b{color:var(--amber); font-weight:500;}
+
+nav.navlist{padding:14px 10px; flex:1;}
+.navlist .grp-label{
+  font-size:10.5px; color:var(--ink-faint); font-family:var(--font-mono);
+  padding:12px 10px 6px; letter-spacing:1px;
+}
+.navlist button.navitem{
+  width:100%; text-align:start; background:transparent; border:none;
+  color:var(--ink-dim); padding:9px 12px; border-radius:var(--radius);
+  font-size:13.5px; display:flex; align-items:center; gap:10px;
+  border-inline-start:2px solid transparent; transition:.12s;
+}
+.navlist button.navitem .dot{width:6px; height:6px; border-radius:50%; background:var(--line); flex-shrink:0;}
+.navlist button.navitem:hover{background:var(--blue-850); color:var(--ink);}
+.navlist button.navitem.active{
+  background:var(--blue-850); color:var(--cyan); border-inline-start-color:var(--cyan);
+}
+.navlist button.navitem.active .dot{background:var(--cyan);}
+.navlist button.navitem .badge{
+  margin-inline-start:auto; background:var(--red-dim); color:#ffd9d9;
+  font-family:var(--font-mono); font-size:10px; padding:1px 6px; border-radius:8px;
+}
+
+.sidebar-foot{padding:14px 16px; border-top:1px solid var(--line-soft); font-size:11px; color:var(--ink-faint);}
+.sidebar-foot .lang-toggle{
+  display:flex; gap:6px; margin-bottom:10px;
+}
+.lang-toggle button{
+  flex:1; background:var(--blue-850); border:1px solid var(--line-soft); color:var(--ink-dim);
+  padding:6px; border-radius:var(--radius); font-size:12px; font-family:var(--font-mono);
+}
+.lang-toggle button.active{background:var(--cyan-dim); color:#fff; border-color:var(--cyan);}
+
+main.view{flex:1; min-width:0; padding:26px 30px 60px; max-width:1300px;}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  margin-bottom:22px; flex-wrap:wrap;
+}
+.topbar h1{font-size:21px; color:var(--ink);}
+.topbar .crumbs{font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-top:4px;}
+.topbar .actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+.btn{
+  background:var(--blue-850); border:1px solid var(--line); color:var(--ink);
+  padding:8px 14px; border-radius:var(--radius); font-size:13px; display:inline-flex; align-items:center; gap:6px;
+  transition:.12s;
+}
+.btn:hover{border-color:var(--cyan-dim); color:var(--cyan);}
+.btn.primary{background:var(--cyan-dim); border-color:var(--cyan); color:#fff;}
+.btn.primary:hover{background:var(--cyan); color:#04222b;}
+.btn.danger{background:var(--red-dim); border-color:var(--red); color:#ffe1e1;}
+.btn.warn{background:var(--amber-dim); border-color:var(--amber); color:#fff3dd;}
+.btn.ghost{background:transparent;}
+.btn.sm{padding:5px 10px; font-size:12px;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+
+.grid{display:grid; gap:16px;}
+.g-4{grid-template-columns:repeat(4,1fr);}
+.g-3{grid-template-columns:repeat(3,1fr);}
+.g-2{grid-template-columns:repeat(2,1fr);}
+@media(max-width:1050px){.g-4{grid-template-columns:repeat(2,1fr);} .g-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.g-4,.g-3,.g-2{grid-template-columns:1fr;} main.view{padding:18px 14px 50px;}}
+
+.card{
+  background:linear-gradient(180deg,var(--blue-900),var(--blue-925));
+  border:1px solid var(--line-soft); border-radius:var(--radius); padding:18px;
+  position:relative;
+}
+.card::before{
+  content:''; position:absolute; inset-inline-start:0; top:0; bottom:0; width:2px;
+  background:var(--line-soft);
+}
+.card.accent-cyan::before{background:var(--cyan);}
+.card.accent-amber::before{background:var(--amber);}
+.card.accent-red::before{background:var(--red);}
+.card.accent-green::before{background:var(--green);}
+.card h3{font-size:12.5px; color:var(--ink-faint); font-weight:500; letter-spacing:.3px; margin-bottom:4px;}
+.card .stat{font-family:var(--font-mono); font-size:30px; color:var(--ink); font-weight:600; line-height:1.1;}
+.card .stat small{font-size:13px; color:var(--ink-faint); font-family:var(--font-body);}
+.card .foot{font-size:11.5px; color:var(--ink-faint); margin-top:6px;}
+
+.section-title{
+  font-size:15px; color:var(--ink); margin:26px 0 12px; display:flex; align-items:center; gap:10px;
+  padding-bottom:8px; border-bottom:1px solid var(--line-soft);
+}
+.section-title .tag{font-family:var(--font-mono); font-size:10.5px; color:var(--cyan-dim); border:1px solid var(--line); padding:1px 8px; border-radius:10px;}
+
+table{width:100%; border-collapse:collapse; font-size:13px;}
+thead th{
+  text-align:start; font-size:11px; color:var(--ink-faint); font-weight:500; letter-spacing:.4px;
+  padding:8px 10px; border-bottom:1px solid var(--line-soft); font-family:var(--font-mono); white-space:nowrap;
+}
+tbody td{padding:9px 10px; border-bottom:1px solid var(--line-soft); color:var(--ink-dim); vertical-align:middle;}
+tbody tr:hover{background:var(--blue-850);}
+.table-wrap{overflow-x:auto; border:1px solid var(--line-soft); border-radius:var(--radius);}
+.table-wrap table{min-width:640px;}
+
+.pill{display:inline-flex; align-items:center; gap:5px; padding:2px 9px; border-radius:10px; font-size:11px; font-family:var(--font-mono); white-space:nowrap;}
+.pill.t1{background:rgba(95,191,136,.15); color:var(--green); border:1px solid var(--green-dim);}
+.pill.t2{background:rgba(95,208,232,.12); color:var(--cyan); border:1px solid var(--cyan-dim);}
+.pill.review{background:rgba(232,163,61,.15); color:var(--amber); border:1px solid var(--amber-dim);}
+.pill.black{background:rgba(227,91,91,.16); color:var(--red); border:1px solid var(--red-dim);}
+.pill.open{background:rgba(232,163,61,.15); color:var(--amber); border:1px solid var(--amber-dim);}
+.pill.closed{background:rgba(95,191,136,.12); color:var(--green); border:1px solid var(--green-dim);}
+
+label{display:block; font-size:12px; color:var(--ink-faint); margin-bottom:5px;}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%; background:var(--blue-850); border:1px solid var(--line); color:var(--ink);
+  padding:9px 11px; border-radius:var(--radius); font-size:13.5px;
+}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--cyan-dim);}
+textarea{resize:vertical; min-height:70px; font-family:var(--font-mono); font-size:12.5px; line-height:1.7;}
+.field{margin-bottom:14px;}
+.form-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr;}}
+
+.modal-bg{
+  position:fixed; inset:0; background:rgba(4,10,14,.72); backdrop-filter:blur(2px);
+  display:none; align-items:flex-start; justify-content:center; z-index:100; padding:40px 16px; overflow-y:auto;
+}
+.modal-bg.show{display:flex;}
+.modal{
+  background:var(--blue-900); border:1px solid var(--line); border-radius:var(--radius);
+  width:100%; max-width:640px; padding:22px; margin-bottom:40px;
+}
+.modal.wide{max-width:820px;}
+.modal h2{font-size:16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;}
+.modal h2 .x{cursor:pointer; color:var(--ink-faint); font-size:20px; line-height:1;}
+.modal .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:18px; padding-top:14px; border-top:1px solid var(--line-soft);}
+
+.empty{
+  text-align:center; padding:50px 20px; color:var(--ink-faint); border:1px dashed var(--line); border-radius:var(--radius);
+}
+.empty b{display:block; color:var(--ink-dim); margin-bottom:6px; font-size:14px;}
+
+.kpi-bar-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.kpi-bar-row .lbl{width:170px; font-size:12px; color:var(--ink-dim); flex-shrink:0;}
+.kpi-bar-track{flex:1; height:9px; background:var(--blue-850); border-radius:5px; overflow:hidden; border:1px solid var(--line-soft);}
+.kpi-bar-fill{height:100%; background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));}
+.kpi-bar-row .val{width:52px; text-align:end; font-family:var(--font-mono); font-size:12.5px; color:var(--ink);}
+
+.doc-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+@media(max-width:900px){.doc-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.doc-grid{grid-template-columns:1fr;}}
+.doc-card{
+  background:var(--blue-900); border:1px solid var(--line-soft); border-radius:var(--radius); padding:14px;
+  cursor:pointer; transition:.12s;
+}
+.doc-card:hover{border-color:var(--cyan-dim); transform:translateY(-1px);}
+.doc-card .code{font-family:var(--font-mono); font-size:10.5px; color:var(--cyan-dim); margin-bottom:6px;}
+.doc-card .name{font-size:13.5px; color:var(--ink); margin-bottom:6px; line-height:1.5;}
+.doc-card .desc{font-size:11.5px; color:var(--ink-faint); line-height:1.5;}
+
+.doc-preview{
+  background:#f4f1ea; color:#1a1a1a; padding:34px 38px; border-radius:2px; font-size:13.5px; line-height:2;
+  white-space:pre-wrap; font-family:var(--font-body); max-height:60vh; overflow-y:auto; border:1px solid #d8d2c2;
+}
+.doc-preview .dh{text-align:center; margin-bottom:18px; border-bottom:2px solid #1a1a1a; padding-bottom:10px;}
+.doc-preview .dh b{font-size:16px; display:block;}
+.doc-preview .dh span{font-size:11px; color:#555; font-family:var(--font-mono);}
+
+.flag{
+  display:inline-flex; align-items:center; gap:6px; background:rgba(95,208,232,.1); border:1px dashed var(--cyan-dim);
+  color:var(--cyan); font-size:11px; padding:5px 10px; border-radius:var(--radius); margin-bottom:14px;
+}
+
+.hint{font-size:11.5px; color:var(--ink-faint); margin-top:4px;}
+.divider{height:1px; background:var(--line-soft); margin:18px 0;}
+
+.escalation-track{display:flex; gap:0; margin:16px 0; overflow-x:auto;}
+.esc-step{flex:1; min-width:130px; text-align:center; padding:12px 8px; border-bottom:3px solid var(--line); position:relative; font-size:11.5px; color:var(--ink-faint);}
+.esc-step.done{border-color:var(--green); color:var(--green);}
+.esc-step.current{border-color:var(--amber); color:var(--amber); font-weight:700;}
+.esc-step b{display:block; font-size:12.5px; margin-bottom:2px;}
+
+.search-box{position:relative; max-width:320px;}
+.search-box input{padding-inline-start:32px;}
+.search-box::before{content:'⌕'; position:absolute; inset-inline-start:10px; top:50%; transform:translateY(-50%); color:var(--ink-faint);}
+
+.toast-wrap{position:fixed; bottom:20px; inset-inline-end:20px; z-index:200; display:flex; flex-direction:column; gap:8px;}
+.toast{background:var(--blue-850); border:1px solid var(--cyan-dim); color:var(--ink); padding:11px 16px; border-radius:var(--radius); font-size:13px; box-shadow:0 6px 18px rgba(0,0,0,.4); animation:in .18s ease;}
+@keyframes in{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+.mini-chart{display:flex; align-items:flex-end; gap:5px; height:70px; margin-top:8px;}
+.mini-chart .bar{flex:1; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); border-radius:2px 2px 0 0; min-height:2px; position:relative;}
+.mini-chart .bar span{position:absolute; top:-16px; inset-inline-start:50%; transform:translateX(-50%); font-size:9px; color:var(--ink-faint); font-family:var(--font-mono); white-space:nowrap;}
+
+.new-badge{background:var(--amber); color:#3a2600; font-size:9px; padding:1px 6px; border-radius:8px; font-family:var(--font-mono); margin-inline-start:6px; vertical-align:middle;}
+
+@media print{
+  body *{visibility:hidden;}
+  #printArea, #printArea *{visibility:visible;}
+  #printArea{position:absolute; inset-inline-start:0; top:0; width:100%; background:#fff; color:#000;}
+  body{background:#fff;}
+}
+#printArea{display:none;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modalRoot"></div>
+<div class="toast-wrap" id="toastWrap"></div>
+<div id="printArea"></div>
+<script>
+/* ============================================================
+   CPLMS — Contractor Performance & Lifecycle Management System
+   Eng. Wael Ali Oweis Mahmoud — BENA Strategic Development Co.
+   ============================================================ */
+
+/* ---------------- STORAGE ---------------- */
+const STORE_KEY = 'cplms_data_v1';
+function defaultData(){
+  return {
+    lang: 'ar',
+    settings: {
+      companyName: 'شركة بناء للتطوير الاستراتيجي',
+      companyNameEn: 'BENA Strategic Development Co.',
+      ownerName: 'م. وائل علي عويس محمود',
+      ownerNameEn: 'Eng. Wael Ali Oweis Mahmoud',
+      weights: { spi:30, cpi:20, quality:25, hse:15, mgmt:10 },
+      escalationThreshold: 70,
+      criticalThreshold: 60
+    },
+    vendors: [],
+    projects: [],
+    evaluations: [],
+    escalations: [],
+    documents: [],
+    compliance: []
+  };
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) { const d=defaultData(); save(d); return d; }
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultData(), parsed, {
+      settings: Object.assign(defaultData().settings, parsed.settings||{})
+    });
+  }catch(e){ const d=defaultData(); save(d); return d; }
+}
+function save(d){ localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
+let DB = load();
+let LANG = DB.lang || 'ar';
+let VIEW = 'dashboard';
+let VIEW_PARAM = null;
+
+function uid(prefix){ return prefix + '-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,6).toUpperCase(); }
+function hashOf(str){
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = (h<<5)-h + str.charCodeAt(i); h|=0; }
+  return 'SHA-' + Math.abs(h).toString(16).toUpperCase().padStart(8,'0');
+}
+function nowISO(){ return new Date().toISOString(); }
+function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso); return d.toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB',{year:'numeric',month:'2-digit',day:'2-digit'}); }
+function fmtDateTime(iso){ if(!iso) return '—'; const d=new Date(iso); return d.toLocaleString(LANG==='ar'?'ar-EG':'en-GB'); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function t(ar,en){ return LANG==='ar' ? ar : en; }
+
+function toast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className='toast'; el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 2600);
+}
+
+/* ---------------- KPI / SCORING ---------------- */
+function computeOverall(ev){
+  const w = DB.settings.weights;
+  const totalW = w.spi+w.cpi+w.quality+w.hse+w.mgmt;
+  const norm = (v)=> Math.max(0,Math.min(100,Number(v)||0));
+  const score = (norm(ev.spi)*w.spi + norm(ev.cpi)*w.cpi + norm(ev.ncrClose)*w.quality + norm(ev.hse)*w.hse + norm(ev.mgmt)*w.mgmt) / (totalW||1);
+  return Math.round(score*100)/100;
+}
+function gradeOf(score){
+  if(score>=90) return t('ممتاز','Excellent');
+  if(score>=80) return t('جيد جداً','Very Good');
+  if(score>=70) return t('جيد','Good');
+  if(score>=60) return t('تحت المراقبة','Under Watch');
+  return t('متعثر','Poor');
+}
+function tierBadgeClass(tier){
+  return {TIER_1:'t1', TIER_2:'t2', UNDER_REVIEW:'review', BLACK_LISTED:'black'}[tier] || 'review';
+}
+function tierLabel(tier){
+  return {
+    TIER_1: t('الفئة الأولى','Tier 1'),
+    TIER_2: t('الفئة الثانية','Tier 2'),
+    UNDER_REVIEW: t('تحت المراجعة','Under Review'),
+    BLACK_LISTED: t('قائمة سوداء','Blacklisted')
+  }[tier] || tier;
+}
+function latestEvalFor(vendorId){
+  const list = DB.evaluations.filter(e=>e.vendorId===vendorId).sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+  return list[0] || null;
+}
+function vendorTrend(vendorId){
+  const list = DB.evaluations.filter(e=>e.vendorId===vendorId).sort((a,b)=> new Date(a.createdAt)-new Date(b.createdAt)).slice(-3);
+  if(list.length<2) return 0;
+  return Math.round((list[list.length-1].overall - list[0].overall)*10)/10;
+}
+/* Suggested addition: lightweight early-warning heuristic (no external AI call — local trend + threshold logic) */
+function riskLevel(vendorId){
+  const last = latestEvalFor(vendorId);
+  if(!last) return {level:'none', label:t('لا توجد بيانات','No data')};
+  const trend = vendorTrend(vendorId);
+  if(last.overall < DB.settings.criticalThreshold || trend <= -8) return {level:'high', label:t('مخاطرة عالية','High Risk')};
+  if(last.overall < DB.settings.escalationThreshold || trend <= -3) return {level:'medium', label:t('مراقبة','Watch')};
+  return {level:'low', label:t('مستقر','Stable')};
+}
+function vendorName(id){ const v=DB.vendors.find(x=>x.id===id); return v? v.name : t('—','—'); }
+function projectName(id){ const p=DB.projects.find(x=>x.id===id); return p? p.name : t('—','—'); }
+
+/* ---------------- NAV DEFINITION ---------------- */
+const NAV = [
+  {grp:t('نظرة عامة','Overview'), items:[
+    {id:'dashboard', ar:'لوحة التحكم', en:'Dashboard'},
+  ]},
+  {grp:t('إدارة المقاولين','Vendor Management'), items:[
+    {id:'vendors', ar:'سجل المقاولين', en:'Vendor Registry'},
+    {id:'projects', ar:'المشاريع', en:'Projects'},
+    {id:'evaluations', ar:'التقييم الشهري', en:'Monthly Evaluation'},
+  ]},
+  {grp:t('الحوكمة والمخاطر','Governance & Risk'), items:[
+    {id:'escalation', ar:'محرك التصعيد', en:'Escalation Engine'},
+    {id:'compliance', ar:'رادار الامتثال', en:'Compliance Radar'},
+  ]},
+  {grp:t('الوثائق','Documents'), items:[
+    {id:'documents', ar:'مكتبة الوثائق', en:'Document Library'},
+    {id:'archive', ar:'الأرشيف', en:'Archive'},
+  ]},
+  {grp:t('النظام','System'), items:[
+    {id:'settings', ar:'الإعدادات', en:'Settings'},
+  ]},
+];
+
+/* ---------------- SHELL RENDER ---------------- */
+function iconFor(id){
+  const icons = {
+    dashboard:'M3 13h4v7H3v-7Zm7-9h4v16h-4V4Zm7 5h4v11h-4V9Z',
+    vendors:'M4 21V8l8-5 8 5v13h-6v-6H10v6H4Z',
+    projects:'M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h10v2H4v-2Z',
+    evaluations:'M9 3h6l1 3h4v2h-1.2l-1.6 13H6.8L5.2 8H4V6h4l1-3Zm1 2-.5 1.5h5L14 5h-4Z',
+    escalation:'M12 2 2 20h20L12 2Zm0 6 6.5 10h-13L12 8Z',
+    compliance:'M12 2 3 6v6c0 5 4 9 9 10 5-1 9-5 9-10V6l-9-4Z',
+    documents:'M6 2h9l5 5v15H6V2Zm8 1.5V8h4.5L14 3.5Z',
+    archive:'M3 4h18v4H3V4Zm1 5h16v11H4V9Zm4 3v2h8v-2H8Z',
+    settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm8.4 4a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L15.5 3h-4l-.4 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L11.5 21h4l.4-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.07-.4.1-.8.1-1.2Z'
+  };
+  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="opacity:.85"><path d="${icons[id]||''}"/></svg>`;
+}
+function escalationOpenCount(){ return DB.escalations.filter(e=>e.stage!=='resolved').length; }
+function complianceAlertCount(){
+  const now = new Date();
+  return DB.compliance.filter(c=>{
+    const d = new Date(c.expiryDate); const days = (d-now)/86400000;
+    return days <= 60;
+  }).length;
+}
+
+let SIDEBAR_OPEN = false;
+function currentNavLabel(){
+  for(const g of NAV){ for(const it of g.items){ if(it.id===VIEW) return LANG==='ar'?it.ar:it.en; } }
+  return '';
+}
+function renderShell(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="sidebar-overlay ${SIDEBAR_OPEN?'show':''}" onclick="closeSidebar()"></div>
+    <aside class="sidebar ${SIDEBAR_OPEN?'open':''}">
+      <div class="brand">
+        <div class="mark">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
+            <rect x="2" y="2" width="44" height="44" rx="3" stroke="#5fd0e8" stroke-width="1.5"/>
+            <path d="M12 34V18l12-8 12 8v16" stroke="#5fd0e8" stroke-width="2" fill="none"/>
+            <path d="M19 34V24h10v10" stroke="#e8a33d" stroke-width="2" fill="none"/>
+          </svg>
+          <div class="txt"><b>CPLMS</b><span>VENDOR INTELLIGENCE</span></div>
+          <span class="close-sidebar-btn" onclick="closeSidebar()">×</span>
+        </div>
+        <div class="sub">${t('نظام إدارة وتقييم المقاولين','Contractor Lifecycle Mgmt')}<br><b>${esc(LANG==='ar'?DB.settings.ownerName:DB.settings.ownerNameEn)}</b></div>
+      </div>
+      <nav class="navlist">
+        ${NAV.map(g=>`
+          <div class="grp-label">${g.grp}</div>
+          ${g.items.map(it=>{
+            let badge = '';
+            if(it.id==='escalation' && escalationOpenCount()>0) badge = `<span class="badge">${escalationOpenCount()}</span>`;
+            if(it.id==='compliance' && complianceAlertCount()>0) badge = `<span class="badge">${complianceAlertCount()}</span>`;
+            return `<button class="navitem ${VIEW===it.id?'active':''}" onclick="goto('${it.id}')"><span class="dot"></span>${iconFor(it.id)} ${LANG==='ar'?it.ar:it.en} ${badge}</button>`;
+          }).join('')}
+        `).join('')}
+      </nav>
+      <div class="sidebar-foot">
+        <div class="lang-toggle">
+          <button class="${LANG==='ar'?'active':''}" onclick="setLang('ar')">العربية</button>
+          <button class="${LANG==='en'?'active':''}" onclick="setLang('en')">English</button>
+        </div>
+        ${t('نسخة محلية آمنة — تخزين على هذا الجهاز','Local secure copy — stored on this device')}
+      </div>
+    </aside>
+    <div class="mobile-topbar">
+      <div class="hamburger" onclick="toggleSidebar()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </div>
+      <div><b>${currentNavLabel()}</b><span>CPLMS</span></div>
+    </div>
+    <main class="view" id="viewRoot"></main>
+  `;
+  renderView();
+}
+function toggleSidebar(){ SIDEBAR_OPEN = !SIDEBAR_OPEN; renderShell(); }
+function closeSidebar(){ SIDEBAR_OPEN = false; renderShell(); }
+function goto(view, param){ VIEW=view; VIEW_PARAM=param||null; SIDEBAR_OPEN=false; renderShell(); window.scrollTo(0,0); }
+function setLang(l){ LANG=l; DB.lang=l; document.documentElement.lang=l; document.documentElement.dir = l==='ar'?'rtl':'ltr'; save(DB); renderShell(); }
+
+function renderView(){
+  const root = document.getElementById('viewRoot');
+  const views = {
+    dashboard: renderDashboard, vendors: renderVendors, projects: renderProjects,
+    evaluations: renderEvaluations, escalation: renderEscalation, compliance: renderCompliance,
+    documents: renderDocuments, archive: renderArchive, settings: renderSettings
+  };
+  root.innerHTML = (views[VIEW]||renderDashboard)();
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = LANG==='ar' ? 'rtl':'ltr';
+  renderShell();
+});
+
+/* ---------------- MODAL HELPERS ---------------- */
+function openModal(html, wide){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `<div class="modal-bg show" id="modalBg" onclick="if(event.target.id==='modalBg')closeModal()"><div class="modal ${wide?'wide':''}">${html}</div></div>`;
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  const totalVendors = DB.vendors.length;
+  const t1 = DB.vendors.filter(v=>v.tier==='TIER_1').length;
+  const black = DB.vendors.filter(v=>v.tier==='BLACK_LISTED').length;
+  const openEsc = DB.escalations.filter(e=>e.stage!=='resolved').length;
+  const avgScore = DB.evaluations.length ? Math.round(DB.evaluations.reduce((s,e)=>s+e.overall,0)/DB.evaluations.length) : 0;
+  const activeProjects = DB.projects.filter(p=>p.status!=='closed').length;
+
+  const riskVendors = DB.vendors.map(v=>({v, r:riskLevel(v.id)})).filter(x=>x.r.level==='high'||x.r.level==='medium')
+    .sort((a,b)=> (a.r.level==='high'?0:1) - (b.r.level==='high'?0:1));
+
+  const tierDist = {TIER_1:t1, TIER_2:DB.vendors.filter(v=>v.tier==='TIER_2').length, UNDER_REVIEW:DB.vendors.filter(v=>v.tier==='UNDER_REVIEW').length, BLACK_LISTED:black};
+  const maxTier = Math.max(1,...Object.values(tierDist));
+
+  const recentDocs = [...DB.documents].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
+
+  return `
+  <div class="topbar">
+    <div><h1>${t('لوحة التحكم','Dashboard')}</h1><div class="crumbs">CPLMS / ${t('نظرة عامة على المنظومة','System Overview')}</div></div>
+    <div class="actions">
+      <button class="btn primary" onclick="goto('vendors'); setTimeout(()=>openVendorModal(),0)">+ ${t('مقاول جديد','New Vendor')}</button>
+      <button class="btn" onclick="goto('evaluations'); setTimeout(()=>openEvalModal(),0)">+ ${t('تقييم شهري','Monthly Eval')}</button>
+    </div>
+  </div>
+
+  <div class="grid g-4">
+    <div class="card accent-cyan"><h3>${t('إجمالي المقاولين المسجلين','Total Registered Vendors')}</h3><div class="stat">${totalVendors}</div><div class="foot">${t('فئة أولى','Tier 1')}: ${t1} · ${t('قائمة سوداء','Blacklisted')}: ${black}</div></div>
+    <div class="card accent-green"><h3>${t('متوسط الأداء العام','Average Overall Score')}</h3><div class="stat">${avgScore}<small>/100</small></div><div class="foot">${t('بناءً على','Based on')} ${DB.evaluations.length} ${t('تقييم','evaluations')}</div></div>
+    <div class="card accent-amber"><h3>${t('حالات تصعيد مفتوحة','Open Escalations')}</h3><div class="stat">${openEsc}</div><div class="foot">${t('قيد المتابعة عبر محرك التصعيد','Tracked via escalation engine')}</div></div>
+    <div class="card accent-red"><h3>${t('مشاريع نشطة','Active Projects')}</h3><div class="stat">${activeProjects}</div><div class="foot">${t('من إجمالي','of total')} ${DB.projects.length}</div></div>
+  </div>
+
+  <div class="section-title">${t('توزيع تصنيف المقاولين','Vendor Tier Distribution')} <span class="tag">LIVE</span></div>
+  <div class="card">
+    ${Object.entries(tierDist).map(([k,v])=>`
+      <div class="kpi-bar-row">
+        <div class="lbl">${tierLabel(k)}</div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:${(v/maxTier*100)||0}%; ${k==='BLACK_LISTED'?'background:linear-gradient(90deg,var(--red-dim),var(--red))':k==='UNDER_REVIEW'?'background:linear-gradient(90deg,var(--amber-dim),var(--amber))':''}"></div></div>
+        <div class="val">${v}</div>
+      </div>`).join('')}
+  </div>
+
+  <div class="grid g-2" style="margin-top:22px;">
+    <div>
+      <div class="section-title">${t('نظام الإنذار المبكر — مقاولون تحت الخطر','Early-Warning Radar — Vendors at Risk')} <span class="tag">${t('إضافة مقترحة','ADDED')}</span></div>
+      <div class="card">
+        ${riskVendors.length===0 ? `<div class="empty">${t('لا يوجد مقاولون ضمن نطاق الخطر حالياً','No vendors currently flagged at risk')}</div>` :
+          riskVendors.map(({v,r})=>`
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--line-soft);">
+            <div>
+              <div style="font-size:13.5px; color:var(--ink);">${esc(v.name)}</div>
+              <div style="font-size:11px; color:var(--ink-faint); font-family:var(--font-mono);">${t('الاتجاه الأخير','Recent trend')}: ${vendorTrend(v.id)>0?'+':''}${vendorTrend(v.id)}</div>
+            </div>
+            <span class="pill ${r.level==='high'?'black':'open'}">${r.label}</span>
+          </div>`).join('')}
+        <div class="hint">${t('يُحسب هذا المؤشر محلياً من اتجاه آخر 3 تقييمات دون إرسال أي بيانات خارجياً.','Computed locally from the trend of the last 3 evaluations — no external data sent.')}</div>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">${t('آخر الوثائق الصادرة','Recently Issued Documents')}</div>
+      <div class="card">
+        ${recentDocs.length===0 ? `<div class="empty">${t('لم تُصدر أي وثائق بعد','No documents issued yet')}</div>` :
+        recentDocs.map(d=>`
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--line-soft); gap:10px;">
+            <div style="min-width:0;">
+              <div style="font-size:13px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(d.title)}</div>
+              <div style="font-size:10.5px; color:var(--ink-faint); font-family:var(--font-mono);">${d.id} · ${fmtDate(d.createdAt)}</div>
+            </div>
+            <button class="btn sm ghost" onclick="viewArchiveDoc('${d.id}')">${t('عرض','View')}</button>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+/* ================= VENDORS ================= */
+function renderVendors(){
+  const list = DB.vendors;
+  return `
+  <div class="topbar">
+    <div><h1>${t('سجل المقاولين','Vendor Registry')}</h1><div class="crumbs">CPLMS / ${t('التأهيل والتصنيف','Pre-Qualification & Tiering')}</div></div>
+    <div class="actions"><button class="btn primary" onclick="openVendorModal()">+ ${t('تسجيل مقاول جديد','Register Vendor')}</button></div>
+  </div>
+  ${list.length===0 ? `<div class="empty"><b>${t('لا يوجد مقاولون مسجلون','No vendors registered')}</b>${t('ابدأ بتسجيل أول مقاول لبدء دورة التأهيل والتقييم.','Register your first vendor to start the qualification cycle.')}</div>` : `
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+      <th>${t('اسم المقاول','Vendor')}</th><th>${t('السجل التجاري','CR No.')}</th><th>${t('الفئة','Tier')}</th>
+      <th>${t('آخر تقييم','Last Score')}</th><th>${t('المخاطر','Risk')}</th><th>${t('ESG')}</th><th></th>
+    </tr></thead>
+    <tbody>
+    ${list.map(v=>{
+      const last = latestEvalFor(v.id); const r = riskLevel(v.id);
+      return `<tr>
+        <td><b style="color:var(--ink)">${esc(v.name)}</b></td>
+        <td style="font-family:var(--font-mono)">${esc(v.cr||'—')}</td>
+        <td><span class="pill ${tierBadgeClass(v.tier)}">${tierLabel(v.tier)}</span></td>
+        <td>${last? last.overall+' / 100' : '—'}</td>
+        <td><span class="pill ${r.level==='high'?'black':r.level==='medium'?'open':'closed'}">${r.label}</span></td>
+        <td>${v.esgScore!=null? v.esgScore+'/100' : '—'}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn sm ghost" onclick="openVendorModal('${v.id}')">${t('تعديل','Edit')}</button>
+          <button class="btn sm ghost" onclick="goto('escalation','${v.id}')">${t('التصعيد','Escalate')}</button>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+  </div>`}
+  `;
+}
+function openVendorModal(id){
+  const v = id ? DB.vendors.find(x=>x.id===id) : {id:null, name:'', cr:'', tax:'', tier:'UNDER_REVIEW', financialCap:'', esgScore:'', notes:''};
+  openModal(`
+    <h2>${id?t('تعديل بيانات المقاول','Edit Vendor'):t('تسجيل مقاول جديد','Register New Vendor')}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="form-grid">
+      <div class="field"><label>${t('اسم الشركة / المقاول','Company / Vendor Name')}</label><input id="f_name" type="text" value="${esc(v.name)}"></div>
+      <div class="field"><label>${t('رقم السجل التجاري','CR Number')}</label><input id="f_cr" type="text" value="${esc(v.cr)}"></div>
+      <div class="field"><label>${t('الرقم الضريبي','Tax Registration No.')}</label><input id="f_tax" type="text" value="${esc(v.tax)}"></div>
+      <div class="field"><label>${t('السقف المالي المعتمد','Approved Financial Cap')}</label><input id="f_fin" type="text" value="${esc(v.financialCap)}"></div>
+      <div class="field"><label>${t('التصنيف / الفئة','Tier Classification')}</label>
+        <select id="f_tier">
+          ${['UNDER_REVIEW','TIER_1','TIER_2','BLACK_LISTED'].map(k=>`<option value="${k}" ${v.tier===k?'selected':''}>${tierLabel(k)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>${t('مؤشر الاستدامة ESG (0-100)','ESG Score (0-100)')} <span class="new-badge">${t('إضافة','ADDED')}</span></label><input id="f_esg" type="number" min="0" max="100" value="${esc(v.esgScore)}"></div>
+    </div>
+    <div class="field"><label>${t('ملاحظات / خبرات سابقة','Notes / Past Experience')}</label><textarea id="f_notes">${esc(v.notes)}</textarea></div>
+    <div class="modal-actions">
+      ${id?`<button class="btn danger" onclick="deleteVendor('${id}')">${t('حذف','Delete')}</button>`:''}
+      <button class="btn ghost" onclick="closeModal()">${t('إلغاء','Cancel')}</button>
+      <button class="btn primary" onclick="saveVendor('${id||''}')">${t('حفظ','Save')}</button>
+    </div>
+  `);
+}
+function saveVendor(id){
+  const name = document.getElementById('f_name').value.trim();
+  if(!name){ toast(t('الاسم مطلوب','Name is required')); return; }
+  const data = {
+    name, cr:document.getElementById('f_cr').value.trim(), tax:document.getElementById('f_tax').value.trim(),
+    financialCap:document.getElementById('f_fin').value.trim(), tier:document.getElementById('f_tier').value,
+    esgScore: document.getElementById('f_esg').value?Number(document.getElementById('f_esg').value):null,
+    notes: document.getElementById('f_notes').value.trim()
+  };
+  if(id){
+    const v = DB.vendors.find(x=>x.id===id); Object.assign(v,data);
+  } else {
+    DB.vendors.push(Object.assign({id:uid('VND'), createdAt:nowISO()}, data));
+  }
+  save(DB); closeModal(); renderView(); toast(t('تم حفظ بيانات المقاول','Vendor saved'));
+}
+function deleteVendor(id){
+  if(!confirm(t('هل أنت متأكد من حذف هذا المقاول؟','Delete this vendor?')))return;
+  DB.vendors = DB.vendors.filter(x=>x.id!==id); save(DB); closeModal(); renderView();
+}
+
+/* ================= PROJECTS ================= */
+function renderProjects(){
+  const list = DB.projects;
+  return `
+  <div class="topbar">
+    <div><h1>${t('المشاريع','Projects')}</h1><div class="crumbs">CPLMS / ${t('سجل المشاريع التعاقدية','Contract Projects Register')}</div></div>
+    <div class="actions"><button class="btn primary" onclick="openProjectModal()">+ ${t('مشروع جديد','New Project')}</button></div>
+  </div>
+  ${list.length===0? `<div class="empty"><b>${t('لا توجد مشاريع','No projects')}</b>${t('أضف مشروعاً لربطه بالمقاولين والتقييمات.','Add a project to link it with vendors and evaluations.')}</div>`:`
+  <div class="table-wrap"><table>
+  <thead><tr><th>${t('اسم المشروع','Project')}</th><th>${t('رقم العقد','Contract No.')}</th><th>${t('المقاول','Vendor')}</th><th>${t('تاريخ البدء','Start')}</th><th>${t('الحالة','Status')}</th><th></th></tr></thead>
+  <tbody>${list.map(p=>`
+    <tr>
+      <td><b style="color:var(--ink)">${esc(p.name)}</b></td>
+      <td style="font-family:var(--font-mono)">${esc(p.contractNo||'—')}</td>
+      <td>${esc(vendorName(p.vendorId))}</td>
+      <td>${fmtDate(p.startDate)}</td>
+      <td><span class="pill ${p.status==='closed'?'closed':'open'}">${p.status==='closed'?t('مغلق','Closed'):t('نشط','Active')}</span></td>
+      <td><button class="btn sm ghost" onclick="openProjectModal('${p.id}')">${t('تعديل','Edit')}</button></td>
+    </tr>`).join('')}</tbody></table></div>`}
+  `;
+}
+function openProjectModal(id){
+  const p = id? DB.projects.find(x=>x.id===id) : {id:null,name:'',contractNo:'',vendorId:'',startDate:'',durationMonths:'',status:'active'};
+  openModal(`
+    <h2>${id?t('تعديل المشروع','Edit Project'):t('مشروع جديد','New Project')}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="form-grid">
+      <div class="field"><label>${t('اسم المشروع','Project Name')}</label><input id="p_name" type="text" value="${esc(p.name)}"></div>
+      <div class="field"><label>${t('رقم العقد','Contract Number')}</label><input id="p_cn" type="text" value="${esc(p.contractNo)}"></div>
+      <div class="field"><label>${t('المقاول المنفذ','Executing Vendor')}</label>
+        <select id="p_vendor"><option value="">—</option>${DB.vendors.map(v=>`<option value="${v.id}" ${p.vendorId===v.id?'selected':''}>${esc(v.name)}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>${t('تاريخ التسليم / بدء التنفيذ','Handover / Start Date')}</label><input id="p_start" type="date" value="${p.startDate||''}"></div>
+      <div class="field"><label>${t('المدة التعاقدية (بالأشهر)','Contract Duration (months)')}</label><input id="p_dur" type="number" value="${esc(p.durationMonths)}"></div>
+      <div class="field"><label>${t('حالة المشروع','Project Status')}</label>
+        <select id="p_status"><option value="active" ${p.status==='active'?'selected':''}>${t('نشط','Active')}</option><option value="closed" ${p.status==='closed'?'selected':''}>${t('مغلق','Closed')}</option></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      ${id?`<button class="btn danger" onclick="deleteProject('${id}')">${t('حذف','Delete')}</button>`:''}
+      <button class="btn ghost" onclick="closeModal()">${t('إلغاء','Cancel')}</button>
+      <button class="btn primary" onclick="saveProject('${id||''}')">${t('حفظ','Save')}</button>
+    </div>
+  `);
+}
+function saveProject(id){
+  const name = document.getElementById('p_name').value.trim();
+  if(!name){ toast(t('اسم المشروع مطلوب','Project name is required')); return; }
+  const data = { name, contractNo:document.getElementById('p_cn').value.trim(), vendorId:document.getElementById('p_vendor').value,
+    startDate:document.getElementById('p_start').value, durationMonths:document.getElementById('p_dur').value, status:document.getElementById('p_status').value };
+  if(id){ Object.assign(DB.projects.find(x=>x.id===id), data); } else { DB.projects.push(Object.assign({id:uid('PRJ'), createdAt:nowISO()},data)); }
+  save(DB); closeModal(); renderView(); toast(t('تم حفظ المشروع','Project saved'));
+}
+function deleteProject(id){ if(!confirm(t('حذف المشروع؟','Delete project?')))return; DB.projects=DB.projects.filter(x=>x.id!==id); save(DB); closeModal(); renderView(); }
+
+/* ================= EVALUATIONS ================= */
+function renderEvaluations(){
+  const list = [...DB.evaluations].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  const w = DB.settings.weights;
+  return `
+  <div class="topbar">
+    <div><h1>${t('التقييم الشهري للأداء','Monthly Performance Evaluation')}</h1><div class="crumbs">CPLMS / SPI · CPI · NCR · HSE · ${t('الإدارة','Management')}</div></div>
+    <div class="actions"><button class="btn primary" onclick="openEvalModal()">+ ${t('تقييم جديد','New Evaluation')}</button></div>
+  </div>
+  <div class="flag">${t(`الأوزان الحالية: الجدول ${w.spi}% · التكلفة ${w.cpi}% · الجودة ${w.quality}% · السلامة ${w.hse}% · الإدارة ${w.mgmt}% — قابلة للتعديل من الإعدادات`,`Current weights: Schedule ${w.spi}% · Cost ${w.cpi}% · Quality ${w.quality}% · HSE ${w.hse}% · Mgmt ${w.mgmt}% — editable in Settings`)}</div>
+  ${list.length===0? `<div class="empty"><b>${t('لا توجد تقييمات بعد','No evaluations yet')}</b>${t('أضف أول تقييم شهري لمقاول لبدء احتساب مؤشرات الأداء.','Add a first monthly evaluation to start tracking KPIs.')}</div>`:`
+  <div class="table-wrap"><table>
+  <thead><tr><th>${t('الفترة','Period')}</th><th>${t('المقاول','Vendor')}</th><th>${t('المشروع','Project')}</th><th>SPI</th><th>CPI</th><th>${t('الجودة','Quality')}</th><th>HSE</th><th>${t('النتيجة الكلية','Overall')}</th><th>${t('التقدير','Grade')}</th><th></th></tr></thead>
+  <tbody>${list.map(e=>`
+    <tr>
+      <td style="font-family:var(--font-mono)">${esc(e.period)}</td>
+      <td>${esc(vendorName(e.vendorId))}</td>
+      <td>${esc(projectName(e.projectId))}</td>
+      <td>${e.spi}</td><td>${e.cpi}</td><td>${e.ncrClose}</td><td>${e.hse}</td>
+      <td><b style="color:${e.overall>=70?'var(--green)':e.overall>=60?'var(--amber)':'var(--red)'}">${e.overall}</b></td>
+      <td>${gradeOf(e.overall)}</td>
+      <td><button class="btn sm ghost" onclick="generateFromEval('${e.id}')">${t('توليد تقرير','Generate Report')}</button></td>
+    </tr>`).join('')}</tbody></table></div>`}
+  `;
+}
+function openEvalModal(){
+  if(DB.vendors.length===0){ toast(t('سجّل مقاولاً أولاً','Register a vendor first')); return; }
+  openModal(`
+    <h2>${t('تقييم أداء شهري جديد','New Monthly Evaluation')}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="form-grid">
+      <div class="field"><label>${t('المقاول','Vendor')}</label><select id="e_vendor">${DB.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('المشروع','Project')}</label><select id="e_project"><option value="">—</option>${DB.projects.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('فترة التقييم (مثال: 2026-09)','Period (e.g. 2026-09)')}</label><input id="e_period" type="text" placeholder="2026-09"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="form-grid">
+      <div class="field"><label>${t('مؤشر أداء الجدول الزمني SPI (0-100)','Schedule Performance SPI (0-100)')}</label><input id="e_spi" type="number" min="0" max="100" value="85"></div>
+      <div class="field"><label>${t('مؤشر أداء التكلفة CPI (0-100)','Cost Performance CPI (0-100)')}</label><input id="e_cpi" type="number" min="0" max="100" value="90"></div>
+      <div class="field"><label>${t('جودة التنفيذ / إغلاق NCR (0-100)','Quality / NCR Closure (0-100)')}</label><input id="e_ncr" type="number" min="0" max="100" value="80"></div>
+      <div class="field"><label>${t('الالتزام بالسلامة HSE (0-100)','HSE Compliance (0-100)')}</label><input id="e_hse" type="number" min="0" max="100" value="90"></div>
+      <div class="field"><label>${t('الكفاءة الإدارية والاستجابة (0-100)','Management & Responsiveness (0-100)')}</label><input id="e_mgmt" type="number" min="0" max="100" value="85"></div>
+    </div>
+    <div class="hint">${t('سيتم احتساب النتيجة الإجمالية تلقائياً وفق الأوزان المعتمدة في الإعدادات.','Overall score is auto-computed using the weights configured in Settings.')}</div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">${t('إلغاء','Cancel')}</button>
+      <button class="btn primary" onclick="saveEvaluation()">${t('حفظ واحتساب','Save & Compute')}</button>
+    </div>
+  `);
+}
+function saveEvaluation(){
+  const vendorId = document.getElementById('e_vendor').value;
+  const projectId = document.getElementById('e_project').value;
+  const period = document.getElementById('e_period').value.trim() || new Date().toISOString().slice(0,7);
+  const ev = { id:uid('EVL'), vendorId, projectId,period,
+    spi:Number(document.getElementById('e_spi').value), cpi:Number(document.getElementById('e_cpi').value),
+    ncrClose:Number(document.getElementById('e_ncr').value), hse:Number(document.getElementById('e_hse').value),
+    mgmt:Number(document.getElementById('e_mgmt').value), createdAt: nowISO() };
+  ev.overall = computeOverall(ev); ev.grade = gradeOf(ev.overall);
+  DB.evaluations.push(ev);
+  // auto-flag escalation if below threshold
+  if(ev.overall < DB.settings.escalationThreshold){
+    autoFlagEscalation(vendorId, projectId, ev.overall);
+  }
+  save(DB); closeModal(); renderView();
+  toast(t('تم حفظ التقييم — النتيجة: ','Evaluation saved — score: ') + ev.overall);
+}
+function autoFlagEscalation(vendorId, projectId, score){
+  let esc_ = DB.escalations.find(e=>e.vendorId===vendorId && e.projectId===projectId && e.stage!=='resolved');
+  if(!esc_){
+    esc_ = { id:uid('ESC'), vendorId, projectId, stage:'cure', openedAt:nowISO(), notes:t('فتح تلقائي — انخفاض النتيجة عن الحد الأدنى','Auto-opened — score below threshold'), history:[{stage:'cure', date:nowISO(), score}] };
+    DB.escalations.push(esc_);
+  }
+}
+function generateFromEval(evId){
+  const ev = DB.evaluations.find(x=>x.id===evId);
+  goto('documents');
+  setTimeout(()=>openDocGenerator('PER_M', {vendorId:ev.vendorId, projectId:ev.projectId, evalId:ev.id}), 0);
+}
+
+/* ================= ESCALATION ENGINE ================= */
+const ESC_STAGES = ['watch','cure','recovery','descope','termination','blacklist','resolved'];
+function stageLabel(s){
+  return {
+    watch:t('مراقبة','Watch'), cure:t('إشعار تصحيح (Cure Notice)','Cure Notice'),
+    recovery:t('خطة تدارك','Recovery Plan'), descope:t('سحب جزئي','De-scoping'),
+    termination:t('إنهاء العقد','Termination'), blacklist:t('قائمة سوداء','Blacklist'), resolved:t('تمت المعالجة','Resolved')
+  }[s]||s;
+}
+function renderEscalation(){
+  const list = [...DB.escalations].sort((a,b)=>new Date(b.openedAt)-new Date(a.openedAt));
+  return `
+  <div class="topbar">
+    <div><h1>${t('محرك التصعيد التدريجي','Progressive Escalation Engine')}</h1><div class="crumbs">CPLMS / FIDIC Clause 15 · Cure → De-scope → Termination → Blacklist</div></div>
+    <div class="actions"><button class="btn primary" onclick="openEscalationModal()">+ ${t('فتح حالة تصعيد','Open Escalation')}</button></div>
+  </div>
+  ${list.length===0? `<div class="empty"><b>${t('لا توجد حالات تصعيد','No escalation cases')}</b>${t('يفتح النظام حالة تلقائياً عند انخفاض تقييم مقاول عن الحد الأدنى، أو يمكنك فتحها يدوياً.','Cases open automatically on low scores, or you can open one manually.')}</div>`:
+  list.map(e=>{
+    const v = DB.vendors.find(x=>x.id===e.vendorId);
+    const stepsToShow = ESC_STAGES.filter(s=>s!=='watch');
+    const currentIdx = stepsToShow.indexOf(e.stage);
+    return `
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-size:15px; color:var(--ink); font-weight:700;">${esc(v?v.name:'—')}</div>
+          <div style="font-size:11.5px; color:var(--ink-faint); font-family:var(--font-mono);">${e.id} · ${t('المشروع','Project')}: ${esc(projectName(e.projectId))} · ${t('فُتحت في','Opened')} ${fmtDate(e.openedAt)}</div>
+        </div>
+        <span class="pill ${e.stage==='resolved'?'closed':e.stage==='blacklist'||e.stage==='termination'?'black':'open'}">${stageLabel(e.stage)}</span>
+      </div>
+      <div class="escalation-track">
+        ${stepsToShow.map((s,i)=>`<div class="esc-step ${i<currentIdx || e.stage==='resolved' ?'done':i===currentIdx?'current':''}"><b>${i+1}</b>${stageLabel(s)}</div>`).join('')}
+      </div>
+      <div style="font-size:12.5px; color:var(--ink-dim); margin-bottom:10px;">${esc(e.notes||'')}</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        ${e.stage!=='resolved' ? `<button class="btn sm warn" onclick="advanceEscalation('${e.id}')">${t('تصعيد للمرحلة التالية','Advance to Next Stage')} →</button>` : ''}
+        ${e.stage!=='resolved' ? `<button class="btn sm" onclick="resolveEscalation('${e.id}')">${t('تحديد كمعالج','Mark Resolved')}</button>` : ''}
+        <button class="btn sm ghost" onclick="issueEscalationDoc('${e.id}')">${t('إصدار الوثيقة المرتبطة','Issue Related Document')}</button>
+      </div>
+    </div>`;
+  }).join('')}
+  `;
+}
+function openEscalationModal(){
+  if(DB.vendors.length===0){ toast(t('سجّل مقاولاً أولاً','Register a vendor first')); return; }
+  openModal(`
+    <h2>${t('فتح حالة تصعيد يدوياً','Manually Open Escalation')}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="field"><label>${t('المقاول','Vendor')}</label><select id="es_vendor">${DB.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select></div>
+    <div class="field"><label>${t('المشروع','Project')}</label><select id="es_project"><option value="">—</option>${DB.projects.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+    <div class="field"><label>${t('سبب فتح الحالة','Reason')}</label><textarea id="es_notes" placeholder="${t('مثال: تأخر توريد المواد وانخفاض العمالة بالموقع','e.g. delayed material supply and understaffing')}"></textarea></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t('إلغاء','Cancel')}</button><button class="btn primary" onclick="saveEscalation()">${t('فتح الحالة','Open Case')}</button></div>
+  `);
+}
+function saveEscalation(){
+  const vendorId = document.getElementById('es_vendor').value, projectId = document.getElementById('es_project').value, notes = document.getElementById('es_notes').value.trim();
+  DB.escalations.push({id:uid('ESC'), vendorId, projectId, stage:'cure', openedAt:nowISO(), notes, history:[{stage:'cure', date:nowISO()}]});
+  save(DB); closeModal(); renderView(); toast(t('تم فتح حالة التصعيد','Escalation case opened'));
+}
+function advanceEscalation(id){
+  const e = DB.escalations.find(x=>x.id===id);
+  const steps = ESC_STAGES.filter(s=>s!=='watch'&&s!=='resolved');
+  const idx = steps.indexOf(e.stage);
+  if(idx < steps.length-1){ e.stage = steps[idx+1]; e.history.push({stage:e.stage, date:nowISO()}); }
+  if(e.stage==='blacklist'){ const v=DB.vendors.find(x=>x.id===e.vendorId); if(v) v.tier='BLACK_LISTED'; }
+  save(DB); renderView(); toast(t('تم التصعيد إلى المرحلة التالية','Advanced to next stage'));
+}
+function resolveEscalation(id){ const e=DB.escalations.find(x=>x.id===id); e.stage='resolved'; e.history.push({stage:'resolved',date:nowISO()}); save(DB); renderView(); toast(t('تم إغلاق الحالة','Case resolved')); }
+function issueEscalationDoc(id){
+  const e = DB.escalations.find(x=>x.id===id);
+  const map = {cure:'NTC', recovery:'RPC', descope:'DSO', termination:'TN', blacklist:'SBN', resolved:'VPC'};
+  const key = map[e.stage] || 'NTC';
+  goto('documents'); setTimeout(()=>openDocGenerator(key,{vendorId:e.vendorId, projectId:e.projectId, escId:e.id}),0);
+}
+
+/* ================= COMPLIANCE RADAR (added value module) ================= */
+function renderCompliance(){
+  const now = new Date();
+  const list = [...DB.compliance].sort((a,b)=> new Date(a.expiryDate)-new Date(b.expiryDate));
+  return `
+  <div class="topbar">
+    <div><h1>${t('رادار الامتثال وانتهاء الوثائق','Compliance & Document Expiry Radar')} <span class="new-badge">${t('إضافة مقترحة','ADDED VALUE')}</span></h1>
+    <div class="crumbs">CPLMS / ${t('تصاريح العمل، الضمانات البنكية، شهادات السلامة والتراخيص','Work permits, bonds, HSE certs & licenses')}</div></div>
+    <div class="actions"><button class="btn primary" onclick="openComplianceModal()">+ ${t('عنصر جديد','New Item')}</button></div>
+  </div>
+  <div class="flag">${t('يرسل النظام تنبيهات متدرجة قبل 60 / 30 / 15 يوماً من انتهاء أي وثيقة أو ضمان لتفادي تجميد المستخلصات.','The system flags items at 60 / 30 / 15 days before expiry to avoid frozen payment cycles.')}</div>
+  ${list.length===0? `<div class="empty"><b>${t('لا توجد عناصر متابعة','No tracked items')}</b>${t('أضف تصريح عمل، ضمان بنكي، أو شهادة سلامة لمتابعة تاريخ انتهائها.','Add a work permit, bond, or HSE certificate to track its expiry.')}</div>`:`
+  <div class="table-wrap"><table>
+  <thead><tr><th>${t('البند','Item')}</th><th>${t('المقاول','Vendor')}</th><th>${t('تاريخ الانتهاء','Expiry Date')}</th><th>${t('الحالة','Status')}</th><th></th></tr></thead>
+  <tbody>${list.map(c=>{
+    const days = Math.round((new Date(c.expiryDate)-now)/86400000);
+    let statusPill = `<span class="pill closed">${t('سارٍ','Valid')}</span>`;
+    if(days<0) statusPill = `<span class="pill black">${t('منتهٍ','Expired')}</span>`;
+    else if(days<=15) statusPill = `<span class="pill black">${t('حرج','Critical')} (${days}${t('ي','d')})</span>`;
+    else if(days<=30) statusPill = `<span class="pill open">${t('عاجل','Urgent')} (${days}${t('ي','d')})</span>`;
+    else if(days<=60) statusPill = `<span class="pill review">${t('تنبيه','Notice')} (${days}${t('ي','d')})</span>`;
+    return `<tr><td>${esc(c.label)}</td><td>${esc(vendorName(c.vendorId))}</td><td style="font-family:var(--font-mono)">${fmtDate(c.expiryDate)}</td><td>${statusPill}</td>
+    <td><button class="btn sm ghost" onclick="deleteCompliance('${c.id}')">${t('حذف','Remove')}</button></td></tr>`;
+  }).join('')}</tbody></table></div>`}
+  `;
+}
+function openComplianceModal(){
+  openModal(`
+    <h2>${t('إضافة عنصر امتثال','Add Compliance Item')}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="field"><label>${t('المقاول','Vendor')}</label><select id="c_vendor">${DB.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select></div>
+    <div class="field"><label>${t('نوع الوثيقة / البند','Item / Document Type')}</label><input id="c_label" type="text" placeholder="${t('مثال: خطاب ضمان حسن التنفيذ','e.g. Performance Bond')}"></div>
+    <div class="field"><label>${t('تاريخ الانتهاء','Expiry Date')}</label><input id="c_expiry" type="date"></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">${t('إلغاء','Cancel')}</button><button class="btn primary" onclick="saveCompliance()">${t('حفظ','Save')}</button></div>
+  `);
+}
+function saveCompliance(){
+  const vendorId=document.getElementById('c_vendor').value, label=document.getElementById('c_label').value.trim(), expiryDate=document.getElementById('c_expiry').value;
+  if(!label||!expiryDate){ toast(t('أكمل جميع الحقول','Fill in all fields')); return; }
+  DB.compliance.push({id:uid('CMP'), vendorId, label, expiryDate}); save(DB); closeModal(); renderView(); toast(t('تمت الإضافة','Added'));
+}
+function deleteCompliance(id){ DB.compliance=DB.compliance.filter(x=>x.id!==id); save(DB); renderView(); }
+
+/* ================= DOCUMENT TEMPLATE ENGINE ================= */
+function field(id,ar,en,type,def,options){ return {id,ar,en,type:type||'text',def:def||'',options:options||null}; }
+const OPT_SEVERITY = [['منخفضة','Low'],['متوسطة','Medium'],['حرجة (إيقاف كامل)','Critical (Full Stop)']];
+const OPT_APPROVE3 = [['مقبول','Approved'],['مقبول مع ملاحظات','Approved as Noted'],['مرفوض','Rejected']];
+const OPT_APPROVE2 = [['معتمد','Approved'],['غير معتمد','Not Approved']];
+const TEMPLATES = [
+  {key:'PQF', nameAr:'استمارة التأهيل المسبق للمقاولين', nameEn:'Pre-Qualification Form', descAr:'تأهيل فني ومالي قبل الترسية', descEn:'Technical & financial pre-award qualification',
+    fields:[field('crNo','رقم السجل التجاري','CR Number'), field('taxNo','الرقم الضريبي','Tax No.'), field('classGrade','الدرجة والتصنيف','Classification Grade'), field('finCap','السقف المالي المعتمد','Approved Financial Cap')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`استمارة التأهيل المسبق للمقاولين (PQF-01)
+
+بيانات المقاول:
+- اسم الشركة / المقاول: ${ctx.vendorName}
+- رقم السجل التجاري: ${f.crNo||'—'} | رقم التسجيل الضريبي: ${f.taxNo||'—'}
+- الدرجة والتصنيف: ${f.classGrade||'—'} | السقف المالي المعتمد: ${f.finCap||'—'}
+
+المرفقات والالتزامات المطلوب رفعها عبر التطبيق:
+- القوائم المالية المعتمدة لآخر 3 سنوات.
+- قائمة المشاريع المماثلة المنفذة خلال الـ 5 سنوات الماضية مع شهادات الإنجاز.
+- الهيكل التنظيمي والسير الذاتية للكوادر الأساسية المقترحة للمشروع.
+- شهادات الجودة والسلامة والصحة المهنية (ISO 9001 / HSE Plan).
+
+إقرار الصحة والمصداقية:
+"نقر نحن الشركة المذكورة أعلاه بأن جميع البيانات والوثائق المرفقة عبر التطبيق صحيحة ودقيقة، ونتحمل كافة المسؤوليات القانونية والمالية في حال ثبوت عكس ذلك، كما نفوض إدارة النظام بالتحقق من صحة هذه البيانات مع الجهات المختصة."`
+: `Contractor Pre-Qualification Form (PQF-01)
+
+Vendor Information:
+- Company / Vendor Name: ${ctx.vendorName}
+- CR Number: ${f.crNo||'—'} | Tax Registration No.: ${f.taxNo||'—'}
+- Classification Grade: ${f.classGrade||'—'} | Approved Financial Cap: ${f.finCap||'—'}
+
+Required Attachments & Commitments:
+- Audited financial statements for the last 3 years.
+- List of similar projects executed in the last 5 years with completion certificates.
+- Organizational chart and CVs of key proposed staff.
+- Quality & HSE certifications (ISO 9001 / HSE Plan).
+
+Declaration:
+"We, the above-named company, declare that all data and documents submitted are accurate and complete, and accept full legal and financial responsibility otherwise. We authorize the system administration to verify this data with relevant authorities."`
+  },
+  {key:'PER_M', nameAr:'تقرير التقييم الشهري لأداء المقاول', nameEn:'Monthly Performance Evaluation Report', descAr:'يولّد تلقائياً من بيانات KPI', descEn:'Auto-generated from KPI evaluation data', auto:true,
+    fields:[],
+    body:(lang,f,ctx)=>{
+      const ev = ctx.evalData;
+      const w = DB.settings.weights;
+      if(!ev) return lang==='ar' ? 'لا توجد بيانات تقييم مرتبطة.' : 'No linked evaluation data.';
+      const line=(labelAr,labelEn,val,weight)=> lang==='ar' ? `- ${labelAr}: [${val}] — الوزن (${weight}%) → النتيجة: ${Math.round(val*weight/100*100)/100} / ${weight}`
+        : `- ${labelEn}: [${val}] — Weight (${weight}%) → Score: ${Math.round(val*weight/100*100)/100} / ${weight}`;
+      return lang==='ar'?
+`تقرير التقييم الشهري لأداء المقاول (PER-M)
+
+اسم المشروع: ${ctx.projectName} | رقم العقد: ${ctx.contractNo}
+المقاول: ${ctx.vendorName} | الفترة: ${ev.period}
+
+جدول مؤشرات الأداء الرئيسية (KPIs Breakdown):
+${line('مؤشر أداء الجدول الزمني (SPI)','',ev.spi,w.spi)}
+${line('مؤشر أداء التكلفة (CPI)','',ev.cpi,w.cpi)}
+${line('جودة التنفيذ وإغلاق (NCRs)','',ev.ncrClose,w.quality)}
+${line('الالتزام بالسلامة والصحة المهنية (HSE)','',ev.hse,w.hse)}
+${line('الكفاءة الإدارية والاستجابة','',ev.mgmt,w.mgmt)}
+
+النتيجة الإجمالية: ${ev.overall}% (تقدير: ${ev.grade})
+
+توصية النظام التلقائية: ${ev.overall>=DB.settings.escalationThreshold ? 'الاستمرار في التنفيذ مع المتابعة الدورية للمؤشرات.' : 'يوصى بفتح إشعار تصحيح قصور (Cure Notice) ومتابعة خطة التدارك خلال المهلة التعاقدية.'}`
+:
+`Monthly Contractor Performance Evaluation Report (PER-M)
+
+Project: ${ctx.projectName} | Contract No.: ${ctx.contractNo}
+Vendor: ${ctx.vendorName} | Period: ${ev.period}
+
+KPI Breakdown:
+${line('','Schedule Performance Index (SPI)',ev.spi,w.spi)}
+${line('','Cost Performance Index (CPI)',ev.cpi,w.cpi)}
+${line('','Quality / NCR Closure Rate',ev.ncrClose,w.quality)}
+${line('','HSE Compliance',ev.hse,w.hse)}
+${line('','Management & Responsiveness',ev.mgmt,w.mgmt)}
+
+Overall Score: ${ev.overall}% (Grade: ${ev.grade})
+
+Automated Recommendation: ${ev.overall>=DB.settings.escalationThreshold ? 'Continue execution with routine KPI monitoring.' : 'A Cure Notice is recommended along with a monitored recovery plan within the contractual grace period.'}`;
+    }
+  },
+  {key:'NTC', nameAr:'إشعار تصحيح قصور في الأداء', nameEn:'Notice to Correct / Cure Notice', descAr:'يصدر عند انخفاض التقييم عن الحد الأدنى', descEn:'Issued when score falls below threshold',
+    fields:[field('pmName','عناية مدير مشروع المقاول','Attn. Vendor PM'), field('spiVal','مؤشر SPI الحالي','Current SPI',''), field('delayPct','نسبة التأخر','Delay %'), field('resourceGap','نقص الموارد/العمالة (%)','Resource/Labor Gap (%)'), field('deadlineDays','مهلة الرد (أيام)','Response Deadline (days)','number','7')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`إشعار تصحيح قصور في الأداء (Notice to Correct - NTC-01)
+
+إلى السادة / شركة: ${ctx.vendorName}
+عناية السيد / مدير مشروع المقاول: ${f.pmName||'—'}
+الموضوع: إشعار رسمي بتصحيح القصور في مشروع ${ctx.projectName} - العقد رقم ${ctx.contractNo}
+
+السلام عليكم ورحمة الله وبركاته،،
+
+يفيدكم نظام إدارة المقاولين الموحد (CPLMS) بأنه وبناءً على التقييم الميداني والموقعي الصادر عن استشاري المشروع، تم تسجيل انخفاض حاد في مستوى أداء شركتكم وفقاً للتالي:
+- التأخر الزمني: انخفاض مؤشر أداء الجدول الزمني إلى (SPI = ${f.spiVal||'—'}) مما يشير إلى تأخر عن البرنامج الزمني المعتمد بنسبة ${f.delayPct||'—'}%.
+- عدم كفاية الموارد: بطء معدل توريد المواد الرئيسية ونقص العمالة بالموقع بنسبة ${f.resourceGap||'—'}% عن الخطة المعتمدة.
+
+المطلوب منكم بموجب هذا الإشعار:
+الالتزام بتصحيح كافة أوجه القصور المذكورة أعلاه، وتقديم خطة تدارك للتأخير (Catch-up / Recovery Plan) معتمدة عبر التطبيق خلال مدة لا تتجاوز (${f.deadlineDays||7} أيام) من تاريخ صدور هذا الإشعار.
+
+وفي حال عدم الالتزام بتقديم الخطة أو عدم تحسن التقييم الميداني خلال المهلة المحددة، يحق للجهة المالك اتخاذ الإجراءات التعاقدية المشددة وفقاً لبنود العقد.
+
+تاريخ الإصدار الرقمي: ${fmtDateTime(nowISO())}
+التوقيع الإلكتروني: ${ctx.ownerName} — إدارة المشاريع`
+:
+`Notice to Correct (NTC-01)
+
+To: ${ctx.vendorName}
+Attn: Vendor Project Manager ${f.pmName||'—'}
+Subject: Formal Notice to Correct Performance Deficiency — Project ${ctx.projectName}, Contract No. ${ctx.contractNo}
+
+Dear Sir/Madam,
+
+Based on the field evaluation issued by the project consultant, a significant decline in your company's performance has been recorded as follows:
+- Schedule slippage: Schedule Performance Index dropped to (SPI = ${f.spiVal||'—'}), indicating a delay of ${f.delayPct||'—'}% against the approved baseline programme.
+- Resource inadequacy: slow material supply rate and a labor shortfall of ${f.resourceGap||'—'}% against the approved plan.
+
+You are hereby required to:
+Rectify all deficiencies noted above and submit an approved Catch-up / Recovery Plan through the platform within (${f.deadlineDays||7} days) from the date of this notice.
+
+Failure to submit the plan or to demonstrate measurable improvement within the stipulated period entitles the Owner to pursue further contractual remedies as per the Contract Conditions.
+
+Digital Issue Date: ${fmtDateTime(nowISO())}
+E-Signature: ${ctx.ownerName} — Project Management`
+  },
+  {key:'RPC', nameAr:'التزام وتعهد تنفيذ خطة تدارك التأخير', nameEn:'Recovery Plan Commitment', descAr:'تعهد المقاول بخطة تعويضية', descEn:'Vendor commitment to a compensating plan',
+    fields:[field('delayPct','نسبة التأخر المطلوب تداركها','Delay % to Recover'), field('days','المدة الزمنية (أيام)','Timeframe (days)'), field('extraLabor','عدد العمالة الإضافية','Additional Labor Count'), field('shift','وردية العمل الإضافية','Additional Shift Timing'), field('equip','نوع المعدات الداعمة','Supporting Equipment')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`التزام وتعهد تنفيذ خطة تدارك التأخير (Recovery Plan Commitment)
+
+اسم المشروع: ${ctx.projectName} | المقاول: ${ctx.vendorName}
+
+تعهد المقاول:
+بناءً على إشعار القصور الصادر، تتعهد شركة ${ctx.vendorName} بتطبيق الخطة التعويضية التالية لتدارك التأخير البالغ ${f.delayPct||'—'}% خلال مدة ${f.days||'—'} يوماً:
+- زيادة عدد العمالة بالموقع بمقدار ${f.extraLabor||'—'} عامل/فني.
+- إضافة وردية عمل إضافية: ${f.shift||'—'}.
+- دعم الموقع بـ ${f.equip||'—'} إضافية.
+
+الموافقة المشروطة:
+يعتمد الاستشاري هذه الخطة للتنفيذ، وفي حال عدم استعادة نسبة الإنجاز المخطط لها عند انتهاء المهلة المحددة، سيتم الانتقال تلقائياً لمرحلة السحب الجزئي للأعمال (De-scoping).`
+:
+`Recovery Plan Commitment
+
+Project: ${ctx.projectName} | Vendor: ${ctx.vendorName}
+
+Vendor Commitment:
+Following the issued Notice to Correct, ${ctx.vendorName} commits to the following compensating plan to recover a delay of ${f.delayPct||'—'}% within ${f.days||'—'} days:
+- Increase site labor by ${f.extraLabor||'—'} workers/technicians.
+- Add an additional shift: ${f.shift||'—'}.
+- Mobilize supporting equipment: ${f.equip||'—'}.
+
+Conditional Approval:
+The Consultant approves this plan for execution. Failure to recover the planned progress by the stipulated deadline will trigger automatic escalation to the De-scoping stage.`
+  },
+  {key:'DSO', nameAr:'قرار اقتطاع وسحب جزئي للأعمال', nameEn:'De-scoping Order', descAr:'اقتطاع نطاق وإسناده لمقاول آخر', descEn:'Scope withdrawal and reassignment',
+    fields:[field('priorNoticeRef','رقم إشعار القصور السابق','Prior Notice Ref.'), field('scopeItem','بند الأعمال المسحوب','Withdrawn Scope Item')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`قرار اقتطاع وسحب جزئي للأعمال (De-scoping Order)
+
+إلى: ${ctx.vendorName}
+الموضوع: سحب جزئي لنطاق العمل الخاص بـ ${f.scopeItem||'—'}
+
+الإشارة إلى إشعار تصحيح القصور رقم ${f.priorNoticeRef||'—'}، ولعدم اتخاذكم الإجراءات التصحيحية الكافية لتدارك التأخير في بند ${f.scopeItem||'—'}:
+
+نُحيطكم علماً بأنه قد تقرر رسمياً وبموجب بنود العقد:
+- سحب نطاق عمل ${f.scopeItem||'—'} من شركتكم فوراً.
+- إسناد هذا النطاق المسحوب إلى مقاول آخر معتمد في النظام على حسابكم وتحت مسؤوليتكم المباشرة، مع خصم التكاليف من مستخلصاتكم القادمة أو خطاب الضمان النهائي.
+- استمراركم في تنفيذ باقي بنود العقد غير المسحوبة وفق الجدول الزمني المعتمد.`
+:
+`De-scoping Order
+
+To: ${ctx.vendorName}
+Subject: Partial Withdrawal of Scope — ${f.scopeItem||'—'}
+
+Reference is made to Notice to Correct No. ${f.priorNoticeRef||'—'}. Due to your failure to take adequate corrective action regarding delays in ${f.scopeItem||'—'}:
+
+Be advised that it has been formally decided, per the Contract Conditions:
+- The scope of ${f.scopeItem||'—'} is withdrawn from your company with immediate effect.
+- This scope will be reassigned to another approved vendor at your cost and under your direct liability, with costs deducted from your future payment certificates or final bond.
+- You shall continue executing the remaining, non-withdrawn scope per the approved programme.`
+  },
+  {key:'TN', nameAr:'قرار نهائي بإنهاء العقد وسحب العمل', nameEn:'Notice of Termination for Default', descAr:'المرحلة النهائية عند الفشل التام', descEn:'Final stage upon total default',
+    fields:[field('notice1','رقم الإشعار الأول','First Notice No.'), field('notice2','رقم الإشعار الثاني','Second Notice No.'), field('spiFinal','مؤشر SPI النهائي','Final SPI'), field('blacklistPeriod','مدة الحظر','Blacklist Duration','text','سنتان / 2 years')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`قرار نهائي بإنهاء العقد وسحب العمل بالكامل (Termination Notice)
+
+إلى السادة / ${ctx.vendorName}
+الموضوع: إنهاء العقد رقم ${ctx.contractNo} لمشروع ${ctx.projectName} بسبب التعثر (Termination for Default)
+
+بناءً على عدم استجابتكم للإشعارات الرسمية الصادرة من النظام برقم ${f.notice1||'—'} ورقم ${f.notice2||'—'}، ونظراً لتجاوز نسبة التأخير الحدود المسموح بها تعاقدياً (SPI = ${f.spiFinal||'—'}):
+
+تقرر اتخاذ الإجراءات النهائية التالية:
+- إنهاء العقد المبرم مع شركتكم لمشروع ${ctx.projectName} فوراً اعتباراً من تاريخه.
+- حظر دخول كوادركم لموقع المشروع إلا لتسليم الموقع وحصر الأعمال المنفذة بحضور الاستشاري.
+- تسييل خطاب ضمان حسن التنفيذ (Performance Bond) لحساب المالك لتغطية الأضرار وتكاليف استكمال المشروع.
+- إدراج شركتكم تلقائياً في القائمة السوداء (Blacklist) وتجميد حسابكم على منصة المقاولين لمدة ${f.blacklistPeriod||'—'}.`
+:
+`Notice of Termination for Default
+
+To: ${ctx.vendorName}
+Subject: Termination of Contract No. ${ctx.contractNo} — Project ${ctx.projectName}
+
+Due to your failure to respond to formal system notices No. ${f.notice1||'—'} and No. ${f.notice2||'—'}, and given that the delay has exceeded contractually permitted limits (SPI = ${f.spiFinal||'—'}):
+
+The following final actions are hereby taken:
+- The contract for Project ${ctx.projectName} is terminated effective immediately.
+- Your personnel are barred from the site except to attend handover and joint measurement with the Consultant.
+- The Performance Bond shall be encashed in favor of the Owner to cover damages and completion costs.
+- Your company is automatically Blacklisted on the vendor platform for a period of ${f.blacklistPeriod||'—'}.`
+  },
+  {key:'VPC', nameAr:'شهادة الأداء النهائي وحسن التنفيذ', nameEn:'Vendor Performance Certificate', descAr:'تصدر عند إغلاق المشروع بنجاح', descEn:'Issued on successful project closure',
+    fields:[field('overallRating','مجموع النقاط النهائي','Overall Rating (0-100)'), field('ltiCount','عدد الحوادث الهادمة','Lost-Time Incidents','number','0')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`شهادة الأداء النهائي وحسن التنفيذ (Vendor Performance Certificate)
+
+يشهد مشروع ${ctx.projectName} بأن المقاول: ${ctx.vendorName}
+قد أتم تنفيذ الأعمال الموكلة إليه بموجب العقد رقم ${ctx.contractNo}، وكانت حصيلة التقييم التراكمي لجميع المراحل كالتالي:
+- مجموع النقاط النهائي (Overall Rating): ${f.overallRating||'—'} / 100
+- الالتزام بالوقت: تم التسليم في موعده المحدد.
+- السلامة والصحة المهنية: ${f.ltiCount||0} حادثة هادمة (LTI).
+
+التوصية للشركات والمشاريع المستقبلية:
+يُوصى باعتماد هذا المقاول وتفضيله في المناقصات القادمة للأنشطة المماثلة.`
+:
+`Vendor Performance Certificate
+
+This certifies that Project ${ctx.projectName} confirms Vendor: ${ctx.vendorName}
+has completed the works under Contract No. ${ctx.contractNo}, with a cumulative evaluation as follows:
+- Overall Rating: ${f.overallRating||'—'} / 100
+- Schedule: Delivered on the committed date.
+- HSE: ${f.ltiCount||0} Lost-Time Incident(s).
+
+Recommendation:
+This vendor is recommended for pre-qualification and preferred status in future tenders for similar scopes.`
+  },
+  {key:'NCR', nameAr:'إشعار عدم مطابقة أعمال / مواد', nameEn:'Non-Conformance Report', descAr:'رصد مخالفة فنية بالموقع', descEn:'Technical non-conformance in the field',
+    fields:[field('zone','موقع المخالفة','Location/Zone'), field('desc','وصف المخالفة الفنية','Description of Non-Conformance','textarea'), field('specRef','رقم بند المواصفات','Spec. Clause No.'), field('hours','مهلة تقديم خطة المعالجة (ساعة)','Rectification Plan Deadline (hrs)','number','48')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`إشعار عدم مطابقة أعمال / مواد (NCR-01)
+
+اسم المشروع: ${ctx.projectName} | رقم العقد: ${ctx.contractNo}
+إلى المقاول: ${ctx.vendorName} | التاريخ: ${fmtDateTime(nowISO())}
+موقع المخالفة: ${f.zone||'—'}
+
+وصف المخالفة الفنية:
+${f.desc||'—'}، مما يخالف بند المواصفات رقم ${f.specRef||'—'}.
+
+الإجراءات المطلوبة من المقاول:
+- إيقاف العمل في المنطقة المتأثرة فوراً.
+- تقديم خطة معالجة واقتراح إصلاح (Method Statement for Rectification) عبر التطبيق خلال (${f.hours||48} ساعة).
+- إزالة الأعمال المخالفة على نفقة المقاول الخاصة في حال عدم صلاحية المعالجة.
+
+حالة الوثيقة: مفتوحة (Open) — تُخصم تلقائياً من تقييم الجودة الشهري لحين الإغلاق المعتمد.`
+:
+`Non-Conformance Report (NCR-01)
+
+Project: ${ctx.projectName} | Contract No.: ${ctx.contractNo}
+To Vendor: ${ctx.vendorName} | Date: ${fmtDateTime(nowISO())}
+Location/Zone: ${f.zone||'—'}
+
+Description of Non-Conformance:
+${f.desc||'—'}, in violation of Specification Clause No. ${f.specRef||'—'}.
+
+Required Vendor Action:
+- Stop work immediately in the affected area.
+- Submit a Method Statement for Rectification through the platform within (${f.hours||48} hours).
+- Remove non-conforming work at the vendor's own cost if rectification is not viable.
+
+Status: Open — automatically deducted from the monthly quality score until formally closed.`
+  },
+  {key:'VO', nameAr:'طلب / أمر تغيير في نطاق العمل', nameEn:'Variation Order', descAr:'توثيق تعديل النطاق والأثر المالي/الزمني', descEn:'Documents scope, cost & time impact',
+    fields:[field('voNo','رقم أمر التغيير','VO Number','text','VO-001'), field('desc','تفاصيل التغيير المطلوب','Change Details','textarea'), field('cost','الأثر المالي','Financial Impact'), field('eot','التمديد الزمني (أيام)','Extension of Time (days)','number','0')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`طلب / أمر تغيير في نطاق العمل (Variation Order - ${f.voNo||'VO-001'})
+
+تاريخ الطلب: ${fmtDate(nowISO())} | المشروع: ${ctx.projectName} | المقاول: ${ctx.vendorName}
+
+تفاصيل التغيير المطلوب:
+${f.desc||'—'}
+
+الأثر المالي والزمني المتوقع:
+- التكلفة المالية الإضافية / المخصومة: ${f.cost||'—'}
+- التمديد الزمني المطلوب (EOT): ${f.eot||0} يوماً
+
+اعتماد النظام واللجنة: [ ] معتمد كلياً  [ ] معتمد جزئياً  [ ] مرفوض
+ملاحظة: يتم تحديث قيمة العقد الإجمالية والجدول الزمني المعتمد تلقائياً في حساب المقاول فور الاعتماد النهائي.`
+:
+`Variation Order (${f.voNo||'VO-001'})
+
+Date: ${fmtDate(nowISO())} | Project: ${ctx.projectName} | Vendor: ${ctx.vendorName}
+
+Change Details:
+${f.desc||'—'}
+
+Estimated Cost & Time Impact:
+- Additional / Deducted Cost: ${f.cost||'—'}
+- Extension of Time (EOT) Requested: ${f.eot||0} days
+
+Approval: [ ] Fully Approved  [ ] Partially Approved  [ ] Rejected
+Note: The total contract value and approved schedule are updated automatically upon final approval.`
+  },
+  {key:'SHC', nameAr:'محضر تسليم موقع المشروع', nameEn:'Site Handover Certificate', descAr:'يثبت التاريخ الرسمي لبدء التنفيذ', descEn:'Establishes the official commencement date',
+    fields:[field('consultantName','اسم الاستشاري/المالك','Owner/Consultant Rep.'), field('months','المدة التعاقدية (أشهر)','Contract Duration (months)'), field('notes','ملاحظات واشتراطات التسليم','Handover Remarks','textarea')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`محضر تسليم موقع المشروع (Site Handover Protocol)
+
+تاريخ التسليم: ${fmtDate(nowISO())} | اسم المشروع: ${ctx.projectName}
+الطرف الأول (المالك/الاستشاري): ${f.consultantName||'—'} | الطرف الثاني (المقاول): ${ctx.vendorName}
+
+الإقرار والتسليم:
+يقر الطرفان بأنه قد تمت معاينة موقع المشروع المعاينة التامة النافية للجهالة، وتم تسليم الموقع للطرف الثاني خالياً من الموانع والعوائق الهيكلية، وبذلك يُعتبر هذا التاريخ هو التاريخ الرسمي لبدء مدة التنفيذ التعاقدية ومقدارها ${f.months||'—'} شهراً.
+
+الملاحظات والاشتراطات عند التسليم:
+${f.notes||'—'}
+يتعهد المقاول بتوفير الحراسة والسلامة للموقع من تاريخه.`
+:
+`Site Handover Protocol
+
+Handover Date: ${fmtDate(nowISO())} | Project: ${ctx.projectName}
+First Party (Owner/Consultant): ${f.consultantName||'—'} | Second Party (Vendor): ${ctx.vendorName}
+
+Acknowledgement:
+Both parties confirm the site has been fully inspected and handed over free of obstructions. This date is deemed the official commencement date of the contractual duration of ${f.months||'—'} months.
+
+Handover Remarks:
+${f.notes||'—'}
+The vendor undertakes to provide site security from this date forward.`
+  },
+  {key:'HSE_V', nameAr:'إشعار مخالفة سلامة وصحة مهنية', nameEn:'HSE Violation Notice', descAr:'إيقاف عمل فوري ودرجة خطورة', descEn:'Immediate stop-work & severity grading',
+    fields:[field('severity','درجة الخطورة','Severity','select','متوسطة',OPT_SEVERITY), field('desc','تفاصيل المخالفة','Violation Details','textarea'), field('fine','الغرامة المالية','Fine Amount'), field('points','النقاط المخصومة من مؤشر HSE','HSE Index Points Deducted','number','5')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`إشعار مخالفة سلامة وصحة مهنية (HSE Incident / Breach Notice)
+
+درجة الخطورة: ${f.severity||'—'}
+تاريخ المخالفة: ${fmtDateTime(nowISO())} | اسم المقاول: ${ctx.vendorName}
+
+تفاصيل المخالفة:
+${f.desc||'—'}
+
+القرار الفوري الصادر من التطبيق:
+- إيقاف العمل فوراً في منطقة المخالفة لحين تصحيح الوضع.
+- فرض غرامة مالية فورية قدرها ${f.fine||'—'} تُخصم من المستخلص الحالي وفق لائحة العقوبات.
+- خصم ${f.points||5} نقاط من مؤشر تقييم السلامة الشهري (HSE Index) الخاص بالمقاول.`
+:
+`HSE Incident / Breach Notice
+
+Severity: ${f.severity||'—'}
+Date: ${fmtDateTime(nowISO())} | Vendor: ${ctx.vendorName}
+
+Violation Details:
+${f.desc||'—'}
+
+Immediate System Decision:
+- Work is stopped immediately in the affected area pending correction.
+- An immediate fine of ${f.fine||'—'} is imposed, deducted from the current payment certificate.
+- ${f.points||5} points deducted from the vendor's monthly HSE Index.`
+  },
+  {key:'PCC', nameAr:'شهادة التسليم الابتدائي واستكمال الأعمال', nameEn:'Practical Completion Certificate', descAr:'بداية فترة الضمان (DNP)', descEn:'Starts the Defects Notification Period',
+    fields:[field('dnpMonths','مدة فترة الضمان (أشهر)','DNP Duration (months)','number','12'), field('punchDays','مهلة إغلاق قائمة النواقص (يوم)','Punch List Closure (days)','number','21')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`شهادة التسليم الابتدائي واستكمال الأعمال (Practical Completion Certificate)
+
+تاريخ المعاينة: ${fmtDate(nowISO())} | اسم المشروع: ${ctx.projectName}
+
+إقرار لجنة الاستلام:
+تفيد لجنة الاستلام بأن المقاول ${ctx.vendorName} قد أتم الأعمال الأساسية للمشروع وهي صالحة للاستخدام للغرض الذي أُنشئت من أجله، وتم تسليم المشروع استلاماً ابتدائياً مع مراعاة التالي:
+- بدء فترة ضمان الأعمال (DNP) ومدتها ${f.dnpMonths||12} شهراً اعتباراً من تاريخه.
+- إرفاق قائمة الأسطر النواقص (Punch List) المرفقة بالتطبيق، ويلتزم المقاول بإغلاق كافة ملاحظاتها خلال مدة لا تتجاوز ${f.punchDays||21} يوماً.`
+:
+`Practical Completion Certificate
+
+Inspection Date: ${fmtDate(nowISO())} | Project: ${ctx.projectName}
+
+Acceptance Committee Statement:
+The committee confirms that Vendor ${ctx.vendorName} has completed the essential works, fit for intended use, and the project is handed over on a practical-completion basis, noting:
+- Commencement of the Defects Notification Period (DNP) of ${f.dnpMonths||12} months from this date.
+- The attached Punch List must be fully closed by the vendor within ${f.punchDays||21} days.`
+  },
+  {key:'ESG', nameAr:'تقرير الالتزام البيئي والاستدامة', nameEn:'ESG Evaluation Report', descAr:'مؤشرات الهدر والطاقة والانبعاثات', descEn:'Waste, energy & emissions indicators',
+    fields:[field('waste','إعادة تدوير المخلفات (%)','Waste Recycling (%)'), field('energy','كفاءة الطاقة والمياه','Energy/Water Efficiency Notes'), field('overall','النتيجة البيئية الإجمالية','Overall ESG Score','number','80')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`تقرير الالتزام البيئي والاستدامة (ESG Evaluation Report)
+
+اسم المقاول: ${ctx.vendorName} | فترة التقييم: ${new Date().toISOString().slice(0,7)}
+
+مؤشرات التقييم البيئي:
+- إدارة المخلفات: إعادة تدوير نسبة ${f.waste||'—'}% من مخلفات البناء بالموقع.
+- كفاءة الطاقة والمياه: ${f.energy||'—'}
+- الحد من التلوث والضوضاء: الالتزام بالحدود المسموح بها للانبعاثات والضوضاء.
+
+النتيجة البيئية الإجمالية: ${f.overall||'—'} / 100 — شارة مقاول صديق للبيئة (Green Contractor Badge) عند تجاوز 85.`
+:
+`ESG Evaluation Report
+
+Vendor: ${ctx.vendorName} | Period: ${new Date().toISOString().slice(0,7)}
+
+Environmental Indicators:
+- Waste Management: ${f.waste||'—'}% of construction waste recycled on site.
+- Energy/Water Efficiency: ${f.energy||'—'}
+- Noise & Emissions: Compliance with allowable limits.
+
+Overall ESG Score: ${f.overall||'—'} / 100 — Green Contractor Badge awarded above 85.`
+  },
+  {key:'SBN', nameAr:'إشعار تجميد الحساب والإدراج في القائمة السوداء', nameEn:'Suspension & Blacklist Notice', descAr:'تجميد الحساب ومنع دخول مناقصات جديدة', descEn:'Freezes account & bars new tenders',
+    fields:[field('decisionNo','رقم القرار الإداري','Decision Number'), field('reason','سبب الإدراج','Reason'), field('duration','مدة التجميد','Suspension Duration','text','دائم / Permanent')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`إشعار رسمي بتجميد الحساب والإدراج في القائمة السوداء (Account Suspension Notice)
+
+إلى: ${ctx.vendorName} | رقم التسجيل بالنظام: ${ctx.vendorId}
+
+بناءً على القرار الإداري رقم: ${f.decisionNo||'—'} الصادر بتاريخ ${fmtDate(nowISO())}، ونظراً لـ ${f.reason||'—'}:
+
+تقرر آلياً عبر نظام CPLMS:
+- تجميد حساب شركتكم على المنصة بشكل ${f.duration||'—'}.
+- حظر تقدمكم لأي مناقصات جديدة مع جميع الشركات والملاك المسجلين بالنظام.
+- نقل تصنيف شركتكم إلى (Blacklisted / Ineligible Contractor) في سجل الموردين الموحد.`
+:
+`Account Suspension & Blacklist Notice
+
+To: ${ctx.vendorName} | System Registration No.: ${ctx.vendorId}
+
+Pursuant to Administrative Decision No. ${f.decisionNo||'—'} dated ${fmtDate(nowISO())}, and due to ${f.reason||'—'}:
+
+The following is automatically enacted via CPLMS:
+- Your platform account is suspended: ${f.duration||'—'}.
+- You are barred from bidding on new tenders with all registered owners/companies.
+- Your classification is moved to (Blacklisted / Ineligible Contractor) in the unified vendor registry.`
+  },
+  {key:'IR', nameAr:'طلب فحص واستلام أعمال ميدانية', nameEn:'Inspection Request', descAr:'اعتماد بند قبل الانتقال للتالي', descEn:'Sign-off before proceeding to next item',
+    fields:[field('irNo','رقم الطلب','IR Number','text','IR-001'), field('zone','موقع الفحص','Location'), field('workType','نوع العمل','Type of Work'), field('result','نتيجة الفحص','Inspection Result','select','مقبول',OPT_APPROVE3)],
+    body:(lang,f,ctx)=> lang==='ar'?
+`طلب فحص واستلام أعمال ميدانية (${f.irNo||'IR-001'})
+
+اسم المشروع: ${ctx.projectName} | المقاول: ${ctx.vendorName}
+موقع الفحص: ${f.zone||'—'} | نوع العمل: ${f.workType||'—'}
+
+نتيجة الفحص الميداني من الاستشاري: ${f.result||'—'}
+
+تأثير آلي: يتم احتساب نسبة إنجاز البند المعتمد تلقائياً في حساب المستخلص المالي عبر المنصة.`
+:
+`Inspection Request (${f.irNo||'IR-001'})
+
+Project: ${ctx.projectName} | Vendor: ${ctx.vendorName}
+Location: ${f.zone||'—'} | Type of Work: ${f.workType||'—'}
+
+Consultant's Field Result: ${f.result||'—'}
+
+Automatic Effect: The approved item's completion percentage is auto-calculated into the payment certificate.`
+  },
+  {key:'ABO', nameAr:'محضر تسليم مخططات التنفيذ الفعلي وكتيبات الصيانة', nameEn:'As-Built & O&M Handover', descAr:'شرط لاستكمال التصفية المالية', descEn:'Prerequisite for final financial closure',
+    fields:[field('asBuilt','حالة مخططات As-Built','As-Built Status','select','معتمد',OPT_APPROVE2), field('omManuals','حالة كتيبات التشغيل','O&M Manuals Status','select','معتمد',OPT_APPROVE2), field('warranties','حالة شهادات الضمان','Warranties Status','select','معتمد',OPT_APPROVE2)],
+    body:(lang,f,ctx)=> lang==='ar'?
+`محضر اعتماد وتسليم مخططات التنفيذ الفعلي وكتيبات الصيانة (As-Built & O&M Handover)
+
+اسم المشروع: ${ctx.projectName} | رقم العقد: ${ctx.contractNo} | المقاول: ${ctx.vendorName}
+
+قائمة المستندات المسلمة والمفحوصة:
+- مخططات التنفيذ الفعلي (As-Built Drawings): ${f.asBuilt||'—'}
+- كتيبات التشغيل والصيانة (O&M Manuals): ${f.omManuals||'—'}
+- شهادات الضمان الممتدة للمواد والمعدات: ${f.warranties||'—'}
+
+قرار لجنة الاستلام:
+يقر الاستشاري باستلام كافة الوثائق المذكورة أعلاه بجودة مطابقة للمواصفات، وبناءً عليه يُسمح باستكمال إجراءات التصفية المالية النهائية للمشروع.`
+:
+`As-Built & O&M Handover Record
+
+Project: ${ctx.projectName} | Contract No.: ${ctx.contractNo} | Vendor: ${ctx.vendorName}
+
+Submitted & Inspected Documents:
+- As-Built Drawings: ${f.asBuilt||'—'}
+- O&M Manuals: ${f.omManuals||'—'}
+- Extended Warranties: ${f.warranties||'—'}
+
+Committee Decision:
+The Consultant confirms receipt of all above documents in conforming quality, and the final financial closure process may proceed.`
+  },
+  {key:'NOC', nameAr:'إشعار مطالبة رسمية من المقاول', nameEn:'Notice of Claim', descAr:'مطالبة زمنية أو مالية وفق العقد', descEn:'Time or cost claim under the contract',
+    fields:[field('claimNo','رقم المطالبة','Claim No.','text','CLM-001'), field('subject','موضوع المطالبة','Claim Subject'), field('clauseRef','البند التعاقدي','Contract/FIDIC Clause'), field('eot','التمديد الزمني المطلوب (أيام)','EOT Requested (days)'), field('cost','التكلفة المالية المقدرة','Estimated Cost')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`إشعار مطالبة رسمية من المقاول (${f.claimNo||'CLM-001'})
+
+التاريخ: ${fmtDate(nowISO())} | المقاول: ${ctx.vendorName} | الجهة الموجه إليها: المالك / الاستشاري
+
+موضوع المطالبة: ${f.subject||'—'}
+الأساس التعاقدي للمطالبة: البند رقم ${f.clauseRef||'—'}
+
+التأثير التقديري المبدئي:
+- التمديد الزمني المطلوب: ${f.eot||0} يوماً
+- التكلفة المالية المقدرة: ${f.cost||'—'}
+
+ملاحظة النظام: يتعين على الاستشاري والمالك الرد والبت في هذه المطالبة خلال 28 يوماً من تاريخ صدور الإشعار الرقمي وفقاً للاشتراطات التعاقدية.`
+:
+`Notice of Claim (${f.claimNo||'CLM-001'})
+
+Date: ${fmtDate(nowISO())} | Vendor: ${ctx.vendorName} | Addressed to: Owner / Consultant
+
+Claim Subject: ${f.subject||'—'}
+Contractual Basis: Clause No. ${f.clauseRef||'—'}
+
+Preliminary Estimated Impact:
+- Extension of Time Requested: ${f.eot||0} days
+- Estimated Cost: ${f.cost||'—'}
+
+System Note: The Consultant and Owner must respond within 28 days of this digital notice per the contract conditions.`
+  },
+  {key:'RRC', nameAr:'شهادة الإفراج عن المحتجزات والضمانات المالية', nameEn:'Release of Retention Certificate', descAr:'تسوية مالية نهائية', descEn:'Final financial settlement',
+    fields:[field('firstHalf','المبلغ المفرج عنه عند التسليم الابتدائي','Amount Released at Practical Completion'), field('secondHalf','المبلغ المفرج عنه عند التسليم النهائي','Amount Released at Final Handover'), field('bondRef','رقم خطاب ضمان حسن التنفيذ','Performance Bond Ref.')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`شهادة الإفراج عن المحتجزات والضمانات المالية (Release of Retention & Guarantees)
+
+اسم المشروع: ${ctx.projectName} | المقاول: ${ctx.vendorName}
+
+تفاصيل المبالغ والضمانات:
+- المبلغ المحتجز المفرج عنه (عند التسليم الابتدائي): ${f.firstHalf||'—'}
+- المبلغ المحتجز المفرج عنه (عند التسليم النهائي): ${f.secondHalf||'—'}
+- خطاب ضمان حسن التنفيذ: ${f.bondRef||'—'} → الحالة: تم الإفراج وإعادة الأصل للبنك.
+
+الإقرار النهائي:
+يقر المالك بإبراء ذمة المقاول مالياً وفنياً عن مشروع ${ctx.projectName} بعد انتهاء كافة الالتزامات التعاقدية وفترة الضمان بنجاح.`
+:
+`Release of Retention & Guarantees Certificate
+
+Project: ${ctx.projectName} | Vendor: ${ctx.vendorName}
+
+Amounts & Guarantees:
+- Retention Released (Practical Completion): ${f.firstHalf||'—'}
+- Retention Released (Final Handover): ${f.secondHalf||'—'}
+- Performance Bond: ${f.bondRef||'—'} → Status: Released, original returned to bank.
+
+Final Acknowledgement:
+The Owner confirms full financial and technical discharge of the vendor for Project ${ctx.projectName} upon successful completion of all contractual obligations and the DNP.`
+  },
+  {key:'DSP', nameAr:'محضر اتفاق وتسوية ودية للنزاعات', nameEn:'Amicable Settlement Protocol', descAr:'تسوية ودية للمطالبات والنزاعات', descEn:'Amicable claims/dispute resolution',
+    fields:[field('venue','مكان الانعقاد','Meeting Venue'), field('subject','موضوع النزاع','Dispute Subject','textarea'), field('eotGranted','تمديد ممنوح (أيام)','EOT Granted (days)')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`محضر اتفاق وتسوية ودية للنزاعات (Amicable Settlement Protocol)
+
+تاريخ الجلسة: ${fmtDate(nowISO())} | مكان الانعقاد: ${f.venue||'—'}
+أطراف النزاع: المالك | المقاول ${ctx.vendorName}
+
+موضوع النزاع: ${f.subject||'—'}
+
+بنود الاتفاق النهائي:
+- يوافق المالك على منح المقاول تمديداً زمنياً قدره ${f.eotGranted||0} يوماً بدون فرض غرامات تأخير.
+- يتنازل المقاول عن كافة المطالبات المالية المترتبة على هذا التأخير حتى تاريخه.
+- يلتزم الطرفان بعدم اللجوء للتحكيم أو القضاء بشأن النقاط المذكورة في هذا المحضر.`
+:
+`Amicable Settlement Protocol
+
+Session Date: ${fmtDate(nowISO())} | Venue: ${f.venue||'—'}
+Parties: Owner | Vendor ${ctx.vendorName}
+
+Dispute Subject: ${f.subject||'—'}
+
+Final Settlement Terms:
+- The Owner grants the vendor an extension of ${f.eotGranted||0} days without liquidated damages.
+- The vendor waives all financial claims arising from this delay to date.
+- Both parties agree not to pursue arbitration or litigation on the matters covered herein.`
+  },
+  {key:'DRF', nameAr:'شهادة إغلاق عيب طارئ في فترة الضمان', nameEn:'Defects Rectification Form', descAr:'إغلاق بلاغ أثناء فترة DNP', descEn:'Closes a defect reported during DNP',
+    fields:[field('defectNo','رقم البلاغ','Report No.','text','DEF-001'), field('location','الموقع/الجزء المتأثر','Affected Location'), field('problem','وصف المشكلة','Problem Description'), field('action','إجراء المقاول الإصلاحي','Rectification Action')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`شهادة إغلاق عيب طارئ في فترة الضمان (${f.defectNo||'DEF-001'})
+
+تاريخ الإصلاح: ${fmtDate(nowISO())} | الموقع/الجزء المتأثر: ${f.location||'—'}
+
+وصف المشكلة والمعالجة:
+- المشكلة: ${f.problem||'—'}
+- إجراء المقاول الإصلاحي: ${f.action||'—'}
+
+اعتماد فريق التشغيل والاستشاري:
+تم فحص الأعمال الإصلاحية والتأكد من عمل النظام بكفاءة، وتم إغلاق البلاغ بنجاح وتحديث مؤشر أداء المقاول (${ctx.vendorName}) في مرحلة الضمان (DNP Score).`
+:
+`Defects Rectification Form (${f.defectNo||'DEF-001'})
+
+Rectification Date: ${fmtDate(nowISO())} | Affected Location: ${f.location||'—'}
+
+Problem & Action:
+- Problem: ${f.problem||'—'}
+- Vendor Rectification Action: ${f.action||'—'}
+
+Approval:
+The operations team and Consultant confirm the repair was inspected and functions correctly. The report is closed and the vendor's (${ctx.vendorName}) DNP performance score is updated accordingly.`
+  },
+  {key:'FMN', nameAr:'إشعار توقف أعمال لظروف قاهرة / أحوال جوية', nameEn:'Force Majeure / Weather Delay Notice', descAr:'توقف معفى من الغرامات', descEn:'Penalty-exempt stoppage',
+    fields:[field('cause','سبب التوقف','Cause of Stoppage'), field('itemAffected','البند المتأثر','Affected Item'), field('duration','مدة التوقف (ساعة/يوم)','Stoppage Duration')],
+    body:(lang,f,ctx)=> lang==='ar'?
+`إشعار توقف أعمال لظروف قاهرة / أحوال جوية (Force Majeure Notice - FMN-001)
+
+تاريخ الحدث: ${fmtDate(nowISO())} | اسم المشروع: ${ctx.projectName} | المقاول: ${ctx.vendorName}
+سبب التوقف: ${f.cause||'—'}
+
+الأثر على المشروع:
+إيقاف العمل في بند ${f.itemAffected||'—'} لمدة ${f.duration||'—'}، ويُحسب هذا التوقف كتأخير قهري غير مدفوع التعويض المالي، مع منح المقاول تمديداً زمنياً معافى من الغرامات بقدر فترة التوقف الفعلية.`
+:
+`Force Majeure / Weather Delay Notice (FMN-001)
+
+Event Date: ${fmtDate(nowISO())} | Project: ${ctx.projectName} | Vendor: ${ctx.vendorName}
+Cause: ${f.cause||'—'}
+
+Project Impact:
+Work is stopped on ${f.itemAffected||'—'} for ${f.duration||'—'}. This stoppage is treated as an uncompensated force-majeure delay, with an EOT granted equal to the actual stoppage period, exempt from liquidated damages.`
+  },
+  {key:'SCC', nameAr:'شهادة إخلاء طرف وإعادة تسليم الموقع', nameEn:'Site Clearance Certificate', descAr:'إغلاق تصاريح الدخول واستكمال المستخلص النهائي', descEn:'Closes site access & final payment',
+    fields:[],
+    body:(lang,f,ctx)=> lang==='ar'?
+`شهادة إخلاء طرف وإعادة تسليم الموقع (Site Clearance Certificate)
+
+اسم المشروع: ${ctx.projectName} | المقاول: ${ctx.vendorName}
+
+المعاينة والتأكيد:
+يقر استشاري المشروع وفريق الإدارة بأن المقاول قد قام بإزالة كافة الكرفانات والمكاتب المؤقتة والمعدات والمخلفات من موقع المشروع وإعادة الموقع لطبيعته ونظافته التامة.
+
+القرار: يُصرح للمقاول بإغلاق تصاريح دخول الموقع واستكمال المستخلص النهائي.`
+:
+`Site Clearance Certificate
+
+Project: ${ctx.projectName} | Vendor: ${ctx.vendorName}
+
+Confirmation:
+The Consultant and management team confirm the vendor has removed all site cabins, temporary offices, equipment and waste, restoring the site to its clean original condition.
+
+Decision: The vendor is authorized to close site access permits and proceed with the final payment certificate.`
+  }
+];
+function templateByKey(k){ return TEMPLATES.find(x=>x.key===k); }
+
+/* ================= DOCUMENTS VIEW ================= */
+function renderDocuments(){
+  return `
+  <div class="topbar">
+    <div><h1>${t('مكتبة الوثائق الرسمية','Official Document Library')}</h1><div class="crumbs">CPLMS / ${TEMPLATES.length} ${t('نموذج معتمد قابل للتوليد التلقائي','certified auto-generated templates')}</div></div>
+  </div>
+  <div class="flag">${t('كل وثيقة تُصدر تُختم برقم مرجعي وبصمة رقمية (Hash) وتُحفظ تلقائياً في الأرشيف غير القابل للتعديل.','Every issued document is stamped with a reference number and digital hash, and saved automatically to the immutable archive.')}</div>
+  <div class="doc-grid">
+    ${TEMPLATES.map(tpl=>`
+      <div class="doc-card" onclick="openDocGenerator('${tpl.key}')">
+        <div class="code">${tpl.key}${tpl.auto?' · '+t('تلقائي','AUTO'):''}</div>
+        <div class="name">${t(tpl.nameAr,tpl.nameEn)}</div>
+        <div class="desc">${t(tpl.descAr,tpl.descEn)}</div>
+      </div>`).join('')}
+  </div>
+  `;
+}
+function openDocGenerator(key, presetCtx){
+  const tpl = templateByKey(key);
+  if(!tpl) return;
+  presetCtx = presetCtx || {};
+  const vendorOptions = DB.vendors.map(v=>`<option value="${v.id}" ${presetCtx.vendorId===v.id?'selected':''}>${esc(v.name)}</option>`).join('');
+  const projectOptions = DB.projects.map(p=>`<option value="${p.id}" ${presetCtx.projectId===p.id?'selected':''}>${esc(p.name)}</option>`).join('');
+  openModal(`
+    <h2>${t(tpl.nameAr,tpl.nameEn)}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="form-grid">
+      <div class="field"><label>${t('المقاول','Vendor')}</label><select id="d_vendor">${vendorOptions||`<option value="">${t('لا يوجد','None')}</option>`}</select></div>
+      <div class="field"><label>${t('المشروع','Project')}</label><select id="d_project"><option value="">—</option>${projectOptions}</select></div>
+    </div>
+    ${tpl.fields.length? `<div class="divider"></div><div class="form-grid">
+      ${tpl.fields.map(f=>`
+        <div class="field"><label>${t(f.ar,f.en)}</label>
+        ${f.type==='textarea'?`<textarea id="tf_${f.id}">${esc(f.def)}</textarea>`
+         : f.type==='select'? `<select id="tf_${f.id}">${(f.options||[]).map(o=>`<option value="${esc(t(o[0],o[1]))}" ${f.def===o[0]?'selected':''}>${esc(t(o[0],o[1]))}</option>`).join('')}</select>`
+         : `<input id="tf_${f.id}" type="${f.type==='number'?'number':'text'}" value="${esc(f.def)}">`}
+        </div>`).join('')}
+    </div>` : `<div class="hint" style="margin-top:10px;">${tpl.auto? t('تُولّد هذه الوثيقة تلقائياً من بيانات آخر تقييم شهري مرتبط.','This document auto-fills from the linked latest monthly evaluation.') : t('لا حقول إضافية مطلوبة — سيتم التوليد من بيانات المشروع والمقاول مباشرة.','No extra fields required — generated directly from vendor/project data.')}</div>`}
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">${t('إلغاء','Cancel')}</button>
+      <button class="btn primary" onclick="previewDoc('${key}', '${presetCtx.evalId||''}', '${presetCtx.escId||''}')">${t('معاينة وتوليد','Preview & Generate')}</button>
+    </div>
+  `, true);
+}
+function collectFieldValues(tpl){
+  const f = {};
+  tpl.fields.forEach(fl=>{ const el = document.getElementById('tf_'+fl.id); f[fl.id] = el ? el.value : fl.def; });
+  return f;
+}
+function buildCtx(vendorId, projectId, evalId, escId){
+  const v = DB.vendors.find(x=>x.id===vendorId);
+  const p = DB.projects.find(x=>x.id===projectId);
+  return {
+    vendorId: vendorId||'', vendorName: v? v.name : t('غير محدد','Unspecified'),
+    projectName: p? p.name : t('غير محدد','Unspecified'),
+    contractNo: p? (p.contractNo||'—') : '—',
+    ownerName: LANG==='ar'?DB.settings.ownerName:DB.settings.ownerNameEn,
+    companyName: LANG==='ar'?DB.settings.companyName:DB.settings.companyNameEn,
+    evalData: evalId ? DB.evaluations.find(x=>x.id===evalId) : null,
+    escId: escId||null
+  };
+}
+function previewDoc(key, evalId, escId){
+  const tpl = templateByKey(key);
+  const vendorId = document.getElementById('d_vendor').value;
+  const projectId = document.getElementById('d_project').value;
+  const f = collectFieldValues(tpl);
+  const ctx = buildCtx(vendorId, projectId, evalId, escId);
+  const bodyAr = tpl.body('ar', f, Object.assign({}, ctx, {vendorName: (DB.vendors.find(x=>x.id===vendorId)||{}).name || t('غير محدد','Unspecified')}));
+  const bodyEn = tpl.body('en', f, ctx);
+  const docId = uid('DOC');
+  const draft = { id:docId, type:key, vendorId, projectId, title: t(tpl.nameAr,tpl.nameEn), fieldsSnapshot:f, bodyAr, bodyEn };
+  window.__draftDoc = draft;
+  openModal(`
+    <h2>${t('معاينة الوثيقة','Document Preview')}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="doc-preview">
+      <div class="dh"><b>${esc(LANG==='ar'?DB.settings.companyName:DB.settings.companyNameEn)}</b><span>${t(tpl.nameAr,tpl.nameEn)} · REF: ${docId}</span></div>
+      ${esc(LANG==='ar'?bodyAr:bodyEn)}
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">${t('تعديل','Back to Edit')}</button>
+      <button class="btn primary" onclick="commitDoc()">${t('اعتماد وحفظ في الأرشيف','Approve & Save to Archive')}</button>
+    </div>
+  `, true);
+}
+function commitDoc(){
+  const d = window.__draftDoc;
+  if(!d) return;
+  const hash = hashOf(d.bodyAr + d.bodyEn + d.id);
+  const record = Object.assign({}, d, {hash, createdAt: nowISO()});
+  DB.documents.push(record);
+  // link back to escalation history if applicable
+  if(d.type){
+    // no-op placeholder for future linking
+  }
+  save(DB); closeModal(); toast(t('تم اعتماد الوثيقة وحفظها في الأرشيف','Document approved and archived'));
+  viewArchiveDoc(record.id);
+}
+
+/* ================= ARCHIVE ================= */
+function renderArchive(){
+  const list = [...DB.documents].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  return `
+  <div class="topbar">
+    <div><h1>${t('الأرشيف الرقمي غير القابل للتعديل','Immutable Digital Archive')}</h1><div class="crumbs">CPLMS / ${list.length} ${t('وثيقة موثقة','archived documents')}</div></div>
+    <div class="actions">
+      <div class="search-box"><input id="archSearch" type="text" placeholder="${t('بحث بالاسم أو الرقم المرجعي','Search by name or reference')}" oninput="filterArchive(this.value)"></div>
+    </div>
+  </div>
+  <div id="archiveTableWrap">${archiveTable(list)}</div>
+  `;
+}
+function archiveTable(list){
+  if(list.length===0) return `<div class="empty"><b>${t('الأرشيف فارغ','Archive is empty')}</b>${t('ستظهر هنا كل وثيقة يتم اعتمادها من مكتبة الوثائق.','Every approved document from the library will appear here.')}</div>`;
+  return `<div class="table-wrap"><table>
+  <thead><tr><th>${t('المرجع','Reference')}</th><th>${t('نوع الوثيقة','Type')}</th><th>${t('المقاول','Vendor')}</th><th>${t('التاريخ','Date')}</th><th>${t('البصمة الرقمية','Hash')}</th><th></th></tr></thead>
+  <tbody>${list.map(d=>`
+    <tr>
+      <td style="font-family:var(--font-mono)">${d.id}</td>
+      <td>${esc(d.title)}</td>
+      <td>${esc(vendorName(d.vendorId))}</td>
+      <td>${fmtDate(d.createdAt)}</td>
+      <td style="font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint);">${d.hash}</td>
+      <td style="white-space:nowrap;"><button class="btn sm ghost" onclick="viewArchiveDoc('${d.id}')">${t('عرض/طباعة','View/Print')}</button></td>
+    </tr>`).join('')}</tbody></table></div>`;
+}
+function filterArchive(q){
+  q = q.trim().toLowerCase();
+  const list = [...DB.documents].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
+    .filter(d=> !q || d.id.toLowerCase().includes(q) || d.title.toLowerCase().includes(q) || vendorName(d.vendorId).toLowerCase().includes(q));
+  document.getElementById('archiveTableWrap').innerHTML = archiveTable(list);
+}
+function viewArchiveDoc(id){
+  const d = DB.documents.find(x=>x.id===id);
+  if(!d) return;
+  openModal(`
+    <h2>${esc(d.title)}<span class="x" onclick="closeModal()">×</span></h2>
+    <div class="doc-preview" id="docPreviewBox">
+      <div class="dh"><b>${esc(LANG==='ar'?DB.settings.companyName:DB.settings.companyNameEn)}</b><span>${esc(d.title)} · REF: ${d.id} · ${fmtDate(d.createdAt)}</span></div>
+      ${esc(LANG==='ar'?d.bodyAr:d.bodyEn)}
+    </div>
+    <div class="hint">${t('البصمة الرقمية للتوثيق','Digital verification hash')}: ${d.hash}</div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">${t('إغلاق','Close')}</button>
+      <button class="btn primary" onclick="printDoc('${d.id}')">${t('طباعة / حفظ PDF','Print / Save as PDF')}</button>
+    </div>
+  `, true);
+}
+function printDoc(id){
+  const d = DB.documents.find(x=>x.id===id);
+  const area = document.getElementById('printArea');
+  area.innerHTML = `
+    <div style="padding:40px; font-family:'Tajawal',sans-serif; direction:${LANG==='ar'?'rtl':'ltr'};">
+      <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:14px; margin-bottom:20px;">
+        <div style="font-size:18px; font-weight:700;">${esc(LANG==='ar'?DB.settings.companyName:DB.settings.companyNameEn)}</div>
+        <div style="font-size:11px; color:#444; font-family:monospace; margin-top:4px;">${esc(d.title)} · REF: ${d.id} · ${fmtDate(d.createdAt)}</div>
+      </div>
+      <div style="white-space:pre-wrap; font-size:13.5px; line-height:2;">${esc(LANG==='ar'?d.bodyAr:d.bodyEn)}</div>
+      <div style="margin-top:40px; padding-top:14px; border-top:1px solid #999; font-size:10.5px; color:#555; display:flex; justify-content:space-between;">
+        <span>${t('الختم الرقمي','Digital hash')}: ${d.hash}</span>
+        <span>${esc(LANG==='ar'?DB.settings.ownerName:DB.settings.ownerNameEn)}</span>
+      </div>
+    </div>`;
+  window.print();
+}
+
+/* ================= SETTINGS ================= */
+function renderSettings(){
+  const w = DB.settings.weights;
+  return `
+  <div class="topbar"><div><h1>${t('إعدادات المنظومة','System Settings')}</h1><div class="crumbs">CPLMS / ${t('الشركة، الأوزان، النسخ الاحتياطي','Company, weights, backup')}</div></div></div>
+
+  <div class="section-title">${t('بيانات الجهة المالكة للنظام','System Owner Information')}</div>
+  <div class="card">
+    <div class="form-grid">
+      <div class="field"><label>${t('اسم الشركة (عربي)','Company Name (Arabic)')}</label><input id="s_company" type="text" value="${esc(DB.settings.companyName)}"></div>
+      <div class="field"><label>${t('اسم الشركة (إنجليزي)','Company Name (English)')}</label><input id="s_companyEn" type="text" value="${esc(DB.settings.companyNameEn)}"></div>
+      <div class="field"><label>${t('اسم المسؤول (عربي)','Owner Name (Arabic)')}</label><input id="s_owner" type="text" value="${esc(DB.settings.ownerName)}"></div>
+      <div class="field"><label>${t('اسم المسؤول (إنجليزي)','Owner Name (English)')}</label><input id="s_ownerEn" type="text" value="${esc(DB.settings.ownerNameEn)}"></div>
+    </div>
+    <button class="btn primary sm" onclick="saveCompanySettings()">${t('حفظ بيانات الشركة','Save Company Info')}</button>
+  </div>
+
+  <div class="section-title">${t('أوزان مؤشرات الأداء (KPI Weights)','KPI Weight Configuration')}</div>
+  <div class="card">
+    <div class="form-grid" style="grid-template-columns:repeat(5,1fr);">
+      <div class="field"><label>${t('الجدول (SPI)','Schedule (SPI)')}</label><input id="w_spi" type="number" value="${w.spi}"></div>
+      <div class="field"><label>${t('التكلفة (CPI)','Cost (CPI)')}</label><input id="w_cpi" type="number" value="${w.cpi}"></div>
+      <div class="field"><label>${t('الجودة','Quality')}</label><input id="w_quality" type="number" value="${w.quality}"></div>
+      <div class="field"><label>${t('السلامة (HSE)','HSE')}</label><input id="w_hse" type="number" value="${w.hse}"></div>
+      <div class="field"><label>${t('الإدارة','Management')}</label><input id="w_mgmt" type="number" value="${w.mgmt}"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>${t('حد فتح التصعيد التلقائي (النتيجة أقل من)','Auto-Escalation Threshold (score below)')}</label><input id="w_thresh" type="number" value="${DB.settings.escalationThreshold}"></div>
+      <div class="field"><label>${t('حد المخاطرة العالية (النتيجة أقل من)','High-Risk Threshold (score below)')}</label><input id="w_crit" type="number" value="${DB.settings.criticalThreshold}"></div>
+    </div>
+    <button class="btn primary sm" onclick="saveWeights()">${t('حفظ الأوزان','Save Weights')}</button>
+  </div>
+
+  <div class="section-title">${t('النسخ الاحتياطي واستعادة البيانات','Backup & Restore')} <span class="tag">${t('إضافة مقترحة','ADDED')}</span></div>
+  <div class="card">
+    <p style="font-size:13px; color:var(--ink-dim); margin-bottom:14px;">${t('البيانات مخزّنة محلياً على هذا المتصفح فقط. صدّر نسخة احتياطية دورياً لحمايتها من الفقدان عند مسح بيانات المتصفح.','Data is stored locally in this browser only. Export a backup regularly to protect it from browser data clearing.')}</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn" onclick="exportBackup()">⭳ ${t('تصدير نسخة احتياطية (JSON)','Export Backup (JSON)')}</button>
+      <label class="btn" style="position:relative; overflow:hidden;">
+        ⭱ ${t('استيراد نسخة احتياطية','Import Backup')}
+        <input type="file" accept=".json" onchange="importBackup(event)" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
+      </label>
+      <button class="btn danger" onclick="resetAllData()">${t('حذف كل البيانات','Erase All Data')}</button>
+    </div>
+  </div>
+  `;
+}
+function saveCompanySettings(){
+  DB.settings.companyName = document.getElementById('s_company').value.trim();
+  DB.settings.companyNameEn = document.getElementById('s_companyEn').value.trim();
+  DB.settings.ownerName = document.getElementById('s_owner').value.trim();
+  DB.settings.ownerNameEn = document.getElementById('s_ownerEn').value.trim();
+  save(DB); renderShell(); toast(t('تم الحفظ','Saved'));
+}
+function saveWeights(){
+  DB.settings.weights = { spi:Number(document.getElementById('w_spi').value), cpi:Number(document.getElementById('w_cpi').value),
+    quality:Number(document.getElementById('w_quality').value), hse:Number(document.getElementById('w_hse').value), mgmt:Number(document.getElementById('w_mgmt').value) };
+  DB.settings.escalationThreshold = Number(document.getElementById('w_thresh').value);
+  DB.settings.criticalThreshold = Number(document.getElementById('w_crit').value);
+  save(DB); renderView(); toast(t('تم حفظ الأوزان','Weights saved'));
+}
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(DB,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'CPLMS_Backup_' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast(t('تم تصدير النسخة الاحتياطية','Backup exported'));
+}
+function importBackup(evt){
+  const file = evt.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      DB = Object.assign(defaultData(), parsed);
+      LANG = DB.lang || 'ar';
+      save(DB); renderShell(); toast(t('تم استيراد البيانات بنجاح','Data imported successfully'));
+    }catch(e){ toast(t('ملف غير صالح','Invalid file')); }
+  };
+  reader.readAsText(file);
+}
+function resetAllData(){
+  if(!confirm(t('سيتم حذف جميع البيانات نهائياً. هل أنت متأكد؟','This will permanently erase all data. Are you sure?')))return;
+  DB = defaultData(); save(DB); LANG='ar'; renderShell(); toast(t('تم إعادة التهيئة','Data reset'));
+}
+</script>
+</body>
+</html>
