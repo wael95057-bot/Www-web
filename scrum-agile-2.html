@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrum Agile</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.0/supabase.min.js" onerror="window.__noSupabase=true"></script>
+<style>
+  @media print {
+    .no-print { display: none !important; }
+    body { background: white !important; color: black !important; }
+    .print-area { color: black !important; }
+  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  body { font-family: -apple-system, 'Segoe UI', Tahoma, Arial, sans-serif; }
+  .kanban-col { min-height: 200px; }
+  .drag-ghost { opacity: 0.4; }
+  textarea, input, select { color: inherit; }
+</style>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100">
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   SCRUM AGILE — Enterprise Scrum/PMO Platform
+   Founder & Chief Architect: Eng. Wael Ali Oweiss Mahmoud
+   م/ وائل علي عويس محمود
+   Single-file bilingual (AR/EN) app, localStorage + optional
+   Supabase cloud backup (table: pmo_backups)
+   ========================================================= */
+
+const STORAGE_KEY = 'scrumAgileData_v1';
+const SETTINGS_KEY = 'scrumAgileSettings_v1';
+
+function uid(prefix){ return (prefix||'id') + '_' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+function defaultData(){
+  return {
+    projects: [
+      { id: uid('prj'), nameAr: 'مشروع تجريبي', nameEn: 'Sample Project', client: '', sector: 'software', statusAr: 'قيد التنفيذ', statusEn: 'In Progress', progress: 20, createdAt: todayISO() }
+    ],
+    backlog: [],
+    sprints: [],
+    tasks: [],
+    standups: [],
+    retros: [],
+    documents: [],
+    risks: [],
+    ncrs: []
+  };
+}
+
+function loadData(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultData();
+    const parsed = JSON.parse(raw);
+    const d = defaultData();
+    return Object.assign(d, parsed);
+  } catch(e){ return defaultData(); }
+}
+
+function saveData(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); } catch(e){ console.error('save failed', e); }
+}
+
+function loadSettings(){
+  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || { supabaseUrl:'', supabaseKey:'', backupId:'scrum-agile-default' }; }
+  catch(e){ return { supabaseUrl:'', supabaseKey:'', backupId:'scrum-agile-default' }; }
+}
+function saveSettings(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+
+const state = {
+  lang: 'ar',
+  tab: 'dashboard',
+  data: loadData(),
+  settings: loadSettings(),
+  activeProjectId: null,
+  activeSprintId: null,
+  docType: null,
+  toast: null,
+  whatifBoost: 0
+};
+if (state.data.projects.length) state.activeProjectId = state.data.projects[0].id;
+
+/* ---------------- i18n ---------------- */
+const T = {
+  ar: {
+    appTitle: 'سكرم أجايل — Scrum Agile',
+    appSubtitle: 'منصة إدارة السباقات وحوكمة الـ PMO متعددة القطاعات',
+    architect: 'المؤسس ورئيس التطوير: م/ وائل علي عويس محمود',
+    langSwitch: 'English',
+    printBtn: 'طباعة / حفظ PDF',
+    nav: {
+      dashboard: 'سجل المشاريع',
+      backlog: 'قائمة المنتج',
+      sprint: 'لوحة السباق',
+      events: 'الاجتماعات والعوائق',
+      docs: 'مكتبة الوثائق',
+      analytics: 'التحليلات والمؤشرات',
+      warroom: 'غرفة العمليات',
+      backup: 'النسخ الاحتياطي السحابي'
+    },
+    common: { add:'إضافة', edit:'تعديل', delete:'حذف', save:'حفظ', cancel:'إلغاء', close:'إغلاق', export:'تصدير', generate:'توليد المستند',
+      name:'الاسم', status:'الحالة', progress:'نسبة الإنجاز', actions:'الإجراءات', date:'التاريخ', none:'لا توجد بيانات',
+      title:'العنوان', description:'الوصف', priority:'الأولوية', points:'نقاط القصة', owner:'المسؤول', sector:'القطاع' },
+    sectors: { software:'برمجيات وتقنية', consulting:'استشارات', marketing:'تسويق وإبداع', construction:'إنشاءات وهندسة', finance:'خدمات مالية', healthcare:'رعاية صحية' },
+    dashboard: { title:'سجل المشاريع والأرشيف', addProject:'مشروع جديد', client:'العميل / الجهة', selectActive:'تفعيل كمشروع حالي', activeTag:'المشروع النشط' },
+    backlog: { title:'قائمة المنتج الكبرى (Product Backlog)', addItem:'بند جديد', impact:'الأثر', effort:'الجهد', moveToSprint:'نقل للسباق الحالي', noSprint:'لا يوجد سباق نشط — أنشئ سباقاً أولاً', search:'بحث في البنود...' },
+    sprint: { title:'لوحة السباق الحي', newSprint:'سباق جديد', sprintName:'اسم السباق', goal:'هدف السباق', startDate:'تاريخ البدء', endDate:'تاريخ الانتهاء',
+      noSprint:'لا يوجد سباق نشط لهذا المشروع', cols:{ todo:'قيد الانتظار', inprogress:'قيد التنفيذ', review:'مراجعة / جودة', done:'تم الإنجاز' },
+      search:'بحث في المهام...', daysLeft:'الأيام المتبقية', daysOver:'تجاوز الموعد بـ', daysUnit:'يوم', autoSuggest:'كل مهام هذا السباق منجزة! يمكنك إغلاقه الآن.' },
+    events: { title:'الاجتماعات، العوائق، والتحسين المستمر', standupLog:'سجل الاجتماع اليومي', addStandup:'تسجيل يومي', yesterday:'ماذا أنجزت أمس؟', today:'ماذا ستنجز اليوم؟', blocker:'هل توجد معوقات؟',
+      retroLog:'سجل التحسين المستمر (Retrospective)', addRetro:'تسجيل استظهار', wentWell:'ما الذي سار بشكل جيد', improve:'ما الذي يحتاج تحسيناً', actionItems:'خطوات العمل القادمة',
+      riskLog:'سجل المخاطر', addRisk:'خطر جديد', riskDesc:'وصف الخطر', riskLevel:'مستوى الخطورة', mitigation:'خطة الاستجابة', high:'عالي', medium:'متوسط', low:'منخفض',
+      ncrLog:'سجل عدم المطابقة (NCR)', addNcr:'تقرير جديد', ncrDesc:'وصف المخالفة', corrective:'الإجراء التصحيحي', ncrOpen:'مفتوح', ncrClosed:'مغلق' },
+    docs: { title:'مكتبة الوثائق والعقود الذكية', pick:'اختر نوع الوثيقة', generated:'المستندات المولدة', types:{
+        charter:'ميثاق السباق (Sprint Charter)', blockers:'سجل العوائق اليومية', acceptance:'شهادة قبول السباق', retro:'تقرير التحسين المستمر',
+        cr:'طلب تغيير (Change Request)', risk:'سجل تقييم المخاطر', ncr:'تقرير عدم مطابقة (NCR)', closeout:'تقرير إغلاق المشروع',
+        resource:'تقرير تفريغ وكفاءة الموارد', ptw:'ترخيص العمل الآمن (PTW)', satisfaction:'استبيان رضا العميل', dispute:'محضر تسوية نزاع ودي',
+        budget:'بيان ميزانية السباق', kaizen:'سجل الابتكار والتحسين (Kaizen)', handover:'محضر نقل المعرفة', sla:'اتفاقية مستوى الخدمة الداخلية (SLA)',
+        commsplan:'خطة الاتصال بأصحاب المصلحة', mgmtreview:'محضر مراجعة الإدارة الاستراتيجية', nda:'اتفاقية عدم إفصاح (NDA)', postmortem:'تقرير تحليل ما بعد الحوادث' } },
+    analytics: { title:'التحليلات ومؤشرات الأداء', velocity:'سرعة الفريق (Velocity)', burndown:'مخطط حرق المهام (Burndown)', noData:'لا توجد بيانات كافية بعد — أضف سباقات ومهام',
+      predictionTitle:'محرك التنبؤ المبسط', onTrack:'✅ السباق على المسار الصحيح', atRisk:'⚠️ احتمالية تأخر — العمل المتبقي أعلى من المخطط المثالي بـ', pts:'نقطة',
+      whatifTitle:'محاكي "ماذا لو؟" لتوزيع الموارد', boostLabel:'زيادة/نقصان السرعة (%)', whatifResult:'الأيام المتوقعة لإنجاز العمل المتبقي:', whatifDaysLeft:'الأيام المتبقية في السباق:', whatifVerdict:'التقييم:',
+      whatifOk:'كافٍ للإنجاز ضمن السباق', whatifShort:'غير كافٍ — قد يتأخر السباق' },
+    backup: { title:'النسخ الاحتياطي السحابي (Supabase)', url:'رابط مشروع Supabase (URL)', key:'مفتاح anon العام (anon key)', backupId:'معرّف النسخة الاحتياطية',
+      backupBtn:'رفع نسخة احتياطية الآن', restoreBtn:'استرجاع من السحابة', saveSettings:'حفظ الإعدادات محلياً', localNote:'تُحفظ كل بياناتك تلقائياً على هذا الجهاز (localStorage). استخدم هذا القسم لأخذ نسخة احتياطية سحابية اختيارية عبر Supabase.',
+      sqlNote:'تأكد من إنشاء الجدول التالي في مشروع Supabase الخاص بك قبل الاستخدام:', localBackupTitle:'نسخة احتياطية محلية (ملف)', exportBtn:'تصدير كملف JSON', importBtn:'استيراد من ملف JSON' },
+    warroom: { title:'غرفة العمليات الاستراتيجية (Executive War Room)', green:'أداء سليم', yellow:'تحذير', red:'حرج', sprints:'السباقات', openRisks:'مخاطر مفتوحة', openNcrs:'NCR مفتوحة' },
+    footer: 'جميع الحقوق محفوظة للمهندس/ وائل علي عويس محمود © 2026 — Scrum Agile Platform'
+  },
+  en: {
+    appTitle: 'Scrum Agile',
+    appSubtitle: 'Cross-Industry Sprint Management & PMO Governance Platform',
+    architect: 'Founder & Chief Architect: Eng. Wael Ali Oweiss Mahmoud',
+    langSwitch: 'العربية',
+    printBtn: 'Print / Save PDF',
+    nav: {
+      dashboard: 'Projects Registry',
+      backlog: 'Product Backlog',
+      sprint: 'Sprint Board',
+      events: 'Events & Blockers',
+      docs: 'Documents Library',
+      analytics: 'Analytics & KPIs',
+      warroom: 'War Room',
+      backup: 'Cloud Backup'
+    },
+    common: { add:'Add', edit:'Edit', delete:'Delete', save:'Save', cancel:'Cancel', close:'Close', export:'Export', generate:'Generate Document',
+      name:'Name', status:'Status', progress:'Progress', actions:'Actions', date:'Date', none:'No data yet',
+      title:'Title', description:'Description', priority:'Priority', points:'Story Points', owner:'Owner', sector:'Sector' },
+    sectors: { software:'Software & IT', consulting:'Consulting', marketing:'Marketing & Creative', construction:'Engineering & Construction', finance:'Financial Services', healthcare:'Healthcare' },
+    dashboard: { title:'Projects Registry & Archive', addProject:'New Project', client:'Client / Entity', selectActive:'Set as active project', activeTag:'Active Project' },
+    backlog: { title:'Product Backlog', addItem:'New Item', impact:'Impact', effort:'Effort', moveToSprint:'Move to Active Sprint', noSprint:'No active sprint — create one first', search:'Search items...' },
+    sprint: { title:'Live Sprint Board', newSprint:'New Sprint', sprintName:'Sprint Name', goal:'Sprint Goal', startDate:'Start Date', endDate:'End Date',
+      noSprint:'No active sprint for this project', cols:{ todo:'To Do', inprogress:'In Progress', review:'Review / QA', done:'Done' },
+      search:'Search tasks...', daysLeft:'Days left', daysOver:'Overdue by', daysUnit:'days', autoSuggest:'All tasks in this sprint are done! You can close it now.' },
+    events: { title:'Events, Blockers & Continuous Improvement', standupLog:'Daily Standup Log', addStandup:'Log Standup', yesterday:'What did you do yesterday?', today:'What will you do today?', blocker:'Any blockers?',
+      retroLog:'Retrospective Log', addRetro:'Log Retro', wentWell:'What went well', improve:'What could improve', actionItems:'Action items',
+      riskLog:'Risk Log', addRisk:'New Risk', riskDesc:'Risk description', riskLevel:'Risk level', mitigation:'Mitigation plan', high:'High', medium:'Medium', low:'Low',
+      ncrLog:'Non-Conformance Log (NCR)', addNcr:'New NCR', ncrDesc:'Non-conformance description', corrective:'Corrective action', ncrOpen:'Open', ncrClosed:'Closed' },
+    docs: { title:'Smart Documents & Contracts Library', pick:'Choose document type', generated:'Generated Documents', types:{
+        charter:'Sprint Charter', blockers:'Daily Blockers Log', acceptance:'Sprint Acceptance Certificate', retro:'Retrospective Report',
+        cr:'Change Request (CR)', risk:'Risk Assessment Log', ncr:'Non-Conformance Report (NCR)', closeout:'Project Final Closeout Report',
+        resource:'Resource Performance & Allocation Report', ptw:'Safe Work Permit (PTW)', satisfaction:'Client Satisfaction Survey', dispute:'Amicable Dispute Settlement Memo',
+        budget:'Sprint Budget Sheet', kaizen:'Innovation & Kaizen Log', handover:'Knowledge Handover Memo', sla:'Internal Service Level Agreement (SLA)',
+        commsplan:'Stakeholder Communication Plan', mgmtreview:'Management Review Meeting Minutes', nda:'Non-Disclosure Agreement (NDA)', postmortem:'Post-Incident Review Report' } },
+    analytics: { title:'Analytics & Performance KPIs', velocity:'Team Velocity', burndown:'Sprint Burndown Chart', noData:'Not enough data yet — add sprints and tasks',
+      predictionTitle:'Simple Predictive Engine', onTrack:'✅ Sprint is on track', atRisk:'⚠️ Delay risk — remaining work exceeds the ideal line by', pts:'points',
+      whatifTitle:'"What-If" Resource Simulator', boostLabel:'Velocity increase/decrease (%)', whatifResult:'Projected days to finish remaining work:', whatifDaysLeft:'Days left in sprint:', whatifVerdict:'Verdict:',
+      whatifOk:'Sufficient to finish within sprint', whatifShort:'Not sufficient — sprint may slip' },
+    backup: { title:'Cloud Backup (Supabase)', url:'Supabase Project URL', key:'Anon Public Key', backupId:'Backup ID',
+      backupBtn:'Backup Now', restoreBtn:'Restore From Cloud', saveSettings:'Save Settings Locally', localNote:'All your data is saved automatically on this device (localStorage). Use this section for an optional cloud backup via Supabase.',
+      sqlNote:'Make sure the following table exists in your Supabase project before using this:', localBackupTitle:'Local Backup (File)', exportBtn:'Export as JSON File', importBtn:'Import from JSON File' },
+    warroom: { title:'Executive War Room', green:'Healthy', yellow:'Warning', red:'Critical', sprints:'Sprints', openRisks:'Open Risks', openNcrs:'Open NCRs' },
+    footer: 'All rights reserved — Eng. Wael Ali Oweiss Mahmoud © 2026 — Scrum Agile Platform'
+  }
+};
+function t(){ return T[state.lang]; }
+
+/* ---------------- helpers ---------------- */
+function activeProject(){ return state.data.projects.find(p => p.id === state.activeProjectId) || null; }
+function activeSprint(){ return state.data.sprints.find(s => s.id === state.activeSprintId && s.projectId === state.activeProjectId) || state.data.sprints.find(s => s.projectId === state.activeProjectId && s.status !== 'closed') || null; }
+function projectSprints(){ return state.data.sprints.filter(s => s.projectId === state.activeProjectId); }
+function esc(str){ return (str||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function showToast(msg){
+  state.toast = msg;
+  render();
+  setTimeout(()=>{ state.toast = null; render(); }, 2500);
+}
+
+/* ---------------- CRUD actions ---------------- */
+const actions = {
+  setLang(l){ state.lang = l; document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr'; render(); },
+  setTab(tab){ state.tab = tab; render(); },
+  setActiveProject(id){ state.activeProjectId = id; state.activeSprintId = null; render(); },
+
+  addProject(){
+    const nameAr = prompt(state.lang==='ar' ? 'اسم المشروع (عربي):' : 'Project name (Arabic):');
+    if (!nameAr) return;
+    const nameEn = prompt(state.lang==='ar' ? 'اسم المشروع (إنجليزي):' : 'Project name (English):') || nameAr;
+    const p = { id: uid('prj'), nameAr, nameEn, client:'', sector:'software', statusAr:'قيد التنفيذ', statusEn:'In Progress', progress:0, createdAt: todayISO() };
+    state.data.projects.push(p);
+    state.activeProjectId = p.id;
+    saveData(); render();
+  },
+  deleteProject(id){
+    if (!confirm(state.lang==='ar' ? 'حذف المشروع وكل بياناته المرتبطة؟' : 'Delete project and all related data?')) return;
+    state.data.projects = state.data.projects.filter(p => p.id !== id);
+    state.data.sprints = state.data.sprints.filter(s => s.projectId !== id);
+    state.data.backlog = state.data.backlog.filter(b => b.projectId !== id);
+    state.data.tasks = state.data.tasks.filter(tk => tk.projectId !== id);
+    if (state.activeProjectId === id) state.activeProjectId = state.data.projects[0] ? state.data.projects[0].id : null;
+    saveData(); render();
+  },
+  updateProjectField(id, field, value){
+    const p = state.data.projects.find(x=>x.id===id); if(!p) return;
+    p[field] = field === 'progress' ? Math.max(0,Math.min(100, Number(value)||0)) : value;
+    saveData(); render();
+  },
+
+  addBacklogItem(){
+    if (!state.activeProjectId) return;
+    const title = prompt(state.lang==='ar' ? 'عنوان البند:' : 'Item title:');
+    if (!title) return;
+    state.data.backlog.push({ id: uid('bl'), projectId: state.activeProjectId, title, points: 3, impact: 3, effort: 3, priority:'medium', createdAt: todayISO() });
+    saveData(); render();
+  },
+  deleteBacklogItem(id){
+    state.data.backlog = state.data.backlog.filter(b => b.id !== id);
+    saveData(); render();
+  },
+  updateBacklogField(id, field, value){
+    const b = state.data.backlog.find(x=>x.id===id); if(!b) return;
+    b[field] = ['points','impact','effort'].includes(field) ? Number(value)||0 : value;
+    saveData(); render();
+  },
+  moveBacklogToSprint(id){
+    const sprint = activeSprint();
+    if (!sprint) { showToast(t().backlog.noSprint); return; }
+    const b = state.data.backlog.find(x=>x.id===id); if(!b) return;
+    state.data.tasks.push({ id: uid('tsk'), projectId: state.activeProjectId, sprintId: sprint.id, title: b.title, points: b.points, status:'todo', owner:'', createdAt: todayISO() });
+    state.data.backlog = state.data.backlog.filter(x=>x.id!==id);
+    saveData(); render();
+  },
+
+  addSprint(){
+    if (!state.activeProjectId) return;
+    const name = prompt(state.lang==='ar' ? 'اسم السباق:' : 'Sprint name:', 'Sprint ' + (projectSprints().length+1));
+    if (!name) return;
+    const goal = prompt(state.lang==='ar' ? 'هدف السباق:' : 'Sprint goal:') || '';
+    const start = todayISO();
+    const end = new Date(Date.now() + 14*24*3600*1000).toISOString().slice(0,10);
+    const s = { id: uid('spr'), projectId: state.activeProjectId, name, goal, startDate:start, endDate:end, status:'active', createdAt: todayISO() };
+    state.data.sprints.push(s);
+    state.activeSprintId = s.id;
+    saveData(); render();
+  },
+  setActiveSprint(id){ state.activeSprintId = id; render(); },
+  closeSprint(id){
+    const s = state.data.sprints.find(x=>x.id===id); if(!s) return;
+    s.status = 'closed';
+    saveData(); render();
+  },
+  deleteTask(id){
+    state.data.tasks = state.data.tasks.filter(x=>x.id!==id);
+    saveData(); render();
+  },
+  addTask(){
+    const sprint = activeSprint();
+    if (!sprint) { showToast(t().sprint.noSprint); return; }
+    const title = prompt(state.lang==='ar' ? 'عنوان المهمة:' : 'Task title:');
+    if (!title) return;
+    state.data.tasks.push({ id: uid('tsk'), projectId: state.activeProjectId, sprintId: sprint.id, title, points: 1, status:'todo', owner:'', createdAt: todayISO() });
+    saveData(); render();
+  },
+  moveTask(id, status){
+    const tk = state.data.tasks.find(x=>x.id===id); if(!tk) return;
+    tk.status = status;
+    saveData(); render();
+  },
+
+  addStandup(){
+    if (!state.activeProjectId) return;
+    const member = prompt(state.lang==='ar' ? 'اسم عضو الفريق:' : 'Team member name:');
+    if (!member) return;
+    const yesterday = prompt(t().events.yesterday) || '';
+    const today_ = prompt(t().events.today) || '';
+    const blocker = prompt(t().events.blocker) || '';
+    state.data.standups.push({ id: uid('su'), projectId: state.activeProjectId, member, yesterday, today: today_, blocker, date: todayISO() });
+    saveData(); render();
+  },
+  deleteStandup(id){ state.data.standups = state.data.standups.filter(x=>x.id!==id); saveData(); render(); },
+
+  addRetro(){
+    if (!state.activeProjectId) return;
+    const wentWell = prompt(t().events.wentWell) || '';
+    const improve = prompt(t().events.improve) || '';
+    const actionItems = prompt(t().events.actionItems) || '';
+    state.data.retros.push({ id: uid('rt'), projectId: state.activeProjectId, wentWell, improve, actionItems, date: todayISO() });
+    saveData(); render();
+  },
+  deleteRetro(id){ state.data.retros = state.data.retros.filter(x=>x.id!==id); saveData(); render(); },
+
+  addRisk(){
+    if (!state.activeProjectId) return;
+    const desc = prompt(t().events.riskDesc); if(!desc) return;
+    const level = prompt((state.lang==='ar'?'المستوى (عالي/متوسط/منخفض):':'Level (high/medium/low):'), 'medium') || 'medium';
+    const mitigation = prompt(t().events.mitigation) || '';
+    state.data.risks.push({ id: uid('rk'), projectId: state.activeProjectId, desc, level, mitigation, date: todayISO() });
+    saveData(); render();
+  },
+  deleteRisk(id){ state.data.risks = state.data.risks.filter(x=>x.id!==id); saveData(); render(); },
+
+  addNcr(){
+    if (!state.activeProjectId) return;
+    const desc = prompt(t().events.ncrDesc); if(!desc) return;
+    const corrective = prompt(t().events.corrective) || '';
+    state.data.ncrs.push({ id: uid('ncr'), projectId: state.activeProjectId, desc, corrective, status:'open', date: todayISO() });
+    saveData(); render();
+  },
+  toggleNcr(id){
+    const n = state.data.ncrs.find(x=>x.id===id); if(!n) return;
+    n.status = n.status === 'open' ? 'closed' : 'open';
+    saveData(); render();
+  },
+  deleteNcr(id){ state.data.ncrs = state.data.ncrs.filter(x=>x.id!==id); saveData(); render(); },
+
+  setDocType(type){ state.docType = type; render(); },
+  generateDoc(type){
+    const proj = activeProject();
+    const sprint = activeSprint();
+    const doc = { id: uid('doc'), type, date: todayISO(), projectName: proj ? (state.lang==='ar'?proj.nameAr:proj.nameEn) : '', sprintName: sprint ? sprint.name : '' };
+    state.data.documents.unshift(doc);
+    saveData(); render();
+    setTimeout(()=>{ const el = document.getElementById('doc-'+doc.id); if(el) el.scrollIntoView({behavior:'smooth'}); }, 50);
+  },
+  deleteDoc(id){ state.data.documents = state.data.documents.filter(x=>x.id!==id); saveData(); render(); },
+
+  print(){ window.print(); },
+
+  saveSettings(){
+    const url = document.getElementById('sb-url').value.trim();
+    const key = document.getElementById('sb-key').value.trim();
+    const backupId = document.getElementById('sb-id').value.trim() || 'scrum-agile-default';
+    state.settings = { supabaseUrl:url, supabaseKey:key, backupId };
+    saveSettings(state.settings);
+    showToast(state.lang==='ar' ? 'تم حفظ الإعدادات' : 'Settings saved');
+  },
+  async backupToCloud(){
+    actions.saveSettings();
+    const { supabaseUrl, supabaseKey, backupId } = state.settings;
+    if (!supabaseUrl || !supabaseKey) { showToast(state.lang==='ar' ? 'أدخل رابط ومفتاح Supabase أولاً' : 'Enter Supabase URL and key first'); return; }
+    if (typeof window.supabase === 'undefined') { showToast(state.lang==='ar' ? 'تعذر تحميل مكتبة Supabase' : 'Supabase library failed to load'); return; }
+    try {
+      const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const { error } = await client.from('pmo_backups').upsert({ id: backupId, payload: state.data, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      showToast(state.lang==='ar' ? 'تم رفع النسخة الاحتياطية بنجاح' : 'Backup uploaded successfully');
+    } catch(e){
+      console.error(e);
+      showToast((state.lang==='ar' ? 'فشل الرفع: ' : 'Backup failed: ') + (e.message||e));
+    }
+  },
+  async restoreFromCloud(){
+    actions.saveSettings();
+    const { supabaseUrl, supabaseKey, backupId } = state.settings;
+    if (!supabaseUrl || !supabaseKey) { showToast(state.lang==='ar' ? 'أدخل رابط ومفتاح Supabase أولاً' : 'Enter Supabase URL and key first'); return; }
+    if (typeof window.supabase === 'undefined') { showToast(state.lang==='ar' ? 'تعذر تحميل مكتبة Supabase' : 'Supabase library failed to load'); return; }
+    if (!confirm(state.lang==='ar' ? 'سيتم استبدال البيانات المحلية الحالية. متابعة؟' : 'This will overwrite local data. Continue?')) return;
+    try {
+      const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const { data, error } = await client.from('pmo_backups').select('payload').eq('id', backupId).single();
+      if (error) throw error;
+      if (data && data.payload) {
+        state.data = Object.assign(defaultData(), data.payload);
+        state.activeProjectId = state.data.projects[0] ? state.data.projects[0].id : null;
+        saveData();
+        showToast(state.lang==='ar' ? 'تم الاسترجاع بنجاح' : 'Restored successfully');
+        render();
+      }
+    } catch(e){
+      console.error(e);
+      showToast((state.lang==='ar' ? 'فشل الاسترجاع: ' : 'Restore failed: ') + (e.message||e));
+    }
+  },
+
+  exportJSON(){
+    const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'scrum-agile-backup-' + todayISO() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    showToast(state.lang==='ar' ? 'تم تصدير الملف' : 'File exported');
+  },
+  triggerImport(){
+    const input = document.getElementById('sb-import-file');
+    if (input) input.click();
+  },
+  importJSONFile(file){
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        if (!confirm(state.lang==='ar' ? 'سيتم استبدال البيانات المحلية الحالية بمحتوى الملف. متابعة؟' : 'This will overwrite current local data with the file contents. Continue?')) return;
+        state.data = Object.assign(defaultData(), parsed);
+        state.activeProjectId = state.data.projects[0] ? state.data.projects[0].id : null;
+        saveData();
+        showToast(state.lang==='ar' ? 'تم الاستيراد بنجاح' : 'Imported successfully');
+        render();
+      } catch(err){
+        showToast(state.lang==='ar' ? 'ملف غير صالح' : 'Invalid file');
+      }
+    };
+    reader.readAsText(file);
+  },
+
+  setWhatifBoost(val){ state.whatifBoost = Number(val)||0; render(); }
+};
+
+/* ---------------- Lightweight search filter (no re-render, keeps focus) ---------------- */
+function wireSearch(inputId, itemSelector){
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    document.querySelectorAll(itemSelector).forEach(el => {
+      const txt = (el.dataset.search || '').toLowerCase();
+      el.style.display = (!q || txt.includes(q)) ? '' : 'none';
+    });
+  });
+}
+
+/* ---------------- Drag and drop for kanban ---------------- */
+let dragTaskId = null;
+function onDragStart(ev, id){ dragTaskId = id; ev.dataTransfer.effectAllowed = 'move'; }
+function onDragOver(ev){ ev.preventDefault(); }
+function onDrop(ev, status){ ev.preventDefault(); if (dragTaskId) { actions.moveTask(dragTaskId, status); dragTaskId = null; } }
+
+/* ---------------- Render ---------------- */
+function render(){
+  const T_ = t();
+  const app = document.getElementById('app');
+  const proj = activeProject();
+
+  app.innerHTML = `
+    <div class="min-h-screen flex flex-col">
+      ${renderHeader(T_)}
+      ${renderNav(T_)}
+      <main class="p-4 md:p-6 max-w-7xl mx-auto w-full flex-1 print-area">
+        ${renderProjectBar(T_, proj)}
+        ${renderTab(T_, proj)}
+      </main>
+      <footer class="mt-8 border-t border-slate-800 py-4 text-center text-xs text-slate-500 no-print">${T_.footer}</footer>
+      ${state.toast ? `<div class="fixed bottom-4 ${state.lang==='ar'?'left-4':'right-4'} bg-cyan-600 text-white px-4 py-2 rounded shadow-lg no-print z-50">${esc(state.toast)}</div>` : ''}
+    </div>
+  `;
+  attachHandlers();
+  if (state.tab === 'analytics') drawCharts();
+}
+
+function renderHeader(T_){
+  return `
+  <header class="bg-slate-950 border-b border-slate-800 p-4 flex flex-col md:flex-row justify-between items-center gap-3 no-print">
+    <div>
+      <h1 class="text-2xl font-bold text-cyan-400">${T_.appTitle}</h1>
+      <p class="text-sm text-slate-400">${T_.appSubtitle}</p>
+      <span class="inline-block mt-1 text-xs bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-800">${T_.architect}</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-lang" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded text-sm border border-slate-700 transition">🌐 ${T_.langSwitch}</button>
+      <button id="btn-print" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-1.5 rounded text-sm font-medium shadow transition">🖨️ ${T_.printBtn}</button>
+    </div>
+  </header>`;
+}
+
+function renderNav(T_){
+  const tabs = ['dashboard','backlog','sprint','events','docs','analytics','warroom','backup'];
+  return `
+  <nav class="bg-slate-900 border-b border-slate-800 px-4 md:px-6 py-3 flex gap-2 overflow-x-auto no-print">
+    ${tabs.map(tb => `
+      <button data-tab="${tb}" class="tab-btn px-4 py-2 rounded text-sm font-medium transition whitespace-nowrap ${state.tab===tb ? 'bg-cyan-500 text-slate-950 font-bold shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">${T_.nav[tb]}</button>
+    `).join('')}
+  </nav>`;
+}
+
+function renderProjectBar(T_, proj){
+  if (!state.data.projects.length) return '';
+  return `
+  <div class="mb-4 flex flex-wrap items-center gap-2 no-print">
+    <span class="text-xs text-slate-500">${state.lang==='ar'?'المشروع النشط:':'Active project:'}</span>
+    <select id="active-project-select" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm">
+      ${state.data.projects.map(p => `<option value="${p.id}" ${p.id===state.activeProjectId?'selected':''}>${esc(state.lang==='ar'?p.nameAr:p.nameEn)}</option>`).join('')}
+    </select>
+  </div>`;
+}
+
+function renderTab(T_, proj){
+  switch(state.tab){
+    case 'dashboard': return renderDashboard(T_);
+    case 'backlog': return renderBacklog(T_, proj);
+    case 'sprint': return renderSprint(T_, proj);
+    case 'events': return renderEvents(T_, proj);
+    case 'docs': return renderDocs(T_, proj);
+    case 'analytics': return renderAnalytics(T_, proj);
+    case 'warroom': return renderWarRoom(T_);
+    case 'backup': return renderBackup(T_);
+    default: return '';
+  }
+}
+
+function card(inner, extra){ return `<div class="bg-slate-950 border border-slate-800 rounded-xl p-5 md:p-6 shadow-xl ${extra||''}">${inner}</div>`; }
+
+function renderDashboard(T_){
+  const rows = state.data.projects.map(p => `
+    <tr class="border-b border-slate-900 hover:bg-slate-900/50 transition">
+      <td class="py-3 px-3">
+        <input data-id="${p.id}" data-field="${state.lang==='ar'?'nameAr':'nameEn'}" class="inline-edit bg-transparent border-b border-transparent hover:border-slate-700 focus:border-cyan-500 outline-none w-full" value="${esc(state.lang==='ar'?p.nameAr:p.nameEn)}"/>
+      </td>
+      <td class="py-3 px-3">
+        <select data-id="${p.id}" data-field="sector" class="inline-edit bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs">
+          ${Object.keys(T_.sectors).map(s=>`<option value="${s}" ${p.sector===s?'selected':''}>${T_.sectors[s]}</option>`).join('')}
+        </select>
+      </td>
+      <td class="py-3 px-3">
+        <input data-id="${p.id}" data-field="${state.lang==='ar'?'statusAr':'statusEn'}" class="inline-edit bg-transparent border-b border-transparent hover:border-slate-700 focus:border-cyan-500 outline-none w-full text-xs" value="${esc(state.lang==='ar'?p.statusAr:p.statusEn)}"/>
+      </td>
+      <td class="py-3 px-3 w-48">
+        <div class="flex items-center gap-2">
+          <input type="range" min="0" max="100" data-id="${p.id}" data-field="progress" class="inline-edit-range flex-1" value="${p.progress}"/>
+          <span class="text-xs text-slate-400 w-10">${p.progress}%</span>
+        </div>
+      </td>
+      <td class="py-3 px-3 whitespace-nowrap">
+        <button data-id="${p.id}" class="btn-set-active text-xs bg-slate-800 hover:bg-slate-700 text-cyan-400 px-2.5 py-1 rounded border border-slate-700 ${p.id===state.activeProjectId?'ring-1 ring-cyan-500':''}">${p.id===state.activeProjectId ? '✓ '+T_.dashboard.activeTag : T_.dashboard.selectActive}</button>
+        <button data-id="${p.id}" class="btn-del-project text-xs bg-red-950 hover:bg-red-900 text-red-300 px-2.5 py-1 rounded border border-red-900 ml-1">${T_.common.delete}</button>
+      </td>
+    </tr>
+  `).join('');
+
+  return card(`
+    <div class="flex justify-between items-center mb-6 flex-wrap gap-2">
+      <h2 class="text-xl font-bold text-cyan-300">${T_.dashboard.title}</h2>
+      <button id="btn-add-project" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm transition">+ ${T_.dashboard.addProject}</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-start border-collapse">
+        <thead><tr class="border-b border-slate-800 text-slate-400 text-xs">
+          <th class="py-2 px-3 text-start">${T_.common.name}</th>
+          <th class="py-2 px-3 text-start">${T_.common.sector}</th>
+          <th class="py-2 px-3 text-start">${T_.common.status}</th>
+          <th class="py-2 px-3 text-start">${T_.common.progress}</th>
+          <th class="py-2 px-3 text-start">${T_.common.actions}</th>
+        </tr></thead>
+        <tbody>${rows || `<tr><td colspan="5" class="py-8 text-center text-slate-500">${T_.common.none}</td></tr>`}</tbody>
+      </table>
+    </div>
+  `);
+}
+
+function renderBacklog(T_, proj){
+  const items = state.data.backlog.filter(b => b.projectId === state.activeProjectId).sort((a,b)=> (b.impact/b.effort) - (a.impact/a.effort));
+  const rows = items.map(b => `
+    <tr class="border-b border-slate-900 hover:bg-slate-900/50 backlog-row" data-search="${esc(b.title.toLowerCase())}">
+      <td class="py-2 px-3"><input data-id="${b.id}" data-field="title" class="inline-edit bg-transparent border-b border-transparent hover:border-slate-700 focus:border-cyan-500 outline-none w-full" value="${esc(b.title)}"/></td>
+      <td class="py-2 px-3 w-20"><input type="number" min="1" max="13" data-id="${b.id}" data-field="points" class="inline-edit bg-slate-800 border border-slate-700 rounded px-2 py-1 w-16 text-xs" value="${b.points}"/></td>
+      <td class="py-2 px-3 w-20"><input type="number" min="1" max="5" data-id="${b.id}" data-field="impact" class="inline-edit bg-slate-800 border border-slate-700 rounded px-2 py-1 w-16 text-xs" value="${b.impact}"/></td>
+      <td class="py-2 px-3 w-20"><input type="number" min="1" max="5" data-id="${b.id}" data-field="effort" class="inline-edit bg-slate-800 border border-slate-700 rounded px-2 py-1 w-16 text-xs" value="${b.effort}"/></td>
+      <td class="py-2 px-3 whitespace-nowrap">
+        <button data-id="${b.id}" class="btn-to-sprint text-xs bg-cyan-950 hover:bg-cyan-900 text-cyan-300 px-2.5 py-1 rounded border border-cyan-800">${T_.backlog.moveToSprint}</button>
+        <button data-id="${b.id}" class="btn-del-backlog text-xs bg-red-950 hover:bg-red-900 text-red-300 px-2.5 py-1 rounded border border-red-900 ml-1">${T_.common.delete}</button>
+      </td>
+    </tr>
+  `).join('');
+
+  return card(`
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+      <h2 class="text-xl font-bold text-cyan-300">${T_.backlog.title}</h2>
+      <button id="btn-add-backlog" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm transition">+ ${T_.backlog.addItem}</button>
+    </div>
+    <input id="backlog-search-input" type="text" placeholder="${T_.backlog.search}" class="w-full mb-4 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"/>
+    <div class="overflow-x-auto">
+      <table class="w-full text-start border-collapse">
+        <thead><tr class="border-b border-slate-800 text-slate-400 text-xs">
+          <th class="py-2 px-3 text-start">${T_.common.title}</th>
+          <th class="py-2 px-3 text-start">${T_.common.points}</th>
+          <th class="py-2 px-3 text-start">${T_.backlog.impact}</th>
+          <th class="py-2 px-3 text-start">${T_.backlog.effort}</th>
+          <th class="py-2 px-3 text-start">${T_.common.actions}</th>
+        </tr></thead>
+        <tbody>${rows || `<tr><td colspan="5" class="py-8 text-center text-slate-500">${T_.common.none}</td></tr>`}</tbody>
+      </table>
+    </div>
+  `);
+}
+
+function renderSprint(T_, proj){
+  const sprints = projectSprints();
+  const sprint = activeSprint();
+  const cols = ['todo','inprogress','review','done'];
+  const tasksFor = (status) => sprint ? state.data.tasks.filter(tk => tk.sprintId === sprint.id && tk.status === status) : [];
+
+  const sprintPicker = sprints.length ? `
+    <select id="sprint-select" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm">
+      ${sprints.map(s => `<option value="${s.id}" ${sprint && s.id===sprint.id?'selected':''}>${esc(s.name)} ${s.status==='closed' ? (state.lang==='ar'?'(مغلق)':'(closed)') : ''}</option>`).join('')}
+    </select>
+  ` : '';
+
+  const board = sprint ? `
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+      ${cols.map(c => `
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 kanban-col" data-col="${c}">
+          <h4 class="text-sm font-bold text-slate-300 mb-3">${T_.sprint.cols[c]} <span class="text-slate-500">(${tasksFor(c).length})</span></h4>
+          <div class="space-y-2 min-h-[100px]">
+            ${tasksFor(c).map(tk => `
+              <div draggable="true" data-task="${tk.id}" data-search="${esc(tk.title.toLowerCase())}" class="task-card bg-slate-800 border border-slate-700 rounded p-2 text-sm cursor-move hover:border-cyan-600">
+                <div class="flex justify-between items-start gap-1">
+                  <span>${esc(tk.title)}</span>
+                  <button data-id="${tk.id}" class="btn-del-task text-red-400 hover:text-red-300 text-xs">✕</button>
+                </div>
+                <div class="text-xs text-slate-500 mt-1">⭐ ${tk.points}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  ` : `<div class="text-center text-slate-500 py-12">${T_.sprint.noSprint}</div>`;
+
+  return card(`
+    <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+      <h2 class="text-xl font-bold text-cyan-300">${T_.sprint.title}</h2>
+      <div class="flex items-center gap-2 flex-wrap">
+        ${sprintPicker}
+        <button id="btn-add-sprint" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded text-sm transition">+ ${T_.sprint.newSprint}</button>
+        ${sprint ? `<button id="btn-add-task" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm transition">+ Task</button>` : ''}
+        ${sprint && sprint.status!=='closed' ? `<button id="btn-close-sprint" data-id="${sprint.id}" class="bg-amber-800 hover:bg-amber-700 text-white px-3 py-1.5 rounded text-sm transition">${state.lang==='ar'?'إغلاق السباق':'Close Sprint'}</button>` : ''}
+      </div>
+    </div>
+    ${sprint ? `<p class="text-sm text-slate-400 mb-1">🎯 ${esc(sprint.goal||'')}</p><p class="text-xs text-slate-500">${sprint.startDate} → ${sprint.endDate} ${sprintCountdownLabel(T_, sprint)}</p>` : ''}
+    ${sprint ? autoSuggestBanner(T_, sprint) : ''}
+    ${sprint ? `<input id="task-search-input" type="text" placeholder="${T_.sprint.search}" class="w-full mt-3 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"/>` : ''}
+    ${board}
+  `);
+}
+
+function sprintCountdownLabel(T_, sprint){
+  if (sprint.status === 'closed') return '';
+  const end = new Date(sprint.endDate); const now = new Date(todayISO());
+  const diffDays = Math.round((end - now) / (24*3600*1000));
+  if (diffDays >= 0) return `• ${T_.sprint.daysLeft}: ${diffDays}`;
+  return `• <span class="text-red-400">${T_.sprint.daysOver} ${Math.abs(diffDays)} ${T_.sprint.daysUnit}</span>`;
+}
+
+function autoSuggestBanner(T_, sprint){
+  if (sprint.status === 'closed') return '';
+  const tasks = state.data.tasks.filter(tk => tk.sprintId === sprint.id);
+  if (!tasks.length) return '';
+  const allDone = tasks.every(tk => tk.status === 'done');
+  if (!allDone) return '';
+  return `<div class="mt-3 bg-emerald-950 border border-emerald-800 text-emerald-300 text-sm rounded px-3 py-2">${T_.sprint.autoSuggest}</div>`;
+}
+
+function renderEvents(T_, proj){
+  const standups = state.data.standups.filter(s=>s.projectId===state.activeProjectId).slice().reverse();
+  const retros = state.data.retros.filter(r=>r.projectId===state.activeProjectId).slice().reverse();
+  const risks = state.data.risks.filter(r=>r.projectId===state.activeProjectId).slice().reverse();
+  const ncrs = state.data.ncrs.filter(n=>n.projectId===state.activeProjectId).slice().reverse();
+
+  const levelColor = (lvl) => lvl==='high' ? 'bg-red-950 text-red-300 border-red-800' : lvl==='low' ? 'bg-emerald-950 text-emerald-300 border-emerald-800' : 'bg-amber-950 text-amber-300 border-amber-800';
+  const levelLabel = (lvl) => lvl==='high' ? T_.events.high : lvl==='low' ? T_.events.low : T_.events.medium;
+
+  return `
+  <div class="space-y-6">
+    ${card(`
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-cyan-300">${T_.events.standupLog}</h3>
+        <button id="btn-add-standup" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm">+ ${T_.events.addStandup}</button>
+      </div>
+      <div class="space-y-2">
+        ${standups.map(s => `
+          <div class="bg-slate-900 border border-slate-800 rounded p-3 text-sm flex justify-between gap-2">
+            <div>
+              <div class="font-bold text-slate-200">${esc(s.member)} <span class="text-xs text-slate-500">— ${s.date}</span></div>
+              <div class="text-slate-400 text-xs mt-1">✅ ${esc(s.yesterday)}</div>
+              <div class="text-slate-400 text-xs">➡️ ${esc(s.today)}</div>
+              ${s.blocker ? `<div class="text-amber-400 text-xs">🚧 ${esc(s.blocker)}</div>` : ''}
+            </div>
+            <button data-id="${s.id}" class="btn-del-standup text-red-400 hover:text-red-300 text-xs h-fit">✕</button>
+          </div>
+        `).join('') || `<p class="text-slate-500 text-sm">${T_.common.none}</p>`}
+      </div>
+    `)}
+
+    ${card(`
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-cyan-300">${T_.events.retroLog}</h3>
+        <button id="btn-add-retro" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm">+ ${T_.events.addRetro}</button>
+      </div>
+      <div class="space-y-2">
+        ${retros.map(r => `
+          <div class="bg-slate-900 border border-slate-800 rounded p-3 text-sm flex justify-between gap-2">
+            <div>
+              <div class="text-xs text-slate-500">${r.date}</div>
+              <div class="text-emerald-400 text-xs mt-1">👍 ${esc(r.wentWell)}</div>
+              <div class="text-amber-400 text-xs">🔧 ${esc(r.improve)}</div>
+              <div class="text-cyan-400 text-xs">➡️ ${esc(r.actionItems)}</div>
+            </div>
+            <button data-id="${r.id}" class="btn-del-retro text-red-400 hover:text-red-300 text-xs h-fit">✕</button>
+          </div>
+        `).join('') || `<p class="text-slate-500 text-sm">${T_.common.none}</p>`}
+      </div>
+    `)}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      ${card(`
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-cyan-300">${T_.events.riskLog}</h3>
+          <button id="btn-add-risk" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm">+ ${T_.events.addRisk}</button>
+        </div>
+        <div class="space-y-2">
+          ${risks.map(r => `
+            <div class="bg-slate-900 border border-slate-800 rounded p-3 text-sm flex justify-between gap-2">
+              <div>
+                <span class="text-xs px-2 py-0.5 rounded border ${levelColor(r.level)}">${levelLabel(r.level)}</span>
+                <div class="text-slate-300 text-xs mt-1">${esc(r.desc)}</div>
+                <div class="text-slate-500 text-xs">${esc(r.mitigation)}</div>
+              </div>
+              <button data-id="${r.id}" class="btn-del-risk text-red-400 hover:text-red-300 text-xs h-fit">✕</button>
+            </div>
+          `).join('') || `<p class="text-slate-500 text-sm">${T_.common.none}</p>`}
+        </div>
+      `)}
+      ${card(`
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-cyan-300">${T_.events.ncrLog}</h3>
+          <button id="btn-add-ncr" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm">+ ${T_.events.addNcr}</button>
+        </div>
+        <div class="space-y-2">
+          ${ncrs.map(n => `
+            <div class="bg-slate-900 border border-slate-800 rounded p-3 text-sm flex justify-between gap-2">
+              <div>
+                <button data-id="${n.id}" class="btn-toggle-ncr text-xs px-2 py-0.5 rounded border ${n.status==='open' ? 'bg-red-950 text-red-300 border-red-800' : 'bg-emerald-950 text-emerald-300 border-emerald-800'}">${n.status==='open' ? T_.events.ncrOpen : T_.events.ncrClosed}</button>
+                <div class="text-slate-300 text-xs mt-1">${esc(n.desc)}</div>
+                <div class="text-slate-500 text-xs">${esc(n.corrective)}</div>
+              </div>
+              <button data-id="${n.id}" class="btn-del-ncr text-red-400 hover:text-red-300 text-xs h-fit">✕</button>
+            </div>
+          `).join('') || `<p class="text-slate-500 text-sm">${T_.common.none}</p>`}
+        </div>
+      `)}
+    </div>
+  </div>
+  `;
+}
+
+function docTemplate(type, proj, sprint, T_){
+  const p = proj ? (state.lang==='ar'?proj.nameAr:proj.nameEn) : '—';
+  const s = sprint ? sprint.name : '—';
+  const d = todayISO();
+  const arch = 'م/ وائل علي عويس محمود';
+  const templates = {
+    charter: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.charter}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${state.lang==='ar'?'السباق':'Sprint'}:</b> ${esc(s)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'الهدف الاستراتيجي:' : 'Strategic goal:'} ${sprint ? esc(sprint.goal||'') : '—'}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'المعتمدون: مالك المنتج وسكرام ماستر' : 'Approved by: Product Owner & Scrum Master'}</p>
+    `,
+    blockers: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.blockers}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <ul class="list-disc ${state.lang==='ar'?'pr-5':'pl-5'} mt-2 space-y-1">
+        ${state.data.standups.filter(x=>x.projectId===state.activeProjectId && x.blocker).slice(-10).map(x=>`<li>${esc(x.member)}: ${esc(x.blocker)}</li>`).join('') || `<li>${state.lang==='ar'?'لا توجد عوائق مسجلة':'No blockers logged'}</li>`}
+      </ul>
+    `,
+    acceptance: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.acceptance}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${state.lang==='ar'?'السباق':'Sprint'}:</b> ${esc(s)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'تم فحص ومراجعة كافة المخرجات والتأكد من مطابقتها لمعايير الجودة المعتمدة.' : 'All deliverables have been reviewed and confirmed compliant with approved quality standards.'}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'اعتماد مالك المنتج: ____________' : 'Product Owner approval: ____________'}</p>
+    `,
+    retro: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.retro}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      ${(()=>{ const r = state.data.retros.filter(x=>x.projectId===state.activeProjectId).slice(-1)[0];
+        return r ? `<p class="mt-2">👍 ${esc(r.wentWell)}</p><p>🔧 ${esc(r.improve)}</p><p>➡️ ${esc(r.actionItems)}</p>` : `<p class="mt-2 text-slate-500">${T_.common.none}</p>`; })()}
+    `,
+    cr: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.cr}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'وصف التغيير المطلوب: ____________________' : 'Requested change description: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'التأثير على الزمن والتكلفة: ____________________' : 'Impact on schedule & cost: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'القرار: [ ] موافقة  [ ] مرفوض' : 'Decision: [ ] Approved  [ ] Rejected'}</p>
+    `,
+    risk: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.risk}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <table class="w-full text-xs mt-2 border-collapse"><thead><tr class="border-b border-slate-700"><th class="text-start py-1">${T_.events.riskLevel}</th><th class="text-start py-1">${T_.events.riskDesc}</th><th class="text-start py-1">${T_.events.mitigation}</th></tr></thead>
+      <tbody>${state.data.risks.filter(x=>x.projectId===state.activeProjectId).map(r=>`<tr class="border-b border-slate-800"><td class="py-1">${r.level}</td><td class="py-1">${esc(r.desc)}</td><td class="py-1">${esc(r.mitigation)}</td></tr>`).join('') || `<tr><td colspan="3" class="py-2 text-slate-500">${T_.common.none}</td></tr>`}</tbody></table>
+    `,
+    ncr: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.ncr}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <table class="w-full text-xs mt-2 border-collapse"><thead><tr class="border-b border-slate-700"><th class="text-start py-1">${T_.common.status}</th><th class="text-start py-1">${T_.events.ncrDesc}</th><th class="text-start py-1">${T_.events.corrective}</th></tr></thead>
+      <tbody>${state.data.ncrs.filter(x=>x.projectId===state.activeProjectId).map(n=>`<tr class="border-b border-slate-800"><td class="py-1">${n.status}</td><td class="py-1">${esc(n.desc)}</td><td class="py-1">${esc(n.corrective)}</td></tr>`).join('') || `<tr><td colspan="3" class="py-2 text-slate-500">${T_.common.none}</td></tr>`}</tbody></table>
+    `,
+    closeout: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.closeout}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'تم تسليم كافة المخرجات والمستهدفات الاستراتيجية بنسبة مطابقة للمعايير المعتمدة.' : 'All deliverables and strategic targets have been delivered in line with approved standards.'}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'المؤسس والمدير التنفيذي:' : 'Founder & Chief Architect:'} ${arch}</p>
+    `,
+    resource: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.resource}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'اسم العضو: ____________ | إجمالي المهام الموكلة: ____ | المنجزة بنجاح: ____' : 'Member name: ____________ | Assigned tasks: ____ | Successfully completed: ____'}</p>
+      <p>${state.lang==='ar' ? 'معدل الأداء الفعلي (Efficiency Rate): ____%' : 'Efficiency Rate: ____%'}</p>
+      <p>${state.lang==='ar' ? 'ملاحظات عبء العمل: ____________________' : 'Workload notes: ____________________'}</p>
+    `,
+    ptw: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.ptw}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'نوع النشاط المرخص: ____________________' : 'Authorized activity type: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'اشتراطات السلامة: ____________________' : 'Safety requirements: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'مدة الصلاحية: من ____ إلى ____ | اعتماد مسؤول السلامة: ____________' : 'Validity: from ____ to ____ | HSE Officer approval: ____________'}</p>
+    `,
+    satisfaction: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.satisfaction}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${state.lang==='ar'?'السباق':'Sprint'}:</b> ${esc(s)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'مطابقة المخرجات للمتطلبات: __ / 5 | الالتزام بالجدول الزمني: __ / 5 | احترافية الفريق: __ / 5' : 'Deliverable match: __ / 5 | Timeliness: __ / 5 | Team professionalism: __ / 5'}</p>
+      <p>${state.lang==='ar' ? 'ملاحظات العميل: ____________________' : 'Client notes: ____________________'}</p>
+    `,
+    dispute: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.dispute}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'موضوع النزاع: ____________________' : 'Dispute subject: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'بنود التسوية المتفق عليها: ____________________' : 'Agreed settlement terms: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'توقيع الأطراف: ____________ / ____________' : 'Signatures: ____________ / ____________'}</p>
+    `,
+    budget: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.budget}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${state.lang==='ar'?'السباق':'Sprint'}:</b> ${esc(s)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'التكلفة التقديرية المعتمدة: ______ | أجور الفريق: ______ | أدوات وتشغيل: ______ | احتياطي المخاطر (10%): ______' : 'Approved budget: ______ | Team cost: ______ | Tools & ops: ______ | Risk reserve (10%): ______'}</p>
+      <p>${state.lang==='ar' ? 'حالة الميزانية: [ ] ضمن الحدود  [ ] تتطلب مراجعة' : 'Budget status: [ ] Within limits  [ ] Needs review'}</p>
+    `,
+    kaizen: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.kaizen}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'مقدم المقترح: ____________ | وصف فكرة التحسين: ____________________' : 'Submitted by: ____________ | Improvement idea: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'القرار: [ ] معتمد للتنفيذ  [ ] قيد الدراسة' : 'Decision: [ ] Approved  [ ] Under study'}</p>
+    `,
+    handover: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.handover}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'الجهة المسلمة: ____________ ➔ الجهة المستلمة: ____________' : 'From: ____________ ➔ To: ____________'}</p>
+      <p>${state.lang==='ar' ? 'بنود المعرفة المنقولة: بيانات الوصول، التوثيق، المهام المفتوحة' : 'Transferred knowledge: access data, documentation, open tasks'}</p>
+      <p>${state.lang==='ar' ? 'توقيع المستلم: ____________' : 'Recipient signature: ____________'}</p>
+    `,
+    sla: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.sla}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'مزود الخدمة: ____________ | المستفيد: ____________' : 'Service provider: ____________ | Beneficiary: ____________'}</p>
+      <p>${state.lang==='ar' ? 'الاستجابة للطوارئ: ساعتين | الطلبات الاعتيادية: 24 ساعة' : 'Critical response: 2 hours | Routine requests: 24 hours'}</p>
+    `,
+    commsplan: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.commsplan}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'الإدارة العليا: لوحة أداء شهرية | العميل: مراجعة السباق دورياً | الفريق: اجتماع يومي' : 'Executives: monthly dashboard | Client: periodic sprint review | Team: daily standup'}</p>
+    `,
+    mgmtreview: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.mgmtreview}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'أبرز الموضوعات: تقييم الإنجاز، مراجعة الحوكمة، اعتماد الميزانيات' : 'Key topics: progress review, governance review, budget approvals'}</p>
+      <p>${state.lang==='ar' ? 'المؤسس والمدير التنفيذي:' : 'Founder & Chief Architect:'} ${arch}</p>
+    `,
+    nda: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.nda}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'أقر الموقع أدناه بالحفاظ على سرية كافة البيانات والتصاميم والأكواد الخاصة بالمنصة أو عملائها، وعدم مشاركتها مع أي طرف ثالث.' : 'The undersigned agrees to keep all platform data, designs, and code confidential and not to share it with third parties.'}</p>
+      <p>${state.lang==='ar' ? 'توقيع الطرف الملتزم: ____________' : 'Signature: ____________'}</p>
+    `,
+    postmortem: `
+      <h4 class="font-bold text-cyan-300 mb-2">${T_.docs.types.postmortem}</h4>
+      <p><b>${state.lang==='ar'?'المشروع':'Project'}:</b> ${esc(p)} | <b>${T_.common.date}:</b> ${d}</p>
+      <p class="mt-2">${state.lang==='ar' ? 'وصف الحادثة: ____________________ | الأسباب الجذرية: ____________________' : 'Incident description: ____________________ | Root cause: ____________________'}</p>
+      <p>${state.lang==='ar' ? 'الخطوات الوقائية: ____________________' : 'Preventive actions: ____________________'}</p>
+    `
+  };
+  return templates[type] || '';
+}
+
+function renderDocs(T_, proj){
+  const sprint = activeSprint();
+  const types = Object.keys(T_.docs.types);
+  const docs = state.data.documents.filter(d => true);
+
+  return `
+  <div class="space-y-6">
+    ${card(`
+      <h2 class="text-xl font-bold text-cyan-300 mb-4">${T_.docs.title}</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+        ${types.map(ty => `<button data-type="${ty}" class="btn-gen-doc bg-slate-800 hover:bg-cyan-900 border border-slate-700 rounded px-3 py-2 text-xs text-start">${T_.docs.types[ty]}</button>`).join('')}
+      </div>
+    `)}
+    ${docs.length ? `<h3 class="text-sm font-bold text-slate-400 px-1">${T_.docs.generated}</h3>` : ''}
+    <div class="space-y-4">
+      ${docs.map(doc => `
+        <div id="doc-${doc.id}" class="bg-white text-slate-900 rounded-xl p-5 shadow-xl relative">
+          <button data-id="${doc.id}" class="btn-del-doc no-print absolute top-2 ${state.lang==='ar'?'left-2':'right-2'} text-red-500 text-xs bg-red-50 px-2 py-1 rounded">✕</button>
+          ${docTemplate(doc.type, proj, sprint, T_).replace(/text-cyan-300/g,'text-cyan-700').replace(/text-slate-500/g,'text-slate-500')}
+          <div class="text-xs text-slate-400 mt-4 border-t pt-2">${arch_line()}</div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+  `;
+}
+function arch_line(){ return state.lang==='ar' ? 'المؤسس ورئيس التطوير: م/ وائل علي عويس محمود' : 'Founder & Chief Architect: Eng. Wael Ali Oweiss Mahmoud'; }
+
+function sprintMetrics(sprint){
+  if (!sprint) return null;
+  const tasks = state.data.tasks.filter(tk=>tk.sprintId===sprint.id);
+  const totalPts = tasks.reduce((a,b)=>a+(b.points||0),0);
+  const donePts = tasks.filter(tk=>tk.status==='done').reduce((a,b)=>a+(b.points||0),0);
+  const remainingPts = totalPts - donePts;
+  const start = new Date(sprint.startDate), end = new Date(sprint.endDate), now = new Date(todayISO());
+  const totalDays = Math.max(1, Math.round((end-start)/(24*3600*1000)));
+  const elapsedDays = Math.max(0, Math.min(totalDays, Math.round((now-start)/(24*3600*1000))));
+  const daysLeft = Math.max(0, totalDays - elapsedDays);
+  const idealRemaining = Math.max(0, Math.round(totalPts - (totalPts/totalDays)*elapsedDays));
+  const avgVelocityPerDay = elapsedDays > 0 ? donePts / elapsedDays : 0;
+  return { totalPts, donePts, remainingPts, totalDays, elapsedDays, daysLeft, idealRemaining, avgVelocityPerDay };
+}
+
+function whatifResultHTML(T_, m, boost){
+  const adjVelocity = m.avgVelocityPerDay * (1 + boost/100);
+  const projectedDays = adjVelocity > 0 ? Math.ceil(m.remainingPts / adjVelocity) : (m.remainingPts > 0 ? '∞' : 0);
+  const ok = typeof projectedDays === 'number' && projectedDays <= m.daysLeft;
+  return `
+    <p>${T_.analytics.whatifResult} <b>${projectedDays}</b></p>
+    <p>${T_.analytics.whatifDaysLeft} <b>${m.daysLeft}</b></p>
+    <p>${T_.analytics.whatifVerdict} <span class="${ok?'text-emerald-400':'text-red-400'}">${ok ? T_.analytics.whatifOk : T_.analytics.whatifShort}</span></p>
+  `;
+}
+function updateWhatifResult(boost){
+  state.whatifBoost = boost;
+  const sprint = activeSprint();
+  const m = sprintMetrics(sprint);
+  const box = document.getElementById('whatif-result-box');
+  if (box && m) box.innerHTML = whatifResultHTML(t(), m, boost);
+  const label = document.getElementById('whatif-boost-value');
+  if (label) label.textContent = boost + '%';
+}
+
+function renderAnalytics(T_, proj){
+  const sprint = activeSprint();
+  const m = sprintMetrics(sprint);
+  const predictionCard = m ? card(`
+    <h3 class="font-bold text-cyan-300 mb-2">${T_.analytics.predictionTitle}</h3>
+    <p class="text-sm ${m.remainingPts > m.idealRemaining ? 'text-amber-400' : 'text-emerald-400'}">
+      ${m.remainingPts > m.idealRemaining ? T_.analytics.atRisk + ' ' + (m.remainingPts - m.idealRemaining) + ' ' + T_.analytics.pts : T_.analytics.onTrack}
+    </p>
+  `) : '';
+  const whatifCard = m ? card(`
+    <h3 class="font-bold text-cyan-300 mb-3">${T_.analytics.whatifTitle}</h3>
+    <label class="text-xs text-slate-500">${T_.analytics.boostLabel}: <span id="whatif-boost-value">${state.whatifBoost}%</span></label>
+    <input id="whatif-boost-input" type="range" min="-50" max="100" value="${state.whatifBoost}" class="w-full mt-1"/>
+    <div class="text-sm text-slate-300 mt-3" id="whatif-result-box">${whatifResultHTML(T_, m, state.whatifBoost)}</div>
+  `) : '';
+  return `
+  <div class="space-y-6">
+    ${card(`<h3 class="font-bold text-cyan-300 mb-4">${T_.analytics.velocity}</h3><canvas id="chart-velocity" height="90"></canvas>`)}
+    ${card(`<h3 class="font-bold text-cyan-300 mb-4">${T_.analytics.burndown}</h3><canvas id="chart-burndown" height="90"></canvas>`)}
+    ${predictionCard}
+    ${whatifCard}
+  </div>
+  `;
+}
+
+let velocityChartInstance=null, burndownChartInstance=null;
+function drawCharts(){
+  const sprints = projectSprints();
+  const T_ = t();
+  if (!sprints.length){
+    return;
+  }
+  // Velocity: completed points per sprint
+  const velLabels = sprints.map(s=>s.name);
+  const velData = sprints.map(s => state.data.tasks.filter(tk=>tk.sprintId===s.id && tk.status==='done').reduce((a,b)=>a+(b.points||0),0));
+  const velCtx = document.getElementById('chart-velocity');
+  if (velCtx){
+    if (velocityChartInstance) velocityChartInstance.destroy();
+    velocityChartInstance = new Chart(velCtx, {
+      type:'bar',
+      data:{ labels:velLabels, datasets:[{ label: T_.analytics.velocity, data: velData, backgroundColor:'#22d3ee' }] },
+      options:{ plugins:{legend:{labels:{color:'#cbd5e1'}}}, scales:{ x:{ticks:{color:'#94a3b8'}}, y:{ticks:{color:'#94a3b8'}} } }
+    });
+  }
+  // Burndown: for active sprint, remaining points per status snapshot (simplified: today snapshot only, ideal line)
+  const sprint = activeSprint();
+  const burnCtx = document.getElementById('chart-burndown');
+  if (burnCtx && sprint){
+    const tasks = state.data.tasks.filter(tk=>tk.sprintId===sprint.id);
+    const totalPts = tasks.reduce((a,b)=>a+(b.points||0),0);
+    const remainingPts = tasks.filter(tk=>tk.status!=='done').reduce((a,b)=>a+(b.points||0),0);
+    const start = new Date(sprint.startDate), end = new Date(sprint.endDate);
+    const days = Math.max(1, Math.round((end-start)/(24*3600*1000)));
+    const idealLabels = []; const idealData = []; const actualData = [];
+    for (let i=0;i<=days;i++){
+      idealLabels.push('D'+i);
+      idealData.push(Math.max(0, Math.round(totalPts - (totalPts/days)*i)));
+      actualData.push(i === days ? remainingPts : (i===0 ? totalPts : null));
+    }
+    if (burndownChartInstance) burndownChartInstance.destroy();
+    burndownChartInstance = new Chart(burnCtx, {
+      type:'line',
+      data:{ labels: idealLabels, datasets:[
+        { label: state.lang==='ar'?'المثالي':'Ideal', data: idealData, borderColor:'#64748b', borderDash:[5,5], fill:false },
+        { label: state.lang==='ar'?'الفعلي':'Actual', data: actualData, borderColor:'#22d3ee', fill:false, spanGaps:true }
+      ]},
+      options:{ plugins:{legend:{labels:{color:'#cbd5e1'}}}, scales:{ x:{ticks:{color:'#94a3b8'}}, y:{ticks:{color:'#94a3b8'}} } }
+    });
+  }
+}
+
+function projectRiskStatus(p){
+  const sprints = state.data.sprints.filter(s=>s.projectId===p.id);
+  const openRisks = state.data.risks.filter(r=>r.projectId===p.id && r.level==='high').length;
+  const openNcrs = state.data.ncrs.filter(n=>n.projectId===p.id && n.status==='open').length;
+  let overdueSprint = false;
+  sprints.forEach(s => {
+    if (s.status !== 'closed' && new Date(s.endDate) < new Date(todayISO())) overdueSprint = true;
+  });
+  if (openRisks > 0 || overdueSprint || openNcrs >= 2) return 'red';
+  if (openNcrs > 0 || p.progress < 40) return 'yellow';
+  return 'green';
+}
+
+function renderWarRoom(T_){
+  const colorMap = { green:'bg-emerald-950 border-emerald-800 text-emerald-300', yellow:'bg-amber-950 border-amber-800 text-amber-300', red:'bg-red-950 border-red-800 text-red-300' };
+  const dotMap = { green:'🟢', yellow:'🟡', red:'🔴' };
+  const cards = state.data.projects.map(p => {
+    const status = projectRiskStatus(p);
+    const sprints = state.data.sprints.filter(s=>s.projectId===p.id);
+    const openRisks = state.data.risks.filter(r=>r.projectId===p.id && r.level==='high').length;
+    const openNcrs = state.data.ncrs.filter(n=>n.projectId===p.id && n.status==='open').length;
+    return `
+      <div class="rounded-xl border p-4 ${colorMap[status]}">
+        <div class="flex justify-between items-center mb-2">
+          <h4 class="font-bold">${dotMap[status]} ${esc(state.lang==='ar'?p.nameAr:p.nameEn)}</h4>
+          <span class="text-xs">${T_.warroom[status]}</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
+          <div class="bg-current h-2 rounded-full" style="width:${p.progress}%"></div>
+        </div>
+        <div class="text-xs flex gap-4 flex-wrap opacity-90">
+          <span>${T_.warroom.sprints}: ${sprints.length}</span>
+          <span>${T_.warroom.openRisks}: ${openRisks}</span>
+          <span>${T_.warroom.openNcrs}: ${openNcrs}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  return card(`
+    <h2 class="text-xl font-bold text-cyan-300 mb-4">${T_.warroom.title}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      ${cards || `<p class="text-slate-500 text-sm">${T_.common.none}</p>`}
+    </div>
+  `);
+}
+
+function renderBackup(T_){
+  const s = state.settings;
+  return card(`
+    <h2 class="text-xl font-bold text-cyan-300 mb-2">${T_.backup.title}</h2>
+    <p class="text-sm text-slate-400 mb-4">${T_.backup.localNote}</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div>
+        <label class="text-xs text-slate-500">${T_.backup.url}</label>
+        <input id="sb-url" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm" placeholder="https://xxxx.supabase.co" value="${esc(s.supabaseUrl)}"/>
+      </div>
+      <div>
+        <label class="text-xs text-slate-500">${T_.backup.key}</label>
+        <input id="sb-key" type="password" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm" placeholder="anon key" value="${esc(s.supabaseKey)}"/>
+      </div>
+      <div>
+        <label class="text-xs text-slate-500">${T_.backup.backupId}</label>
+        <input id="sb-id" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm" value="${esc(s.backupId)}"/>
+      </div>
+    </div>
+    <div class="flex gap-2 flex-wrap mb-6">
+      <button id="btn-save-settings" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded text-sm">${T_.backup.saveSettings}</button>
+      <button id="btn-backup" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded text-sm">☁️ ${T_.backup.backupBtn}</button>
+      <button id="btn-restore" class="bg-amber-700 hover:bg-amber-600 text-white px-3 py-2 rounded text-sm">⬇️ ${T_.backup.restoreBtn}</button>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded p-3 mb-6">
+      <h3 class="text-sm font-bold text-slate-300 mb-3">${T_.backup.localBackupTitle}</h3>
+      <div class="flex gap-2 flex-wrap">
+        <button id="btn-export-json" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded text-sm">⬇️ ${T_.backup.exportBtn}</button>
+        <button id="btn-import-json" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded text-sm">⬆️ ${T_.backup.importBtn}</button>
+        <input id="sb-import-file" type="file" accept="application/json" class="hidden"/>
+      </div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded p-3">
+      <p class="text-xs text-slate-500 mb-2">${T_.backup.sqlNote}</p>
+      <pre class="text-xs text-slate-400 overflow-x-auto">create table if not exists pmo_backups (
+  id text primary key,
+  payload jsonb,
+  updated_at timestamp with time zone default now()
+);
+
+alter table pmo_backups enable row level security;
+
+create policy "allow all for now"
+on pmo_backups
+for all
+using (true)
+with check (true);</pre>
+    </div>
+  `);
+}
+
+/* ---------------- Event wiring ---------------- */
+function attachHandlers(){
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+  const btnLang = $('#btn-lang'); if (btnLang) btnLang.onclick = () => actions.setLang(state.lang==='ar'?'en':'ar');
+  const btnPrint = $('#btn-print'); if (btnPrint) btnPrint.onclick = actions.print;
+
+  $$('.tab-btn').forEach(b => b.onclick = () => actions.setTab(b.dataset.tab));
+
+  const projSel = $('#active-project-select'); if (projSel) projSel.onchange = (e) => actions.setActiveProject(e.target.value);
+
+  // Dashboard
+  const addProjBtn = $('#btn-add-project'); if (addProjBtn) addProjBtn.onclick = actions.addProject;
+  $$('.btn-set-active').forEach(b => b.onclick = () => actions.setActiveProject(b.dataset.id));
+  $$('.btn-del-project').forEach(b => b.onclick = () => actions.deleteProject(b.dataset.id));
+  $$('.inline-edit').forEach(el => {
+    el.onchange = () => actions.updateProjectField(el.dataset.id, el.dataset.field, el.value);
+  });
+  $$('.inline-edit-range').forEach(el => {
+    el.onchange = () => actions.updateProjectField(el.dataset.id, el.dataset.field, el.value);
+  });
+
+  // Backlog
+  const addBLBtn = $('#btn-add-backlog'); if (addBLBtn) addBLBtn.onclick = actions.addBacklogItem;
+  $$('.btn-to-sprint').forEach(b => b.onclick = () => actions.moveBacklogToSprint(b.dataset.id));
+  $$('.btn-del-backlog').forEach(b => b.onclick = () => actions.deleteBacklogItem(b.dataset.id));
+  wireSearch('backlog-search-input', '.backlog-row');
+
+  // Sprint
+  const sprintSel = $('#sprint-select'); if (sprintSel) sprintSel.onchange = (e) => actions.setActiveSprint(e.target.value);
+  const addSprintBtn = $('#btn-add-sprint'); if (addSprintBtn) addSprintBtn.onclick = actions.addSprint;
+  const addTaskBtn = $('#btn-add-task'); if (addTaskBtn) addTaskBtn.onclick = actions.addTask;
+  const closeSprintBtn = $('#btn-close-sprint'); if (closeSprintBtn) closeSprintBtn.onclick = () => actions.closeSprint(closeSprintBtn.dataset.id);
+  $$('.btn-del-task').forEach(b => b.onclick = () => actions.deleteTask(b.dataset.id));
+  $$('.task-card').forEach(el => { el.addEventListener('dragstart', (ev)=>onDragStart(ev, el.dataset.task)); });
+  $$('.kanban-col').forEach(el => {
+    el.addEventListener('dragover', onDragOver);
+    el.addEventListener('drop', (ev)=>onDrop(ev, el.dataset.col));
+  });
+  wireSearch('task-search-input', '.task-card');
+
+  // Events
+  const addStandupBtn = $('#btn-add-standup'); if (addStandupBtn) addStandupBtn.onclick = actions.addStandup;
+  $$('.btn-del-standup').forEach(b => b.onclick = () => actions.deleteStandup(b.dataset.id));
+  const addRetroBtn = $('#btn-add-retro'); if (addRetroBtn) addRetroBtn.onclick = actions.addRetro;
+  $$('.btn-del-retro').forEach(b => b.onclick = () => actions.deleteRetro(b.dataset.id));
+  const addRiskBtn = $('#btn-add-risk'); if (addRiskBtn) addRiskBtn.onclick = actions.addRisk;
+  $$('.btn-del-risk').forEach(b => b.onclick = () => actions.deleteRisk(b.dataset.id));
+  const addNcrBtn = $('#btn-add-ncr'); if (addNcrBtn) addNcrBtn.onclick = actions.addNcr;
+  $$('.btn-toggle-ncr').forEach(b => b.onclick = () => actions.toggleNcr(b.dataset.id));
+  $$('.btn-del-ncr').forEach(b => b.onclick = () => actions.deleteNcr(b.dataset.id));
+
+  // Docs
+  $$('.btn-gen-doc').forEach(b => b.onclick = () => actions.generateDoc(b.dataset.type));
+  $$('.btn-del-doc').forEach(b => b.onclick = () => actions.deleteDoc(b.dataset.id));
+
+  // Backup
+  const saveSettingsBtn = $('#btn-save-settings'); if (saveSettingsBtn) saveSettingsBtn.onclick = actions.saveSettings;
+  const backupBtn = $('#btn-backup'); if (backupBtn) backupBtn.onclick = actions.backupToCloud;
+  const restoreBtn = $('#btn-restore'); if (restoreBtn) restoreBtn.onclick = actions.restoreFromCloud;
+  const exportBtn = $('#btn-export-json'); if (exportBtn) exportBtn.onclick = actions.exportJSON;
+  const importBtn = $('#btn-import-json'); if (importBtn) importBtn.onclick = actions.triggerImport;
+  const importFile = $('#sb-import-file'); if (importFile) importFile.onchange = (e) => actions.importJSONFile(e.target.files[0]);
+
+  // Analytics what-if
+  const whatifInput = $('#whatif-boost-input'); if (whatifInput) whatifInput.oninput = (e) => updateWhatifResult(Number(e.target.value)||0);
+}
+
+/* ---------------- init ---------------- */
+document.documentElement.lang = state.lang;
+document.documentElement.dir = 'rtl';
+render();
+</script>
+</body>
+</html>

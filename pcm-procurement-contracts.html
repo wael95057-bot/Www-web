@@ -1,0 +1,2455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة العقود والمشتريات | PCM</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏗️</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0b1220; --bg2:#0f172a; --panel:#111c33; --panel2:#15213b; --border:#22304d; --border2:#2c3c5e;
+  --text:#e7edf7; --muted:#93a4c3; --muted2:#6b7d9e;
+  --blue:#2563eb; --blue2:#3b82f6; --blue-soft:#1d3a6b;
+  --gold:#c9a24b; --gold-soft:#3a3120;
+  --green:#22c55e; --green-soft:#0f2e1c;
+  --red:#ef4444; --red-soft:#3a1620;
+  --amber:#f59e0b; --amber-soft:#3a2c10;
+  --radius:12px; --radius-sm:8px;
+  --shadow:0 8px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Cairo',sans-serif; background:
+    radial-gradient(1100px 500px at 90% -10%, #14213f 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, #17243f 0%, transparent 55%),
+    var(--bg);
+  color:var(--text); min-height:100vh; display:flex;
+}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-thumb{background:var(--border2); border-radius:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ===== Layout ===== */
+#sidebar{
+  width:264px; min-width:264px; background:linear-gradient(180deg,#0d1830,#0a1224);
+  border-inline-end:1px solid var(--border); display:flex; flex-direction:column;
+  height:100vh; position:sticky; top:0;
+}
+[dir="ltr"] #sidebar{border-inline-start:1px solid var(--border);}
+.brand{
+  padding:20px 18px 14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+}
+.brand .logo{
+  width:42px; height:42px; border-radius:11px; background:linear-gradient(135deg,var(--gold),#8a6d24);
+  display:flex; align-items:center; justify-content:center; font-size:20px; flex:none;
+  box-shadow:0 4px 14px rgba(201,162,75,.35);
+}
+.brand h1{font-size:15.5px; font-weight:800; line-height:1.35;}
+.brand p{font-size:11px; color:var(--muted2); margin-top:2px; letter-spacing:.3px;}
+
+nav.menu{flex:1; overflow-y:auto; padding:12px 10px;}
+.menu .grp-label{font-size:10.5px; color:var(--muted2); text-transform:uppercase; letter-spacing:1px; padding:14px 10px 6px;}
+.menu button{
+  width:100%; display:flex; align-items:center; gap:10px; text-align:start;
+  background:transparent; border:none; color:var(--muted); padding:10px 12px; border-radius:9px;
+  font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer; margin-bottom:2px;
+  transition:.15s;
+}
+.menu button .ic{font-size:16px; width:20px; text-align:center; flex:none;}
+.menu button:hover{background:#15213b; color:var(--text);}
+.menu button.active{background:linear-gradient(90deg, var(--blue-soft), rgba(37,99,235,.08)); color:#fff; box-shadow:inset 2px 0 0 var(--blue2);}
+[dir="ltr"] .menu button.active{box-shadow:inset -2px 0 0 var(--blue2);}
+.menu .badge{margin-inline-start:auto; background:var(--red); color:#fff; font-size:10px; font-weight:800; border-radius:20px; padding:1px 7px; min-width:18px; text-align:center;}
+
+.side-footer{padding:12px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px;}
+.side-footer .btn{width:100%; justify-content:center;}
+
+/* ===== Main ===== */
+#main{flex:1; min-width:0; height:100vh; overflow-y:auto;}
+header.topbar{
+  position:sticky; top:0; z-index:30; background:rgba(11,18,32,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border); padding:14px 24px; display:flex; align-items:center; gap:14px;
+}
+header.topbar h2{font-size:18px; font-weight:800;}
+header.topbar .sub{font-size:12px; color:var(--muted2); margin-top:2px;}
+header.topbar .spacer{flex:1;}
+.top-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+.wrap{padding:22px 24px 60px; max-width:1500px;}
+
+/* ===== Buttons ===== */
+.btn{
+  display:inline-flex; align-items:center; gap:7px; padding:9px 15px; border-radius:9px; border:1px solid var(--border2);
+  background:#152037; color:var(--text); font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:.15s; white-space:nowrap;
+}
+.btn:hover{background:#1b2a48; border-color:#3c507a;}
+.btn-primary{background:linear-gradient(180deg,var(--blue2),var(--blue)); border-color:var(--blue); color:#fff;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-gold{background:linear-gradient(180deg,#d9b45e,var(--gold)); border-color:var(--gold); color:#1a1305;}
+.btn-danger{background:var(--red-soft); border-color:#5a2430; color:#ff9aa4;}
+.btn-danger:hover{background:#4a1c26;}
+.btn-sm{padding:6px 10px; font-size:12px; border-radius:7px;}
+.btn:disabled{opacity:.45; cursor:not-allowed;}
+
+/* ===== Cards / KPI ===== */
+.grid{display:grid; gap:16px;}
+.kpi-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); margin-bottom:22px;}
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; box-shadow:var(--shadow);
+}
+.kpi{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+.kpi .lbl{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; font-weight:700;}
+.kpi .val{font-size:24px; font-weight:800; margin-top:6px;}
+.kpi .icon{width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex:none;}
+.kpi .note{font-size:11.5px; color:var(--muted2); margin-top:10px;}
+.ic-blue{background:rgba(37,99,235,.15); color:#60a5fa;}
+.ic-green{background:rgba(34,197,94,.15); color:#4ade80;}
+.ic-gold{background:rgba(201,162,75,.18); color:#e0bd6b;}
+.ic-red{background:rgba(239,68,68,.15); color:#f87171;}
+.ic-amber{background:rgba(245,158,11,.15); color:#fbbf24;}
+
+.section-title{display:flex; align-items:center; justify-content:space-between; margin:26px 0 12px;}
+.section-title h3{font-size:15.5px; font-weight:800;}
+.section-title .hint{font-size:12px; color:var(--muted2);}
+
+/* ===== Table ===== */
+.table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius); background:var(--panel);}
+table{width:100%; border-collapse:collapse; font-size:13px; min-width:640px;}
+thead th{
+  background:#0d1830; color:var(--muted); text-align:start; font-size:11px; text-transform:uppercase; letter-spacing:.4px;
+  padding:11px 12px; border-bottom:1px solid var(--border); font-weight:800; white-space:nowrap;
+}
+tbody td{padding:11px 12px; border-bottom:1px solid #1a2740; vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#0f1a30;}
+.empty-row td{text-align:center; padding:34px; color:var(--muted2);}
+.mono{font-family:'JetBrains Mono',monospace; font-size:12px;}
+.num{font-variant-numeric:tabular-nums;}
+
+.pill{display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:800; white-space:nowrap;}
+.pill-blue{background:rgba(37,99,235,.15); color:#7fb0ff;}
+.pill-green{background:rgba(34,197,94,.16); color:#5be08a;}
+.pill-red{background:rgba(239,68,68,.16); color:#ff8f97;}
+.pill-amber{background:rgba(245,158,11,.16); color:#ffc35c;}
+.pill-gray{background:#22304d; color:var(--muted);}
+
+.row-actions{display:flex; gap:6px;}
+.iconbtn{
+  background:#182746; border:1px solid var(--border2); color:var(--muted); width:28px; height:28px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px;
+}
+.iconbtn:hover{background:#22345a; color:#fff;}
+.iconbtn.danger:hover{background:var(--red-soft); color:#ff9aa4;}
+
+/* ===== Forms / Modal ===== */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(4,8,18,.72); backdrop-filter:blur(3px); display:none;
+  align-items:flex-start; justify-content:center; z-index:100; padding:40px 16px; overflow-y:auto;
+}
+.modal-overlay.show{display:flex;}
+.modal{
+  background:linear-gradient(180deg,#12203e,#0e1830); border:1px solid var(--border2); border-radius:16px;
+  width:100%; max-width:640px; box-shadow:0 20px 60px rgba(0,0,0,.5); overflow:hidden;
+}
+.modal.wide{max-width:900px;}
+.modal-head{padding:18px 22px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;}
+.modal-head h3{font-size:16px; font-weight:800;}
+.modal-close{background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; line-height:1;}
+.modal-body{padding:20px 22px; max-height:72vh; overflow-y:auto;}
+.modal-foot{padding:16px 22px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;}
+
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:6px;}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.field-row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+input,select,textarea{
+  width:100%; background:#0c1830; border:1px solid var(--border2); color:var(--text); border-radius:8px;
+  padding:9px 11px; font-family:inherit; font-size:13.5px; outline:none; transition:.15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue2); box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+textarea{resize:vertical; min-height:64px;}
+.helptext{font-size:11px; color:var(--muted2); margin-top:5px;}
+
+.items-editor{border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-top:8px;}
+.items-editor table{min-width:0;}
+.items-editor input{padding:6px 8px; font-size:12.5px;}
+.tiny-btn{font-size:11px; padding:5px 9px;}
+
+.subtabs{display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; border-bottom:1px solid var(--border); padding-bottom:0;}
+.subtabs button{background:none; border:none; color:var(--muted); font-family:inherit; font-weight:700; font-size:13px; padding:9px 4px; margin-inline-end:18px; cursor:pointer; border-bottom:2px solid transparent;}
+.subtabs button.active{color:#fff; border-color:var(--blue2);}
+
+.alert-item{display:flex; gap:12px; padding:13px; border-radius:10px; background:#0e1830; border:1px solid var(--border); margin-bottom:10px;}
+.alert-item .aic{width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex:none; font-size:15px;}
+.alert-item h4{font-size:13px; font-weight:800; margin-bottom:3px;}
+.alert-item p{font-size:11.5px; color:var(--muted2);}
+.alert-item .adl{font-size:11.5px; font-weight:800; margin-top:6px;}
+
+.toast{
+  position:fixed; bottom:24px; inset-inline-end:24px; background:#12203e; border:1px solid var(--border2); color:#fff;
+  padding:12px 18px; border-radius:10px; box-shadow:var(--shadow); z-index:200; font-size:13px; font-weight:700;
+  display:flex; align-items:center; gap:9px; animation:slideup .25s ease;
+}
+@keyframes slideup{from{transform:translateY(14px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+
+.doc-preview{background:#fff; color:#111; border-radius:10px; padding:26px; font-size:12.5px; line-height:1.7;}
+.doc-preview h2{font-size:17px; margin-bottom:4px; text-align:center;}
+.doc-preview .sub{text-align:center; color:#555; font-size:11px; margin-bottom:16px;}
+.doc-preview table{width:100%; border-collapse:collapse; margin:10px 0; font-size:12px;}
+.doc-preview th,.doc-preview td{border:1px solid #ccc; padding:6px 8px;}
+.doc-preview th{background:#f1f5f9;}
+.doc-preview .totalrow td{font-weight:800; background:#f8fafc;}
+.doc-preview .sign{display:flex; justify-content:space-between; margin-top:36px;}
+.doc-preview .sign div{width:45%; border-top:1px solid #333; padding-top:6px; font-size:11.5px; text-align:center;}
+.doc-preview .signed-block{margin-top:26px; border:1px dashed #999; border-radius:8px; padding:14px; display:flex; gap:18px; align-items:center;}
+.doc-preview .signed-block img{height:60px; background:#fff; border:1px solid #ddd; border-radius:4px;}
+.doc-preview .signed-block .sig-meta{font-size:10.5px; color:#333; line-height:1.6;}
+.doc-preview .signed-block .sig-hash{font-family:'JetBrains Mono',monospace; font-size:9.5px; color:#666; word-break:break-all; margin-top:3px;}
+.sigpad-box{border:1px solid var(--border2); border-radius:10px; padding:14px; background:#0c1830; margin-top:18px;}
+.sigpad-box h4{font-size:13px; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+#sigCanvas{width:100%; height:150px; background:#fff; border-radius:8px; touch-action:none; cursor:crosshair; display:block;}
+.sigpad-actions{display:flex; justify-content:space-between; align-items:center; margin-top:10px; gap:10px; flex-wrap:wrap;}
+.hash-chip{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:#0e1830; border:1px solid var(--border2); border-radius:6px; padding:6px 9px; color:#7fb0ff; word-break:break-all;}
+
+.empty-state{text-align:center; padding:50px 20px; color:var(--muted2);}
+.empty-state .ic{font-size:38px; margin-bottom:10px;}
+
+.progress-track{height:6px; background:#1a2740; border-radius:6px; overflow:hidden; margin-top:6px;}
+.progress-fill{height:100%; border-radius:6px;}
+
+.tag-select{display:flex; flex-wrap:wrap; gap:8px;}
+.tag-select label{display:flex; align-items:center; gap:6px; background:#0c1830; border:1px solid var(--border2); padding:6px 10px; border-radius:20px; font-size:12px; cursor:pointer;}
+
+@media print{
+  #sidebar, header.topbar, .no-print{display:none !important;}
+  #main{height:auto; overflow:visible;}
+  body{background:#fff; color:#111;}
+  .wrap{padding:0;}
+}
+@media (max-width:900px){
+  #sidebar{position:fixed; inset-inline-start:0; top:0; z-index:90; transform:translateX(-110%); transition:.2s;}
+  [dir="rtl"] #sidebar{transform:translateX(110%);}
+  #sidebar.open{transform:translateX(0);}
+  .mobile-toggle{display:flex !important;}
+  .field-row,.field-row3{grid-template-columns:1fr;}
+}
+.mobile-toggle{display:none; background:#152037; border:1px solid var(--border2); color:#fff; width:38px; height:38px; border-radius:9px; align-items:center; justify-content:center; font-size:16px; cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="brand">
+    <div class="logo">🏗️</div>
+    <div>
+      <h1 id="brandTitleAr" data-i18n="brandName">إدارة العقود والمشتريات</h1>
+      <p data-i18n="brandSub">Bena Strategic Development</p>
+    </div>
+  </div>
+  <nav class="menu" id="menuNav"></nav>
+  <div class="side-footer">
+    <button class="btn btn-gold no-print" onclick="openCloudSyncModal()">
+      <span>☁️</span> <span id="cloudBtnLabel">المزامنة السحابية</span>
+    </button>
+    <button class="btn no-print" onclick="toggleLang()">
+      <span>🌐</span> <span id="langBtnLabel">English</span>
+    </button>
+    <button class="btn no-print" onclick="exportData()"><span>⬇️</span> <span data-i18n="exportBtn">تصدير نسخة احتياطية</span></button>
+    <label class="btn no-print" style="cursor:pointer;">
+      <span>⬆️</span> <span data-i18n="importBtn">استيراد نسخة</span>
+      <input type="file" accept=".json" style="display:none" onchange="importData(event)">
+    </label>
+  </div>
+</div>
+
+<div id="main">
+  <header class="topbar no-print">
+    <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+    <div>
+      <h2 id="pageTitle">لوحة التحكم التنفيذية</h2>
+      <div class="sub" id="pageSub">نظرة عامة استراتيجية على المشتريات والتعاقدات</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="top-actions" id="topActions"></div>
+  </header>
+  <div class="wrap" id="content"></div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-head">
+      <h3 id="modalTitle">-</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   إدارة العقود والمشتريات — PCM Unified Platform
+   Single-file HTML app — bilingual AR/EN, localStorage persistence
+   ============================================================ */
+
+const STORAGE_KEY = 'pcm_wael_v1';
+const uid = () => 'x' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+const fmt = (n) => (isNaN(n)?0:n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const todayISO = () => new Date().toISOString().slice(0,10);
+const daysBetween = (a,b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+
+let LANG = localStorage.getItem('pcm_lang') || 'ar';
+
+/* ---------- Default / seed data ---------- */
+function seedData(){
+  const pid = uid(), pid2 = uid();
+  const vId1 = uid(), vId2 = uid(), vId3 = uid();
+  const cId1 = uid(), cId2 = uid();
+  return {
+    projects:[
+      {id:pid, code:'PRJ-01', name:'مشروع تطوير وتوسعة مركز البيانات', budget:14000000},
+      {id:pid2, code:'PRJ-02', name:'مشروع البنية التحتية والطرق', budget:9500000},
+    ],
+    vendors:[
+      {id:vId1, name:'شركة التقنية المتقدمة للمقاولات', cr:'CR-10023', vat:'VAT-77410', contact:'م. أحمد سالم', phone:'01000000001', email:'info@advtech.com', score:4.6, vetted:true},
+      {id:vId2, name:'مجموعة الحلول الرقمية', cr:'CR-10087', vat:'VAT-77522', contact:'م. منى فؤاد', phone:'01000000002', email:'sales@digisol.com', score:4.2, vetted:true},
+      {id:vId3, name:'ستيل وركس المحدودة', cr:'CR-10151', vat:'VAT-77633', contact:'Eng. Adam', phone:'01000000003', email:'ops@steelworks.co', score:3.8, vetted:false},
+    ],
+    contracts:[
+      {id:cId1, code:'CNT-2026-0001', title:'عقد إنشاء وتوسعة مركز البيانات - المرحلة 2', projectId:pid, vendorId:vId1,
+        originalValue:8600000, currentValue:8850000, advanceRate:10, retentionRate:5, vatRate:14,
+        startDate:'2026-02-01', endDate:'2026-12-31', status:'ACTIVE', prevPaid:3200000},
+      {id:cId2, code:'CNT-2026-0002', title:'عقد الأعمال الكهروميكانيكية', projectId:pid, vendorId:vId2,
+        originalValue:2400000, currentValue:2400000, advanceRate:10, retentionRate:5, vatRate:14,
+        startDate:'2026-03-15', endDate:'2026-10-30', status:'ACTIVE', prevPaid:640000},
+    ],
+    purchaseRequisitions:[],
+    rfqs:[],
+    purchaseOrders:[],
+    bankGuarantees:[
+      {id:uid(), code:'BG-2026-0011', contractId:cId1, bank:'البنك الأهلي المصري', type:'PERFORMANCE_BOND', amount:442500, issueDate:'2026-02-05', expiryDate: addDays(todayISO(),12), status:'ACTIVE'},
+      {id:uid(), code:'BG-2026-0012', contractId:cId2, bank:'بنك مصر', type:'ADVANCE_GUARANTEE', amount:240000, issueDate:'2026-03-20', expiryDate: addDays(todayISO(),120), status:'ACTIVE'},
+    ],
+    slaMilestones:[
+      {id:uid(), contractId:cId1, title:'تقديم خطاب الضمان النهائي', dueDate: addDays(todayISO(),20), completed:false},
+      {id:uid(), contractId:cId1, title:'التوريد الميداني للشحنة الأولى', dueDate: addDays(todayISO(),-3), completed:false},
+    ],
+    changeOrders:[],
+    claims:[
+      {id:uid(), code:'CLM-2026-0004', contractId:cId1, clause:'20.1', incidentDate: addDays(todayISO(),-10), timeBarDeadline: addDays(todayISO(),4), claimedAmount:185000, claimedDays:14, status:'NOTIFIED', title:'تأخر تسليم الموقع'},
+    ],
+    grns:[],
+    inspections:[],
+    ipcs:[
+      {id:uid(), code:'IPC-2026-0089', contractId:cId1, ipcNo:5, periodStart:'2026-08-01', periodEnd:'2026-08-31',
+        grossWorkDone:4650000, status:'CONSULTANT_APPROVED', threeWayMatched:true, submissionDate:'2026-09-05'},
+    ],
+  };
+}
+function addDays(iso,n){ const d = new Date(iso); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+
+let DB = loadData();
+DB.evmInputs = DB.evmInputs || {}; // {contractId: {plannedPct, actualCost, whatIfFactor}}
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  const seeded = seedData();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+  return seeded;
+}
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(DB,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pcm-backup-'+todayISO()+'.json';
+  a.click();
+  toast(t('exportedMsg'));
+}
+function importData(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const data = JSON.parse(e.target.result);
+      DB = data; save(); toast(t('importedMsg')); render();
+    }catch(err){ alert(t('importErr')); }
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- Cloud Sync (Supabase) ---------- */
+const CLOUD_CFG_KEY = 'pcm_cloud_cfg';
+const CLOUD_TABLE = 'pcm_backups';
+const CLOUD_ROW_ID = 'main';
+function getCloudCfg(){
+  try{ return JSON.parse(localStorage.getItem(CLOUD_CFG_KEY)) || {url:'', key:'', lastSync:''}; }
+  catch(e){ return {url:'', key:'', lastSync:''}; }
+}
+function setCloudCfg(cfg){ localStorage.setItem(CLOUD_CFG_KEY, JSON.stringify(cfg)); }
+
+function openCloudSyncModal(){
+  const cfg = getCloudCfg();
+  const connected = !!(cfg.url && cfg.key);
+  const body = `
+    <p class="helptext" style="margin-bottom:16px; font-size:12.5px;">${t('cloud_intro')}</p>
+    <div class="field"><label>${t('cloud_url')}</label><input id="cloudUrl" placeholder="https://xxxxx.supabase.co" value="${cfg.url||''}"></div>
+    <div class="field"><label>${t('cloud_key')}</label><input id="cloudKey" placeholder="eyJhbGciOi..." value="${cfg.key||''}"></div>
+    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+      <button class="btn btn-sm" onclick="saveCloudCfgFromForm()">💾 ${t('cloud_save_cfg')}</button>
+      <button class="btn btn-sm" onclick="testCloudConnection()">🔌 ${t('cloud_test')}</button>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:9px; background:#0e1830; border:1px solid var(--border); margin-bottom:16px;">
+      <span style="font-size:12.5px; color:var(--muted);">${connected ? '🟢 '+t('cloud_status_connected') : '⚪ '+t('cloud_status_none')}</span>
+      <span style="font-size:11.5px; color:var(--muted2);">${t('cloud_last_sync')}: ${cfg.lastSync || t('cloud_never')}</span>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="pushToCloud()">${t('cloud_push')}</button>
+      <button class="btn btn-gold" style="flex:1;" onclick="pullFromCloud()">${t('cloud_pull')}</button>
+    </div>
+    <div class="field">
+      <label>🛠️ ${t('cloud_sql_title')}</label>
+      <textarea readonly style="min-height:150px; font-family:'JetBrains Mono',monospace; font-size:11.5px;" onclick="this.select()">create table if not exists ${CLOUD_TABLE} (
+  id text primary key,
+  payload jsonb,
+  updated_at timestamptz default now()
+);
+
+alter table ${CLOUD_TABLE} enable row level security;
+
+create policy "allow anon read/write"
+on ${CLOUD_TABLE} for all
+using (true) with check (true);</textarea>
+      <div class="helptext">${LANG==='ar'?'انسخ الكود ده وشغّله مرة واحدة بس في SQL Editor بمشروعك على Supabase. السياسة هنا مفتوحة للتبسيط — لو محتاج حماية أكثر قوللي نضيف مفتاح دخول.':'Copy this once into your Supabase SQL Editor. The policy is permissive for simplicity — tell me if you want it locked down further.'}</div>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>`;
+  openModal(t('cloud_title'), body, foot, true);
+}
+function saveCloudCfgFromForm(){
+  const cfg = getCloudCfg();
+  cfg.url = val('cloudUrl').replace(/\/+$/,'');
+  cfg.key = val('cloudKey');
+  setCloudCfg(cfg);
+  toast(t('formSaved'));
+}
+async function supabaseRequest(method, extraHeaders, body){
+  const cfg = getCloudCfg();
+  if(!cfg.url || !cfg.key){ alert(t('cloud_no_cfg')); return null; }
+  const res = await fetch(`${cfg.url}/rest/v1/${CLOUD_TABLE}?id=eq.${CLOUD_ROW_ID}`, {
+    method,
+    headers: Object.assign({
+      'apikey': cfg.key,
+      'Authorization': `Bearer ${cfg.key}`,
+      'Content-Type': 'application/json',
+    }, extraHeaders || {}),
+    body: body ? JSON.stringify(body) : undefined
+  });
+  return res;
+}
+async function testCloudConnection(){
+  saveCloudCfgFromForm();
+  try{
+    const res = await supabaseRequest('GET', {'Prefer':'count=exact'});
+    if(res && (res.ok || res.status===206)){ toast(t('cloud_test_ok')); }
+    else { toast(t('cloud_test_fail')); }
+  }catch(e){ toast(t('cloud_test_fail')); }
+}
+async function pushToCloud(){
+  saveCloudCfgFromForm();
+  try{
+    const res = await supabaseRequest('POST', {'Prefer':'resolution=merge-duplicates,return=minimal'}, { id: CLOUD_ROW_ID, payload: DB, updated_at: new Date().toISOString() });
+    if(res && res.ok){
+      const cfg = getCloudCfg(); cfg.lastSync = new Date().toLocaleString(LANG==='ar'?'ar-EG':'en-US'); setCloudCfg(cfg);
+      toast(t('cloud_pushed_msg')); closeModal();
+    } else { toast(t('cloud_test_fail')); }
+  }catch(e){ toast(t('cloud_test_fail')); }
+}
+async function pullFromCloud(){
+  if(!confirm(t('cloud_confirm_overwrite'))) return;
+  saveCloudCfgFromForm();
+  try{
+    const res = await supabaseRequest('GET', {'Accept':'application/vnd.pgrst.object+json'});
+    if(res && res.ok){
+      const row = await res.json();
+      if(row && row.payload){
+        DB = row.payload; save();
+        const cfg = getCloudCfg(); cfg.lastSync = new Date().toLocaleString(LANG==='ar'?'ar-EG':'en-US'); setCloudCfg(cfg);
+        toast(t('cloud_pulled_msg')); closeModal(); render();
+      } else { toast(t('cloud_test_fail')); }
+    } else { toast(t('cloud_test_fail')); }
+  }catch(e){ toast(t('cloud_test_fail')); }
+}
+
+/* ---------- i18n ---------- */
+const I18N = {
+  ar:{
+    brandName:'إدارة العقود والمشتريات', brandSub:'شركة بناء للتطوير الاستراتيجي',
+    exportBtn:'تصدير نسخة احتياطية', importBtn:'استيراد نسخة', exportedMsg:'تم تصدير النسخة الاحتياطية', importedMsg:'تم استيراد البيانات بنجاح', importErr:'ملف غير صالح',
+    nav_dashboard:'لوحة التحكم', nav_vendors:'الموردون والمقاولون', nav_projects:'المشاريع',
+    nav_pr:'طلبات الشراء PR', nav_rfq:'المناقصات RFQ', nav_po:'أوامر الشراء PO',
+    nav_contracts:'العقود', nav_bg:'الضمانات البنكية', nav_sla:'شروط SLA والمعالم',
+    nav_co:'أوامر التغيير', nav_claims:'المطالبات التعاقدية', nav_fidic:'مساعد الفيديك FIDIC',
+    nav_grn:'الاستلام الميداني GRN', nav_mir:'الفحص الميداني MIR/WIR',
+    nav_ipc:'المستخلصات المالية IPC', nav_reports:'التقرير التنفيذي الشامل',
+    grp_core:'الأساسيات', grp_proc:'المشتريات', grp_contract:'التعاقدات', grp_field:'العمليات الميدانية', grp_fin:'المالية والتقارير',
+    dash_title:'لوحة التحكم التنفيذية', dash_sub:'نظرة عامة استراتيجية على المشتريات والتعاقدات',
+    kpi_active_contracts:'إجمالي قيمة العقود النشطة', kpi_paid_ipc:'إجمالي المستخلصات المعتمدة', kpi_retention:'محتجز ضمان حسن التنفيذ',
+    kpi_risk:'تنبيهات المخاطر الحرجة', kpi_match:'نسبة المطابقة الثلاثية',
+    alerts_title:'رادار المهل والمخاطر الحرجة', alerts_sub:'ضمانات على وشك الانتهاء ومهل مطالبات تقترب من السقوط',
+    no_alerts:'لا توجد تنبيهات حرجة حالياً',
+    recent_ipc:'أحدث المستخلصات المالية', view_all:'عرض الكل',
+    addNew:'إضافة جديد', edit:'تعديل', delete:'حذف', save:'حفظ', cancel:'إلغاء', print:'طباعة', view:'عرض',
+    confirmDelete:'هل تريد حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.',
+    search:'بحث...', noData:'لا توجد بيانات بعد', addFirst:'ابدأ بإضافة أول عنصر',
+    col_code:'الكود', col_name:'الاسم', col_status:'الحالة', col_actions:'إجراءات', col_amount:'المبلغ', col_date:'التاريخ',
+    // Vendors
+    vendorName:'اسم الشركة / المورد', vendorCR:'السجل التجاري', vendorVAT:'الرقم الضريبي', vendorContact:'الشخص المسؤول',
+    vendorPhone:'الهاتف', vendorEmail:'البريد الإلكتروني', vendorScore:'مؤشر الأداء (من 5)', vendorVetted:'مورد معتمد',
+    // Projects
+    projectCode:'كود المشروع', projectName:'اسم المشروع', projectBudget:'الميزانية',
+    // PR
+    prReqBy:'مقدم الطلب', prProject:'المشروع', prCostCenter:'مركز التكلفة', prStatus:'الحالة', prItems:'بنود الطلب',
+    // RFQ
+    rfqTitle:'عنوان المناقصة', rfqDeadline:'الموعد النهائي للتقديم', rfqStatus:'الحالة', rfqBids:'العروض المقدمة',
+    addBid:'إضافة عرض', bidVendor:'المورد', bidTech:'التقييم الفني %', bidAmount:'المبلغ المالي', bidAward:'ترسية',
+    // PO
+    poVendor:'المورد', poProject:'المشروع', poContract:'العقد المرتبط (اختياري)', poDelivery:'تاريخ التسليم', poStatus:'الحالة',
+    poItems:'بنود أمر الشراء', poVat:'نسبة الضريبة %', poLD:'غرامة التأخير % يومياً', poLDCap:'الحد الأقصى للغرامة %',
+    itemDesc:'الوصف', itemUnit:'الوحدة', itemQty:'الكمية', itemPrice:'سعر الوحدة', itemTotal:'الإجمالي', addItem:'إضافة بند',
+    subtotal:'الإجمالي قبل الضريبة', vatAmount:'ضريبة القيمة المضافة', grandTotal:'الإجمالي شامل الضريبة',
+    // Contract
+    contractTitle:'عنوان العقد', contractProject:'المشروع', contractVendor:'المورد/المقاول',
+    contractOriginal:'القيمة الأصلية', contractCurrent:'القيمة الحالية (بعد التغييرات)',
+    advanceRate:'نسبة الدفعة المقدمة %', retentionRate:'نسبة محتجز الضمان %', vatRate:'نسبة الضريبة %',
+    startDate:'تاريخ البدء', endDate:'تاريخ الانتهاء', contractStatus:'حالة العقد', prevPaid:'إجمالي المدفوعات السابقة',
+    // BG
+    bgContract:'العقد المرتبط', bgBank:'البنك المُصدر', bgType:'نوع الضمان', bgAmount:'قيمة الضمان',
+    bgIssue:'تاريخ الإصدار', bgExpiry:'تاريخ الانتهاء', bgStatus:'الحالة',
+    // SLA
+    slaContract:'العقد المرتبط', slaTitle:'وصف الشرط / المعلم', slaDue:'التاريخ المستهدف', slaDone:'مكتمل',
+    // CO
+    coContract:'العقد المرتبط', coTitle:'عنوان التغيير', coReason:'المبرر', coCost:'الأثر المالي (+/-)',
+    coTime:'الأثر الزمني (أيام +/-)', coApproved:'معتمد',
+    // Claims
+    clmContract:'العقد المرتبط', clmTitle:'موضوع المطالبة', clmClause:'البند التعاقدي', clmIncident:'تاريخ الحادثة',
+    clmDeadline:'مهلة إشعار المطالبة', clmAmount:'المبلغ المطالب به', clmDays:'أيام التمديد المطلوبة', clmStatus:'الحالة',
+    // GRN
+    grnPO:'أمر الشراء المرتبط', grnDeliveryNote:'رقم إذن التسليم', grnReceivedBy:'استلمها', grnItems:'بنود الاستلام',
+    grnDeliveredQty:'الكمية الموردة', grnAcceptedQty:'الكمية المقبولة', grnRejectReason:'سبب الرفض',
+    // MIR
+    mirContract:'العقد المرتبط', mirGRN:'مرتبط بإشعار استلام (اختياري)', mirType:'نوع الفحص', mirResult:'نتيجة الفحص', mirComments:'ملاحظات',
+    // IPC
+    ipcContract:'العقد المرتبط', ipcNo:'رقم المستخلص', ipcPeriodStart:'من تاريخ', ipcPeriodEnd:'إلى تاريخ',
+    ipcGross:'إجمالي الأعمال المنفذة (تراكمي)', ipcStatus:'حالة الاعتماد', ipcMatch:'المطابقة الثلاثية',
+    ipc_summary:'الملخص المالي', ipc_grossW:'إجمالي الأعمال التراكمية المنفذة', ipc_advDed:'خصم: استرداد الدفعة المقدمة',
+    ipc_retDed:'خصم: محتجز ضمان حسن التنفيذ', ipc_totDed:'إجمالي الاستقطاعات التراكمية', ipc_netCum:'صافي الأعمال التراكمية المستحقة',
+    ipc_prevPaid:'يخصم: صافي المستخلصات السابقة', ipc_netCur:'صافي المستحق للمستخلص الحالي', ipc_vat:'يضاف: ضريبة القيمة المضافة',
+    ipc_final:'الصافي النهائي الواجب صرفه', matchedYes:'مطابقة تامة ✓', matchedNo:'يتطلب مراجعة',
+    reports_title:'التقرير التنفيذي الشامل', reports_sub:'ملخص شامل قابل للطباعة لكل العقود والمستخلصات والمخاطر',
+    printReport:'طباعة التقرير الكامل',
+    statusDraft:'مسودة', statusActive:'نشط', statusClosed:'مغلق', statusSubmitted:'مقدم', statusApproved:'معتمد', statusRejected:'مرفوض',
+    langToggleLabel:'English',
+    formSaved:'تم الحفظ بنجاح', formDeleted:'تم الحذف بنجاح',
+    genPO:'إصدار مستند PO', genIPC:'إصدار شهادة IPC', printDoc:'طباعة المستند',
+    dueIn:'خلال', daysLabel:'يوم', overdueLabel:'متأخر بـ',
+    sig_title:'التوقيع الرقمي واعتماد المستند', sig_name:'اسم المعتمِد وصفته', sig_clear:'مسح التوقيع',
+    sig_certify:'توقيع واعتماد المستند', sig_hash_label:'بصمة التوقيع الرقمي (SHA-256)',
+    sig_signed_title:'مستند موقّع ومعتمد رقمياً', sig_signed_by:'المعتمِد', sig_signed_at:'تاريخ الاعتماد',
+    sig_name_required:'يرجى إدخال اسم المعتمِد أولاً', sig_draw_required:'يرجى رسم التوقيع في المساحة المخصصة',
+    sig_verify_note:'أي تعديل لاحق على بيانات المستند سيُبطل هذه البصمة الرقمية', sig_pill:'موقّع', sig_certified_msg:'تم توقيع واعتماد المستند بنجاح',
+    sig_copy:'نسخ البصمة',
+    fidic_sub:'محرك بحث محلي في أهم بنود عقود الفيديك (Red Book 2017) — يعمل بالكامل بدون إنترنت',
+    fidic_search_ph:'ابحث بكلمة مفتاحية: تأخير، مطالبة، ضمان، تغيير، دفع...', fidic_noresults:'لا توجد بنود مطابقة لبحثك',
+    fidic_book:'الفيديك — عقد الأعمال الإنشائية (طبعة 2017)', fidic_clause_no:'البند رقم', fidic_disclaimer:'ملخص إرشادي عام لأغراض المرجعية السريعة فقط، ولا يغني عن الرجوع لنص العقد الأصلي أو استشارة قانونية متخصصة',
+    fidic_copy_ref:'نسخ رقم البند', fidic_all_topics:'كل الموضوعات', fidic_results_count:'نتيجة',
+    nav_evm:'حاسبة EVM ومحاكاة "ماذا لو"',
+    evm_sub:'قياس أداء التكلفة والجدول الزمني لكل عقد، مع محاكاة تفاعلية لسيناريوهات الإنتاجية المستقبلية',
+    evm_select_contract:'اختر العقد', evm_no_contracts:'أضف عقداً أولاً لاستخدام هذه الأداة',
+    evm_bac:'الميزانية عند الإتمام (BAC)', evm_pv:'القيمة المخططة (PV)', evm_ev:'القيمة المكتسبة (EV)', evm_ac:'التكلفة الفعلية (AC)',
+    evm_cv:'انحراف التكلفة (CV)', evm_sv:'انحراف الجدول (SV)', evm_cpi:'مؤشر أداء التكلفة (CPI)', evm_spi:'مؤشر أداء الجدول (SPI)',
+    evm_eac:'التكلفة المتوقعة عند الإتمام (EAC)', evm_etc:'التكلفة المتبقية المقدرة (ETC)', evm_vac:'الانحراف عند الإتمام (VAC)',
+    evm_planned_pct:'نسبة الإنجاز المخططة % (حسب الجدول الزمني)', evm_actual_cost:'التكلفة الفعلية المصروفة حتى تاريخه',
+    evm_use_latest_ipc:'القيمة المكتسبة مأخوذة تلقائياً من آخر مستخلص IPC معتمد لهذا العقد',
+    evm_whatif_title:'محاكاة "ماذا لو" — إنتاجية المرحلة القادمة', evm_whatif_factor:'معامل الإنتاجية المستقبلية المفترض',
+    evm_whatif_note:'حرّك المؤشر لمحاكاة تحسّن أو تراجع أداء الفريق في المرحلة المتبقية من المشروع، وشاهد أثره على التكلفة النهائية المتوقعة',
+    evm_projected_eac:'التكلفة النهائية المتوقعة بعد المحاكاة', evm_health:'الحالة العامة للأداء',
+    evm_status_ahead:'متقدم عن الجدول وأقل تكلفة من المخطط', evm_status_behind_over:'متأخر عن الجدول وتجاوز في التكلفة',
+    evm_status_behind:'متأخر عن الجدول الزمني', evm_status_over:'تجاوز في التكلفة عن المخطط', evm_status_ontrack:'ضمن المخطط تقريباً',
+    cloud_sync_btn:'المزامنة السحابية', cloud_title:'المزامنة السحابية (Supabase)',
+    cloud_intro:'اربط التطبيق بمشروع Supabase مجاني عشان بياناتك متبقاش محبوسة في متصفح جهاز واحد بس — تقدر تفتح نفس البيانات من أي جهاز تاني.',
+    cloud_url:'رابط المشروع (Project URL)', cloud_key:'المفتاح العام (anon/public key)',
+    cloud_save_cfg:'حفظ الإعدادات', cloud_test:'اختبار الاتصال', cloud_push:'⬆️ رفع نسختي الحالية للسحابة',
+    cloud_pull:'⬇️ سحب آخر نسخة من السحابة', cloud_status_connected:'متصل', cloud_status_none:'غير معدّ بعد',
+    cloud_last_sync:'آخر مزامنة', cloud_never:'لم تتم أي مزامنة بعد',
+    cloud_pushed_msg:'تم رفع البيانات للسحابة بنجاح', cloud_pulled_msg:'تم سحب البيانات من السحابة بنجاح',
+    cloud_test_ok:'الاتصال ناجح ✓', cloud_test_fail:'فشل الاتصال — تأكد من الرابط والمفتاح وإعداد الجدول',
+    cloud_sql_title:'خطوة تجهيز الجدول (مرة واحدة فقط في لوحة SQL Editor بمشروعك)',
+    cloud_confirm_overwrite:'سحب النسخة السحابية سيستبدل كل بياناتك الحالية في هذا الجهاز. هل تريد المتابعة؟',
+    cloud_no_cfg:'يجب حفظ رابط المشروع والمفتاح أولاً',
+    downloadPdf:'تحميل PDF', pdf_generating:'جاري التجهيز...', pdf_saved_msg:'تم تنزيل ملف PDF بنجاح',
+    pdf_lib_error:'تعذر إنشاء ملف PDF — تأكد من الاتصال بالإنترنت (المكتبة تُحمَّل أول مرة فقط) وحاول مرة أخرى',
+  },
+  en:{
+    brandName:'Procurement & Contract Management', brandSub:'Bena Strategic Development Co.',
+    exportBtn:'Export Backup', importBtn:'Import Backup', exportedMsg:'Backup exported', importedMsg:'Data imported successfully', importErr:'Invalid file',
+    nav_dashboard:'Dashboard', nav_vendors:'Vendors & Contractors', nav_projects:'Projects',
+    nav_pr:'Purchase Requisitions', nav_rfq:'RFQ / Tenders', nav_po:'Purchase Orders',
+    nav_contracts:'Contracts', nav_bg:'Bank Guarantees', nav_sla:'SLA & Milestones',
+    nav_co:'Change Orders', nav_claims:'Contract Claims', nav_fidic:'FIDIC Assistant',
+    nav_grn:'Goods Received (GRN)', nav_mir:'Inspections (MIR/WIR)',
+    nav_ipc:'Payment Certificates (IPC)', nav_reports:'Executive Report',
+    grp_core:'Core', grp_proc:'Procurement', grp_contract:'Contracts', grp_field:'Field Operations', grp_fin:'Finance & Reports',
+    dash_title:'Executive Dashboard', dash_sub:'Strategic overview of procurement and contracts',
+    kpi_active_contracts:'Total Active Contracts Value', kpi_paid_ipc:'Total Approved Payments (IPC)', kpi_retention:'Retention Pool',
+    kpi_risk:'Critical Risk Alerts', kpi_match:'3-Way Match Rate',
+    alerts_title:'Deadline & Risk Radar', alerts_sub:'Expiring guarantees and approaching claim time-bars',
+    no_alerts:'No critical alerts right now',
+    recent_ipc:'Recent Payment Certificates', view_all:'View all',
+    addNew:'Add New', edit:'Edit', delete:'Delete', save:'Save', cancel:'Cancel', print:'Print', view:'View',
+    confirmDelete:'Delete this item? This cannot be undone.',
+    search:'Search...', noData:'No data yet', addFirst:'Start by adding the first item',
+    col_code:'Code', col_name:'Name', col_status:'Status', col_actions:'Actions', col_amount:'Amount', col_date:'Date',
+    vendorName:'Company / Vendor Name', vendorCR:'CR Number', vendorVAT:'VAT Number', vendorContact:'Contact Person',
+    vendorPhone:'Phone', vendorEmail:'Email', vendorScore:'Performance Score (/5)', vendorVetted:'Vetted Vendor',
+    projectCode:'Project Code', projectName:'Project Name', projectBudget:'Budget',
+    prReqBy:'Requested By', prProject:'Project', prCostCenter:'Cost Center', prStatus:'Status', prItems:'Requisition Items',
+    rfqTitle:'RFQ Title', rfqDeadline:'Submission Deadline', rfqStatus:'Status', rfqBids:'Submitted Bids',
+    addBid:'Add Bid', bidVendor:'Vendor', bidTech:'Technical Score %', bidAmount:'Financial Amount', bidAward:'Award',
+    poVendor:'Vendor', poProject:'Project', poContract:'Linked Contract (optional)', poDelivery:'Delivery Date', poStatus:'Status',
+    poItems:'PO Line Items', poVat:'VAT Rate %', poLD:'Daily LD Rate %', poLDCap:'Max LD Cap %',
+    itemDesc:'Description', itemUnit:'Unit', itemQty:'Qty', itemPrice:'Unit Price', itemTotal:'Total', addItem:'Add Item',
+    subtotal:'Subtotal (before VAT)', vatAmount:'VAT Amount', grandTotal:'Grand Total (incl. VAT)',
+    contractTitle:'Contract Title', contractProject:'Project', contractVendor:'Vendor / Contractor',
+    contractOriginal:'Original Value', contractCurrent:'Current Value (after variations)',
+    advanceRate:'Advance Payment %', retentionRate:'Retention %', vatRate:'VAT %',
+    startDate:'Start Date', endDate:'End Date', contractStatus:'Contract Status', prevPaid:'Total Previous Payments',
+    bgContract:'Linked Contract', bgBank:'Issuing Bank', bgType:'Guarantee Type', bgAmount:'Guarantee Amount',
+    bgIssue:'Issue Date', bgExpiry:'Expiry Date', bgStatus:'Status',
+    slaContract:'Linked Contract', slaTitle:'Milestone / SLA Description', slaDue:'Target Date', slaDone:'Completed',
+    coContract:'Linked Contract', coTitle:'Change Title', coReason:'Justification', coCost:'Cost Impact (+/-)',
+    coTime:'Time Impact (days +/-)', coApproved:'Approved',
+    clmContract:'Linked Contract', clmTitle:'Claim Subject', clmClause:'Contract Clause', clmIncident:'Incident Date',
+    clmDeadline:'Notice Time-Bar Deadline', clmAmount:'Claimed Amount', clmDays:'Extension Requested (days)', clmStatus:'Status',
+    grnPO:'Linked Purchase Order', grnDeliveryNote:'Delivery Note #', grnReceivedBy:'Received By', grnItems:'Received Items',
+    grnDeliveredQty:'Qty Delivered', grnAcceptedQty:'Qty Accepted', grnRejectReason:'Rejection Reason',
+    mirContract:'Linked Contract', mirGRN:'Linked GRN (optional)', mirType:'Inspection Type', mirResult:'Result', mirComments:'Comments',
+    ipcContract:'Linked Contract', ipcNo:'IPC Number', ipcPeriodStart:'Period Start', ipcPeriodEnd:'Period End',
+    ipcGross:'Gross Work Done (cumulative)', ipcStatus:'Approval Status', ipcMatch:'3-Way Match',
+    ipc_summary:'Financial Summary', ipc_grossW:'Gross cumulative work certified', ipc_advDed:'Deduct: Advance payment recovery',
+    ipc_retDed:'Deduct: Retention (performance bond)', ipc_totDed:'Total cumulative deductions', ipc_netCum:'Net cumulative amount due',
+    ipc_prevPaid:'Less: Previous certificates paid', ipc_netCur:'Net payable this certificate', ipc_vat:'Add: VAT',
+    ipc_final:'Final net amount payable', matchedYes:'Fully Matched ✓', matchedNo:'Requires Review',
+    reports_title:'Executive Report', reports_sub:'Printable summary of all contracts, certificates and risks',
+    printReport:'Print Full Report',
+    statusDraft:'Draft', statusActive:'Active', statusClosed:'Closed', statusSubmitted:'Submitted', statusApproved:'Approved', statusRejected:'Rejected',
+    langToggleLabel:'العربية',
+    formSaved:'Saved successfully', formDeleted:'Deleted successfully',
+    genPO:'Generate PO Document', genIPC:'Generate IPC Certificate', printDoc:'Print Document',
+    dueIn:'in', daysLabel:'days', overdueLabel:'overdue by',
+    sig_title:'Digital Signature & Document Certification', sig_name:'Signer Name & Title', sig_clear:'Clear Signature',
+    sig_certify:'Sign & Certify Document', sig_hash_label:'Digital Signature Hash (SHA-256)',
+    sig_signed_title:'Digitally Signed & Certified Document', sig_signed_by:'Certified By', sig_signed_at:'Certified On',
+    sig_name_required:'Please enter the signer name first', sig_draw_required:'Please draw the signature in the pad',
+    sig_verify_note:'Any later edit to this document will invalidate this digital hash', sig_pill:'Signed', sig_certified_msg:'Document signed and certified successfully',
+    sig_copy:'Copy Hash',
+    fidic_sub:'Offline local search engine for key FIDIC clauses (Red Book 2017) — works fully without internet',
+    fidic_search_ph:'Search a keyword: delay, claim, guarantee, variation, payment...', fidic_noresults:'No matching clauses found',
+    fidic_book:'FIDIC — Conditions of Contract for Construction (2017 Edition)', fidic_clause_no:'Clause', fidic_disclaimer:'A general reference summary for quick lookup only — does not replace the original contract text or specialist legal advice',
+    fidic_copy_ref:'Copy Clause Number', fidic_all_topics:'All Topics', fidic_results_count:'results',
+    nav_evm:'EVM Calculator & What-If',
+    evm_sub:"Cost and schedule performance per contract, with an interactive what-if productivity simulation",
+    evm_select_contract:'Select Contract', evm_no_contracts:'Add a contract first to use this tool',
+    evm_bac:'Budget at Completion (BAC)', evm_pv:'Planned Value (PV)', evm_ev:'Earned Value (EV)', evm_ac:'Actual Cost (AC)',
+    evm_cv:'Cost Variance (CV)', evm_sv:'Schedule Variance (SV)', evm_cpi:'Cost Performance Index (CPI)', evm_spi:'Schedule Performance Index (SPI)',
+    evm_eac:'Estimate at Completion (EAC)', evm_etc:'Estimate to Complete (ETC)', evm_vac:'Variance at Completion (VAC)',
+    evm_planned_pct:'Planned % Complete (per schedule)', evm_actual_cost:'Actual cost spent to date',
+    evm_use_latest_ipc:"Earned Value is auto-pulled from this contract's latest approved IPC",
+    evm_whatif_title:'What-If Simulation — Remaining Phase Productivity', evm_whatif_factor:'Assumed future productivity factor',
+    evm_whatif_note:"Drag the slider to simulate the team's performance improving or declining for the remaining project phase, and see its effect on the projected final cost",
+    evm_projected_eac:'Projected Final Cost After Simulation', evm_health:'Overall Performance Health',
+    evm_status_ahead:'Ahead of schedule and under planned cost', evm_status_behind_over:'Behind schedule and over cost',
+    evm_status_behind:'Behind schedule', evm_status_over:'Over cost vs. plan', evm_status_ontrack:'Roughly on track',
+    cloud_sync_btn:'Cloud Sync', cloud_title:'Cloud Sync (Supabase)',
+    cloud_intro:"Connect the app to a free Supabase project so your data isn't locked to one browser — access the same data from any device.",
+    cloud_url:'Project URL', cloud_key:'Anon/public key',
+    cloud_save_cfg:'Save Settings', cloud_test:'Test Connection', cloud_push:'⬆️ Push my current copy to cloud',
+    cloud_pull:'⬇️ Pull latest copy from cloud', cloud_status_connected:'Connected', cloud_status_none:'Not configured yet',
+    cloud_last_sync:'Last sync', cloud_never:'No sync yet',
+    cloud_pushed_msg:'Data pushed to cloud successfully', cloud_pulled_msg:'Data pulled from cloud successfully',
+    cloud_test_ok:'Connection successful ✓', cloud_test_fail:'Connection failed — check the URL, key, and table setup',
+    cloud_sql_title:'One-time table setup (run once in your project\'s SQL Editor)',
+    cloud_confirm_overwrite:'Pulling the cloud copy will overwrite all current data on this device. Continue?',
+    cloud_no_cfg:'Please save the project URL and key first',
+    downloadPdf:'Download PDF', pdf_generating:'Preparing...', pdf_saved_msg:'PDF downloaded successfully',
+    pdf_lib_error:'Could not generate the PDF — check your internet connection (the library loads once on first use) and try again',
+  }
+};
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || key; }
+
+function toggleLang(){
+  LANG = LANG === 'ar' ? 'en' : 'ar';
+  localStorage.setItem('pcm_lang', LANG);
+  applyDirection();
+  render();
+}
+function applyDirection(){
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = LANG === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('langBtnLabel').textContent = t('langToggleLabel');
+  const cb = document.getElementById('cloudBtnLabel'); if(cb) cb.textContent = t('cloud_sync_btn');
+}
+
+/* ---------- Menu structure ---------- */
+const MENU = [
+  {group:'grp_core', items:[
+    {key:'dashboard', icon:'📊', label:'nav_dashboard'},
+    {key:'vendors', icon:'🏢', label:'nav_vendors'},
+    {key:'projects', icon:'📁', label:'nav_projects'},
+  ]},
+  {group:'grp_proc', items:[
+    {key:'pr', icon:'📝', label:'nav_pr'},
+    {key:'rfq', icon:'📨', label:'nav_rfq'},
+    {key:'po', icon:'🧾', label:'nav_po'},
+  ]},
+  {group:'grp_contract', items:[
+    {key:'contracts', icon:'📜', label:'nav_contracts'},
+    {key:'bg', icon:'🏦', label:'nav_bg', badgeFn:countExpiringBG},
+    {key:'sla', icon:'⏱️', label:'nav_sla'},
+    {key:'co', icon:'🔀', label:'nav_co'},
+    {key:'claims', icon:'⚖️', label:'nav_claims', badgeFn:countUrgentClaims},
+    {key:'fidic', icon:'📚', label:'nav_fidic'},
+  ]},
+  {group:'grp_field', items:[
+    {key:'grn', icon:'📦', label:'nav_grn'},
+    {key:'mir', icon:'🔍', label:'nav_mir'},
+  ]},
+  {group:'grp_fin', items:[
+    {key:'ipc', icon:'💳', label:'nav_ipc'},
+    {key:'evm', icon:'📐', label:'nav_evm'},
+    {key:'reports', icon:'📈', label:'nav_reports'},
+  ]},
+];
+
+let CURRENT = 'dashboard';
+
+function countExpiringBG(){
+  return DB.bankGuarantees.filter(b => bgStatusOf(b) === 'EXPIRING_SOON').length || null;
+}
+function countUrgentClaims(){
+  const n = DB.claims.filter(c => c.status !== 'REJECTED' && daysBetween(todayISO(), c.timeBarDeadline) <= 7).length;
+  return n || null;
+}
+
+function renderMenu(){
+  const nav = document.getElementById('menuNav');
+  nav.innerHTML = '';
+  MENU.forEach(grp => {
+    const label = document.createElement('div');
+    label.className = 'grp-label';
+    label.textContent = t(grp.group);
+    nav.appendChild(label);
+    grp.items.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = item.key === CURRENT ? 'active' : '';
+      const badge = item.badgeFn ? item.badgeFn() : null;
+      btn.innerHTML = `<span class="ic">${item.icon}</span><span>${t(item.label)}</span>` + (badge ? `<span class="badge">${badge}</span>` : '');
+      btn.onclick = () => { CURRENT = item.key; document.getElementById('sidebar').classList.remove('open'); render(); };
+      nav.appendChild(btn);
+    });
+  });
+}
+
+/* ---------- Lookups ---------- */
+const vendorName = id => DB.vendors.find(v=>v.id===id)?.name || '—';
+const projectName = id => DB.projects.find(p=>p.id===id)?.name || '—';
+const contractLabel = id => { const c = DB.contracts.find(x=>x.id===id); return c ? `${c.code} — ${c.title}` : '—'; };
+const poLabel = id => { const p = DB.purchaseOrders.find(x=>x.id===id); return p ? `${p.code} — ${vendorName(p.vendorId)}` : '—'; };
+
+function statusPill(status){
+  const map = {
+    DRAFT:['pill-gray','statusDraft'], ACTIVE:['pill-green','statusActive'], CLOSED:['pill-gray','statusClosed'],
+    SUBMITTED:['pill-blue','statusSubmitted'], APPROVED:['pill-green','statusApproved'], REJECTED:['pill-red','statusRejected'],
+    ISSUED:['pill-blue',null], PENDING:['pill-amber',null], NOTIFIED:['pill-amber',null],
+    ACTIVE_BG:['pill-green',null], EXPIRING_SOON:['pill-amber',null], EXPIRED:['pill-red',null], RELEASED:['pill-gray',null],
+    PERFORMANCE_BOND:['pill-blue',null], ADVANCE_GUARANTEE:['pill-gold',null], BID_BOND:['pill-gray',null],
+    DRAFTIPC:['pill-gray',null], QS_IN_REVIEW:['pill-amber',null], CONSULTANT_APPROVED:['pill-blue',null],
+    FINANCE_AUDITED:['pill-blue',null], APPROVED_FOR_PAYMENT:['pill-green',null], PAID:['pill-green',null],
+  };
+  const [cls, key] = map[status] || ['pill-gray', null];
+  const label = key ? t(key) : humanize(status);
+  return `<span class="pill ${cls}">${label}</span>`;
+}
+function humanize(s){ return (s||'').toString().replaceAll('_',' '); }
+
+function bgStatusOf(bg){
+  const days = daysBetween(todayISO(), bg.expiryDate);
+  if(bg.status === 'RELEASED' || bg.status === 'CLAIMED') return bg.status;
+  if(days < 0) return 'EXPIRED';
+  if(days <= 30) return 'EXPIRING_SOON';
+  return 'ACTIVE_BG';
+}
+
+/* ---------- Toast ---------- */
+function toast(msg){
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span>✅</span><span>${msg}</span>`;
+  document.body.appendChild(el);
+  setTimeout(()=> el.remove(), 2600);
+}
+
+/* ---------- Modal helpers ---------- */
+function openModal(title, bodyHTML, footHTML, wide){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHTML;
+  document.getElementById('modalFoot').innerHTML = footHTML;
+  document.getElementById('modalBox').classList.toggle('wide', !!wide);
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); }
+document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target.id==='modalOverlay') closeModal(); });
+
+function confirmDelete(cb){
+  if(confirm(t('confirmDelete'))) cb();
+}
+
+/* ============================================================
+   RENDER: main dispatcher
+   ============================================================ */
+function render(){
+  applyDirection();
+  renderMenu();
+  const titles = {
+    dashboard:['dash_title','dash_sub'], vendors:['nav_vendors',null], projects:['nav_projects',null],
+    pr:['nav_pr',null], rfq:['nav_rfq',null], po:['nav_po',null],
+    contracts:['nav_contracts',null], bg:['nav_bg',null], sla:['nav_sla',null], co:['nav_co',null], claims:['nav_claims',null],
+    fidic:['nav_fidic','fidic_sub'],
+    grn:['nav_grn',null], mir:['nav_mir',null], ipc:['nav_ipc',null], evm:['nav_evm','evm_sub'], reports:['reports_title','reports_sub'],
+  };
+  const [tk, sk] = titles[CURRENT] || ['',null];
+  document.getElementById('pageTitle').textContent = t(tk);
+  document.getElementById('pageSub').textContent = sk ? t(sk) : '';
+  const topActions = document.getElementById('topActions');
+  topActions.innerHTML = '';
+
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  switch(CURRENT){
+    case 'dashboard': renderDashboard(content); break;
+    case 'vendors': renderVendors(content, topActions); break;
+    case 'projects': renderProjects(content, topActions); break;
+    case 'pr': renderPR(content, topActions); break;
+    case 'rfq': renderRFQ(content, topActions); break;
+    case 'po': renderPO(content, topActions); break;
+    case 'contracts': renderContracts(content, topActions); break;
+    case 'bg': renderBG(content, topActions); break;
+    case 'sla': renderSLA(content, topActions); break;
+    case 'co': renderCO(content, topActions); break;
+    case 'claims': renderClaims(content, topActions); break;
+    case 'fidic': renderFIDIC(content, topActions); break;
+    case 'grn': renderGRN(content, topActions); break;
+    case 'mir': renderMIR(content, topActions); break;
+    case 'ipc': renderIPC(content, topActions); break;
+    case 'evm': renderEVM(content, topActions); break;
+    case 'reports': renderReports(content, topActions); break;
+  }
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderDashboard(content){
+  const activeContracts = DB.contracts.filter(c=>c.status==='ACTIVE');
+  const totalActiveValue = activeContracts.reduce((s,c)=> s + Number(c.currentValue||0), 0);
+  const paidIPCs = DB.ipcs.filter(i=>['APPROVED_FOR_PAYMENT','PAID','FINANCE_AUDITED'].includes(i.status));
+  const totalPaidIPC = paidIPCs.reduce((s,i)=> s + ipcCalc(i).finalPayable, 0);
+  const retentionPool = DB.contracts.reduce((s,c)=> s + Math.min((c.currentValue||0)*(c.retentionRate||0)/100, (c.currentValue||0)*(c.retentionRate||0)/100), 0);
+
+  const bgExpiring = DB.bankGuarantees.filter(b=> bgStatusOf(b)==='EXPIRING_SOON' || bgStatusOf(b)==='EXPIRED');
+  const claimsUrgent = DB.claims.filter(c=> c.status!=='REJECTED' && daysBetween(todayISO(), c.timeBarDeadline) <= 14);
+  const slaOverdue = DB.slaMilestones.filter(m=> !m.completed && daysBetween(todayISO(), m.dueDate) < 0);
+  const riskCount = bgExpiring.length + claimsUrgent.length + slaOverdue.length;
+
+  const matched = DB.ipcs.filter(i=>i.threeWayMatched).length;
+  const matchRate = DB.ipcs.length ? Math.round((matched/DB.ipcs.length)*100) : 100;
+
+  let html = `<div class="grid kpi-grid">
+    ${kpiCard('kpi_active_contracts', '$'+fmt(totalActiveValue), 'ic-blue','📜', activeContracts.length + ' ' + (LANG==='ar'?'عقد نشط':'active contracts'))}
+    ${kpiCard('kpi_paid_ipc', '$'+fmt(totalPaidIPC), 'ic-green','💳', paidIPCs.length + ' ' + (LANG==='ar'?'مستخلص':'certificates'))}
+    ${kpiCard('kpi_retention', '$'+fmt(retentionPool), 'ic-gold','🔒', (LANG==='ar'?'إجمالي محتجزات حسن التنفيذ':'total performance retentions'))}
+    ${kpiCard('kpi_match', matchRate+'%', matchRate>=90?'ic-green':'ic-amber','✅', (LANG==='ar'?'PO + GRN/MIR + IPC':'PO + GRN/MIR + IPC'))}
+  </div>`;
+
+  html += `<div class="grid" style="grid-template-columns:1.6fr 1fr; align-items:start;">`;
+
+  // Recent IPC pipeline
+  html += `<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="font-size:15px; font-weight:800;">${t('recent_ipc')}</h3>
+      <button class="btn btn-sm" onclick="CURRENT='ipc'; render();">${t('view_all')}</button>
+    </div>
+    ${DB.ipcs.length===0 ? emptyState() : `<div class="table-wrap"><table><thead><tr>
+      <th>${t('col_code')}</th><th>${t('contractTitle')}</th><th>${t('col_amount')}</th><th>${t('ipcStatus')}</th><th>${t('ipcMatch')}</th>
+    </tr></thead><tbody>
+      ${DB.ipcs.slice().reverse().slice(0,6).map(i=>{
+        const calc = ipcCalc(i);
+        return `<tr>
+          <td class="mono">${i.code}</td>
+          <td>${contractLabel(i.contractId)}</td>
+          <td class="num">$${fmt(calc.finalPayable)}</td>
+          <td>${statusPill(i.status)}</td>
+          <td>${i.threeWayMatched ? '<span class="pill pill-green">'+t('matchedYes')+'</span>' : '<span class="pill pill-amber">'+t('matchedNo')+'</span>'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody></table></div>`}
+  </div>`;
+
+  // Risk radar
+  html += `<div class="card">
+    <h3 style="font-size:15px; font-weight:800; margin-bottom:4px;">${t('alerts_title')}</h3>
+    <p style="font-size:11.5px; color:var(--muted2); margin-bottom:14px;">${t('alerts_sub')}</p>`;
+
+  const alerts = [];
+  bgExpiring.forEach(b=>{
+    const days = daysBetween(todayISO(), b.expiryDate);
+    alerts.push({
+      icon:'🏦', sev: days<0?'red':'amber',
+      title: LANG==='ar' ? 'خطاب ضمان قارب على الانتهاء' : 'Bank guarantee expiring soon',
+      sub: b.code + ' — ' + contractLabel(b.contractId),
+      dl: days<0 ? `${t('overdueLabel')} ${Math.abs(days)} ${t('daysLabel')}` : `${t('dueIn')} ${days} ${t('daysLabel')}`
+    });
+  });
+  claimsUrgent.forEach(c=>{
+    const days = daysBetween(todayISO(), c.timeBarDeadline);
+    alerts.push({
+      icon:'⚖️', sev: days<=3?'red':'amber',
+      title: LANG==='ar' ? 'مهلة إشعار مطالبة تعاقدية' : 'Claim notice time-bar',
+      sub: c.code + ' — ' + contractLabel(c.contractId),
+      dl: days<0 ? `${t('overdueLabel')} ${Math.abs(days)} ${t('daysLabel')}` : `${t('dueIn')} ${days} ${t('daysLabel')}`
+    });
+  });
+  slaOverdue.forEach(m=>{
+    alerts.push({
+      icon:'⏱️', sev:'red',
+      title: LANG==='ar' ? 'شرط SLA متأخر عن الموعد' : 'Overdue SLA milestone',
+      sub: m.title + ' — ' + contractLabel(m.contractId),
+      dl: `${t('overdueLabel')} ${Math.abs(daysBetween(todayISO(), m.dueDate))} ${t('daysLabel')}`
+    });
+  });
+
+  html += alerts.length===0 ? `<div class="empty-state"><div class="ic">✅</div>${t('no_alerts')}</div>` :
+    alerts.map(a=> `<div class="alert-item">
+      <div class="aic ${a.sev==='red'?'ic-red':'ic-amber'}">${a.icon}</div>
+      <div><h4>${a.title}</h4><p>${a.sub}</p><div class="adl" style="color:${a.sev==='red'?'#ff8f97':'#ffc35c'}">${a.dl}</div></div>
+    </div>`).join('');
+
+  html += `</div></div>`;
+  content.innerHTML = html;
+}
+function kpiCard(labelKey, val, iconCls, icon, note){
+  return `<div class="card kpi">
+    <div>
+      <div class="lbl">${t(labelKey)}</div>
+      <div class="val">${val}</div>
+      <div class="note">${note}</div>
+    </div>
+    <div class="icon ${iconCls}">${icon}</div>
+  </div>`;
+}
+function emptyState(){
+  return `<div class="empty-state"><div class="ic">🗂️</div><div>${t('noData')}</div></div>`;
+}
+
+/* ============================================================
+   GENERIC CRUD TABLE RENDERER
+   ============================================================ */
+function crudHeader(topActions, addLabel, onAdd){
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-primary';
+  btn.innerHTML = `<span>➕</span> ${addLabel}`;
+  btn.onclick = onAdd;
+  topActions.appendChild(btn);
+}
+
+/* ============================================================
+   VENDORS
+   ============================================================ */
+function renderVendors(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openVendorForm());
+  const rows = DB.vendors.map(v => `<tr>
+    <td><strong>${v.name}</strong><div class="helptext">${v.contact||''}</div></td>
+    <td class="mono">${v.cr}</td>
+    <td class="mono">${v.vat}</td>
+    <td>${v.phone||''}<div class="helptext">${v.email||''}</div></td>
+    <td class="num">⭐ ${v.score||0}</td>
+    <td>${v.vetted ? '<span class="pill pill-green">'+(LANG==='ar'?'معتمد':'Vetted')+'</span>' : '<span class="pill pill-gray">'+(LANG==='ar'?'قيد التقييم':'Unvetted')+'</span>'}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openVendorForm('${v.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('vendors','${v.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('vendorName')}</th><th>${t('vendorCR')}</th><th>${t('vendorVAT')}</th><th>${t('vendorPhone')}</th>
+    <th>${t('vendorScore')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="7">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openVendorForm(id){
+  const v = id ? DB.vendors.find(x=>x.id===id) : {name:'',cr:'',vat:'',contact:'',phone:'',email:'',score:5,vetted:false};
+  const body = `
+    <div class="field"><label>${t('vendorName')}</label><input id="f_name" value="${v.name||''}"></div>
+    <div class="field-row">
+      <div class="field"><label>${t('vendorCR')}</label><input id="f_cr" value="${v.cr||''}"></div>
+      <div class="field"><label>${t('vendorVAT')}</label><input id="f_vat" value="${v.vat||''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('vendorContact')}</label><input id="f_contact" value="${v.contact||''}"></div>
+      <div class="field"><label>${t('vendorPhone')}</label><input id="f_phone" value="${v.phone||''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('vendorEmail')}</label><input id="f_email" value="${v.email||''}"></div>
+      <div class="field"><label>${t('vendorScore')}</label><input id="f_score" type="number" step="0.1" min="0" max="5" value="${v.score||5}"></div>
+    </div>
+    <div class="field"><label><input type="checkbox" id="f_vetted" ${v.vetted?'checked':''} style="width:auto; display:inline-block; margin-inline-end:6px;">${t('vendorVetted')}</label></div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveVendor('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'مورد جديد':'New Vendor'), body, foot);
+}
+function saveVendor(id){
+  const data = {
+    name: val('f_name'), cr: val('f_cr'), vat: val('f_vat'), contact: val('f_contact'),
+    phone: val('f_phone'), email: val('f_email'), score: parseFloat(val('f_score'))||0,
+    vetted: document.getElementById('f_vetted').checked,
+  };
+  if(id){ Object.assign(DB.vendors.find(v=>v.id===id), data); }
+  else { data.id = uid(); DB.vendors.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+function val(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+function renderProjects(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openProjectForm());
+  const rows = DB.projects.map(p => `<tr>
+    <td class="mono">${p.code}</td><td><strong>${p.name}</strong></td>
+    <td class="num">$${fmt(p.budget)}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openProjectForm('${p.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('projects','${p.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('projectCode')}</th><th>${t('projectName')}</th><th>${t('projectBudget')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="4">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openProjectForm(id){
+  const p = id ? DB.projects.find(x=>x.id===id) : {code:'PRJ-0'+(DB.projects.length+1), name:'', budget:0};
+  const body = `
+    <div class="field-row">
+      <div class="field"><label>${t('projectCode')}</label><input id="f_code" value="${p.code}"></div>
+      <div class="field"><label>${t('projectBudget')}</label><input id="f_budget" type="number" value="${p.budget}"></div>
+    </div>
+    <div class="field"><label>${t('projectName')}</label><input id="f_name" value="${p.name}"></div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveProject('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'مشروع جديد':'New Project'), body, foot);
+}
+function saveProject(id){
+  const data = { code:val('f_code'), name:val('f_name'), budget:parseFloat(val('f_budget'))||0 };
+  if(id){ Object.assign(DB.projects.find(p=>p.id===id), data); }
+  else { data.id = uid(); DB.projects.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   PURCHASE REQUISITIONS (PR)
+   ============================================================ */
+function renderPR(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openPRForm());
+  const rows = DB.purchaseRequisitions.map(p => `<tr>
+    <td class="mono">${p.code}</td><td>${projectName(p.projectId)}</td><td>${p.requestedBy}</td>
+    <td class="mono">${p.costCenter||'-'}</td>
+    <td class="num">$${fmt(prTotal(p))}</td>
+    <td>${statusPill(p.status)}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openPRForm('${p.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('purchaseRequisitions','${p.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('prProject')}</th><th>${t('prReqBy')}</th><th>${t('prCostCenter')}</th>
+    <th>${t('col_amount')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="7">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function prTotal(p){ return (p.items||[]).reduce((s,i)=> s + (Number(i.qty)||0)*(Number(i.price)||0), 0); }
+function openPRForm(id){
+  const p = id ? DB.purchaseRequisitions.find(x=>x.id===id) : {code:'PR-2026-'+String(DB.purchaseRequisitions.length+1).padStart(4,'0'), projectId:DB.projects[0]?.id||'', requestedBy:'', costCenter:'', status:'DRAFT', items:[]};
+  const items = p.items && p.items.length ? p.items : [{id:uid(),desc:'',unit:'',qty:1,price:0}];
+  const body = `
+    <div class="field-row3">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${p.code}"></div>
+      <div class="field"><label>${t('prProject')}</label><select id="f_project">${projectOptions(p.projectId)}</select></div>
+      <div class="field"><label>${t('prStatus')}</label><select id="f_status">${statusOptions(['DRAFT','SUBMITTED','APPROVED','REJECTED'], p.status)}</select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('prReqBy')}</label><input id="f_reqby" value="${p.requestedBy}"></div>
+      <div class="field"><label>${t('prCostCenter')}</label><input id="f_cc" value="${p.costCenter||''}"></div>
+    </div>
+    <div class="field"><label>${t('prItems')}</label>
+      <div class="items-editor"><table><thead><tr>
+        <th>${t('itemDesc')}</th><th>${t('itemUnit')}</th><th>${t('itemQty')}</th><th>${t('itemPrice')}</th><th></th>
+      </tr></thead><tbody id="itemsBody"></tbody></table></div>
+      <button class="btn btn-sm tiny-btn" style="margin-top:8px;" onclick="addItemRow()">➕ ${t('addItem')}</button>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="savePR('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'طلب شراء جديد':'New Requisition'), body, foot);
+  window._items = items.map(i=>({...i}));
+  renderItemRows();
+}
+function projectOptions(sel){ return DB.projects.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${p.name}</option>`).join(''); }
+function vendorOptions(sel){ return `<option value="">—</option>` + DB.vendors.map(v=>`<option value="${v.id}" ${v.id===sel?'selected':''}>${v.name}</option>`).join(''); }
+function contractOptions(sel, allowEmpty){ return (allowEmpty?`<option value="">—</option>`:'') + DB.contracts.map(c=>`<option value="${c.id}" ${c.id===sel?'selected':''}>${c.code} — ${c.title}</option>`).join(''); }
+function poOptions(sel){ return DB.purchaseOrders.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${p.code} — ${vendorName(p.vendorId)}</option>`).join(''); }
+function grnOptions(sel){ return `<option value="">—</option>` + DB.grns.map(g=>`<option value="${g.id}" ${g.id===sel?'selected':''}>${g.code}</option>`).join(''); }
+function statusOptions(list, sel){ return list.map(s=>`<option value="${s}" ${s===sel?'selected':''}>${t('status'+cap(s.toLowerCase().replace(/_./g,m=>m[1].toUpperCase()))) || humanize(s)}</option>`).join(''); }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function renderItemRows(){
+  const body = document.getElementById('itemsBody');
+  if(!body) return;
+  body.innerHTML = window._items.map((it,idx) => `<tr>
+    <td><input value="${it.desc}" onchange="window._items[${idx}].desc=this.value"></td>
+    <td><input value="${it.unit}" onchange="window._items[${idx}].unit=this.value" style="width:70px;"></td>
+    <td><input type="number" value="${it.qty}" onchange="window._items[${idx}].qty=this.value" style="width:70px;"></td>
+    <td><input type="number" value="${it.price}" onchange="window._items[${idx}].price=this.value" style="width:90px;"></td>
+    <td><button class="iconbtn danger" onclick="removeItemRow(${idx})">✕</button></td>
+  </tr>`).join('');
+}
+function addItemRow(){ window._items.push({id:uid(),desc:'',unit:'',qty:1,price:0}); renderItemRows(); }
+function removeItemRow(idx){ window._items.splice(idx,1); renderItemRows(); }
+
+function savePR(id){
+  const data = {
+    code:val('f_code'), projectId:val('f_project'), requestedBy:val('f_reqby'), costCenter:val('f_cc'),
+    status:val('f_status'), items: window._items.filter(i=>i.desc)
+  };
+  if(id){ Object.assign(DB.purchaseRequisitions.find(p=>p.id===id), data); }
+  else { data.id = uid(); DB.purchaseRequisitions.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   RFQ / TENDERS
+   ============================================================ */
+function renderRFQ(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openRFQForm());
+  const rows = DB.rfqs.map(r => `<tr>
+    <td class="mono">${r.code}</td><td><strong>${r.title}</strong></td>
+    <td class="mono">${r.deadline}</td><td class="num">${(r.bids||[]).length}</td>
+    <td>${statusPill(r.status)}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openRFQForm('${r.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('rfqs','${r.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('rfqTitle')}</th><th>${t('rfqDeadline')}</th><th>${t('rfqBids')}</th>
+    <th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="6">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openRFQForm(id){
+  const r = id ? DB.rfqs.find(x=>x.id===id) : {code:'RFQ-2026-'+String(DB.rfqs.length+1).padStart(4,'0'), title:'', deadline:todayISO(), status:'DRAFT', bids:[]};
+  window._bids = r.bids ? r.bids.map(b=>({...b})) : [];
+  const body = `
+    <div class="field-row3">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${r.code}"></div>
+      <div class="field"><label>${t('rfqDeadline')}</label><input id="f_deadline" type="date" value="${r.deadline}"></div>
+      <div class="field"><label>${t('rfqStatus')}</label><select id="f_status">${statusOptions(['DRAFT','SUBMITTED','APPROVED','REJECTED'], r.status)}</select></div>
+    </div>
+    <div class="field"><label>${t('rfqTitle')}</label><input id="f_title" value="${r.title}"></div>
+    <div class="field"><label>${t('rfqBids')}</label>
+      <div class="items-editor"><table><thead><tr>
+        <th>${t('bidVendor')}</th><th>${t('bidTech')}</th><th>${t('bidAmount')}</th><th>${t('bidAward')}</th><th></th>
+      </tr></thead><tbody id="bidsBody"></tbody></table></div>
+      <button class="btn btn-sm tiny-btn" style="margin-top:8px;" onclick="addBidRow()">➕ ${t('addBid')}</button>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveRFQ('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'مناقصة جديدة':'New RFQ'), body, foot, true);
+  renderBidRows();
+}
+function renderBidRows(){
+  const body = document.getElementById('bidsBody');
+  if(!body) return;
+  body.innerHTML = window._bids.map((b,idx)=> `<tr>
+    <td><select onchange="window._bids[${idx}].vendorId=this.value" style="min-width:160px;">${vendorOptions(b.vendorId)}</select></td>
+    <td><input type="number" value="${b.techScore||0}" onchange="window._bids[${idx}].techScore=this.value" style="width:80px;"></td>
+    <td><input type="number" value="${b.amount||0}" onchange="window._bids[${idx}].amount=this.value" style="width:100px;"></td>
+    <td style="text-align:center;"><input type="checkbox" ${b.awarded?'checked':''} onchange="window._bids[${idx}].awarded=this.checked; renderBidRows();" style="width:auto;"></td>
+    <td><button class="iconbtn danger" onclick="window._bids.splice(${idx},1); renderBidRows();">✕</button></td>
+  </tr>`).join('');
+}
+function addBidRow(){ window._bids.push({id:uid(), vendorId:DB.vendors[0]?.id||'', techScore:0, amount:0, awarded:false}); renderBidRows(); }
+function saveRFQ(id){
+  const data = { code:val('f_code'), title:val('f_title'), deadline:val('f_deadline'), status:val('f_status'), bids:window._bids.filter(b=>b.vendorId) };
+  if(id){ Object.assign(DB.rfqs.find(r=>r.id===id), data); }
+  else { data.id = uid(); DB.rfqs.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   PURCHASE ORDERS (PO)
+   ============================================================ */
+function poCalc(p){
+  const subtotal = (p.items||[]).reduce((s,i)=> s + (Number(i.qty)||0)*(Number(i.price)||0), 0);
+  const vat = subtotal * (Number(p.vatRate)||0)/100;
+  return { subtotal, vat, total: subtotal+vat };
+}
+function renderPO(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openPOForm());
+  const rows = DB.purchaseOrders.map(p => {
+    const calc = poCalc(p);
+    const signed = p.signature && p.signature.fingerprint === docFingerprint(p);
+    return `<tr>
+      <td class="mono">${p.code}</td><td>${vendorName(p.vendorId)}</td><td>${projectName(p.projectId)}</td>
+      <td class="mono">${p.deliveryDate}</td><td class="num">$${fmt(calc.total)}</td>
+      <td>${statusPill(p.status)} ${signed?'<span class="pill pill-gold" style="background:rgba(201,162,75,.18); color:#e0bd6b;">🔏 '+t('sig_pill')+'</span>':''}</td>
+      <td><div class="row-actions">
+        <button class="iconbtn" onclick="printPO('${p.id}')" title="${t('printDoc')}">🖨️</button>
+        <button class="iconbtn" onclick="openPOForm('${p.id}')">✏️</button>
+        <button class="iconbtn danger" onclick="deleteRecord('purchaseOrders','${p.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('poVendor')}</th><th>${t('poProject')}</th><th>${t('poDelivery')}</th>
+    <th>${t('col_amount')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="7">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openPOForm(id){
+  const p = id ? DB.purchaseOrders.find(x=>x.id===id) : {
+    code:'PO-2026-'+String(DB.purchaseOrders.length+1).padStart(4,'0'), vendorId:DB.vendors[0]?.id||'', projectId:DB.projects[0]?.id||'',
+    contractId:'', deliveryDate:todayISO(), status:'ISSUED', vatRate:14, ldRate:0.5, ldCap:10, items:[]
+  };
+  window._items = (p.items && p.items.length ? p.items : [{id:uid(),desc:'',unit:'',qty:1,price:0}]).map(i=>({...i}));
+  const body = `
+    <div class="field-row3">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${p.code}"></div>
+      <div class="field"><label>${t('poVendor')}</label><select id="f_vendor">${vendorOptions(p.vendorId)}</select></div>
+      <div class="field"><label>${t('poProject')}</label><select id="f_project">${projectOptions(p.projectId)}</select></div>
+    </div>
+    <div class="field-row3">
+      <div class="field"><label>${t('poContract')}</label><select id="f_contract">${contractOptions(p.contractId, true)}</select></div>
+      <div class="field"><label>${t('poDelivery')}</label><input id="f_delivery" type="date" value="${p.deliveryDate}"></div>
+      <div class="field"><label>${t('poStatus')}</label><select id="f_status">${statusOptions(['ISSUED','PARTIALLY_DELIVERED','FULLY_DELIVERED','CLOSED','CANCELLED'], p.status)}</select></div>
+    </div>
+    <div class="field-row3">
+      <div class="field"><label>${t('poVat')}</label><input id="f_vat" type="number" value="${p.vatRate}"></div>
+      <div class="field"><label>${t('poLD')}</label><input id="f_ld" type="number" step="0.1" value="${p.ldRate}"></div>
+      <div class="field"><label>${t('poLDCap')}</label><input id="f_ldcap" type="number" value="${p.ldCap}"></div>
+    </div>
+    <div class="field"><label>${t('poItems')}</label>
+      <div class="items-editor"><table><thead><tr>
+        <th>${t('itemDesc')}</th><th>${t('itemUnit')}</th><th>${t('itemQty')}</th><th>${t('itemPrice')}</th><th></th>
+      </tr></thead><tbody id="itemsBody"></tbody></table></div>
+      <button class="btn btn-sm tiny-btn" style="margin-top:8px;" onclick="addItemRow()">➕ ${t('addItem')}</button>
+      <div id="poTotals" style="margin-top:12px; font-size:13px; text-align:end;"></div>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="savePO('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'أمر شراء جديد':'New Purchase Order'), body, foot, true);
+  renderItemRowsPO();
+}
+function renderItemRowsPO(){
+  renderItemRows();
+  updatePOTotals();
+  document.getElementById('itemsBody').addEventListener('input', updatePOTotals);
+  document.getElementById('f_vat')?.addEventListener('input', updatePOTotals);
+}
+function updatePOTotals(){
+  const vatRate = parseFloat(document.getElementById('f_vat')?.value)||0;
+  const subtotal = window._items.reduce((s,i)=> s + (Number(i.qty)||0)*(Number(i.price)||0), 0);
+  const vat = subtotal*vatRate/100;
+  const totalsEl = document.getElementById('poTotals');
+  if(totalsEl){
+    totalsEl.innerHTML = `${t('subtotal')}: <strong>$${fmt(subtotal)}</strong> &nbsp;|&nbsp; ${t('vatAmount')}: <strong>$${fmt(vat)}</strong> &nbsp;|&nbsp; ${t('grandTotal')}: <strong style="color:#7fb0ff;">$${fmt(subtotal+vat)}</strong>`;
+  }
+}
+function savePO(id){
+  const data = {
+    code:val('f_code'), vendorId:val('f_vendor'), projectId:val('f_project'), contractId:val('f_contract')||'',
+    deliveryDate:val('f_delivery'), status:val('f_status'), vatRate:parseFloat(val('f_vat'))||0,
+    ldRate:parseFloat(val('f_ld'))||0, ldCap:parseFloat(val('f_ldcap'))||0, items: window._items.filter(i=>i.desc)
+  };
+  if(id){ Object.assign(DB.purchaseOrders.find(p=>p.id===id), data); }
+  else { data.id = uid(); DB.purchaseOrders.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+function printPO(id){
+  const p = DB.purchaseOrders.find(x=>x.id===id);
+  const v = DB.vendors.find(x=>x.id===p.vendorId);
+  const calc = poCalc(p);
+  const itemsRows = (p.items||[]).map((i,idx)=> `<tr><td>${idx+1}</td><td>${i.desc}</td><td>${i.unit}</td><td>${i.qty}</td><td>${fmt(i.price)}</td><td>${fmt((i.qty||0)*(i.price||0))}</td></tr>`).join('');
+  const html = `
+    <h2>${LANG==='ar'?'أمر شراء معتمد':'Purchase Order'}</h2>
+    <div class="sub">${p.code} — ${todayISO()}</div>
+    <table><tr><td><strong>${LANG==='ar'?'المورد':'Vendor'}:</strong> ${v?.name||''}</td><td><strong>${LANG==='ar'?'السجل التجاري':'CR'}:</strong> ${v?.cr||''}</td></tr>
+    <tr><td><strong>${LANG==='ar'?'المشروع':'Project'}:</strong> ${projectName(p.projectId)}</td><td><strong>${LANG==='ar'?'تاريخ التسليم':'Delivery'}:</strong> ${p.deliveryDate}</td></tr></table>
+    <table><thead><tr><th>#</th><th>${t('itemDesc')}</th><th>${t('itemUnit')}</th><th>${t('itemQty')}</th><th>${t('itemPrice')}</th><th>${t('itemTotal')}</th></tr></thead>
+    <tbody>${itemsRows}</tbody>
+    <tfoot>
+      <tr class="totalrow"><td colspan="5">${t('subtotal')}</td><td>${fmt(calc.subtotal)}</td></tr>
+      <tr class="totalrow"><td colspan="5">${t('vatAmount')} (${p.vatRate}%)</td><td>${fmt(calc.vat)}</td></tr>
+      <tr class="totalrow"><td colspan="5">${t('grandTotal')}</td><td>${fmt(calc.total)}</td></tr>
+    </tfoot></table>
+    <p style="margin-top:12px; font-size:11.5px; color:#444;">${LANG==='ar'?'غرامة تأخير':'LD rate'}: ${p.ldRate}% ${LANG==='ar'?'يومياً بحد أقصى':'/day, capped at'} ${p.ldCap}%</p>
+    <div class="sign"><div>${LANG==='ar'?'اعتماد الجهة المصدرة':'Issued By'}</div><div>${LANG==='ar'?'اعتماد المورد':'Accepted By'}</div></div>
+  `;
+  openPrintPreview(html, 'purchaseOrders', id, docFingerprint(p), p.code);
+}
+
+/* ---------- Digital signature (Canvas + SHA-256) ---------- */
+let _sigCtx = null; // {collection, id, fingerprint}
+let _sigDrawing = false, _sigCanvasEl = null, _sigCanvasCtx = null;
+
+function docFingerprint(record){
+  // Stable string of the record's meaningful content, used to detect later edits that should invalidate a signature
+  const clone = Object.assign({}, record);
+  delete clone.signature;
+  return JSON.stringify(clone);
+}
+
+function renderSignatureSection(collection, id, fingerprint){
+  const record = DB[collection].find(x=>x.id===id);
+  const sig = record?.signature;
+  const stillValid = sig && sig.fingerprint === fingerprint;
+  if(stillValid){
+    return `<div class="signed-block">
+      <img src="${sig.dataUrl}" alt="signature">
+      <div class="sig-meta">
+        <div><strong>${t('sig_signed_title')}</strong></div>
+        <div>${t('sig_signed_by')}: ${sig.signerName}</div>
+        <div>${t('sig_signed_at')}: ${sig.signedAt}</div>
+        <div class="sig-hash">${t('sig_hash_label')}: ${sig.hash}</div>
+        <button class="btn btn-sm no-print" style="margin-top:6px;" onclick="copySigHash('${sig.hash}')">📋 ${t('sig_copy')}</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="sigpad-box no-print">
+    <h4>🔏 ${t('sig_title')}</h4>
+    <div class="field"><label>${t('sig_name')}</label><input id="sigSignerName" placeholder="${LANG==='ar'?'مثال: م. وائل عويس — مدير العقود':'e.g. Eng. Wael Oweis — Contracts Manager'}"></div>
+    <canvas id="sigCanvas" width="760" height="150"></canvas>
+    <div class="sigpad-actions">
+      <button class="btn btn-sm" onclick="clearSigCanvas()">🧹 ${t('sig_clear')}</button>
+      <button class="btn btn-gold btn-sm" onclick="certifySignature()">🔏 ${t('sig_certify')}</button>
+    </div>
+    <div class="helptext" style="margin-top:8px;">${t('sig_verify_note')}</div>
+  </div>`;
+}
+
+function initSigCanvas(){
+  const canvas = document.getElementById('sigCanvas');
+  if(!canvas) return;
+  // scale for crispness
+  const ratio = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * ratio;
+  canvas.height = rect.height * ratio;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(ratio, ratio);
+  ctx.strokeStyle = '#111';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  _sigCanvasEl = canvas; _sigCanvasCtx = ctx;
+
+  const pos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+    return {x:cx, y:cy};
+  };
+  const start = (e) => { _sigDrawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); e.preventDefault(); };
+  const move = (e) => { if(!_sigDrawing) return; const p = pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); e.preventDefault(); };
+  const end = () => { _sigDrawing = false; };
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+}
+function clearSigCanvas(){
+  if(!_sigCanvasEl) return;
+  const ratio = window.devicePixelRatio || 1;
+  _sigCanvasCtx.clearRect(0,0,_sigCanvasEl.width/ratio, _sigCanvasEl.height/ratio);
+}
+function isCanvasBlank(canvas){
+  const blank = document.createElement('canvas');
+  blank.width = canvas.width; blank.height = canvas.height;
+  return canvas.toDataURL() === blank.toDataURL();
+}
+async function sha256Hex(str){
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function certifySignature(){
+  const name = document.getElementById('sigSignerName')?.value.trim();
+  if(!name){ alert(t('sig_name_required')); return; }
+  if(!_sigCanvasEl || isCanvasBlank(_sigCanvasEl)){ alert(t('sig_draw_required')); return; }
+  const { collection, id, fingerprint } = _sigCtx;
+  const record = DB[collection].find(x=>x.id===id);
+  const dataUrl = _sigCanvasEl.toDataURL('image/png');
+  const signedAt = new Date().toISOString().replace('T',' ').slice(0,19);
+  const payload = fingerprint + '|' + name + '|' + signedAt;
+  const hash = await sha256Hex(payload);
+  record.signature = { dataUrl, signerName:name, signedAt, hash, fingerprint };
+  save(); toast(t('sig_certified_msg'));
+  // refresh the same print preview to show the signed block
+  if(collection === 'purchaseOrders') printPO(id); else if(collection === 'ipcs') printIPC(id);
+}
+function copySigHash(hash){
+  navigator.clipboard?.writeText(hash);
+  toast(t('sig_copy'));
+}
+
+function openPrintPreview(innerHTML, collection, id, fingerprint, docName){
+  let sigHTML = '';
+  if(collection && id){
+    _sigCtx = { collection, id, fingerprint };
+    sigHTML = renderSignatureSection(collection, id, fingerprint);
+  }
+  window._currentPdfName = docName || 'document';
+  const body = `<div class="doc-preview">${innerHTML}${sigHTML}</div>`;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-gold" id="pdfDownloadBtn" onclick="downloadAsPDF()">📄 ${t('downloadPdf')}</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨️ ${t('printDoc')}</button>`;
+  openModal(t('printDoc'), body, foot, true);
+  if(collection && id){ setTimeout(initSigCanvas, 30); }
+}
+
+async function downloadAsPDF(selector, filenameOverride){
+  const btn = document.getElementById('pdfDownloadBtn');
+  const el = document.querySelector(selector || '#modalBody .doc-preview');
+  if(!el) return;
+  if(typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined'){
+    alert(t('pdf_lib_error'));
+    return;
+  }
+  const originalLabel = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ ' + t('pdf_generating'); }
+  try{
+    const canvas = await html2canvas(el, {scale:2, backgroundColor:'#ffffff', useCORS:true});
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p','mm','a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while(heightLeft > 0){
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    pdf.save(`${filenameOverride || window._currentPdfName || 'document'}.pdf`);
+    toast(t('pdf_saved_msg'));
+  }catch(e){
+    alert(t('pdf_lib_error'));
+  }finally{
+    if(btn){ btn.disabled = false; btn.innerHTML = originalLabel; }
+  }
+}
+
+/* ============================================================
+   CONTRACTS
+   ============================================================ */
+function renderContracts(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openContractForm());
+  const rows = DB.contracts.map(c => `<tr>
+    <td class="mono">${c.code}</td><td><strong>${c.title}</strong><div class="helptext">${vendorName(c.vendorId)}</div></td>
+    <td>${projectName(c.projectId)}</td>
+    <td class="num">$${fmt(c.currentValue)}</td>
+    <td class="mono">${c.endDate}</td>
+    <td>${statusPill(c.status)}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openContractForm('${c.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('contracts','${c.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('contractTitle')}</th><th>${t('contractProject')}</th>
+    <th>${t('contractCurrent')}</th><th>${t('endDate')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="7">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openContractForm(id){
+  const c = id ? DB.contracts.find(x=>x.id===id) : {
+    code:'CNT-2026-'+String(DB.contracts.length+1).padStart(4,'0'), title:'', projectId:DB.projects[0]?.id||'', vendorId:DB.vendors[0]?.id||'',
+    originalValue:0, currentValue:0, advanceRate:10, retentionRate:5, vatRate:14, startDate:todayISO(), endDate:todayISO(), status:'DRAFT', prevPaid:0
+  };
+  const body = `
+    <div class="field-row">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${c.code}"></div>
+      <div class="field"><label>${t('contractStatus')}</label><select id="f_status">${statusOptions(['DRAFT','ACTIVE','CLOSED'], c.status)}</select></div>
+    </div>
+    <div class="field"><label>${t('contractTitle')}</label><input id="f_title" value="${c.title}"></div>
+    <div class="field-row">
+      <div class="field"><label>${t('contractProject')}</label><select id="f_project">${projectOptions(c.projectId)}</select></div>
+      <div class="field"><label>${t('contractVendor')}</label><select id="f_vendor">${vendorOptions(c.vendorId)}</select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('contractOriginal')}</label><input id="f_orig" type="number" value="${c.originalValue}"></div>
+      <div class="field"><label>${t('contractCurrent')}</label><input id="f_cur" type="number" value="${c.currentValue}"></div>
+    </div>
+    <div class="field-row3">
+      <div class="field"><label>${t('advanceRate')}</label><input id="f_adv" type="number" value="${c.advanceRate}"></div>
+      <div class="field"><label>${t('retentionRate')}</label><input id="f_ret" type="number" value="${c.retentionRate}"></div>
+      <div class="field"><label>${t('vatRate')}</label><input id="f_vat" type="number" value="${c.vatRate}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('startDate')}</label><input id="f_start" type="date" value="${c.startDate}"></div>
+      <div class="field"><label>${t('endDate')}</label><input id="f_end" type="date" value="${c.endDate}"></div>
+    </div>
+    <div class="field"><label>${t('prevPaid')}</label><input id="f_prevpaid" type="number" value="${c.prevPaid||0}"></div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveContract('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'عقد جديد':'New Contract'), body, foot, true);
+}
+function saveContract(id){
+  const data = {
+    code:val('f_code'), title:val('f_title'), projectId:val('f_project'), vendorId:val('f_vendor'),
+    originalValue:parseFloat(val('f_orig'))||0, currentValue:parseFloat(val('f_cur'))||0,
+    advanceRate:parseFloat(val('f_adv'))||0, retentionRate:parseFloat(val('f_ret'))||0, vatRate:parseFloat(val('f_vat'))||0,
+    startDate:val('f_start'), endDate:val('f_end'), status:val('f_status'), prevPaid:parseFloat(val('f_prevpaid'))||0
+  };
+  if(id){ Object.assign(DB.contracts.find(c=>c.id===id), data); }
+  else { data.id = uid(); DB.contracts.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   BANK GUARANTEES
+   ============================================================ */
+function renderBG(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openBGForm());
+  const rows = DB.bankGuarantees.map(b => {
+    const st = bgStatusOf(b);
+    const days = daysBetween(todayISO(), b.expiryDate);
+    return `<tr>
+      <td class="mono">${b.code}</td><td>${contractLabel(b.contractId)}</td><td>${b.bank}</td>
+      <td>${statusPill(b.type)}</td><td class="num">$${fmt(b.amount)}</td>
+      <td class="mono">${b.expiryDate} ${st==='EXPIRING_SOON'?`<div class="helptext" style="color:#ffc35c;">${t('dueIn')} ${days} ${t('daysLabel')}</div>`:''}${st==='EXPIRED'?`<div class="helptext" style="color:#ff8f97;">${t('overdueLabel')} ${Math.abs(days)} ${t('daysLabel')}</div>`:''}</td>
+      <td>${statusPill(st)}</td>
+      <td><div class="row-actions">
+        <button class="iconbtn" onclick="openBGForm('${b.id}')">✏️</button>
+        <button class="iconbtn danger" onclick="deleteRecord('bankGuarantees','${b.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('bgContract')}</th><th>${t('bgBank')}</th><th>${t('bgType')}</th>
+    <th>${t('bgAmount')}</th><th>${t('bgExpiry')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="8">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openBGForm(id){
+  const b = id ? DB.bankGuarantees.find(x=>x.id===id) : {code:'BG-2026-'+String(DB.bankGuarantees.length+1).padStart(4,'0'), contractId:DB.contracts[0]?.id||'', bank:'', type:'PERFORMANCE_BOND', amount:0, issueDate:todayISO(), expiryDate:addDays(todayISO(),180), status:'ACTIVE'};
+  const body = `
+    <div class="field-row">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${b.code}"></div>
+      <div class="field"><label>${t('bgContract')}</label><select id="f_contract">${contractOptions(b.contractId)}</select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('bgBank')}</label><input id="f_bank" value="${b.bank}"></div>
+      <div class="field"><label>${t('bgType')}</label><select id="f_type">
+        <option value="BID_BOND" ${b.type==='BID_BOND'?'selected':''}>${LANG==='ar'?'ضمان ابتدائي':'Bid Bond'}</option>
+        <option value="PERFORMANCE_BOND" ${b.type==='PERFORMANCE_BOND'?'selected':''}>${LANG==='ar'?'ضمان حسن تنفيذ':'Performance Bond'}</option>
+        <option value="ADVANCE_GUARANTEE" ${b.type==='ADVANCE_GUARANTEE'?'selected':''}>${LANG==='ar'?'ضمان دفعة مقدمة':'Advance Guarantee'}</option>
+      </select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('bgAmount')}</label><input id="f_amount" type="number" value="${b.amount}"></div>
+      <div class="field"><label>${t('bgStatus')}</label><select id="f_status">
+        <option value="ACTIVE" ${b.status==='ACTIVE'?'selected':''}>${LANG==='ar'?'ساري':'Active'}</option>
+        <option value="CLAIMED" ${b.status==='CLAIMED'?'selected':''}>${LANG==='ar'?'مصادر':'Claimed'}</option>
+        <option value="RELEASED" ${b.status==='RELEASED'?'selected':''}>${LANG==='ar'?'مفرج عنه':'Released'}</option>
+      </select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('bgIssue')}</label><input id="f_issue" type="date" value="${b.issueDate}"></div>
+      <div class="field"><label>${t('bgExpiry')}</label><input id="f_expiry" type="date" value="${b.expiryDate}"></div>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveBG('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'ضمان بنكي جديد':'New Bank Guarantee'), body, foot);
+}
+function saveBG(id){
+  const data = { code:val('f_code'), contractId:val('f_contract'), bank:val('f_bank'), type:val('f_type'),
+    amount:parseFloat(val('f_amount'))||0, issueDate:val('f_issue'), expiryDate:val('f_expiry'), status:val('f_status') };
+  if(id){ Object.assign(DB.bankGuarantees.find(b=>b.id===id), data); }
+  else { data.id = uid(); DB.bankGuarantees.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   SLA MILESTONES
+   ============================================================ */
+function renderSLA(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openSLAForm());
+  const rows = DB.slaMilestones.map(m => {
+    const days = daysBetween(todayISO(), m.dueDate);
+    const overdue = !m.completed && days < 0;
+    return `<tr>
+      <td>${m.title}</td><td>${contractLabel(m.contractId)}</td><td class="mono">${m.dueDate}</td>
+      <td>${m.completed ? '<span class="pill pill-green">'+(LANG==='ar'?'مكتمل':'Completed')+'</span>' : overdue ? '<span class="pill pill-red">'+(LANG==='ar'?'متأخر':'Overdue')+'</span>' : '<span class="pill pill-blue">'+(LANG==='ar'?'جاري':'Pending')+'</span>'}</td>
+      <td><div class="row-actions">
+        <button class="iconbtn" onclick="openSLAForm('${m.id}')">✏️</button>
+        <button class="iconbtn danger" onclick="deleteRecord('slaMilestones','${m.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('slaTitle')}</th><th>${t('slaContract')}</th><th>${t('slaDue')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="5">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openSLAForm(id){
+  const m = id ? DB.slaMilestones.find(x=>x.id===id) : {title:'', contractId:DB.contracts[0]?.id||'', dueDate:todayISO(), completed:false};
+  const body = `
+    <div class="field"><label>${t('slaTitle')}</label><input id="f_title" value="${m.title}"></div>
+    <div class="field-row">
+      <div class="field"><label>${t('slaContract')}</label><select id="f_contract">${contractOptions(m.contractId)}</select></div>
+      <div class="field"><label>${t('slaDue')}</label><input id="f_due" type="date" value="${m.dueDate}"></div>
+    </div>
+    <div class="field"><label><input type="checkbox" id="f_done" ${m.completed?'checked':''} style="width:auto; margin-inline-end:6px;">${t('slaDone')}</label></div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveSLA('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'شرط جديد':'New Milestone'), body, foot);
+}
+function saveSLA(id){
+  const data = { title:val('f_title'), contractId:val('f_contract'), dueDate:val('f_due'), completed:document.getElementById('f_done').checked };
+  if(id){ Object.assign(DB.slaMilestones.find(m=>m.id===id), data); }
+  else { data.id = uid(); DB.slaMilestones.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   CHANGE ORDERS
+   ============================================================ */
+function renderCO(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openCOForm());
+  const rows = DB.changeOrders.map(c => `<tr>
+    <td class="mono">${c.code}</td><td>${c.title}</td><td>${contractLabel(c.contractId)}</td>
+    <td class="num" style="color:${c.cost>=0?'#5be08a':'#ff8f97'}">${c.cost>=0?'+':''}$${fmt(c.cost)}</td>
+    <td class="num">${c.timeImpact>=0?'+':''}${c.timeImpact} ${LANG==='ar'?'يوم':'d'}</td>
+    <td>${c.approved ? '<span class="pill pill-green">'+t('statusApproved')+'</span>' : '<span class="pill pill-amber">'+t('statusSubmitted')+'</span>'}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openCOForm('${c.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('changeOrders','${c.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('coTitle')}</th><th>${t('coContract')}</th><th>${t('coCost')}</th>
+    <th>${t('coTime')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="7">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openCOForm(id){
+  const c = id ? DB.changeOrders.find(x=>x.id===id) : {code:'CO-2026-'+String(DB.changeOrders.length+1).padStart(4,'0'), title:'', contractId:DB.contracts[0]?.id||'', reason:'', cost:0, timeImpact:0, approved:false};
+  const body = `
+    <div class="field-row">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${c.code}"></div>
+      <div class="field"><label>${t('coContract')}</label><select id="f_contract">${contractOptions(c.contractId)}</select></div>
+    </div>
+    <div class="field"><label>${t('coTitle')}</label><input id="f_title" value="${c.title}"></div>
+    <div class="field"><label>${t('coReason')}</label><textarea id="f_reason">${c.reason||''}</textarea></div>
+    <div class="field-row">
+      <div class="field"><label>${t('coCost')}</label><input id="f_cost" type="number" value="${c.cost}"></div>
+      <div class="field"><label>${t('coTime')}</label><input id="f_time" type="number" value="${c.timeImpact}"></div>
+    </div>
+    <div class="field"><label><input type="checkbox" id="f_approved" ${c.approved?'checked':''} style="width:auto; margin-inline-end:6px;">${t('coApproved')}</label>
+      <div class="helptext">${LANG==='ar'?'عند التأشير كمعتمد، تُحدَّث قيمة العقد الحالية تلقائياً بالأثر المالي':'Marking as approved will update the contract current value automatically'}</div>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveCO('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'أمر تغيير جديد':'New Change Order'), body, foot);
+}
+function saveCO(id){
+  const wasApproved = id ? DB.changeOrders.find(c=>c.id===id).approved : false;
+  const data = { code:val('f_code'), title:val('f_title'), contractId:val('f_contract'), reason:val('f_reason'),
+    cost:parseFloat(val('f_cost'))||0, timeImpact:parseInt(val('f_time'))||0, approved:document.getElementById('f_approved').checked };
+  let record;
+  if(id){ record = DB.changeOrders.find(c=>c.id===id); Object.assign(record, data); }
+  else { data.id = uid(); DB.changeOrders.push(data); record = data; }
+  // Apply financial impact once, on transition to approved
+  if(record.approved && !wasApproved){
+    const contract = DB.contracts.find(c=>c.id===record.contractId);
+    if(contract){ contract.currentValue = (Number(contract.currentValue)||0) + record.cost; }
+  } else if(!record.approved && wasApproved){
+    const contract = DB.contracts.find(c=>c.id===record.contractId);
+    if(contract){ contract.currentValue = (Number(contract.currentValue)||0) - record.cost; }
+  }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   CLAIMS
+   ============================================================ */
+function renderClaims(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openClaimForm());
+  const rows = DB.claims.map(c => {
+    const days = daysBetween(todayISO(), c.timeBarDeadline);
+    return `<tr>
+      <td class="mono">${c.code}</td><td>${c.title}</td><td>${contractLabel(c.contractId)}</td>
+      <td class="num">$${fmt(c.claimedAmount)}</td>
+      <td class="mono" style="color:${days<0?'#ff8f97':days<=14?'#ffc35c':'inherit'}">${c.timeBarDeadline}</td>
+      <td>${statusPill(c.status)}</td>
+      <td><div class="row-actions">
+        <button class="iconbtn" onclick="openClaimForm('${c.id}')">✏️</button>
+        <button class="iconbtn danger" onclick="deleteRecord('claims','${c.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('clmTitle')}</th><th>${t('clmContract')}</th><th>${t('clmAmount')}</th>
+    <th>${t('clmDeadline')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="7">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openClaimForm(id){
+  const c = id ? DB.claims.find(x=>x.id===id) : {code:'CLM-2026-'+String(DB.claims.length+1).padStart(4,'0'), title:'', contractId:DB.contracts[0]?.id||'', clause:'', incidentDate:todayISO(), timeBarDeadline:addDays(todayISO(),28), claimedAmount:0, claimedDays:0, status:'NOTIFIED'};
+  const body = `
+    <div class="field-row">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${c.code}"></div>
+      <div class="field"><label>${t('clmContract')}</label><select id="f_contract">${contractOptions(c.contractId)}</select></div>
+    </div>
+    <div class="field"><label>${t('clmTitle')}</label><input id="f_title" value="${c.title}"></div>
+    <div class="field-row3">
+      <div class="field"><label>${t('clmClause')}</label><input id="f_clause" value="${c.clause}"></div>
+      <div class="field"><label>${t('clmIncident')}</label><input id="f_incident" type="date" value="${c.incidentDate}"></div>
+      <div class="field"><label>${t('clmDeadline')}</label><input id="f_deadline" type="date" value="${c.timeBarDeadline}"></div>
+    </div>
+    <div class="field-row3">
+      <div class="field"><label>${t('clmAmount')}</label><input id="f_amount" type="number" value="${c.claimedAmount}"></div>
+      <div class="field"><label>${t('clmDays')}</label><input id="f_days" type="number" value="${c.claimedDays}"></div>
+      <div class="field"><label>${t('clmStatus')}</label><select id="f_status">${statusOptions(['NOTIFIED','SUBMITTED','APPROVED','REJECTED'], c.status)}</select></div>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveClaim('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'مطالبة جديدة':'New Claim'), body, foot, true);
+}
+function saveClaim(id){
+  const data = { code:val('f_code'), title:val('f_title'), contractId:val('f_contract'), clause:val('f_clause'),
+    incidentDate:val('f_incident'), timeBarDeadline:val('f_deadline'), claimedAmount:parseFloat(val('f_amount'))||0,
+    claimedDays:parseInt(val('f_days'))||0, status:val('f_status') };
+  if(id){ Object.assign(DB.claims.find(c=>c.id===id), data); }
+  else { data.id = uid(); DB.claims.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   FIDIC ASSISTANT — local offline clause reference & search
+   (General reference summaries in our own words — not verbatim
+    reproductions of the licensed FIDIC text.)
+   ============================================================ */
+const FIDIC_CLAUSES = [
+  {no:'1.1', topic:'general', kw:['تعريفات','definitions','مصطلحات'],
+   title_ar:'التعريفات العامة', title_en:'Definitions',
+   sum_ar:'يوضح هذا البند المعاني المعتمدة للمصطلحات التعاقدية الأساسية مثل "تاريخ الأساس"، "أعمال دائمة"، "أعمال مؤقتة"، و"تاريخ الإنجاز"، لضمان فهم موحد لكل الأطراف عبر مستندات العقد.',
+   sum_en:'Sets out the agreed meaning of core contract terms such as "Base Date", "Permanent Works", "Temporary Works" and "Time for Completion", ensuring a shared understanding across all contract documents.'},
+  {no:'3.1–3.7', topic:'engineer', kw:['المهندس','engineer','استشاري','تعليمات'],
+   title_ar:'دور المهندس/الاستشاري وصلاحياته', title_en:"The Engineer's Role & Authority",
+   sum_ar:'يحدد صلاحيات المهندس المعيّن من صاحب العمل في إصدار التعليمات، الموافقات، تحديد القيم والتمديدات الزمنية، والتزامه بالتصرف بحيادية عند اتخاذ القرارات التعاقدية.',
+   sum_en:'Defines the Engineer\'s authority to issue instructions and approvals, determine valuations and extensions of time, and the duty to act neutrally when making contractual determinations.'},
+  {no:'4.1', topic:'contractor', kw:['التزامات المقاول','general obligations','نطاق العمل'],
+   title_ar:'الالتزامات العامة للمقاول', title_en:"Contractor's General Obligations",
+   sum_ar:'يُلزم المقاول بتصميم (إن انطبق) وتنفيذ وإتمام الأعمال طبقاً للعقد، وتوفير كل ما يلزم من عمالة ومواد ومعدات ما لم يُنص على خلاف ذلك.',
+   sum_en:'Obliges the Contractor to design (if applicable), execute and complete the Works in accordance with the Contract, providing all labour, materials and equipment unless stated otherwise.'},
+  {no:'4.2', topic:'contractor', kw:['ضمان الأداء','performance security','خطاب ضمان'],
+   title_ar:'ضمان حسن الأداء (Performance Security)', title_en:'Performance Security',
+   sum_ar:'يُلزم المقاول بتقديم ضمان بنكي لحسن الأداء بالقيمة والصيغة المحددة بالعقد، ساري حتى إتمام الأعمال واستكمال أي التزامات ضمان لاحقة.',
+   sum_en:"Requires the Contractor to provide a performance security in the amount and form stated in the Contract, valid until completion of the Works and any subsequent defects obligations."},
+  {no:'6.1', topic:'labour', kw:['العمالة','staff','labour','قوى عاملة'],
+   title_ar:'تعيين الطاقم والعمالة', title_en:'Engagement of Staff and Labour',
+   sum_ar:'يلزم المقاول بترتيب توظيف كل الطاقم والعمالة اللازمة، محلياً أو من مصادر أخرى، مع الالتزام بقوانين العمل السارية.',
+   sum_en:'Requires the Contractor to arrange for the engagement of all staff and labour needed, local or otherwise, in compliance with applicable labour laws.'},
+  {no:'7.1–7.6', topic:'quality', kw:['جودة','quality','فحص','اختبار','materials','workmanship'],
+   title_ar:'المواد وجودة التنفيذ والفحص', title_en:'Plant, Materials and Workmanship',
+   sum_ar:'يحدد معايير جودة المواد والتصنيع، وحق المهندس في فحص واختبار الأعمال في أي مرحلة، ورفض أي عمل أو مادة غير مطابقة والمطالبة بإزالتها أو إعادة تنفيذها.',
+   sum_en:"Sets quality standards for materials and workmanship, and the Engineer's right to inspect and test work at any stage, rejecting and requiring removal or re-execution of non-conforming items."},
+  {no:'8.1', topic:'time', kw:['بدء الأعمال','commencement','تاريخ البدء'],
+   title_ar:'تاريخ بدء الأعمال', title_en:'Commencement of Works',
+   sum_ar:'يحدد آلية إخطار المقاول بتاريخ بدء الأعمال، والذي تبدأ منه حساب مدة الإنجاز التعاقدية.',
+   sum_en:'Establishes how the Contractor is notified of the Commencement Date, from which the contractual Time for Completion is calculated.'},
+  {no:'8.2', topic:'time', kw:['مدة الإنجاز','time for completion','تاريخ الإنجاز'],
+   title_ar:'مدة الإنجاز', title_en:'Time for Completion',
+   sum_ar:'يُلزم المقاول بإنجاز الأعمال (أو أي أقسام منها) خلال المدة المحددة بالعقد، بما في ذلك اجتياز اختبارات الإنجاز المطلوبة.',
+   sum_en:'Obliges the Contractor to complete the Works (or Sections) within the time stated in the Contract, including passing any required Tests on Completion.'},
+  {no:'8.5', topic:'time', kw:['تمديد زمني','extension of time','EOT','تأخير'],
+   title_ar:'التمديد الزمني (Extension of Time)', title_en:'Extension of Time for Completion',
+   sum_ar:'يمنح المقاول الحق في تمديد زمني إذا تأخر التنفيذ لأسباب خارجة عن مسؤوليته المنصوص عليها في العقد، شريطة تقديم إخطار المطالبة خلال المهلة المحددة.',
+   sum_en:'Entitles the Contractor to an extension of time where completion is delayed by a cause listed in the Contract that is not its responsibility, subject to submitting a claim notice within the stated period.'},
+  {no:'8.7', topic:'time', kw:['غرامة تأخير','delay damages','liquidated damages','LD'],
+   title_ar:'غرامات التأخير (Delay Damages)', title_en:'Delay Damages',
+   sum_ar:'يحدد آلية استحقاق صاحب العمل لغرامات تأخير محسوبة بمعدل يومي أو أسبوعي عند تجاوز المقاول لمدة الإنجاز، بحد أقصى منصوص عليه في البيانات التعاقدية.',
+   sum_en:"Establishes the Employer's entitlement to delay damages at a daily/weekly rate for late completion by the Contractor, subject to the maximum stated in the Contract Data."},
+  {no:'10.1', topic:'takeover', kw:['استلام ابتدائي','taking over','تسليم'],
+   title_ar:'استلام الأعمال (Taking Over)', title_en:'Taking Over the Works',
+   sum_ar:'ينظم إجراءات إصدار شهادة الاستلام الابتدائي عند إتمام الأعمال واجتياز الاختبارات المطلوبة، وانتقال المسؤولية عن حفظ الأعمال لصاحب العمل.',
+   sum_en:'Governs issuance of the Taking-Over Certificate once the Works are complete and required tests passed, transferring care of the Works to the Employer.'},
+  {no:'11.1–11.3', topic:'defects', kw:['عيوب','defects','ضمان الصيانة','fitting'],
+   title_ar:'إصلاح العيوب وفترة الإخطار بالعيوب', title_en:'Defects Notification Period',
+   sum_ar:'يُلزم المقاول بإصلاح أي عيوب تظهر خلال فترة الإخطار بالعيوب المحددة بالعقد على نفقته الخاصة، قبل إصدار شهادة الأداء النهائية.',
+   sum_en:"Requires the Contractor to remedy any defects appearing during the stated Defects Notification Period at its own cost, prior to issuance of the Performance Certificate."},
+  {no:'12.1–12.3', topic:'measurement', kw:['حصر الكميات','measurement','قياس','تقييم'],
+   title_ar:'القياس والتقييم (Measurement & Evaluation)', title_en:'Measurement and Evaluation',
+   sum_ar:'ينظم طريقة قياس الكميات المنفذة فعلياً وتقييمها بأسعار العقد، مع آلية لتحديد سعر جديد إذا اختلفت الكمية الفعلية جوهرياً عن الكمية التعاقدية.',
+   sum_en:'Governs measurement of actually executed quantities and their evaluation at Contract rates, with a mechanism for a new rate where actual quantity varies substantially from the billed quantity.'},
+  {no:'13.1–13.3', topic:'variations', kw:['أوامر تغيير','variation','تعديل','change order'],
+   title_ar:'أوامر التغيير (Variations)', title_en:'Variations',
+   sum_ar:'يمنح المهندس صلاحية إصدار أوامر تغيير في نطاق الأعمال، ويوضح إجراءات تقديم المقاول لمقترح تغيير وتقييم أثره المالي والزمني قبل التنفيذ.',
+   sum_en:"Empowers the Engineer to instruct Variations to the scope of Works, and sets out how the Contractor may propose a variation and how its cost/time impact is evaluated before execution."},
+  {no:'14.1–14.7', topic:'payment', kw:['الدفعات','payment','مستخلص','IPC','فاتورة'],
+   title_ar:'قيمة العقد وآلية الدفع', title_en:'Contract Price and Payment',
+   sum_ar:'ينظم تقديم المقاول لبيانات الدفع الدورية (Statements)، ومراجعة المهندس واعتماده لشهادات الدفع المرحلية (IPC)، والمهلة الزمنية المحددة لسداد صاحب العمل.',
+   sum_en:"Governs the Contractor's periodic Statements, the Engineer's review and certification of Interim Payment Certificates, and the Employer's stipulated payment period."},
+  {no:'14.2', topic:'payment', kw:['دفعة مقدمة','advance payment'],
+   title_ar:'الدفعة المقدمة (Advance Payment)', title_en:'Advance Payment',
+   sum_ar:'يوضح نسبة وآلية صرف الدفعة المقدمة للمقاول مقابل ضمان بنكي، وطريقة استردادها تدريجياً من المستخلصات اللاحقة.',
+   sum_en:"Sets out the percentage and mechanism for the Contractor's advance payment against a bank guarantee, and its gradual recovery from subsequent payment certificates."},
+  {no:'14.9', topic:'payment', kw:['محتجز','retention','ضمان حسن تنفيذ'],
+   title_ar:'محتجز ضمان حسن التنفيذ (Retention)', title_en:'Retention Money',
+   sum_ar:'ينظم نسبة الاستقطاع من كل مستخلص كمحتجز ضمان، وشروط الإفراج عن نصفه عند الاستلام الابتدائي والنصف الآخر عند انتهاء فترة الإخطار بالعيوب.',
+   sum_en:'Governs the retention percentage deducted from each certificate, and conditions for releasing half at taking-over and the remaining half at the end of the Defects Notification Period.'},
+  {no:'15.1–15.2', topic:'termination', kw:['فسخ من صاحب العمل','termination by employer','إنذار'],
+   title_ar:'إنهاء العقد من قِبل صاحب العمل', title_en:'Termination by Employer',
+   sum_ar:'يحدد حالات التقصير الجوهري التي تُخوّل صاحب العمل إنذار المقاول ثم فسخ العقد في حال عدم التصحيح، وحقوق صاحب العمل في إتمام الأعمال على حساب المقاول المتعثر.',
+   sum_en:"Defines material default events entitling the Employer to notify the Contractor and terminate if uncured, and the Employer's rights to complete the Works at the defaulting Contractor's cost."},
+  {no:'16.1–16.2', topic:'termination', kw:['فسخ من المقاول','termination by contractor','وقف الأعمال'],
+   title_ar:'تعليق العمل وإنهاء العقد من قِبل المقاول', title_en:'Suspension & Termination by Contractor',
+   sum_ar:'يمنح المقاول الحق في تعليق العمل أو إنهاء العقد إذا تأخر صاحب العمل جوهرياً عن السداد أو أخل بالتزامات جوهرية أخرى بعد الإخطار المسبق.',
+   sum_en:'Entitles the Contractor to suspend work or terminate the Contract where the Employer materially fails to pay or breaches other fundamental obligations, after prior notice.'},
+  {no:'17.1', topic:'risk', kw:['المخاطر','risk','مسؤولية','indemnity'],
+   title_ar:'توزيع المخاطر والمسؤولية بين الطرفين', title_en:'Risk Allocation and Responsibility',
+   sum_ar:'يوزّع المخاطر التعاقدية والمسؤولية عن التلف أو الفقد بين صاحب العمل والمقاول، ويحدد التزامات التعويض المتبادلة.',
+   sum_en:'Allocates contractual risks and responsibility for loss or damage between Employer and Contractor, and sets out mutual indemnity obligations.'},
+  {no:'18.1–18.4', topic:'insurance', kw:['تأمين','insurance','بوليصة'],
+   title_ar:'متطلبات التأمين', title_en:'Insurance Requirements',
+   sum_ar:'يُلزم بتوفير بوليصات تأمين على الأعمال، والمعدات، وضد الغير، بقيم تغطية دنيا محددة، مع استمرار سريانها طوال فترة العقد المعنية.',
+   sum_en:'Requires insurance policies covering the Works, equipment and third-party liability at stated minimum values, to remain in force for the relevant contract period.'},
+  {no:'18.6', topic:'risk', kw:['قوة قاهرة','force majeure','ظروف استثنائية','exceptional events'],
+   title_ar:'الأحداث الاستثنائية (القوة القاهرة)', title_en:'Exceptional Events (Force Majeure)',
+   sum_ar:'يحدد شروط اعتبار حدث ما "استثنائياً" خارجاً عن إرادة الطرفين، وآثاره من حيث التمديد الزمني والتعويض المحتمل أو إنهاء العقد إذا طالت مدته.',
+   sum_en:"Defines the conditions for an event to qualify as 'Exceptional', and its consequences regarding extension of time, possible compensation, or termination if it persists."},
+  {no:'20.1', topic:'claims', kw:['مطالبة','claim','إشعار مطالبة','notice of claim'],
+   title_ar:'إشعار المطالبة والمهلة الزمنية (Time-Bar)', title_en:'Notice of Claim and Time-Bar',
+   sum_ar:'يُلزم أي طرف يرغب في مطالبة مالية أو تمديد زمني بتقديم إشعار رسمي خلال مهلة محددة (غالباً 28 يوماً) من علمه بالحدث، وإلا سقط حقه في المطالبة.',
+   sum_en:"Requires a party seeking a financial claim or time extension to give formal notice within a stated period (commonly 28 days) of becoming aware of the event, failing which the claim is time-barred."},
+  {no:'21.1–21.4', topic:'disputes', kw:['فض المنازعات','DAAB','لجنة فض النزاعات','dispute board'],
+   title_ar:'مجلس تفادي وفض المنازعات (DAAB)', title_en:'Dispute Avoidance/Adjudication Board',
+   sum_ar:'ينظم إحالة الخلافات إلى مجلس مستقل (DAAB) لإصدار قرار ملزم مبدئياً قبل اللجوء للتحكيم، بهدف حل النزاعات مبكراً أثناء تنفيذ المشروع.',
+   sum_en:'Governs referral of disputes to an independent Board for a provisionally binding decision before arbitration, aiming to resolve disputes early during project execution.'},
+  {no:'21.6', topic:'disputes', kw:['تحكيم','arbitration','ICC'],
+   title_ar:'التحكيم الدولي', title_en:'Arbitration',
+   sum_ar:'ينظم إحالة أي نزاع لم يُحل عبر مجلس المنازعات إلى التحكيم وفق القواعد المتفق عليها (غالباً غرفة التجارة الدولية ICC)، كوسيلة نهائية وملزمة لفض النزاع.',
+   sum_en:'Governs referral of any dispute not resolved via the Dispute Board to arbitration under the agreed rules (commonly ICC), as the final and binding means of resolution.'},
+];
+
+function renderFIDIC(content, topActions){
+  content.innerHTML = `
+    <div class="card" style="margin-bottom:18px;">
+      <div style="font-size:13px; font-weight:800; margin-bottom:4px;">📚 ${t('fidic_book')}</div>
+      <div class="helptext" style="margin-bottom:14px;">${t('fidic_disclaimer')}</div>
+      <input id="fidicSearch" placeholder="${t('fidic_search_ph')}" oninput="renderFidicResults()" style="font-size:14.5px; padding:12px 14px;">
+    </div>
+    <div id="fidicResultsMeta" class="helptext" style="margin-bottom:10px;"></div>
+    <div id="fidicResults" class="grid" style="grid-template-columns:1fr;"></div>
+  `;
+  renderFidicResults();
+}
+function renderFidicResults(){
+  const q = (document.getElementById('fidicSearch')?.value || '').trim().toLowerCase();
+  const list = !q ? FIDIC_CLAUSES : FIDIC_CLAUSES.filter(c => {
+    const hay = [c.no, c.title_ar, c.title_en, c.sum_ar, c.sum_en, ...(c.kw||[])].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  const meta = document.getElementById('fidicResultsMeta');
+  if(meta) meta.textContent = `${list.length} ${t('fidic_results_count')}`;
+  const wrap = document.getElementById('fidicResults');
+  if(!wrap) return;
+  if(list.length===0){ wrap.innerHTML = `<div class="empty-state"><div class="ic">🔍</div>${t('fidic_noresults')}</div>`; return; }
+  wrap.innerHTML = list.map(c => `
+    <div class="card" style="padding:16px 18px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;">
+        <div>
+          <span class="pill pill-blue">${t('fidic_clause_no')} ${c.no}</span>
+          <h4 style="font-size:14.5px; font-weight:800; margin-top:8px;">${LANG==='ar'?c.title_ar:c.title_en}</h4>
+        </div>
+        <button class="iconbtn" title="${t('fidic_copy_ref')}" onclick="navigator.clipboard?.writeText('${c.no}'); toast(t('fidic_copy_ref'))">📋</button>
+      </div>
+      <p style="font-size:13px; color:var(--muted); line-height:1.8;">${LANG==='ar'?c.sum_ar:c.sum_en}</p>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   GRN — Goods Received Notes
+   ============================================================ */
+function renderGRN(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openGRNForm());
+  const rows = DB.grns.map(g => `<tr>
+    <td class="mono">${g.code}</td><td>${poLabel(g.poId)}</td><td>${g.receivedBy}</td>
+    <td class="mono">${g.receivedDate}</td>
+    <td class="num">${(g.items||[]).length}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openGRNForm('${g.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('grns','${g.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('grnPO')}</th><th>${t('grnReceivedBy')}</th><th>${t('col_date')}</th>
+    <th>${t('grnItems')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="6">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openGRNForm(id){
+  if(DB.purchaseOrders.length===0){ alert(LANG==='ar'?'يجب إضافة أمر شراء أولاً':'Please add a Purchase Order first'); return; }
+  const g = id ? DB.grns.find(x=>x.id===id) : {code:'GRN-2026-'+String(DB.grns.length+1).padStart(4,'0'), poId:DB.purchaseOrders[0]?.id, receivedBy:'', receivedDate:todayISO(), deliveryNote:'', items:[]};
+  const po = DB.purchaseOrders.find(p=>p.id===g.poId);
+  window._grnItems = g.items && g.items.length ? g.items.map(i=>({...i})) : (po?.items||[]).map(i=>({poItemDesc:i.desc, delivered:i.qty, accepted:i.qty, reason:''}));
+  const body = `
+    <div class="field-row3">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${g.code}"></div>
+      <div class="field"><label>${t('grnPO')}</label><select id="f_po" onchange="onGRNPoChange()">${poOptions(g.poId)}</select></div>
+      <div class="field"><label>${t('col_date')}</label><input id="f_date" type="date" value="${g.receivedDate}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('grnReceivedBy')}</label><input id="f_by" value="${g.receivedBy}"></div>
+      <div class="field"><label>${t('grnDeliveryNote')}</label><input id="f_note" value="${g.deliveryNote||''}"></div>
+    </div>
+    <div class="field"><label>${t('grnItems')}</label>
+      <div class="items-editor"><table><thead><tr>
+        <th>${t('itemDesc')}</th><th>${t('grnDeliveredQty')}</th><th>${t('grnAcceptedQty')}</th><th>${t('grnRejectReason')}</th>
+      </tr></thead><tbody id="grnItemsBody"></tbody></table></div>
+    </div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveGRN('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'إشعار استلام جديد':'New GRN'), body, foot, true);
+  renderGRNItems();
+}
+function onGRNPoChange(){
+  const poId = val('f_po');
+  const po = DB.purchaseOrders.find(p=>p.id===poId);
+  window._grnItems = (po?.items||[]).map(i=>({poItemDesc:i.desc, delivered:i.qty, accepted:i.qty, reason:''}));
+  renderGRNItems();
+}
+function renderGRNItems(){
+  const body = document.getElementById('grnItemsBody');
+  if(!body) return;
+  body.innerHTML = window._grnItems.map((it,idx)=> `<tr>
+    <td>${it.poItemDesc}</td>
+    <td><input type="number" value="${it.delivered}" onchange="window._grnItems[${idx}].delivered=this.value" style="width:80px;"></td>
+    <td><input type="number" value="${it.accepted}" onchange="window._grnItems[${idx}].accepted=this.value" style="width:80px;"></td>
+    <td><input value="${it.reason||''}" onchange="window._grnItems[${idx}].reason=this.value"></td>
+  </tr>`).join('');
+}
+function saveGRN(id){
+  const data = { code:val('f_code'), poId:val('f_po'), receivedBy:val('f_by'), receivedDate:val('f_date'), deliveryNote:val('f_note'), items:window._grnItems };
+  if(id){ Object.assign(DB.grns.find(g=>g.id===id), data); }
+  else { data.id = uid(); DB.grns.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   INSPECTIONS (MIR/WIR)
+   ============================================================ */
+function renderMIR(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openMIRForm());
+  const rows = DB.inspections.map(m => `<tr>
+    <td class="mono">${m.code}</td><td>${contractLabel(m.contractId)}</td><td>${m.type==='MIR'?(LANG==='ar'?'فحص مواد':'Materials'):(LANG==='ar'?'فحص أعمال':'Works')}</td>
+    <td class="mono">${m.date}</td>
+    <td>${resultPill(m.result)}</td>
+    <td><div class="row-actions">
+      <button class="iconbtn" onclick="openMIRForm('${m.id}')">✏️</button>
+      <button class="iconbtn danger" onclick="deleteRecord('inspections','${m.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('mirContract')}</th><th>${t('mirType')}</th><th>${t('col_date')}</th>
+    <th>${t('mirResult')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="6">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function resultPill(r){
+  const map = { PENDING:'pill-amber', APPROVED:'pill-green', APPROVED_WITH_NOTES:'pill-blue', REJECTED:'pill-red' };
+  const labels = { PENDING: LANG==='ar'?'قيد الفحص':'Pending', APPROVED: LANG==='ar'?'مقبول':'Approved',
+    APPROVED_WITH_NOTES: LANG==='ar'?'مقبول بملاحظات':'Approved w/ notes', REJECTED: LANG==='ar'?'مرفوض':'Rejected' };
+  return `<span class="pill ${map[r]||'pill-gray'}">${labels[r]||r}</span>`;
+}
+function openMIRForm(id){
+  const m = id ? DB.inspections.find(x=>x.id===id) : {code:'IR-2026-'+String(DB.inspections.length+1).padStart(4,'0'), contractId:DB.contracts[0]?.id||'', grnId:'', type:'MIR', date:todayISO(), result:'PENDING', comments:''};
+  const body = `
+    <div class="field-row">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${m.code}"></div>
+      <div class="field"><label>${t('mirContract')}</label><select id="f_contract">${contractOptions(m.contractId)}</select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('mirGRN')}</label><select id="f_grn">${grnOptions(m.grnId)}</select></div>
+      <div class="field"><label>${t('mirType')}</label><select id="f_type">
+        <option value="MIR" ${m.type==='MIR'?'selected':''}>${LANG==='ar'?'فحص مواد (MIR)':'Material (MIR)'}</option>
+        <option value="WIR" ${m.type==='WIR'?'selected':''}>${LANG==='ar'?'فحص أعمال (WIR)':'Works (WIR)'}</option>
+      </select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('col_date')}</label><input id="f_date" type="date" value="${m.date}"></div>
+      <div class="field"><label>${t('mirResult')}</label><select id="f_result">
+        <option value="PENDING" ${m.result==='PENDING'?'selected':''}>${LANG==='ar'?'قيد الفحص':'Pending'}</option>
+        <option value="APPROVED" ${m.result==='APPROVED'?'selected':''}>${LANG==='ar'?'مقبول':'Approved'}</option>
+        <option value="APPROVED_WITH_NOTES" ${m.result==='APPROVED_WITH_NOTES'?'selected':''}>${LANG==='ar'?'مقبول بملاحظات':'Approved w/ notes'}</option>
+        <option value="REJECTED" ${m.result==='REJECTED'?'selected':''}>${LANG==='ar'?'مرفوض':'Rejected'}</option>
+      </select></div>
+    </div>
+    <div class="field"><label>${t('mirComments')}</label><textarea id="f_comments">${m.comments||''}</textarea></div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveMIR('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'فحص ميداني جديد':'New Inspection'), body, foot);
+}
+function saveMIR(id){
+  const data = { code:val('f_code'), contractId:val('f_contract'), grnId:val('f_grn'), type:val('f_type'), date:val('f_date'), result:val('f_result'), comments:val('f_comments') };
+  if(id){ Object.assign(DB.inspections.find(m=>m.id===id), data); }
+  else { data.id = uid(); DB.inspections.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+
+/* ============================================================
+   IPC — Interim Payment Certificates
+   ============================================================ */
+function ipcCalc(ipc){
+  const contract = DB.contracts.find(c=>c.id===ipc.contractId) || {advanceRate:0,retentionRate:0,vatRate:0,currentValue:0,prevPaid:0};
+  const gross = Number(ipc.grossWorkDone)||0;
+  const advDeduction = Math.min(gross * (contract.advanceRate||0)/100, (contract.currentValue||0) * (contract.advanceRate||0)/100);
+  const retCap = (contract.currentValue||0) * (contract.retentionRate||0)/100;
+  const retDeduction = Math.min(gross * (contract.retentionRate||0)/100, retCap);
+  const totalDeductions = advDeduction + retDeduction;
+  const netCumulative = gross - totalDeductions;
+  // sum of previously approved IPCs for same contract (excluding this one) + contract.prevPaid baseline
+  const priorIpcs = DB.ipcs.filter(i => i.contractId===ipc.contractId && i.id!==ipc.id && (i.ipcNo||0) < (ipc.ipcNo||0));
+  const priorFromIpcs = priorIpcs.reduce((s,i)=> s + ipcCalcBase(i, contract).netCumulative, 0);
+  const previousPaid = (contract.prevPaid||0) + priorFromIpcs;
+  const netCurrent = netCumulative - previousPaid;
+  const vat = netCurrent * (contract.vatRate||0)/100;
+  const finalPayable = netCurrent + vat;
+  return { gross, advDeduction, retDeduction, totalDeductions, netCumulative, previousPaid, netCurrent, vat, finalPayable };
+}
+// lightweight version to avoid infinite recursion when summing priors
+function ipcCalcBase(ipc, contract){
+  const gross = Number(ipc.grossWorkDone)||0;
+  const advDeduction = Math.min(gross * (contract.advanceRate||0)/100, (contract.currentValue||0) * (contract.advanceRate||0)/100);
+  const retCap = (contract.currentValue||0) * (contract.retentionRate||0)/100;
+  const retDeduction = Math.min(gross * (contract.retentionRate||0)/100, retCap);
+  return { netCumulative: gross - advDeduction - retDeduction };
+}
+function threeWayMatchCheck(ipc){
+  // Sum accepted GRN value linked via POs tied to this contract
+  const contractPOs = DB.purchaseOrders.filter(p=>p.contractId===ipc.contractId).map(p=>p.id);
+  let acceptedTotal = 0;
+  DB.grns.filter(g=>contractPOs.includes(g.poId)).forEach(g=>{
+    const po = DB.purchaseOrders.find(p=>p.id===g.poId);
+    (g.items||[]).forEach(it=>{
+      const poItem = (po?.items||[]).find(pi=>pi.desc===it.poItemDesc);
+      const rate = poItem ? Number(poItem.price)||0 : 0;
+      acceptedTotal += (Number(it.accepted)||0) * rate;
+    });
+  });
+  if(acceptedTotal === 0) return null; // no GRN data to compare — leave manual
+  return Number(ipc.grossWorkDone||0) <= acceptedTotal * 1.02; // 2% tolerance
+}
+
+function renderIPC(content, topActions){
+  crudHeader(topActions, t('addNew'), () => openIPCForm());
+  const rows = DB.ipcs.map(i => {
+    const calc = ipcCalc(i);
+    const signed = i.signature && i.signature.fingerprint === docFingerprint(i);
+    return `<tr>
+      <td class="mono">${i.code}</td><td>${contractLabel(i.contractId)}</td><td class="num">#${i.ipcNo}</td>
+      <td class="num">$${fmt(calc.finalPayable)}</td>
+      <td>${statusPill(i.status)} ${signed?'<span class="pill" style="background:rgba(201,162,75,.18); color:#e0bd6b;">🔏 '+t('sig_pill')+'</span>':''}</td>
+      <td>${i.threeWayMatched ? '<span class="pill pill-green">'+t('matchedYes')+'</span>' : '<span class="pill pill-amber">'+t('matchedNo')+'</span>'}</td>
+      <td><div class="row-actions">
+        <button class="iconbtn" onclick="printIPC('${i.id}')" title="${t('printDoc')}">🖨️</button>
+        <button class="iconbtn" onclick="openIPCForm('${i.id}')">✏️</button>
+        <button class="iconbtn danger" onclick="deleteRecord('ipcs','${i.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('ipcContract')}</th><th>${t('ipcNo')}</th><th>${t('col_amount')}</th>
+    <th>${t('ipcStatus')}</th><th>${t('ipcMatch')}</th><th>${t('col_actions')}</th>
+  </tr></thead><tbody>${rows || `<tr class="empty-row"><td colspan="7">${t('noData')}</td></tr>`}</tbody></table></div>`;
+}
+function openIPCForm(id){
+  const i = id ? DB.ipcs.find(x=>x.id===id) : {
+    code:'IPC-2026-'+String(DB.ipcs.length+1).padStart(4,'0'), contractId:DB.contracts[0]?.id||'',
+    ipcNo:(DB.ipcs.length+1), periodStart:todayISO(), periodEnd:todayISO(), grossWorkDone:0, status:'DRAFT', threeWayMatched:false, submissionDate:todayISO()
+  };
+  const body = `
+    <div class="field-row3">
+      <div class="field"><label>${t('col_code')}</label><input id="f_code" value="${i.code}"></div>
+      <div class="field"><label>${t('ipcContract')}</label><select id="f_contract" onchange="updateIPCPreview()">${contractOptions(i.contractId)}</select></div>
+      <div class="field"><label>${t('ipcNo')}</label><input id="f_no" type="number" value="${i.ipcNo}" onchange="updateIPCPreview()"></div>
+    </div>
+    <div class="field-row3">
+      <div class="field"><label>${t('ipcPeriodStart')}</label><input id="f_start" type="date" value="${i.periodStart}"></div>
+      <div class="field"><label>${t('ipcPeriodEnd')}</label><input id="f_end" type="date" value="${i.periodEnd}"></div>
+      <div class="field"><label>${t('ipcStatus')}</label><select id="f_status">${statusOptions(['DRAFT','SUBMITTED','QS_IN_REVIEW','CONSULTANT_APPROVED','FINANCE_AUDITED','APPROVED_FOR_PAYMENT','PAID','REJECTED'], i.status)}</select></div>
+    </div>
+    <div class="field"><label>${t('ipcGross')}</label><input id="f_gross" type="number" value="${i.grossWorkDone}" oninput="updateIPCPreview()"></div>
+    <div class="field"><label><input type="checkbox" id="f_matched" ${i.threeWayMatched?'checked':''} style="width:auto; margin-inline-end:6px;">${t('ipcMatch')}</label>
+      <div class="helptext" id="matchHint"></div>
+    </div>
+    <div class="card" id="ipcPreview" style="margin-top:10px;"></div>
+  `;
+  const foot = `<button class="btn" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn btn-primary" onclick="saveIPC('${id||''}')">${t('save')}</button>`;
+  openModal(id ? t('edit') : (LANG==='ar'?'مستخلص جديد':'New IPC'), body, foot, true);
+  window._ipcEditId = id||'';
+  updateIPCPreview();
+}
+function updateIPCPreview(){
+  const draft = { id:window._ipcEditId||'new', contractId:val('f_contract'), ipcNo:parseInt(val('f_no'))||0, grossWorkDone:parseFloat(val('f_gross'))||0 };
+  const calc = ipcCalc(draft);
+  const autoMatch = threeWayMatchCheck(draft);
+  const hint = document.getElementById('matchHint');
+  if(hint){
+    hint.textContent = autoMatch===null ? (LANG==='ar'?'لا توجد بيانات استلام ميداني مرتبطة — يمكن التأشير يدوياً':'No linked GRN data — set manually') :
+      autoMatch ? (LANG==='ar'?'✓ تطابق تلقائي مع بيانات الاستلام الميداني':'✓ Auto-matched with field receipt data') :
+      (LANG==='ar'?'⚠ تجاوز الأعمال المدخلة الكميات المستلمة ميدانياً — يتطلب مراجعة':'⚠ Entered value exceeds accepted field receipts — needs review');
+  }
+  const prev = document.getElementById('ipcPreview');
+  if(prev){
+    prev.innerHTML = `
+      <div style="font-size:12.5px; font-weight:800; margin-bottom:10px; color:var(--muted);">${t('ipc_summary')}</div>
+      ${ipcLine(t('ipc_grossW'), calc.gross)}
+      ${ipcLine(t('ipc_advDed'), -calc.advDeduction)}
+      ${ipcLine(t('ipc_retDed'), -calc.retDeduction)}
+      ${ipcLine(t('ipc_totDed'), -calc.totalDeductions, true)}
+      ${ipcLine(t('ipc_netCum'), calc.netCumulative, true)}
+      ${ipcLine(t('ipc_prevPaid'), -calc.previousPaid)}
+      ${ipcLine(t('ipc_netCur'), calc.netCurrent, true)}
+      ${ipcLine(t('ipc_vat'), calc.vat)}
+      <div style="display:flex; justify-content:space-between; padding:10px 0 2px; margin-top:6px; border-top:1px solid var(--border2); font-weight:800; font-size:14.5px; color:#5be08a;">
+        <span>${t('ipc_final')}</span><span>$${fmt(calc.finalPayable)}</span>
+      </div>
+    `;
+  }
+}
+function ipcLine(label, val, bold){
+  return `<div style="display:flex; justify-content:space-between; padding:5px 0; font-size:12.5px; ${bold?'font-weight:800; border-top:1px dashed var(--border);':''}">
+    <span style="color:var(--muted);">${label}</span><span class="num">${val<0?'-':''}$${fmt(Math.abs(val))}</span>
+  </div>`;
+}
+function saveIPC(id){
+  const contractId = val('f_contract');
+  const draft = { id: id||'new', contractId, ipcNo:parseInt(val('f_no'))||0, grossWorkDone:parseFloat(val('f_gross'))||0 };
+  const autoMatch = threeWayMatchCheck(draft);
+  const data = {
+    code:val('f_code'), contractId, ipcNo:parseInt(val('f_no'))||0, periodStart:val('f_start'), periodEnd:val('f_end'),
+    grossWorkDone:parseFloat(val('f_gross'))||0, status:val('f_status'),
+    threeWayMatched: document.getElementById('f_matched').checked || (autoMatch===true),
+    submissionDate: id ? DB.ipcs.find(x=>x.id===id).submissionDate : todayISO()
+  };
+  if(id){ Object.assign(DB.ipcs.find(i=>i.id===id), data); }
+  else { data.id = uid(); DB.ipcs.push(data); }
+  save(); closeModal(); toast(t('formSaved')); render();
+}
+function printIPC(id){
+  const i = DB.ipcs.find(x=>x.id===id);
+  const c = DB.contracts.find(x=>x.id===i.contractId);
+  const calc = ipcCalc(i);
+  const html = `
+    <h2>${LANG==='ar'?'شهادة إنجاز ومستخلص مالي':'Interim Payment Certificate'}</h2>
+    <div class="sub">${i.code} — ${i.periodStart} → ${i.periodEnd}</div>
+    <table>
+      <tr><td><strong>${LANG==='ar'?'العقد':'Contract'}:</strong> ${c?.code} — ${c?.title}</td><td><strong>${LANG==='ar'?'المقاول':'Contractor'}:</strong> ${vendorName(c?.vendorId)}</td></tr>
+    </table>
+    <table>
+      <tr><td>1</td><td>${t('ipc_grossW')}</td><td>${fmt(calc.gross)}</td></tr>
+      <tr><td>2</td><td>${t('ipc_advDed')}</td><td>-${fmt(calc.advDeduction)}</td></tr>
+      <tr><td>3</td><td>${t('ipc_retDed')}</td><td>-${fmt(calc.retDeduction)}</td></tr>
+      <tr class="totalrow"><td>4</td><td>${t('ipc_totDed')}</td><td>-${fmt(calc.totalDeductions)}</td></tr>
+      <tr class="totalrow"><td>5</td><td>${t('ipc_netCum')}</td><td>${fmt(calc.netCumulative)}</td></tr>
+      <tr><td>6</td><td>${t('ipc_prevPaid')}</td><td>-${fmt(calc.previousPaid)}</td></tr>
+      <tr class="totalrow"><td>7</td><td>${t('ipc_netCur')}</td><td>${fmt(calc.netCurrent)}</td></tr>
+      <tr><td>8</td><td>${t('ipc_vat')}</td><td>${fmt(calc.vat)}</td></tr>
+      <tr class="totalrow"><td>9</td><td>${t('ipc_final')}</td><td>${fmt(calc.finalPayable)}</td></tr>
+    </table>
+    <div class="sign"><div>${LANG==='ar'?'اعتماد الاستشاري':'Consultant Approval'}</div><div>${LANG==='ar'?'اعتماد الإدارة المالية':'Finance Approval'}</div></div>
+  `;
+  openPrintPreview(html, 'ipcs', id, docFingerprint(i), i.code);
+}
+
+/* ============================================================
+   EVM CALCULATOR & WHAT-IF SIMULATION
+   ============================================================ */
+function evmDefaultPlannedPct(c){
+  const start = new Date(c.startDate), end = new Date(c.endDate), now = new Date();
+  const totalSpan = end - start;
+  if(totalSpan <= 0) return 0;
+  const elapsed = Math.min(Math.max(now - start, 0), totalSpan);
+  return Math.round((elapsed/totalSpan)*1000)/10; // one decimal
+}
+function evmLatestEV(contractId){
+  const list = DB.ipcs.filter(i=>i.contractId===contractId);
+  if(list.length===0) return 0;
+  return list.reduce((max,i)=> Math.max(max, Number(i.grossWorkDone)||0), 0);
+}
+function getEvmInput(contractId, contract){
+  if(!DB.evmInputs[contractId]){
+    DB.evmInputs[contractId] = {
+      plannedPct: evmDefaultPlannedPct(contract),
+      actualCost: evmLatestEV(contractId),
+      whatIfFactor: 100
+    };
+  }
+  return DB.evmInputs[contractId];
+}
+function computeEVM(contractId){
+  const contract = DB.contracts.find(c=>c.id===contractId);
+  if(!contract) return null;
+  const input = getEvmInput(contractId, contract);
+  const bac = Number(contract.currentValue)||0;
+  const ev = evmLatestEV(contractId);
+  const pv = bac * (Number(input.plannedPct)||0)/100;
+  const ac = Number(input.actualCost)||0;
+  const cv = ev - ac;
+  const sv = ev - pv;
+  const cpi = ac > 0 ? ev/ac : 0;
+  const spi = pv > 0 ? ev/pv : 0;
+  const baseEac = cpi > 0 ? bac/cpi : bac;
+  const etc = baseEac - ac;
+  const vac = bac - baseEac;
+  // what-if: apply assumed future productivity factor to the *remaining* work's efficiency
+  const factor = (Number(input.whatIfFactor)||100)/100;
+  const effectiveFutureCpi = cpi>0 ? cpi*factor : factor;
+  const remainingWork = Math.max(bac - ev, 0);
+  const projectedEtc = effectiveFutureCpi > 0 ? remainingWork/effectiveFutureCpi : remainingWork;
+  const projectedEac = ac + projectedEtc;
+  return { bac, pv, ev, ac, cv, sv, cpi, spi, eac:baseEac, etc, vac, projectedEac, projectedEtc };
+}
+function renderEVM(content, topActions){
+  if(DB.contracts.length===0){ content.innerHTML = `<div class="empty-state"><div class="ic">📐</div>${t('evm_no_contracts')}</div>`; return; }
+  if(!window._evmContractId || !DB.contracts.find(c=>c.id===window._evmContractId)) window._evmContractId = DB.contracts[0].id;
+  content.innerHTML = `
+    <div class="card" style="margin-bottom:18px;">
+      <div class="field" style="margin-bottom:0;">
+        <label>${t('evm_select_contract')}</label>
+        <select id="evmContractSelect" onchange="window._evmContractId=this.value; renderEvmBody();">${contractOptions(window._evmContractId)}</select>
+      </div>
+    </div>
+    <div id="evmBody"></div>
+  `;
+  renderEvmBody();
+}
+function renderEvmBody(){
+  const contractId = window._evmContractId;
+  const contract = DB.contracts.find(c=>c.id===contractId);
+  const input = getEvmInput(contractId, contract);
+  const body = document.getElementById('evmBody');
+  if(!body) return;
+
+  body.innerHTML = `
+    <div class="grid" style="grid-template-columns:1fr 1fr; align-items:start;">
+      <div class="card">
+        <h3 style="font-size:14.5px; font-weight:800; margin-bottom:14px;">${t('evm_select_contract')}: ${contract.title}</h3>
+        <div class="field">
+          <label>${t('evm_planned_pct')}</label>
+          <input type="range" min="0" max="100" step="1" id="evmPlannedPct" value="${input.plannedPct}" oninput="updateEvmInput('plannedPct', this.value)">
+          <div class="helptext num" style="text-align:end; font-weight:800; color:#7fb0ff;">${input.plannedPct}%</div>
+        </div>
+        <div class="field">
+          <label>${t('evm_actual_cost')}</label>
+          <input type="number" id="evmActualCost" value="${input.actualCost}" oninput="updateEvmInput('actualCost', this.value)">
+          <div class="helptext">${t('evm_use_latest_ipc')}: $${fmt(evmLatestEV(contractId))}</div>
+        </div>
+      </div>
+      <div class="card" id="evmMetricsCard"></div>
+    </div>
+    <div class="card" style="margin-top:18px;">
+      <h3 style="font-size:14.5px; font-weight:800; margin-bottom:6px;">🎛️ ${t('evm_whatif_title')}</h3>
+      <p class="helptext" style="margin-bottom:14px;">${t('evm_whatif_note')}</p>
+      <div class="field">
+        <label>${t('evm_whatif_factor')}</label>
+        <input type="range" min="40" max="160" step="5" id="evmWhatIf" value="${input.whatIfFactor}" oninput="updateEvmInput('whatIfFactor', this.value)">
+        <div class="helptext num" style="text-align:end; font-weight:800; color:#e0bd6b;">${input.whatIfFactor}%</div>
+      </div>
+      <div id="evmWhatIfResult" style="margin-top:14px;"></div>
+    </div>
+  `;
+  renderEvmMetrics();
+}
+function updateEvmInput(key, value){
+  const input = getEvmInput(window._evmContractId, DB.contracts.find(c=>c.id===window._evmContractId));
+  input[key] = parseFloat(value)||0;
+  save();
+  renderEvmBody(); // re-render to refresh slider labels + all computed values together
+}
+function renderEvmMetrics(){
+  const calc = computeEVM(window._evmContractId);
+  if(!calc) return;
+  const card = document.getElementById('evmMetricsCard');
+  if(card){
+    card.innerHTML = `
+      ${evmMetricLine(t('evm_bac'), calc.bac)}
+      ${evmMetricLine(t('evm_pv'), calc.pv)}
+      ${evmMetricLine(t('evm_ev'), calc.ev)}
+      ${evmMetricLine(t('evm_ac'), calc.ac)}
+      <div style="border-top:1px dashed var(--border2); margin:10px 0;"></div>
+      ${evmMetricLine(t('evm_cv'), calc.cv, calc.cv>=0?'#5be08a':'#ff8f97')}
+      ${evmMetricLine(t('evm_sv'), calc.sv, calc.sv>=0?'#5be08a':'#ff8f97')}
+      ${evmIndexLine(t('evm_cpi'), calc.cpi)}
+      ${evmIndexLine(t('evm_spi'), calc.spi)}
+      <div style="border-top:1px dashed var(--border2); margin:10px 0;"></div>
+      ${evmMetricLine(t('evm_eac'), calc.eac)}
+      ${evmMetricLine(t('evm_etc'), calc.etc)}
+      ${evmMetricLine(t('evm_vac'), calc.vac, calc.vac>=0?'#5be08a':'#ff8f97')}
+      <div style="margin-top:14px; padding:10px 12px; border-radius:9px; background:${evmHealthColor(calc).bg};">
+        <div style="font-size:11px; font-weight:800; color:var(--muted); margin-bottom:3px;">${t('evm_health')}</div>
+        <div style="font-size:13px; font-weight:800; color:${evmHealthColor(calc).fg};">${evmHealthColor(calc).label}</div>
+      </div>
+    `;
+  }
+  const wr = document.getElementById('evmWhatIfResult');
+  if(wr){
+    wr.innerHTML = `
+      <div class="grid" style="grid-template-columns:repeat(2,1fr); gap:14px;">
+        <div class="card" style="padding:14px;">
+          <div class="lbl" style="font-size:11px; color:var(--muted);">${t('evm_projected_eac')}</div>
+          <div style="font-size:20px; font-weight:800; margin-top:6px; color:#e0bd6b;">$${fmt(calc.projectedEac)}</div>
+        </div>
+        <div class="card" style="padding:14px;">
+          <div class="lbl" style="font-size:11px; color:var(--muted);">${t('evm_etc')} (${LANG==='ar'?'بعد المحاكاة':'post-simulation'})</div>
+          <div style="font-size:20px; font-weight:800; margin-top:6px;">$${fmt(calc.projectedEtc)}</div>
+        </div>
+      </div>
+    `;
+  }
+}
+function evmMetricLine(label, val, color){
+  return `<div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px;">
+    <span style="color:var(--muted);">${label}</span>
+    <span class="num" style="font-weight:800; ${color?'color:'+color+';':''}">${val<0?'-':''}$${fmt(Math.abs(val))}</span>
+  </div>`;
+}
+function evmIndexLine(label, val){
+  const color = val>=1 ? '#5be08a' : val>0 ? '#ffc35c' : 'var(--muted)';
+  return `<div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px;">
+    <span style="color:var(--muted);">${label}</span>
+    <span class="num" style="font-weight:800; color:${color};">${val.toFixed(2)}</span>
+  </div>`;
+}
+function evmHealthColor(calc){
+  const goodCost = calc.cpi >= 1, goodSchedule = calc.spi >= 1;
+  if(goodCost && goodSchedule) return {label:t('evm_status_ahead'), fg:'#5be08a', bg:'rgba(34,197,94,.1)'};
+  if(!goodCost && !goodSchedule) return {label:t('evm_status_behind_over'), fg:'#ff8f97', bg:'rgba(239,68,68,.1)'};
+  if(!goodSchedule) return {label:t('evm_status_behind'), fg:'#ffc35c', bg:'rgba(245,158,11,.1)'};
+  return {label:t('evm_status_over'), fg:'#ffc35c', bg:'rgba(245,158,11,.1)'};
+}
+
+
+function renderReports(content, topActions){
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-primary';
+  btn.innerHTML = `🖨️ ${t('printReport')}`;
+  btn.onclick = () => window.print();
+  topActions.appendChild(btn);
+
+  const pdfBtn = document.createElement('button');
+  pdfBtn.className = 'btn btn-gold';
+  pdfBtn.innerHTML = `📄 ${t('downloadPdf')}`;
+  pdfBtn.onclick = () => downloadAsPDF('#reportPrintArea', 'PCM-Executive-Report-'+todayISO());
+  topActions.appendChild(pdfBtn);
+
+  const activeContracts = DB.contracts.filter(c=>c.status==='ACTIVE');
+  const totalActiveValue = activeContracts.reduce((s,c)=> s + Number(c.currentValue||0), 0);
+  const totalPaidIPC = DB.ipcs.reduce((s,i)=> s + ipcCalc(i).finalPayable, 0);
+
+  let html = `<div class="card" style="margin-bottom:20px;">
+    <h3 style="font-size:16px; font-weight:800; margin-bottom:14px;">${LANG==='ar'?'ملخص المحفظة':'Portfolio Summary'}</h3>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);">
+      <div><div class="lbl" style="font-size:11px; color:var(--muted);">${t('kpi_active_contracts')}</div><div style="font-size:19px; font-weight:800;">$${fmt(totalActiveValue)}</div></div>
+      <div><div class="lbl" style="font-size:11px; color:var(--muted);">${t('kpi_paid_ipc')}</div><div style="font-size:19px; font-weight:800;">$${fmt(totalPaidIPC)}</div></div>
+      <div><div class="lbl" style="font-size:11px; color:var(--muted);">${LANG==='ar'?'عدد الموردين':'Vendors'}</div><div style="font-size:19px; font-weight:800;">${DB.vendors.length}</div></div>
+      <div><div class="lbl" style="font-size:11px; color:var(--muted);">${LANG==='ar'?'عدد العقود':'Contracts'}</div><div style="font-size:19px; font-weight:800;">${DB.contracts.length}</div></div>
+    </div>
+  </div>`;
+
+  html += `<div class="section-title"><h3>${t('nav_contracts')}</h3></div><div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('contractTitle')}</th><th>${t('contractVendor')}</th><th>${t('contractCurrent')}</th><th>${t('col_status')}</th>
+  </tr></thead><tbody>
+    ${DB.contracts.map(c=>`<tr><td class="mono">${c.code}</td><td>${c.title}</td><td>${vendorName(c.vendorId)}</td><td class="num">$${fmt(c.currentValue)}</td><td>${statusPill(c.status)}</td></tr>`).join('') || `<tr class="empty-row"><td colspan="5">${t('noData')}</td></tr>`}
+  </tbody></table></div>`;
+
+  html += `<div class="section-title"><h3>${t('nav_ipc')}</h3></div><div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('ipcContract')}</th><th>${t('col_amount')}</th><th>${t('ipcStatus')}</th>
+  </tr></thead><tbody>
+    ${DB.ipcs.map(i=>`<tr><td class="mono">${i.code}</td><td>${contractLabel(i.contractId)}</td><td class="num">$${fmt(ipcCalc(i).finalPayable)}</td><td>${statusPill(i.status)}</td></tr>`).join('') || `<tr class="empty-row"><td colspan="4">${t('noData')}</td></tr>`}
+  </tbody></table></div>`;
+
+  html += `<div class="section-title"><h3>${t('nav_bg')}</h3></div><div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('bgContract')}</th><th>${t('bgAmount')}</th><th>${t('bgExpiry')}</th><th>${t('col_status')}</th>
+  </tr></thead><tbody>
+    ${DB.bankGuarantees.map(b=>`<tr><td class="mono">${b.code}</td><td>${contractLabel(b.contractId)}</td><td class="num">$${fmt(b.amount)}</td><td class="mono">${b.expiryDate}</td><td>${statusPill(bgStatusOf(b))}</td></tr>`).join('') || `<tr class="empty-row"><td colspan="5">${t('noData')}</td></tr>`}
+  </tbody></table></div>`;
+
+  html += `<div class="section-title"><h3>${t('nav_claims')}</h3></div><div class="table-wrap"><table><thead><tr>
+    <th>${t('col_code')}</th><th>${t('clmContract')}</th><th>${t('clmAmount')}</th><th>${t('clmDeadline')}</th><th>${t('col_status')}</th>
+  </tr></thead><tbody>
+    ${DB.claims.map(c=>`<tr><td class="mono">${c.code}</td><td>${contractLabel(c.contractId)}</td><td class="num">$${fmt(c.claimedAmount)}</td><td class="mono">${c.timeBarDeadline}</td><td>${statusPill(c.status)}</td></tr>`).join('') || `<tr class="empty-row"><td colspan="5">${t('noData')}</td></tr>`}
+  </tbody></table></div>`;
+
+  content.innerHTML = `<div id="reportPrintArea">${html}</div>`;
+}
+
+/* ============================================================
+   DELETE
+   ============================================================ */
+function deleteRecord(collection, id){
+  confirmDelete(() => {
+    DB[collection] = DB[collection].filter(x=>x.id!==id);
+    save(); toast(t('formDeleted')); render();
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+render();
+</script>
+</body>
+</html>

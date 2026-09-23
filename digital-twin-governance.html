@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منصة التوأم الرقمي وحوكمة العقود</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0A1628; --navy-2:#12233d; --navy-3:#1b3252; --gold:#C9A84C; --gold-2:#e2c675;
+  --bg:#eef1f5; --card:#ffffff; --ink:#0f1b2d; --muted:#5d6b80; --line:#d9dfe8;
+  --good:#2E9E6B; --warn:#E0A100; --bad:#D64545; --info:#2d6cdf;
+  --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.6}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+aside{background:var(--navy);color:#dfe6f1;padding:18px 14px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;gap:10px;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--navy-3)}
+.brand .mark{width:38px;height:38px;border:2px solid var(--gold);border-radius:6px;display:grid;place-items:center;color:var(--gold);font-weight:700}
+.brand b{display:block;font-size:15px;color:#fff;line-height:1.3}
+.brand small{color:#93a3bb;font-size:11.5px}
+nav{display:flex;flex-direction:column;gap:2px}
+nav button{background:none;border:0;color:#c3cddd;text-align:start;padding:9px 12px;border-radius:6px;cursor:pointer;border-inline-start:3px solid transparent}
+nav button:hover{background:var(--navy-2)}
+nav button.on{background:var(--navy-2);color:#fff;border-inline-start-color:var(--gold)}
+.side-box{margin-top:auto;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--navy-3);padding-top:12px}
+.side-box label{font-size:12px;color:#93a3bb}
+.side-box select,.side-box input{width:100%;background:var(--navy-2);border:1px solid var(--navy-3);color:#fff;border-radius:6px;padding:7px 9px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px 13px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--navy)}
+.btn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.pri:hover{background:var(--navy-2)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+.btn.sm{padding:3px 9px;font-size:12.5px}
+.btn.danger{color:var(--bad);border-color:#efc4c4}
+.btn.ok{color:#fff;background:var(--good);border-color:var(--good)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+aside .btn{background:var(--navy-2);border-color:var(--navy-3);color:#fff}
+aside .btn:hover{border-color:var(--gold)}
+main{padding:22px 26px 40px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.top h1{margin:0;font-size:22px;font-weight:700}
+.top p{margin:2px 0 0;color:var(--muted)}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;color:#fff;background:var(--muted)}
+.chip.good{background:var(--good)}.chip.warn{background:var(--warn);color:#2b2000}.chip.bad{background:var(--bad)}.chip.info{background:var(--info)}.chip.navy{background:var(--navy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.card h2{margin:0 0 10px;font-size:15.5px;font-weight:600}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.card-head h2{margin:0}
+.grid{display:grid;gap:14px}
+.g-kpi{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.g-2{grid-template-columns:2fr 1fr}
+.kpi{border-inline-start:4px solid var(--navy);padding:12px 14px}
+.kpi small{color:var(--muted);display:block}
+.kpi strong{font-size:26px;font-weight:700;display:block;line-height:1.2;margin:2px 0}
+.kpi.lead strong{font-size:38px}
+.kpi.good{border-inline-start-color:var(--good)}.kpi.warn{border-inline-start-color:var(--warn)}.kpi.bad{border-inline-start-color:var(--bad)}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px 10px;text-align:start;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12.5px;background:#f6f8fb;white-space:nowrap}
+tr.sel td{background:#fbf5e3}
+.row-actions{display:flex;gap:5px;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.empty{padding:26px;text-align:center;color:var(--muted)}
+.bar{display:flex;height:16px;border-radius:99px;overflow:hidden;background:var(--line)}
+.bar i{display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:5px;background:var(--c)}
+.twin{display:grid;grid-template-columns:1fr 340px;gap:14px}
+#viewerHost{position:relative;height:560px;background:#0e1c33;border-radius:var(--radius);overflow:hidden;touch-action:none;cursor:grab}
+#viewerHost canvas{display:block;width:100%;height:100%}
+.v-hint{position:absolute;inset-inline-start:12px;bottom:10px;color:#9db0cc;font-size:12px;pointer-events:none}
+.v-tools{position:absolute;inset-inline-end:10px;top:10px;display:flex;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chips button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:2px 11px;cursor:pointer;font-size:12.5px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px}
+dt{color:var(--muted)}dd{margin:0;font-weight:500;word-break:break-word}
+.notice{background:#fbf5e3;border:1px solid #ecd9a0;border-radius:6px;padding:9px 12px;font-size:13px;color:#5b4610}
+.notice.bad{background:#fbeaea;border-color:#efc4c4;color:#7a2020}
+.notice.good{background:#e6f5ee;border-color:#b8e0cd;color:#155b3b}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:1px 9px;color:var(--muted)}
+.steps span.done{background:var(--good);border-color:var(--good);color:#fff}
+.steps span.next{border-color:var(--gold);color:#7a5c10;background:#fbf5e3}
+.hash{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--muted);direction:ltr;unicode-bidi:plaintext}
+.modal-bg{position:fixed;inset:0;background:rgba(10,22,40,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:14px}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:10px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:20px}
+.modal h3{margin:0 0 12px}
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f-grid .full{grid-column:1/-1}
+.f label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:2px}
+.f input,.f select,.f textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;background:#fff}
+.f input[readonly]{background:#f2f4f8}
+.modal .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+#toast{position:fixed;bottom:20px;inset-inline-start:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;border:1px solid var(--gold);z-index:99;display:none;max-width:90vw}
+[dir=rtl] #toast{transform:translateX(50%)}
+.view{display:none}.view.on{display:block}
+.report h2{border-bottom:2px solid var(--gold);padding-bottom:4px;margin-top:22px}
+.menu-btn{display:none}
+@media(max-width:980px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto}
+  nav{flex-direction:row;flex-wrap:wrap}
+  .side-box{margin-top:0}
+  .twin,.g-2{grid-template-columns:1fr}
+  #viewerHost{height:420px}
+  main{padding:16px}
+}
+@media print{
+  aside,.no-print,.modal-bg,#toast{display:none!important}
+  .app{display:block}
+  body{background:#fff}
+  main{padding:0}
+  .card{break-inside:avoid;border-color:#bbb}
+  .view{display:none!important}.view.on{display:block!important}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="no-print">
+    <div class="brand">
+      <div class="mark">DT</div>
+      <div><b data-i="app_title"></b><small data-i="app_tag"></small></div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="side-box">
+      <label for="userName" data-i="user"></label>
+      <input id="userName" autocomplete="off">
+      <label for="roleSel" data-i="role"></label>
+      <select id="roleSel"></select>
+      <button class="btn" data-act="lang" id="langBtn"></button>
+      <button class="btn" data-act="print" data-i="print"></button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div><h1 id="viewTitle"></h1><p id="viewSub"></p></div>
+      <div id="topRight"></div>
+    </div>
+    <section class="view" id="v-dashboard"></section>
+    <section class="view" id="v-twin">
+      <div class="twin">
+        <div>
+          <div id="viewerHost">
+            <div class="v-tools no-print"><button class="btn sm" data-act="resetCam" data-i="reset_view"></button></div>
+            <div class="v-hint" data-i="v_hint"></div>
+          </div>
+          <div class="legend" style="margin-top:10px" id="twinLegend"></div>
+        </div>
+        <div id="twinPanel"></div>
+      </div>
+    </section>
+    <section class="view" id="v-elements"></section>
+    <section class="view" id="v-claims"></section>
+    <section class="view" id="v-cos"></section>
+    <section class="view" id="v-evm"></section>
+    <section class="view" id="v-projects"></section>
+    <section class="view" id="v-audit"></section>
+    <section class="view" id="v-reports"></section>
+  </main>
+</div>
+
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true">
+  <div class="modal"><h3 id="modalTitle"></h3><form id="modalForm"><div class="f-grid" id="modalFields"></div>
+    <div class="foot"><button type="button" class="btn" data-act="closeModal" data-i="cancel"></button><button type="submit" class="btn pri" id="modalOk"></button></div></form></div>
+</div>
+<div id="toast" role="status"></div>
+<input type="file" id="fileIn" accept="application/json" style="display:none">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+/* ============ i18n ============ */
+const I18N={
+ar:{
+app_title:'التوأم الرقمي وحوكمة العقود',app_tag:'BIM · EVM · FIDIC · Audit',
+nav_dashboard:'لوحة القيادة',nav_twin:'التوأم الرقمي 3D',nav_elements:'عناصر النموذج',nav_claims:'مطالبات الفيديك',nav_cos:'الأوامر التغييرية',nav_evm:'الأداء المكتسب (EVM)',nav_projects:'سجل المشاريع',nav_audit:'سجل التدقيق',nav_reports:'التقارير والبيانات',
+sub_dashboard:'الموقف المالي والزمني والتعاقدي للمشروع النشط',sub_twin:'انقر على أي عنصر لعرض بياناته المالية والتعاقدية',sub_elements:'إدخال وتحديث البيانات التشغيلية لعناصر النموذج عبر المعرّف GUID',sub_claims:'متابعة مهلة الإخطار (28 يوماً) من تاريخ العلم بالحدث',sub_cos:'دورة اعتماد متعددة المستويات بحسب القيمة',sub_evm:'قياسات القيمة المخططة والمكتسبة والتكلفة الفعلية',sub_projects:'المشاريع والعقود',sub_audit:'سجل مترابط بالتجزئة يوثق كل تعديل',sub_reports:'تقرير تنفيذي جاهز للطباعة وإدارة البيانات',
+user:'اسم المستخدم',role:'الدور (محاكاة الصلاحيات)',r_SITE_ENGINEER:'مهندس موقع',r_PROJECT_MANAGER:'مدير مشروع',r_EXECUTIVE:'إدارة عليا',
+print:'طباعة',cancel:'إلغاء',save:'حفظ',add:'إضافة',edit:'تعديل',del:'حذف',close:'إغلاق',actions:'الإجراءات',yes_del:'تأكيد الحذف؟',
+reset_view:'إعادة ضبط الزاوية',v_hint:'اسحب للتدوير · العجلة أو القرص للتقريب',no3d:'تعذر تحميل مكتبة Three.js. تحقق من اتصال الإنترنت ثم أعد فتح الصفحة.',
+GOOD:'سليم',WARNING:'تنبيه',CRITICAL:'حرج',all:'الكل',
+cat_Structural:'إنشائي',cat_Architectural:'معماري',cat_MEP:'كهروميكانيكا',
+low:'منخفضة',medium:'متوسطة',high:'مرتفعة',risk:'مستوى المخاطر',
+cpi:'مؤشر أداء التكلفة CPI',spi:'مؤشر أداء الجدول SPI',cv:'انحراف التكلفة CV',sv:'انحراف الجدول SV',eac:'التكلفة المقدّرة عند الإنجاز EAC',vac:'الانحراف عند الإنجاز VAC',etc:'المتبقي ETC',tcpi:'TCPI',bac:'الميزانية المعدّلة BAC',
+cpi_good:'ضمن الميزانية',cpi_bad:'تجاوز في التكلفة',spi_good:'ضمن الجدول',spi_bad:'تأخير عن الجدول',
+scurve:'المنحنى التراكمي',pv:'القيمة المخططة PV',ev:'القيمة المكتسبة EV',ac:'التكلفة الفعلية AC',
+el_status:'حالة عناصر النموذج',urgent_claims:'مهل الفيديك الأقرب',pending_cos:'أوامر تغييرية قيد الاعتماد',none:'لا يوجد',
+no_evm:'لا توجد قياسات EVM بعد. أضف أول قياس من تبويب الأداء المكتسب.',
+guid:'المعرّف GUID',name:'الاسم',category:'التصنيف',level:'الطابق / المستوى',status:'الحالة',health:'مؤشر الكفاءة (0-100)',est:'التكلفة التقديرية (USD)',act:'التكلفة الفعلية (USD)',notes:'ملاحظات هندسية',version:'الإصدار',updated:'آخر تحديث',by:'بواسطة',
+pos_x:'الموضع X',pos_y:'الموضع Y',pos_z:'الموضع Z',size_w:'العرض',size_h:'الارتفاع',size_d:'العمق',
+add_el:'إضافة عنصر',search:'بحث…',el_added:'تمت إضافة العنصر',el_saved:'تم حفظ بيانات العنصر',el_deleted:'تم حذف العنصر',
+conflict:'تعارض في التعديل: حدّث مهندس آخر هذا العنصر (الإصدار الحالي {v}). أُعيد تحميل البيانات، راجع القيم ثم أعد الحفظ.',
+guid_dup:'هذا المعرّف مستخدم لعنصر آخر.',bad_health:'مؤشر الكفاءة يجب أن يكون بين 0 و100.',bad_cost:'التكاليف يجب ألا تكون سالبة.',
+sel_hint:'اختر عنصراً من النموذج ثلاثي الأبعاد.',linked_claims:'مطالبات مرتبطة',linked_cos:'أوامر تغيير مرتبطة',edit_data:'تحديث البيانات',variance:'الفرق',
+claim_title:'عنوان المطالبة',claim_el:'عنصر النموذج المرتبط',event_date:'تاريخ وقوع الحدث',aware_date:'تاريخ العلم بالحدث',notice_date:'تاريخ الإخطار الفعلي',detailed_date:'تاريخ المطالبة المفصّلة',claim_usd:'القيمة المطلوبة (USD)',claim_days:'التمديد المطلوب (يوم)',edition:'إصدار الفيديك',outcome:'نتيجة المطالبة',
+o_none:'قيد المعالجة',o_APPROVED:'مقبولة',o_REJECTED:'مرفوضة',
+deadline:'آخر موعد للإخطار',days_left:'الأيام المتبقية',detailed_due:'موعد المطالبة المفصّلة',
+cs_ON_TIME:'إخطار في الموعد',cs_OPEN:'مهلة سارية',cs_URGENT:'مهلة حرجة',cs_EXPOSED:'معرّضة للسقوط الزمني',
+d_left:'{n} يوم متبقٍ',d_over:'تجاوزت المهلة بـ {n} يوم',d_done:'أُرسل قبل الموعد بـ {n} يوم',d_late:'أُرسل متأخراً {n} يوم',
+claims_note:'تقدير آلي للمساعدة فقط. أثر تجاوز المهلة يتوقف على الشروط الخاصة للعقد والقانون الحاكم، فراجع المستشار القانوني قبل اتخاذ موقف. المهلة محسوبة من تاريخ العلم بالحدث لا من تاريخ وقوعه.',
+claim_added:'تم تسجيل المطالبة',claim_saved:'تم حفظ المطالبة',claim_deleted:'تم حذف المطالبة',
+bad_dates:'تاريخ الإخطار لا يسبق تاريخ العلم، وتاريخ العلم لا يسبق تاريخ الحدث.',add_claim:'تسجيل مطالبة',
+co_title:'عنوان الأمر التغييري',co_value:'الأثر المالي (USD)',co_desc:'الوصف',co_status:'الحالة',co_steps:'مسار الاعتماد',
+s_DRAFT:'مسودة',s_PENDING:'قيد الاعتماد',s_APPROVED:'معتمد',s_REJECTED:'مرفوض',
+step_PM:'مدير المشروع',step_DIR:'المدير التنفيذي',step_CEO:'الرئيس التنفيذي',approve:'اعتماد',reject:'رفض',
+co_rule:'≤ 25,000$ : مدير المشروع · ≤ 250,000$ : + المدير التنفيذي · أعلى: + الرئيس التنفيذي',
+co_added:'تم إنشاء الأمر التغييري',co_appr:'تم تسجيل الاعتماد',co_rej:'تم رفض الأمر',co_deleted:'تم حذف الأمر',add_co:'أمر تغييري جديد',no_perm_step:'هذه الخطوة تتطلب دوراً آخر.',
+add_evm:'إضافة قياس',m_date:'تاريخ القياس',evm_added:'تمت إضافة القياس',evm_deleted:'تم حذف القياس',
+p_name:'اسم المشروع',p_loc:'الموقع',p_status:'الحالة',p_value:'قيمة العقد (USD)',p_contract:'نوع العقد',p_active:'المشروع النشط',set_active:'تعيين كنشط',add_project:'إضافة مشروع',
+ps_ACTIVE:'نشط',ps_PLANNING:'تخطيط',ps_CLOSED:'مغلق',p_saved:'تم حفظ المشروع',p_deleted:'تم حذف المشروع',p_last:'لا يمكن حذف المشروع النشط.',
+a_seq:'#',a_time:'الوقت',a_user:'المستخدم',a_action:'الإجراء',a_entity:'الكيان',a_changes:'التغييرات',a_hash:'البصمة',verify:'فحص سلامة السجل',
+verify_ok:'السجل سليم: {n} قيداً مترابطاً.',verify_bad:'تم اكتشاف عبث عند القيد رقم {n}.',
+audit_note:'البصمة تربط كل قيد بسابقه، فأي تعديل لاحق يكسر السلسلة ويظهر عند الفحص. هذه النسخة تحفظ السجل في متصفحك؛ الحماية الكاملة من الحذف تتطلب خادماً بصلاحيات كتابة فقط.',
+rep_title:'التقرير التنفيذي',rep_date:'تاريخ التقرير',rep_demo:'البيانات المعروضة تجريبية إلى أن تُستبدل ببيانات المشروع الفعلية.',
+data_mgmt:'إدارة البيانات',export:'تصدير JSON',import:'استيراد JSON',reset:'استعادة البيانات التجريبية',imported:'تم استيراد البيانات',bad_file:'ملف غير صالح.',reset_ok:'تمت استعادة البيانات التجريبية',
+need_role:'صلاحية دورك الحالي لا تسمح بهذا الإجراء.',required:'حقل مطلوب',
+en_lang:'English'},
+en:{
+app_title:'Digital Twin & Contract Governance',app_tag:'BIM · EVM · FIDIC · Audit',
+nav_dashboard:'Dashboard',nav_twin:'3D Digital Twin',nav_elements:'Model Elements',nav_claims:'FIDIC Claims',nav_cos:'Change Orders',nav_evm:'Earned Value (EVM)',nav_projects:'Projects Registry',nav_audit:'Audit Trail',nav_reports:'Reports & Data',
+sub_dashboard:'Cost, schedule and contract position of the active project',sub_twin:'Click any element to see its financial and contractual data',sub_elements:'Enter and update operational data for model elements by GUID',sub_claims:'Track the 28-day notice period from the date of awareness',sub_cos:'Multi-level approval by value',sub_evm:'Planned value, earned value and actual cost measurements',sub_projects:'Projects and contracts',sub_audit:'Hash-chained log recording every change',sub_reports:'Print-ready executive report and data management',
+user:'User name',role:'Role (permission simulation)',r_SITE_ENGINEER:'Site Engineer',r_PROJECT_MANAGER:'Project Manager',r_EXECUTIVE:'Executive',
+print:'Print',cancel:'Cancel',save:'Save',add:'Add',edit:'Edit',del:'Delete',close:'Close',actions:'Actions',yes_del:'Confirm delete?',
+reset_view:'Reset view',v_hint:'Drag to orbit · wheel or pinch to zoom',no3d:'Three.js could not be loaded. Check your internet connection and reopen the page.',
+GOOD:'Good',WARNING:'Warning',CRITICAL:'Critical',all:'All',
+cat_Structural:'Structural',cat_Architectural:'Architectural',cat_MEP:'MEP',
+low:'Low',medium:'Medium',high:'High',risk:'Risk level',
+cpi:'Cost Performance Index (CPI)',spi:'Schedule Performance Index (SPI)',cv:'Cost variance (CV)',sv:'Schedule variance (SV)',eac:'Estimate at completion (EAC)',vac:'Variance at completion (VAC)',etc:'Estimate to complete (ETC)',tcpi:'TCPI',bac:'Adjusted budget (BAC)',
+cpi_good:'Within budget',cpi_bad:'Over budget',spi_good:'On schedule',spi_bad:'Behind schedule',
+scurve:'Cumulative curve',pv:'Planned value PV',ev:'Earned value EV',ac:'Actual cost AC',
+el_status:'Model element status',urgent_claims:'Nearest FIDIC deadlines',pending_cos:'Change orders awaiting approval',none:'None',
+no_evm:'No EVM measurements yet. Add the first one from the Earned Value tab.',
+guid:'GUID',name:'Name',category:'Category',level:'Floor / level',status:'Status',health:'Health score (0-100)',est:'Estimated cost (USD)',act:'Actual cost (USD)',notes:'Engineering notes',version:'Version',updated:'Last update',by:'By',
+pos_x:'Position X',pos_y:'Position Y',pos_z:'Position Z',size_w:'Width',size_h:'Height',size_d:'Depth',
+add_el:'Add element',search:'Search…',el_added:'Element added',el_saved:'Element data saved',el_deleted:'Element deleted',
+conflict:'Edit conflict: another engineer updated this element (current version {v}). Data was reloaded, review the values and save again.',
+guid_dup:'This GUID is already used by another element.',bad_health:'Health score must be between 0 and 100.',bad_cost:'Costs cannot be negative.',
+sel_hint:'Select an element in the 3D model.',linked_claims:'Linked claims',linked_cos:'Linked change orders',edit_data:'Update data',variance:'Variance',
+claim_title:'Claim title',claim_el:'Linked model element',event_date:'Event date',aware_date:'Awareness date',notice_date:'Actual notice date',detailed_date:'Detailed claim date',claim_usd:'Amount claimed (USD)',claim_days:'Extension requested (days)',edition:'FIDIC edition',outcome:'Claim outcome',
+o_none:'In progress',o_APPROVED:'Accepted',o_REJECTED:'Rejected',
+deadline:'Notice deadline',days_left:'Days left',detailed_due:'Detailed claim due',
+cs_ON_TIME:'Notice on time',cs_OPEN:'Period running',cs_URGENT:'Urgent',cs_EXPOSED:'Exposed to time bar',
+d_left:'{n} days left',d_over:'{n} days past deadline',d_done:'Sent {n} days early',d_late:'Sent {n} days late',
+claims_note:'Automated estimate for guidance only. The effect of missing a deadline depends on the Particular Conditions and governing law, so consult legal counsel before taking a position. The period runs from the date of awareness, not the date the event occurred.',
+claim_added:'Claim recorded',claim_saved:'Claim saved',claim_deleted:'Claim deleted',
+bad_dates:'Notice date cannot precede awareness date, and awareness date cannot precede the event date.',add_claim:'Record a claim',
+co_title:'Change order title',co_value:'Cost impact (USD)',co_desc:'Description',co_status:'Status',co_steps:'Approval path',
+s_DRAFT:'Draft',s_PENDING:'Pending approval',s_APPROVED:'Approved',s_REJECTED:'Rejected',
+step_PM:'Project Manager',step_DIR:'Executive Director',step_CEO:'CEO',approve:'Approve',reject:'Reject',
+co_rule:'≤ $25,000: Project Manager · ≤ $250,000: + Executive Director · above: + CEO',
+co_added:'Change order created',co_appr:'Approval recorded',co_rej:'Change order rejected',co_deleted:'Change order deleted',add_co:'New change order',no_perm_step:'This step requires a different role.',
+add_evm:'Add measurement',m_date:'Measurement date',evm_added:'Measurement added',evm_deleted:'Measurement deleted',
+p_name:'Project name',p_loc:'Location',p_status:'Status',p_value:'Contract value (USD)',p_contract:'Contract type',p_active:'Active project',set_active:'Set active',add_project:'Add project',
+ps_ACTIVE:'Active',ps_PLANNING:'Planning',ps_CLOSED:'Closed',p_saved:'Project saved',p_deleted:'Project deleted',p_last:'The active project cannot be deleted.',
+a_seq:'#',a_time:'Time',a_user:'User',a_action:'Action',a_entity:'Entity',a_changes:'Changes',a_hash:'Hash',verify:'Verify log integrity',
+verify_ok:'Log is intact: {n} chained entries.',verify_bad:'Tampering detected at entry {n}.',
+audit_note:'Each entry hash covers the previous one, so any later edit breaks the chain and shows up on verification. This version stores the log in your browser; full protection against deletion needs a server with append-only permissions.',
+rep_title:'Executive report',rep_date:'Report date',rep_demo:'Data shown is sample data until replaced with real project data.',
+data_mgmt:'Data management',export:'Export JSON',import:'Import JSON',reset:'Restore sample data',imported:'Data imported',bad_file:'Invalid file.',reset_ok:'Sample data restored',
+need_role:'Your current role does not allow this action.',required:'Required',
+en_lang:'العربية'}
+};
+let lang='ar';
+const t=(k,p)=>{let s=(I18N[lang]&&I18N[lang][k])??I18N.ar[k]??k;if(p)for(const x in p)s=s.replace('{'+x+'}',p[x]);return s};
+
+/* ============ helpers ============ */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
+const money=n=>(n<0?'-':'')+'$'+fmt(Math.abs(n));
+const num2=n=>Number(n).toFixed(2);
+const DAY=864e5;
+const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const addDays=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
+const diffDays=(a,b)=>Math.round((new Date(b+'T00:00:00Z')-new Date(a+'T00:00:00Z'))/DAY);
+const STATUS_HEX={GOOD:'#2E9E6B',WARNING:'#E0A100',CRITICAL:'#D64545'};
+const badgeCls={GOOD:'good',WARNING:'warn',CRITICAL:'bad'};
+
+/* ============ state & storage ============ */
+const KEY='bimTwinGovernance.v1';
+let state=null;
+function seedElements(){
+  const els=[];const L=['Ground','Level 1','Level 2'];const W=12,D=8,H=3.2;
+  const add=(guid,name,category,level,x,y,z,w,h,d,extra={})=>els.push(Object.assign({guid,name,category,level,x,y,z,w,h,d,status:'GOOD',health:100,est:0,act:0,notes:'',version:1,updatedBy:'',updatedAt:''},extra));
+  add('BIM-FND-01','Raft Foundation','Structural','Foundation',0,-0.4,0,W+2,0.8,D+2,{est:420000,act:415000,health:98});
+  L.forEach((lv,i)=>{
+    const y=i*H;
+    [[-W/2,-D/2],[W/2,-D/2],[-W/2,D/2],[W/2,D/2]].forEach((p,k)=>add(`BIM-L${i}-COL-0${k+1}`,`Column C${i}${k+1}`,'Structural',lv,p[0],y+H/2,p[1],0.6,H,0.6,{est:9000,act:9000+(i*200),health:97}));
+    add(`BIM-L${i}-SLB-01`,`Slab ${lv}`,'Structural',lv,0,y+H,0,W+1,0.3,D+1,{est:210000,act:205000,health:96});
+    add(`BIM-L${i}-WAL-01`,`Rear Wall ${lv}`,'Architectural',lv,0,y+H/2,-D/2,W,H-0.3,0.2,{est:64000,act:63000,health:95});
+    add(`BIM-L${i}-AHU-01`,`Air Handling Unit ${i+1}`,'MEP',lv,-3,y+1.0,0,2,1.6,1.4,{est:88000,act:88000,health:94});
+  });
+  add('BIM-RF-CHL-01','Chiller CH-01','MEP','Roof',-3,3*H+0.95,0,2.6,1.6,1.8,{est:150000,act:150000,health:92});
+  add('BIM-RF-CHL-02','Chiller CH-02','MEP','Roof',3,3*H+0.95,0,2.6,1.6,1.8,{est:150000,act:171500,health:60,status:'CRITICAL',notes:'Supply delay and price escalation; linked to a pending change order.'});
+  const by=(g,o)=>Object.assign(els.find(e=>e.guid===g),o);
+  by('BIM-L1-AHU-01',{status:'WARNING',health:75,act:96000,notes:'Spare parts delivery delayed by one week.'});
+  by('BIM-L2-COL-03',{status:'WARNING',health:78,notes:'Honeycombing observed at column base; repair method statement submitted.'});
+  return els;
+}
+function seedState(){
+  const T=todayStr();
+  return{
+    settings:{lang:'ar',role:'PROJECT_MANAGER',user:'م. وائل عويس',activeProject:'P-01'},
+    projects:[
+      {id:'P-01',name:'مركز بيانات Tier III – العاصمة الإدارية الجديدة (Tier III Data Center – NAC)',location:'Egypt',status:'ACTIVE',value:12000000,contract:'FIDIC'},
+      {id:'P-02',name:'Smart Data Campus – Dubai',location:'UAE',status:'PLANNING',value:8500000,contract:'FIDIC'}
+    ],
+    elements:seedElements(),
+    evm:[[-150,1.2,1.1,1.1],[-120,2.6,2.4,2.3],[-90,4.4,4.0,3.8],[-60,6.3,5.7,5.4],[-30,8.0,7.5,7.0],[0,9.6,9.1,8.45]].map(r=>({date:addDays(T,r[0]),pv:r[1]*1e6,ev:r[2]*1e6,ac:r[3]*1e6})),
+    cos:[
+      {id:'CO-01',title:'Chiller CH-02 price escalation',value:21500,elementGuid:'BIM-RF-CHL-02',desc:'Manufacturer price increase after design freeze.',status:'PENDING',steps:['PM'],approvals:[],created:addDays(T,-12)},
+      {id:'CO-02',title:'Additional fire-rated partitions L1',value:145000,elementGuid:'BIM-L1-WAL-01',desc:'Authority requirement issued after tender.',status:'PENDING',steps:['PM','DIR'],approvals:[{step:'PM',by:'م. وائل عويس',ts:addDays(T,-5)}],created:addDays(T,-9)},
+      {id:'CO-03',title:'Foundation waterproofing upgrade',value:64000,elementGuid:'BIM-FND-01',desc:'Higher groundwater level than the soil report.',status:'APPROVED',steps:['PM','DIR'],approvals:[{step:'PM',by:'م. وائل عويس',ts:addDays(T,-40)},{step:'DIR',by:'Executive',ts:addDays(T,-36)}],created:addDays(T,-45)}
+    ],
+    claims:[
+      {id:'CL-101',title:'Delayed access to Level 2 hall',elementGuid:'BIM-L2-SLB-01',eventDate:addDays(T,-27),awarenessDate:addDays(T,-25),noticeDate:'',detailedDate:'',claimUsd:86000,days:14,edition:'2017',outcome:''},
+      {id:'CL-102',title:'Unforeseeable ground water',elementGuid:'BIM-FND-01',eventDate:addDays(T,-62),awarenessDate:addDays(T,-60),noticeDate:addDays(T,-38),detailedDate:'',claimUsd:64000,days:10,edition:'2017',outcome:'APPROVED'},
+      {id:'CL-103',title:'Late instruction on AHU location',elementGuid:'BIM-L1-AHU-01',eventDate:addDays(T,-75),awarenessDate:addDays(T,-70),noticeDate:addDays(T,-32),detailedDate:'',claimUsd:23000,days:6,edition:'1999',outcome:''}
+    ],
+    audit:[]
+  };
+}
+function loadState(){
+  try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&s.elements&&s.settings)return s;}}catch(e){}
+  return null;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+let fallbackMem=null;
+
+/* ============ audit (hash chain) ============ */
+function cyrb(str){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<str.length;i++){const c=str.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(16).padStart(14,'0')}
+async function sha(str){
+  try{if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}}catch(e){}
+  return 'f'+cyrb(str)+cyrb(str.split('').reverse().join(''));
+}
+const rec=e=>JSON.stringify({seq:e.seq,ts:e.ts,user:e.user,role:e.role,action:e.action,entity:e.entity,entityId:e.entityId,diff:e.diff});
+function diffObj(a,b){const d={};const keys=new Set([...Object.keys(a||{}),...Object.keys(b||{})]);
+  keys.forEach(k=>{if(JSON.stringify((a||{})[k])!==JSON.stringify((b||{})[k]))d[k]=[(a||{})[k]??null,(b||{})[k]??null]});return d}
+let auditQ=Promise.resolve();
+function log(action,entity,entityId,oldO,newO){
+  const diff=diffObj(oldO,newO);
+  const u=state.settings.user,r=state.settings.role;
+  auditQ=auditQ.then(async()=>{
+    const prev=state.audit.length?state.audit[state.audit.length-1].hash:'GENESIS';
+    const e={seq:state.audit.length+1,ts:new Date().toISOString(),user:u,role:r,action,entity,entityId,diff,prev};
+    e.hash=await sha(prev+rec(e));
+    state.audit.push(e);save();
+    if(cur==='audit')render();
+  });
+  return auditQ;
+}
+async function verifyChain(){
+  let prev='GENESIS';
+  for(let i=0;i<state.audit.length;i++){const e=state.audit[i];
+    const h=await sha(prev+rec(e));
+    if(e.prev!==prev||e.hash!==h)return{ok:false,n:e.seq};
+    prev=e.hash}
+  return{ok:true,n:state.audit.length};
+}
+
+/* ============ permissions ============ */
+const PERM={edit:['SITE_ENGINEER','PROJECT_MANAGER'],evm:['PROJECT_MANAGER'],admin:['PROJECT_MANAGER']};
+const can=a=>PERM[a].includes(state.settings.role);
+function need(a){if(can(a))return true;toast(t('need_role'));return false}
+const STEPS=v=>v<=25000?['PM']:v<=250000?['PM','DIR']:['PM','DIR','CEO'];
+const STEP_ROLE={PM:'PROJECT_MANAGER',DIR:'EXECUTIVE',CEO:'EXECUTIVE'};
+
+/* ============ calculations ============ */
+const activeProject=()=>state.projects.find(p=>p.id===state.settings.activeProject)||state.projects[0];
+const approvedCOs=()=>state.cos.filter(c=>c.status==='APPROVED').reduce((s,c)=>s+Number(c.value||0),0);
+function evmCalc(){
+  const s=state.evm.slice().sort((a,b)=>a.date.localeCompare(b.date));const l=s[s.length-1];if(!l)return null;
+  const bac=(activeProject()?Number(activeProject().value):0)+approvedCOs();
+  const cpi=l.ac>0?l.ev/l.ac:1,spi=l.pv>0?l.ev/l.pv:1;
+  const eac=cpi>0?bac/cpi:bac;
+  const risk=(cpi<.85||spi<.85)?'high':(cpi<.95||spi<.95)?'medium':'low';
+  return{s,l,bac,cpi,spi,cv:l.ev-l.ac,sv:l.ev-l.pv,eac,etc:eac-l.ac,vac:bac-eac,tcpi:(bac-l.ev)/Math.max(bac-l.ac,1),risk};
+}
+function claimInfo(c){
+  const T=todayStr();const deadline=addDays(c.awarenessDate,28);
+  const detailedDue=addDays(c.awarenessDate,c.edition==='1999'?42:84);
+  let st,text,left=diffDays(T,deadline);
+  if(c.noticeDate){const d=diffDays(c.noticeDate,deadline);
+    if(d>=0){st='ON_TIME';text=t('d_done',{n:d})}else{st='EXPOSED';text=t('d_late',{n:-d})}}
+  else if(left<0){st='EXPOSED';text=t('d_over',{n:-left})}
+  else{st=left<=7?'URGENT':'OPEN';text=t('d_left',{n:left})}
+  return{deadline,detailedDue,st,text,left};
+}
+const csCls={ON_TIME:'good',OPEN:'info',URGENT:'warn',EXPOSED:'bad'};
+const nextId=(prefix,arr,w=2)=>{const m=arr.reduce((x,o)=>Math.max(x,parseInt(String(o.id).replace(/\D/g,''))||0),0);return prefix+String(m+1).padStart(w,'0')};
+const elName=g=>{const e=state.elements.find(x=>x.guid===g);return e?`${esc(e.name)} <span class="muted">(${esc(g)})</span>`:'—'};
+
+/* ============ UI shell ============ */
+const VIEWS=['dashboard','twin','elements','claims','cos','evm','projects','audit','reports'];
+let cur='dashboard';
+function toast(msg){const el=$('#toast');el.textContent=msg;el.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>el.style.display='none',3600)}
+function applyLang(){
+  const r=$('#root');r.lang=lang;r.dir=lang==='ar'?'rtl':'ltr';
+  document.title=t('app_title');
+  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
+  $('#langBtn').textContent=t('en_lang');
+  $('#roleSel').innerHTML=['SITE_ENGINEER','PROJECT_MANAGER','EXECUTIVE'].map(x=>`<option value="${x}" ${state.settings.role===x?'selected':''}>${t('r_'+x)}</option>`).join('');
+  $('#nav').innerHTML=VIEWS.map(v=>`<button data-act="nav" data-id="${v}" class="${v===cur?'on':''}">${t('nav_'+v)}</button>`).join('');
+  $('#userName').value=state.settings.user;
+  buildLegend();
+}
+function buildLegend(){
+  $('#twinLegend').innerHTML=['GOOD','WARNING','CRITICAL'].map(s=>`<span style="--c:${STATUS_HEX[s]}">${t(s)}</span>`).join('');
+}
+function render(){
+  $('#viewTitle').textContent=t('nav_'+cur);$('#viewSub').textContent=t('sub_'+cur);
+  const p=activeProject();
+  $('#topRight').innerHTML=p?`<span class="chip navy">${esc(p.id)}</span> <span class="muted">${esc(p.name)}</span>`:'';
+  VIEWS.forEach(v=>$('#v-'+v).classList.toggle('on',v===cur));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.id===cur));
+  const R={dashboard:rDash,twin:rTwin,elements:rElements,claims:rClaims,cos:rCOs,evm:rEvm,projects:rProjects,audit:rAudit,reports:rReports};
+  R[cur]();
+}
+
+/* ============ dashboard ============ */
+function sCurve(s,bac){
+  const W=640,H=250,pl=54,pr=14,pt=14,pb=30;
+  const max=Math.max(...s.map(x=>Math.max(x.pv,x.ev,x.ac)),1)*1.1;
+  const X=i=>pl+(s.length<2?0:i*(W-pl-pr)/(s.length-1)),Y=v=>pt+(H-pt-pb)*(1-v/max);
+  const line=(k,c,dash)=>`<polyline fill="none" stroke="${c}" stroke-width="2.5" ${dash?'stroke-dasharray="6 4"':''} points="${s.map((x,i)=>X(i)+','+Y(x[k])).join(' ')}"/>`+s.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x[k])}" r="3" fill="${c}"/>`).join('');
+  let grid='';for(let i=0;i<=4;i++){const v=max*i/4;grid+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e3e8ef"/><text x="${pl-6}" y="${Y(v)+4}" font-size="11" fill="#5d6b80" text-anchor="end">${(v/1e6).toFixed(1)}M</text>`}
+  const xl=s.map((x,i)=>`<text x="${X(i)}" y="${H-8}" font-size="10.5" fill="#5d6b80" text-anchor="middle" direction="ltr">${x.date.slice(2,7)}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${t('scurve')}">${grid}${xl}${line('pv','#C9A84C',true)}${line('ev','#2E9E6B')}${line('ac','#D64545')}</svg>
+  <div class="legend"><span style="--c:#C9A84C">${t('pv')}</span><span style="--c:#2E9E6B">${t('ev')}</span><span style="--c:#D64545">${t('ac')}</span></div>`;
+}
+function rDash(){
+  const e=evmCalc(),el=state.elements;
+  const cnt={GOOD:0,WARNING:0,CRITICAL:0};el.forEach(x=>cnt[x.status]=(cnt[x.status]||0)+1);
+  const cl=state.claims.filter(c=>!c.outcome).map(c=>({c,i:claimInfo(c)})).sort((a,b)=>a.i.left-b.i.left).slice(0,4);
+  const pend=state.cos.filter(c=>c.status==='PENDING');
+  let kpi='';
+  if(e){
+    const kc=(v)=>v>=1?'good':v>=.95?'warn':'bad';
+    const rk={low:'good',medium:'warn',high:'bad'}[e.risk];
+    kpi=`<div class="grid g-kpi">
+      <div class="card kpi lead ${kc(e.cpi)}"><small>${t('cpi')}</small><strong>${num2(e.cpi)}</strong><small>${e.cpi>=1?t('cpi_good'):t('cpi_bad')}</small></div>
+      <div class="card kpi lead ${kc(e.spi)}"><small>${t('spi')}</small><strong>${num2(e.spi)}</strong><small>${e.spi>=1?t('spi_good'):t('spi_bad')}</small></div>
+      <div class="card kpi ${rk}"><small>${t('risk')}</small><strong>${t(e.risk)}</strong><small>${t('bac')}: ${money(e.bac)}</small></div>
+      <div class="card kpi"><small>${t('cv')}</small><strong>${money(e.cv)}</strong></div>
+      <div class="card kpi"><small>${t('sv')}</small><strong>${money(e.sv)}</strong></div>
+      <div class="card kpi"><small>${t('eac')}</small><strong>${money(e.eac)}</strong><small>${t('vac')}: ${money(e.vac)}</small></div>
+    </div>`;
+  }else kpi=`<div class="card empty">${t('no_evm')}</div>`;
+  const tot=el.length||1;
+  $('#v-dashboard').innerHTML=`${kpi}
+  <div class="grid g-2" style="margin-top:14px">
+    <div class="card"><div class="card-head"><h2>${t('scurve')}</h2></div>${e?sCurve(e.s,e.bac):`<div class="empty">${t('no_evm')}</div>`}</div>
+    <div class="grid">
+      <div class="card"><h2>${t('el_status')}</h2>
+        <div class="bar">${['GOOD','WARNING','CRITICAL'].map(s=>`<i style="width:${cnt[s]/tot*100}%;background:${STATUS_HEX[s]}"></i>`).join('')}</div>
+        <div class="legend" style="margin-top:8px">${['GOOD','WARNING','CRITICAL'].map(s=>`<span style="--c:${STATUS_HEX[s]}">${t(s)}: ${cnt[s]}</span>`).join('')}</div></div>
+      <div class="card"><h2>${t('urgent_claims')}</h2>${cl.length?cl.map(x=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)"><span>${esc(x.c.id)} · ${esc(x.c.title)}</span><span class="chip ${csCls[x.i.st]}">${x.i.text}</span></div>`).join(''):`<div class="muted">${t('none')}</div>`}</div>
+      <div class="card"><h2>${t('pending_cos')}</h2>${pend.length?`<strong style="font-size:22px">${pend.length}</strong> <span class="muted">· ${money(pend.reduce((s,c)=>s+c.value,0))}</span>`:`<div class="muted">${t('none')}</div>`}</div>
+    </div>
+  </div>`;
+}
+
+/* ============ elements ============ */
+let elQuery='';
+function elFields(e,isNew){
+  const cats=[['Structural',t('cat_Structural')],['Architectural',t('cat_Architectural')],['MEP',t('cat_MEP')]];
+  const stt=['GOOD','WARNING','CRITICAL'].map(s=>[s,t(s)]);
+  const f=[
+    {k:'guid',l:t('guid'),v:e.guid,ro:!isNew,req:1,full:1},
+    {k:'name',l:t('name'),v:e.name,req:1},
+    {k:'level',l:t('level'),v:e.level,req:1},
+    {k:'category',l:t('category'),type:'select',opts:cats,v:e.category},
+    {k:'status',l:t('status'),type:'select',opts:stt,v:e.status},
+    {k:'health',l:t('health'),type:'number',v:e.health,min:0,max:100,step:1},
+    {k:'est',l:t('est'),type:'number',v:e.est,min:0,step:.01},
+    {k:'act',l:t('act'),type:'number',v:e.act,min:0,step:.01},
+    {k:'notes',l:t('notes'),type:'textarea',v:e.notes,full:1},
+    {k:'version',l:t('version'),type:'hidden',v:e.version}
+  ];
+  if(isNew)f.splice(9,0,
+    {k:'x',l:t('pos_x'),type:'number',v:e.x,step:.1},{k:'y',l:t('pos_y'),type:'number',v:e.y,step:.1},{k:'z',l:t('pos_z'),type:'number',v:e.z,step:.1},
+    {k:'w',l:t('size_w'),type:'number',v:e.w,min:.1,step:.1},{k:'h',l:t('size_h'),type:'number',v:e.h,min:.1,step:.1},{k:'d',l:t('size_d'),type:'number',v:e.d,min:.1,step:.1});
+  return f;
+}
+function rElements(){
+  const q=elQuery.toLowerCase();
+  const rows=state.elements.filter(e=>!q||(e.guid+e.name+e.level+e.category).toLowerCase().includes(q));
+  $('#v-elements').innerHTML=`<div class="card">
+    <div class="card-head"><input class="f" style="border:1px solid var(--line);border-radius:6px;padding:7px 10px;min-width:220px" id="elSearch" placeholder="${t('search')}" value="${esc(elQuery)}" aria-label="${t('search')}">
+    <button class="btn gold" data-act="addEl">${t('add_el')}</button></div>
+    <div class="tbl-wrap"><table><thead><tr><th>${t('guid')}</th><th>${t('name')}</th><th>${t('category')}</th><th>${t('level')}</th><th>${t('status')}</th><th>${t('health')}</th><th>${t('est')}</th><th>${t('act')}</th><th>${t('variance')}</th><th>${t('version')}</th><th>${t('actions')}</th></tr></thead><tbody>
+    ${rows.map(e=>{const v=e.act-e.est;return`<tr><td class="hash">${esc(e.guid)}</td><td>${esc(e.name)}</td><td>${t('cat_'+e.category)}</td><td>${esc(e.level)}</td><td><span class="chip ${badgeCls[e.status]}">${t(e.status)}</span></td><td>${e.health}%</td><td>${money(e.est)}</td><td>${money(e.act)}</td><td style="color:${v>0?'var(--bad)':'var(--good)'}">${money(v)}</td><td>${e.version}</td>
+    <td><div class="row-actions"><button class="btn sm" data-act="editEl" data-id="${esc(e.guid)}">${t('edit')}</button><button class="btn sm" data-act="viewEl" data-id="${esc(e.guid)}">3D</button><button class="btn sm danger" data-act="delEl" data-id="${esc(e.guid)}">${t('del')}</button></div></td></tr>`}).join('')||`<tr><td colspan="11" class="empty">${t('none')}</td></tr>`}
+    </tbody></table></div></div>`;
+  const s=$('#elSearch');s.addEventListener('input',()=>{elQuery=s.value;const p=s.selectionStart;rElements();const n=$('#elSearch');n.focus();n.setSelectionRange(p,p)});
+}
+
+/* ============ claims ============ */
+function claimFields(c){
+  return[
+    {k:'title',l:t('claim_title'),v:c.title,req:1,full:1},
+    {k:'elementGuid',l:t('claim_el'),type:'select',opts:[['','—'],...state.elements.map(e=>[e.guid,e.name+' ('+e.guid+')'])],v:c.elementGuid,full:1},
+    {k:'eventDate',l:t('event_date'),type:'date',v:c.eventDate,req:1},
+    {k:'awarenessDate',l:t('aware_date'),type:'date',v:c.awarenessDate,req:1},
+    {k:'noticeDate',l:t('notice_date'),type:'date',v:c.noticeDate},
+    {k:'detailedDate',l:t('detailed_date'),type:'date',v:c.detailedDate},
+    {k:'claimUsd',l:t('claim_usd'),type:'number',v:c.claimUsd,min:0,step:.01},
+    {k:'days',l:t('claim_days'),type:'number',v:c.days,min:0,step:1},
+    {k:'edition',l:t('edition'),type:'select',opts:[['1999','1999 (20.1)'],['2017','2017 (20.2)']],v:c.edition},
+    {k:'outcome',l:t('outcome'),type:'select',opts:[['',t('o_none')],['APPROVED',t('o_APPROVED')],['REJECTED',t('o_REJECTED')]],v:c.outcome}
+  ];
+}
+function rClaims(){
+  $('#v-claims').innerHTML=`<div class="card"><div class="card-head"><div class="notice" style="flex:1">${t('claims_note')}</div><button class="btn gold" data-act="addClaim">${t('add_claim')}</button></div>
+  <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>${t('claim_title')}</th><th>${t('claim_el')}</th><th>${t('aware_date')}</th><th>${t('deadline')}</th><th>${t('notice_date')}</th><th>${t('status')}</th><th>${t('detailed_due')}</th><th>${t('claim_usd')}</th><th>${t('claim_days')}</th><th>${t('outcome')}</th><th>${t('actions')}</th></tr></thead><tbody>
+  ${state.claims.map(c=>{const i=claimInfo(c);return`<tr><td>${esc(c.id)}</td><td>${esc(c.title)}<div class="muted">FIDIC ${esc(c.edition)}</div></td><td>${elName(c.elementGuid)}</td><td>${esc(c.awarenessDate)}</td><td><b>${i.deadline}</b></td><td>${esc(c.noticeDate)||'—'}</td><td><span class="chip ${csCls[i.st]}">${t('cs_'+i.st)}</span><div class="muted">${i.text}</div></td><td>${i.detailedDue}</td><td>${money(c.claimUsd)}</td><td>${c.days}</td><td>${c.outcome?t('o_'+c.outcome):t('o_none')}</td>
+  <td><div class="row-actions"><button class="btn sm" data-act="editClaim" data-id="${esc(c.id)}">${t('edit')}</button><button class="btn sm danger" data-act="delClaim" data-id="${esc(c.id)}">${t('del')}</button></div></td></tr>`}).join('')||`<tr><td colspan="12" class="empty">${t('none')}</td></tr>`}
+  </tbody></table></div></div>`;
+}
+
+/* ============ change orders ============ */
+function stepsHtml(c){
+  return`<div class="steps">${c.steps.map((s,i)=>`<span class="${i<c.approvals.length?'done':(i===c.approvals.length&&c.status==='PENDING'?'next':'')}">${t('step_'+s)}</span>`).join('')}</div>`;
+}
+function rCOs(){
+  const sc={DRAFT:'',PENDING:'warn',APPROVED:'good',REJECTED:'bad'};
+  $('#v-cos').innerHTML=`<div class="card"><div class="card-head"><div class="notice" style="flex:1">${t('co_rule')}</div><button class="btn gold" data-act="addCO">${t('add_co')}</button></div>
+  <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>${t('co_title')}</th><th>${t('claim_el')}</th><th>${t('co_value')}</th><th>${t('co_steps')}</th><th>${t('co_status')}</th><th>${t('actions')}</th></tr></thead><tbody>
+  ${state.cos.map(c=>{
+    const nextRole=STEP_ROLE[c.steps[c.approvals.length]];
+    const mine=c.status==='PENDING'&&state.settings.role===nextRole;
+    const canRej=c.status==='PENDING'&&state.settings.role!=='SITE_ENGINEER';
+    return`<tr><td>${esc(c.id)}</td><td>${esc(c.title)}<div class="muted">${esc(c.desc)}</div></td><td>${elName(c.elementGuid)}</td><td>${money(c.value)}</td><td>${stepsHtml(c)}</td><td><span class="chip ${sc[c.status]||''}">${t('s_'+c.status)}</span></td>
+    <td><div class="row-actions">${c.status==='PENDING'?`<button class="btn sm ok" data-act="approveCO" data-id="${esc(c.id)}" ${mine?'':'disabled title="'+t('no_perm_step')+'"'}>${t('approve')}</button><button class="btn sm danger" data-act="rejectCO" data-id="${esc(c.id)}" ${canRej?'':'disabled'}>${t('reject')}</button>`:''}<button class="btn sm danger" data-act="delCO" data-id="${esc(c.id)}">${t('del')}</button></div></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">${t('none')}</td></tr>`}
+  </tbody></table></div></div>`;
+}
+
+/* ============ EVM ============ */
+function rEvm(){
+  const s=state.evm.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  $('#v-evm').innerHTML=`<div class="card"><div class="card-head"><h2>${t('nav_evm')}</h2><button class="btn gold" data-act="addEvm">${t('add_evm')}</button></div>
+  <div class="tbl-wrap"><table><thead><tr><th>${t('m_date')}</th><th>${t('pv')}</th><th>${t('ev')}</th><th>${t('ac')}</th><th>CPI</th><th>SPI</th><th>${t('actions')}</th></tr></thead><tbody>
+  ${s.map((x,i)=>{const cpi=x.ac>0?x.ev/x.ac:1,spi=x.pv>0?x.ev/x.pv:1;return`<tr><td>${esc(x.date)}</td><td>${money(x.pv)}</td><td>${money(x.ev)}</td><td>${money(x.ac)}</td><td style="color:${cpi>=1?'var(--good)':'var(--bad)'}"><b>${num2(cpi)}</b></td><td style="color:${spi>=1?'var(--good)':'var(--bad)'}"><b>${num2(spi)}</b></td><td><button class="btn sm danger" data-act="delEvm" data-id="${esc(x.date)}">${t('del')}</button></td></tr>`}).join('')||`<tr><td colspan="7" class="empty">${t('no_evm')}</td></tr>`}
+  </tbody></table></div></div>`;
+}
+
+/* ============ projects ============ */
+function rProjects(){
+  $('#v-projects').innerHTML=`<div class="card"><div class="card-head"><h2>${t('nav_projects')}</h2><button class="btn gold" data-act="addProject">${t('add_project')}</button></div>
+  <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>${t('p_name')}</th><th>${t('p_loc')}</th><th>${t('p_contract')}</th><th>${t('p_value')}</th><th>${t('p_status')}</th><th>${t('actions')}</th></tr></thead><tbody>
+  ${state.projects.map(p=>{const a=p.id===state.settings.activeProject;return`<tr class="${a?'sel':''}"><td>${esc(p.id)}</td><td>${esc(p.name)} ${a?`<span class="chip gold" style="background:var(--gold);color:var(--navy)">${t('p_active')}</span>`:''}</td><td>${esc(p.location)}</td><td>${esc(p.contract)}</td><td>${money(p.value)}</td><td><span class="chip ${p.status==='ACTIVE'?'good':p.status==='PLANNING'?'warn':''}">${t('ps_'+p.status)}</span></td>
+  <td><div class="row-actions">${a?'':`<button class="btn sm" data-act="activeProject" data-id="${esc(p.id)}">${t('set_active')}</button>`}<button class="btn sm" data-act="editProject" data-id="${esc(p.id)}">${t('edit')}</button><button class="btn sm danger" data-act="delProject" data-id="${esc(p.id)}">${t('del')}</button></div></td></tr>`}).join('')}
+  </tbody></table></div></div>`;
+}
+
+/* ============ audit ============ */
+function rAudit(){
+  const rows=state.audit.slice().reverse();
+  $('#v-audit').innerHTML=`<div class="card"><div class="card-head"><div class="notice" style="flex:1">${t('audit_note')}</div><button class="btn pri" data-act="verifyAudit">${t('verify')}</button></div>
+  <div id="verifyOut"></div>
+  <div class="tbl-wrap"><table><thead><tr><th>${t('a_seq')}</th><th>${t('a_time')}</th><th>${t('a_user')}</th><th>${t('a_action')}</th><th>${t('a_entity')}</th><th>${t('a_changes')}</th><th>${t('a_hash')}</th></tr></thead><tbody>
+  ${rows.map(e=>`<tr><td>${e.seq}</td><td class="hash">${esc(e.ts.replace('T',' ').slice(0,19))}</td><td>${esc(e.user)}<div class="muted">${t('r_'+e.role)}</div></td><td><span class="chip navy">${esc(e.action)}</span></td><td>${esc(e.entity)}<div class="hash">${esc(e.entityId)}</div></td>
+  <td class="hash">${Object.entries(e.diff||{}).slice(0,6).map(([k,v])=>`${esc(k)}: ${esc(JSON.stringify(v[0]))} → ${esc(JSON.stringify(v[1]))}`).join('<br>')}</td><td class="hash">${esc(e.hash.slice(0,16))}…</td></tr>`).join('')||`<tr><td colspan="7" class="empty">${t('none')}</td></tr>`}
+  </tbody></table></div></div>`;
+}
+
+/* ============ reports ============ */
+function rReports(){
+  const e=evmCalc(),p=activeProject(),el=state.elements;
+  const cnt={GOOD:0,WARNING:0,CRITICAL:0};el.forEach(x=>cnt[x.status]++);
+  const crit=el.filter(x=>x.status!=='GOOD');
+  $('#v-reports').innerHTML=`<div class="card report">
+    <div class="card-head no-print"><h2>${t('rep_title')}</h2><button class="btn pri" data-act="print">${t('print')}</button></div>
+    <h1 style="margin:0">${esc(p?p.name:'')}</h1>
+    <div class="muted">${t('rep_title')} · ${t('rep_date')}: ${todayStr()} · ${esc(state.settings.user)}</div>
+    <h2>${t('nav_evm')}</h2>
+    ${e?`<div class="tbl-wrap"><table><tbody>
+    <tr><th>${t('bac')}</th><td>${money(e.bac)}</td><th>${t('risk')}</th><td>${t(e.risk)}</td></tr>
+    <tr><th>${t('cpi')}</th><td>${num2(e.cpi)}</td><th>${t('spi')}</th><td>${num2(e.spi)}</td></tr>
+    <tr><th>${t('cv')}</th><td>${money(e.cv)}</td><th>${t('sv')}</th><td>${money(e.sv)}</td></tr>
+    <tr><th>${t('eac')}</th><td>${money(e.eac)}</td><th>${t('vac')}</th><td>${money(e.vac)}</td></tr></tbody></table></div>${sCurve(e.s,e.bac)}`:`<div class="muted">${t('no_evm')}</div>`}
+    <h2>${t('el_status')}</h2>
+    <div class="legend">${['GOOD','WARNING','CRITICAL'].map(s=>`<span style="--c:${STATUS_HEX[s]}">${t(s)}: ${cnt[s]}</span>`).join('')}</div>
+    ${crit.length?`<div class="tbl-wrap"><table><thead><tr><th>${t('name')}</th><th>${t('status')}</th><th>${t('variance')}</th><th>${t('notes')}</th></tr></thead><tbody>${crit.map(x=>`<tr><td>${esc(x.name)}<div class="hash">${esc(x.guid)}</div></td><td>${t(x.status)}</td><td>${money(x.act-x.est)}</td><td>${esc(x.notes)}</td></tr>`).join('')}</tbody></table></div>`:''}
+    <h2>${t('nav_claims')}</h2>
+    <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>${t('claim_title')}</th><th>${t('deadline')}</th><th>${t('status')}</th><th>${t('claim_usd')}</th></tr></thead><tbody>
+    ${state.claims.map(c=>{const i=claimInfo(c);return`<tr><td>${esc(c.id)}</td><td>${esc(c.title)}</td><td>${i.deadline}</td><td>${t('cs_'+i.st)} · ${i.text}</td><td>${money(c.claimUsd)}</td></tr>`}).join('')}</tbody></table></div>
+    <div class="muted" style="margin-top:6px">${t('claims_note')}</div>
+    <h2>${t('nav_cos')}</h2>
+    <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>${t('co_title')}</th><th>${t('co_value')}</th><th>${t('co_status')}</th></tr></thead><tbody>
+    ${state.cos.map(c=>`<tr><td>${esc(c.id)}</td><td>${esc(c.title)}</td><td>${money(c.value)}</td><td>${t('s_'+c.status)}</td></tr>`).join('')}</tbody></table></div>
+    <p class="muted">${t('rep_demo')}</p>
+  </div>
+  <div class="card no-print" style="margin-top:14px"><h2>${t('data_mgmt')}</h2><div class="row-actions">
+    <button class="btn" data-act="exportJSON">${t('export')}</button><button class="btn" data-act="importJSON">${t('import')}</button><button class="btn danger" data-act="resetData">${t('reset')}</button></div></div>`;
+}
+
+/* ============ modal forms ============ */
+let modalSubmit=null;
+function openForm(title,fields,okLabel,onSubmit){
+  $('#modalTitle').textContent=title;$('#modalOk').textContent=okLabel;
+  $('#modalFields').innerHTML=fields.map(f=>{
+    if(f.type==='hidden')return`<input type="hidden" name="${f.k}" value="${esc(f.v)}">`;
+    const cls='f'+(f.full?' full':'');const id='f_'+f.k;
+    let inp;
+    if(f.type==='select')inp=`<select id="${id}" name="${f.k}">${f.opts.map(o=>`<option value="${esc(o[0])}" ${String(o[0])===String(f.v??'')?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`;
+    else if(f.type==='textarea')inp=`<textarea id="${id}" name="${f.k}" rows="3">${esc(f.v)}</textarea>`;
+    else inp=`<input id="${id}" name="${f.k}" type="${f.type||'text'}" value="${esc(f.v)}" ${f.req?'required':''} ${f.ro?'readonly':''} ${f.min!=null?`min="${f.min}"`:''} ${f.max!=null?`max="${f.max}"`:''} ${f.step!=null?`step="${f.step}"`:''}>`;
+    return`<div class="${cls}"><label for="${id}">${esc(f.l)}</label>${inp}</div>`;
+  }).join('');
+  modalSubmit=(data)=>onSubmit(data);
+  $('#modalBg').classList.add('on');
+  const first=$('#modalFields input:not([type=hidden]):not([readonly]),#modalFields select');if(first)first.focus();
+  fields._types=Object.fromEntries(fields.map(f=>[f.k,f.type]));
+  openForm.types=fields._types;
+}
+function closeModal(){$('#modalBg').classList.remove('on');modalSubmit=null}
+$('#modalForm').addEventListener('submit',ev=>{
+  ev.preventDefault();if(!modalSubmit)return;
+  const data={};new FormData(ev.target).forEach((v,k)=>{data[k]=openForm.types[k]==='number'?(v===''?0:Number(v)):(typeof v==='string'?v.trim():v)});
+  const r=modalSubmit(data);if(r!==false)closeModal();
+});
+$('#modalBg').addEventListener('mousedown',e=>{if(e.target.id==='modalBg')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+/* ============ actions ============ */
+const ACT={
+nav(v){cur=v;applyLang();render();if(v==='twin')enter3D();else V.active=false;window.scrollTo(0,0)},
+lang(){lang=lang==='ar'?'en':'ar';state.settings.lang=lang;save();applyLang();render()},
+print(){window.print()},
+closeModal,
+addEl(){if(!need('edit'))return;
+  const e={guid:'',name:'',category:'Structural',level:'Level 1',x:0,y:1,z:0,w:1,h:1,d:1,status:'GOOD',health:100,est:0,act:0,notes:'',version:1};
+  openForm(t('add_el'),elFields(e,true),t('add'),d=>{
+    if(!d.guid)return false;
+    if(state.elements.some(x=>x.guid===d.guid)){toast(t('guid_dup'));return false}
+    if(d.health<0||d.health>100){toast(t('bad_health'));return false}
+    if(d.est<0||d.act<0){toast(t('bad_cost'));return false}
+    const n={...d,version:1,updatedBy:state.settings.user,updatedAt:new Date().toISOString()};
+    state.elements.push(n);save();log('CREATE','BIM_ELEMENT',n.guid,null,n);sync3D();toast(t('el_added'));render();});},
+editEl(g){if(!need('edit'))return;
+  const e=state.elements.find(x=>x.guid===g);if(!e)return;
+  openForm(t('edit_data')+' · '+e.name,elFields(e,false),t('save'),d=>{
+    const fresh=loadState();if(fresh){state=fresh}
+    const cu=state.elements.find(x=>x.guid===g);if(!cu)return;
+    if(cu.version!==Number(d.version)){toast(t('conflict',{v:cu.version}));sync3D();render();return true}
+    if(d.health<0||d.health>100){toast(t('bad_health'));return false}
+    if(d.est<0||d.act<0){toast(t('bad_cost'));return false}
+    const old={...cu};
+    Object.assign(cu,{name:d.name,level:d.level,category:d.category,status:d.status,health:d.health,est:d.est,act:d.act,notes:d.notes,version:cu.version+1,updatedBy:state.settings.user,updatedAt:new Date().toISOString()});
+    save();log('UPDATE','BIM_ELEMENT',g,old,cu);sync3D();toast(t('el_saved'));render();});},
+delEl(g){if(!need('admin'))return;if(!confirm(t('yes_del')))return;
+  const i=state.elements.findIndex(x=>x.guid===g);if(i<0)return;const old=state.elements.splice(i,1)[0];
+  if(V.sel===g)V.sel=null;save();log('DELETE','BIM_ELEMENT',g,old,null);sync3D();toast(t('el_deleted'));render();},
+viewEl(g){V.sel=g;ACT.nav('twin')},
+addClaim(){if(!need('edit'))return;
+  const T=todayStr();const c={title:'',elementGuid:'',eventDate:T,awarenessDate:T,noticeDate:'',detailedDate:'',claimUsd:0,days:0,edition:'2017',outcome:''};
+  openForm(t('add_claim'),claimFields(c),t('add'),d=>{
+    if(!claimDatesOk(d)){toast(t('bad_dates'));return false}
+    const n={id:nextId('CL-',state.claims,3),...d};state.claims.push(n);save();log('CREATE','FIDIC_CLAIM',n.id,null,n);toast(t('claim_added'));render();});},
+editClaim(id){if(!need('edit'))return;const c=state.claims.find(x=>x.id===id);if(!c)return;
+  openForm(t('edit')+' · '+c.id,claimFields(c),t('save'),d=>{
+    if(!claimDatesOk(d)){toast(t('bad_dates'));return false}
+    const old={...c};Object.assign(c,d);save();log('UPDATE','FIDIC_CLAIM',id,old,c);toast(t('claim_saved'));render();});},
+delClaim(id){if(!need('admin'))return;if(!confirm(t('yes_del')))return;const i=state.claims.findIndex(x=>x.id===id);if(i<0)return;const old=state.claims.splice(i,1)[0];save();log('DELETE','FIDIC_CLAIM',id,old,null);toast(t('claim_deleted'));render();},
+addCO(){if(!need('edit'))return;
+  const f=[{k:'title',l:t('co_title'),v:'',req:1,full:1},{k:'elementGuid',l:t('claim_el'),type:'select',opts:[['','—'],...state.elements.map(e=>[e.guid,e.name+' ('+e.guid+')'])],v:'',full:1},{k:'value',l:t('co_value'),type:'number',v:0,min:0,step:.01,req:1,full:1},{k:'desc',l:t('co_desc'),type:'textarea',v:'',full:1}];
+  openForm(t('add_co'),f,t('add'),d=>{const n={id:nextId('CO-',state.cos),title:d.title,value:d.value,elementGuid:d.elementGuid,desc:d.desc,status:'PENDING',steps:STEPS(d.value),approvals:[],created:todayStr()};
+    state.cos.push(n);save();log('CREATE','CHANGE_ORDER',n.id,null,n);toast(t('co_added'));render();});},
+approveCO(id){const c=state.cos.find(x=>x.id===id);if(!c||c.status!=='PENDING')return;
+  const step=c.steps[c.approvals.length];if(state.settings.role!==STEP_ROLE[step]){toast(t('no_perm_step'));return}
+  const old=JSON.parse(JSON.stringify(c));c.approvals.push({step,by:state.settings.user,ts:todayStr()});
+  if(c.approvals.length>=c.steps.length)c.status='APPROVED';
+  save();log('APPROVE','CHANGE_ORDER',id,old,c);toast(t('co_appr'));render();},
+rejectCO(id){const c=state.cos.find(x=>x.id===id);if(!c||c.status!=='PENDING'||state.settings.role==='SITE_ENGINEER')return;
+  const old=JSON.parse(JSON.stringify(c));c.status='REJECTED';save();log('REJECT','CHANGE_ORDER',id,old,c);toast(t('co_rej'));render();},
+delCO(id){if(!need('admin'))return;if(!confirm(t('yes_del')))return;const i=state.cos.findIndex(x=>x.id===id);if(i<0)return;const old=state.cos.splice(i,1)[0];save();log('DELETE','CHANGE_ORDER',id,old,null);toast(t('co_deleted'));render();},
+addEvm(){if(!need('evm'))return;
+  const f=[{k:'date',l:t('m_date'),type:'date',v:todayStr(),req:1,full:1},{k:'pv',l:t('pv'),type:'number',v:0,min:0,step:.01,req:1},{k:'ev',l:t('ev'),type:'number',v:0,min:0,step:.01,req:1},{k:'ac',l:t('ac'),type:'number',v:0,min:0,step:.01,req:1}];
+  openForm(t('add_evm'),f,t('add'),d=>{const old=state.evm.find(x=>x.date===d.date);if(old){Object.assign(old,d)}else state.evm.push(d);save();log(old?'UPDATE':'CREATE','EVM_METRIC',d.date,old||null,d);toast(t('evm_added'));render();});},
+delEvm(date){if(!need('admin'))return;if(!confirm(t('yes_del')))return;const i=state.evm.findIndex(x=>x.date===date);if(i<0)return;const old=state.evm.splice(i,1)[0];save();log('DELETE','EVM_METRIC',date,old,null);toast(t('evm_deleted'));render();},
+addProject(){if(!need('admin'))return;projectForm({name:'',location:'',contract:'FIDIC',value:0,status:'PLANNING'},null)},
+editProject(id){if(!need('admin'))return;const p=state.projects.find(x=>x.id===id);if(p)projectForm(p,p)},
+activeProject(id){state.settings.activeProject=id;save();render()},
+delProject(id){if(!need('admin'))return;if(id===state.settings.activeProject){toast(t('p_last'));return}
+  if(!confirm(t('yes_del')))return;const i=state.projects.findIndex(x=>x.id===id);const old=state.projects.splice(i,1)[0];save();log('DELETE','PROJECT',id,old,null);toast(t('p_deleted'));render();},
+async verifyAudit(){const r=await verifyChain();$('#verifyOut').innerHTML=`<div class="notice ${r.ok?'good':'bad'}" style="margin-bottom:10px">${r.ok?t('verify_ok',{n:r.n}):t('verify_bad',{n:r.n})}</div>`},
+exportJSON(){const b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='digital-twin-'+todayStr()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)},
+importJSON(){if(!need('admin'))return;$('#fileIn').click()},
+resetData(){if(!need('admin'))return;if(!confirm(t('yes_del')))return;const s=state.settings;state=seedState();state.settings={...state.settings,lang:s.lang,role:s.role,user:s.user};save();log('RESET','SYSTEM','-',null,{});sync3D();toast(t('reset_ok'));render();},
+resetCam(){cameraReset()},
+fcat(v){V.fCat=v;sync3D();rTwinPanel()},
+fst(v){V.fSt=v;sync3D();rTwinPanel()},
+selEl(g){V.sel=g;sync3D();rTwinPanel()}
+};
+function claimDatesOk(d){return d.awarenessDate>=d.eventDate&&(!d.noticeDate||d.noticeDate>=d.awarenessDate)}
+function projectForm(p,ex){
+  const f=[{k:'name',l:t('p_name'),v:p.name,req:1,full:1},{k:'location',l:t('p_loc'),v:p.location},{k:'contract',l:t('p_contract'),v:p.contract},{k:'value',l:t('p_value'),type:'number',v:p.value,min:0,step:1},{k:'status',l:t('p_status'),type:'select',opts:['ACTIVE','PLANNING','CLOSED'].map(s=>[s,t('ps_'+s)]),v:p.status}];
+  openForm(ex?t('edit'):t('add_project'),f,t('save'),d=>{
+    if(ex){const old={...ex};Object.assign(ex,d);save();log('UPDATE','PROJECT',ex.id,old,ex)}
+    else{const n={id:nextId('P-',state.projects),...d};state.projects.push(n);save();log('CREATE','PROJECT',n.id,null,n)}
+    toast(t('p_saved'));render();});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const fn=ACT[b.dataset.act];if(fn)fn(b.dataset.id,b)});
+$('#roleSel').addEventListener('change',e=>{state.settings.role=e.target.value;save();render()});
+$('#userName').addEventListener('change',e=>{state.settings.user=e.target.value.trim()||state.settings.user;save();render()});
+$('#fileIn').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const s=JSON.parse(r.result);if(!s.elements||!s.settings||!s.projects)throw 0;state=s;state.settings.lang=lang;save();sync3D();toast(t('imported'));render()}catch(x){toast(t('bad_file'))}};
+  r.readAsText(f);e.target.value='';
+});
+window.addEventListener('storage',e=>{if(e.key===KEY&&e.newValue){try{state=JSON.parse(e.newValue);sync3D();render()}catch(x){}}});
+
+/* ============ 3D twin ============ */
+const V={active:false,ready:false,fCat:'ALL',fSt:'ALL',sel:null,meshes:new Map(),dirty:true,yaw:.75,pitch:.42,dist:30,target:null};
+function cameraReset(){V.yaw=.75;V.pitch=.42;V.dist=30;V.target.set(0,5,0);camUpdate()}
+function camUpdate(){if(!V.cam)return;const c=Math.cos(V.pitch);V.cam.position.set(V.target.x+V.dist*c*Math.sin(V.yaw),V.target.y+V.dist*Math.sin(V.pitch),V.target.z+V.dist*c*Math.cos(V.yaw));V.cam.lookAt(V.target);V.dirty=true}
+function init3D(){
+  const host=$('#viewerHost');
+  if(!window.THREE){host.insertAdjacentHTML('afterbegin',`<div class="empty" style="color:#9db0cc">${t('no3d')}</div>`);return false}
+  V.target=new THREE.Vector3(0,5,0);
+  V.scene=new THREE.Scene();V.scene.background=new THREE.Color(0x0e1c33);
+  V.cam=new THREE.PerspectiveCamera(50,1,.1,500);
+  V.renderer=new THREE.WebGLRenderer({antialias:true});V.renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  host.insertBefore(V.renderer.domElement,host.firstChild);
+  V.scene.add(new THREE.AmbientLight(0xffffff,.65));
+  const dl=new THREE.DirectionalLight(0xffffff,.85);dl.position.set(15,30,20);V.scene.add(dl);
+  const grid=new THREE.GridHelper(60,30,0xC9A84C,0x22385a);grid.position.y=-.8;grid.material.opacity=.5;grid.material.transparent=true;V.scene.add(grid);
+  V.ray=new THREE.Raycaster();V.ndc=new THREE.Vector2();
+  const el=V.renderer.domElement,ptrs=new Map();let moved=0,pinch=0;
+  el.addEventListener('pointerdown',ev=>{el.setPointerCapture(ev.pointerId);ptrs.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});moved=0;if(ptrs.size===2){const a=[...ptrs.values()];pinch=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}host.style.cursor='grabbing'});
+  el.addEventListener('pointermove',ev=>{const p=ptrs.get(ev.pointerId);if(!p)return;
+    if(ptrs.size===1){const dx=ev.clientX-p.x,dy=ev.clientY-p.y;moved+=Math.abs(dx)+Math.abs(dy);V.yaw-=dx*.008;V.pitch=Math.max(.05,Math.min(1.5,V.pitch+dy*.006));p.x=ev.clientX;p.y=ev.clientY;camUpdate()}
+    else if(ptrs.size===2){p.x=ev.clientX;p.y=ev.clientY;const a=[...ptrs.values()];const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch)V.dist=Math.max(8,Math.min(80,V.dist*pinch/d));pinch=d;moved=99;camUpdate()}});
+  const up=ev=>{if(ptrs.has(ev.pointerId)){ptrs.delete(ev.pointerId);host.style.cursor='grab';if(moved<6&&ptrs.size===0&&ev.type==='pointerup')pick(ev)}};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+  el.addEventListener('wheel',ev=>{ev.preventDefault();V.dist=Math.max(8,Math.min(80,V.dist*(1+ev.deltaY*.0012)));camUpdate()},{passive:false});
+  new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;V.renderer.setSize(w,h,false);V.cam.aspect=w/h;V.cam.updateProjectionMatrix();V.dirty=true}).observe(host);
+  camUpdate();
+  (function loop(){requestAnimationFrame(loop);if(V.active&&V.dirty){V.renderer.render(V.scene,V.cam);V.dirty=false}})();
+  V.ready=true;sync3D();return true;
+}
+function elVisible(e){return(V.fCat==='ALL'||e.category===V.fCat)&&(V.fSt==='ALL'||e.status===V.fSt)}
+function sync3D(){
+  if(!V.ready)return;
+  const seen=new Set();
+  state.elements.forEach(e=>{
+    seen.add(e.guid);
+    let m=V.meshes.get(e.guid);
+    if(!m){
+      const geo=new THREE.BoxGeometry(1,1,1);
+      m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:0x888888,transparent:true}));
+      const edges=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x0a1628}));
+      m.add(edges);m.userData.edges=edges;V.scene.add(m);V.meshes.set(e.guid,m);
+    }
+    m.userData.guid=e.guid;
+    m.position.set(e.x,e.y,e.z);m.scale.set(e.w,e.h,e.d);
+    m.material.color.set(STATUS_HEX[e.status]||'#888888');
+    const vis=elVisible(e),sel=V.sel===e.guid;
+    m.material.opacity=!vis?.06:(e.category==='Architectural'?.45:(e.level==='Foundation'?.9:(e.category==='Structural'&&e.h<.5?.55:1)));
+    m.material.emissive.set(sel?0x554411:0x000000);
+    m.userData.edges.material.color.set(sel?0xC9A84C:0x0a1628);
+    m.userData.pick=vis;m.material.depthWrite=vis&&m.material.opacity>.9;
+  });
+  [...V.meshes.keys()].forEach(g=>{if(!seen.has(g)){const m=V.meshes.get(g);V.scene.remove(m);m.geometry.dispose();m.material.dispose();V.meshes.delete(g)}});
+  V.dirty=true;
+}
+function pick(ev){
+  const r=V.renderer.domElement.getBoundingClientRect();
+  V.ndc.set(((ev.clientX-r.left)/r.width)*2-1,-((ev.clientY-r.top)/r.height)*2+1);
+  V.ray.setFromCamera(V.ndc,V.cam);
+  const list=[...V.meshes.values()].filter(m=>m.userData.pick);
+  const hit=V.ray.intersectObjects(list,false)[0];
+  V.sel=hit?hit.object.userData.guid:null;sync3D();rTwinPanel();
+}
+function enter3D(){
+  V.active=true;
+  if(!V.ready&&!V.failed){if(!init3D())V.failed=true}
+  else{sync3D();V.dirty=true}
+  if(V.ready){const h=$('#viewerHost');const w=h.clientWidth,hh=h.clientHeight;if(w&&hh){V.renderer.setSize(w,hh,false);V.cam.aspect=w/hh;V.cam.updateProjectionMatrix()}V.dirty=true}
+}
+function rTwin(){rTwinPanel();if(cur==='twin')enter3D()}
+function rTwinPanel(){
+  const cats=['ALL','Structural','Architectural','MEP'],sts=['ALL','GOOD','WARNING','CRITICAL'];
+  const e=state.elements.find(x=>x.guid===V.sel);
+  let det=`<div class="empty">${t('sel_hint')}</div>`;
+  if(e){
+    const cl=state.claims.filter(c=>c.elementGuid===e.guid),co=state.cos.filter(c=>c.elementGuid===e.guid);
+    const v=e.act-e.est;
+    det=`<dl><dt>${t('name')}</dt><dd>${esc(e.name)}</dd><dt>${t('guid')}</dt><dd class="hash">${esc(e.guid)}</dd><dt>${t('category')}</dt><dd>${t('cat_'+e.category)} · ${esc(e.level)}</dd>
+    <dt>${t('status')}</dt><dd><span class="chip ${badgeCls[e.status]}">${t(e.status)}</span></dd><dt>${t('health')}</dt><dd>${e.health}%</dd>
+    <dt>${t('est')}</dt><dd>${money(e.est)}</dd><dt>${t('act')}</dt><dd>${money(e.act)}</dd><dt>${t('variance')}</dt><dd style="color:${v>0?'var(--bad)':'var(--good)'}">${money(v)}</dd>
+    <dt>${t('notes')}</dt><dd>${esc(e.notes)||'—'}</dd><dt>${t('version')}</dt><dd>${e.version}${e.updatedBy?` · ${esc(e.updatedBy)}`:''}</dd>
+    <dt>${t('linked_claims')}</dt><dd>${cl.map(c=>`${esc(c.id)} <span class="chip ${csCls[claimInfo(c).st]}">${t('cs_'+claimInfo(c).st)}</span>`).join('<br>')||'—'}</dd>
+    <dt>${t('linked_cos')}</dt><dd>${co.map(c=>`${esc(c.id)} · ${money(c.value)} · ${t('s_'+c.status)}`).join('<br>')||'—'}</dd></dl>
+    <div style="margin-top:12px"><button class="btn pri" data-act="editEl" data-id="${esc(e.guid)}">${t('edit_data')}</button></div>`;
+  }
+  $('#twinPanel').innerHTML=`<div class="card"><div class="chips">${cats.map(c=>`<button class="${V.fCat===c?'on':''}" data-act="fcat" data-id="${c}">${c==='ALL'?t('all'):t('cat_'+c)}</button>`).join('')}</div>
+  <div class="chips">${sts.map(c=>`<button class="${V.fSt===c?'on':''}" data-act="fst" data-id="${c}">${c==='ALL'?t('all'):t(c)}</button>`).join('')}</div></div>
+  <div class="card" style="margin-top:14px">${det}</div>`;
+}
+
+/* ============ boot ============ */
+(function boot(){
+  state=loadState();
+  const fresh=!state;
+  if(fresh){state=seedState();save()}
+  lang=state.settings.lang||'ar';
+  applyLang();render();
+  if(fresh||!state.audit.length)log('INIT','SYSTEM','-',null,{project:activeProject()?activeProject().id:''});
+})();
+</script>
+</body>
+</html>
