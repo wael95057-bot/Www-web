@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>منظومة تقفيل المشروع | م. وائل عويس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#EFEBE1; --paper:#FFFFFF; --ink:#1B2B28; --muted:#6B7570;
+  --primary:#0B4F4A; --primary-dark:#08332F; --primary-light:#E6EFEC;
+  --gold:#A9782F; --gold-light:#F3E9D2;
+  --blueprint:#1F4E79; --blueprint-light:#E9F0F7;
+  --ok:#2F7D4F; --ok-bg:#E7F3EA; --warn:#B8860B; --warn-bg:#FCF3DC; --danger:#B3403A; --danger-bg:#FAE6E4;
+  --line:#DCD5C4; --shadow:0 2px 10px rgba(11,79,74,.08);
+  --radius:10px;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12201D; --paper:#182B27; --ink:#EDEAE0; --muted:#9BAAA4; --primary-light:#1C332E; --line:#2A3E39; --gold-light:#3A2F1A; --blueprint-light:#182A38; }
+}
+:root[data-theme="dark"]{ --bg:#12201D; --paper:#182B27; --ink:#EDEAE0; --muted:#9BAAA4; --primary-light:#1C332E; --line:#2A3E39; --gold-light:#3A2F1A; --blueprint-light:#182A38; }
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Tajawal',sans-serif;font-size:15px;line-height:1.7;}
+h1,h2,h3,h4{font-family:'Almarai',sans-serif;margin:0 0 10px;color:var(--primary);}
+[dir="ltr"] h1,[dir="ltr"] h2,[dir="ltr"] h3,[dir="ltr"] h4{font-family:'Almarai',sans-serif;}
+:root[data-theme="dark"] h1,:root[data-theme="dark"] h2,:root[data-theme="dark"] h3,:root[data-theme="dark"] h4{color:#8FD6C6;}
+a{color:var(--primary);}
+button{font-family:inherit;cursor:pointer;}
+.app{display:flex;min-height:100%;}
+/* ===== Sidebar ===== */
+.sidebar{width:190px;flex:0 0 190px;background:var(--primary-dark);color:#EFEBE1;padding:12px 9px;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:12px;transition:transform .25s ease;z-index:60;}
+.sidebar.collapsed{width:54px;flex:0 0 54px;}
+.sidebar.collapsed .brand div, .sidebar.collapsed .nav-group-label, .sidebar.collapsed .nav-btn span:not(.ic), .sidebar.collapsed .sidebar-foot{display:none;}
+.sidebar.collapsed .nav-btn{justify-content:center;}
+.brand{display:flex;align-items:center;gap:7px;padding:4px 4px 10px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:8px;}
+.brand svg{flex:0 0 24px;width:24px;height:24px;}
+.brand div b{display:block;font-size:12.5px;color:#fff;}
+.brand div span{display:block;font-size:10px;color:#C9B98A;}
+.nav-group{margin-bottom:8px;}
+.nav-group-label{font-size:9.5px;color:#9FC9BE;letter-spacing:.3px;padding:0 6px;margin-bottom:3px;opacity:.8;white-space:nowrap;}
+.nav-btn{display:flex;align-items:center;gap:6px;width:100%;text-align:inherit;background:transparent;border:0;color:#DCE7E3;padding:6px 7px;border-radius:6px;font-size:11.5px;line-height:1.3;margin-bottom:1px;transition:background .15s;white-space:nowrap;overflow:hidden;}
+.nav-btn:hover{background:rgba(255,255,255,.08);}
+.nav-btn.active{background:var(--gold);color:#2b2005;font-weight:700;}
+.nav-btn .ic{width:14px;text-align:center;font-size:12px;flex:0 0 14px;}
+.sidebar-foot{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.12);font-size:9.5px;color:#B9C9C4;line-height:1.4;}
+.collapse-toggle{display:none;width:100%;background:rgba(255,255,255,.08);border:0;color:#DCE7E3;padding:6px;border-radius:6px;margin-bottom:8px;font-size:12px;}
+@media(min-width:901px){.collapse-toggle{display:block;}}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;display:none;}
+.sidebar-overlay.open{display:block;}
+.hamburger{display:none;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:15px;line-height:1;}
+/* ===== Main ===== */
+.main{flex:1;min-width:0;}
+.topbar{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.topbar select, .topbar .btn{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:12.5px;}
+.btn{background:var(--primary);color:#fff;border:1px solid var(--primary);font-weight:700;}
+.btn.secondary{background:var(--paper);color:var(--primary);}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#2b2005;}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);}
+.btn:hover{filter:brightness(1.06);}
+.content{padding:20px;max-width:1200px;padding-bottom:70px;}
+/* ===== Mobile bottom nav ===== */
+.bottom-nav{display:none;}
+@media(max-width:900px){
+  .sidebar{position:fixed;top:0;bottom:0;width:230px;box-shadow:2px 0 18px rgba(0,0,0,.3);}
+  .sidebar.collapsed{width:230px;flex:0 0 230px;}
+  .sidebar.collapsed .brand div, .sidebar.collapsed .nav-group-label, .sidebar.collapsed .nav-btn span:not(.ic), .sidebar.collapsed .sidebar-foot{display:block;}
+  .sidebar.collapsed .nav-btn{justify-content:flex-start;}
+  html[dir="rtl"] .sidebar{right:0;transform:translateX(100%);}
+  html[dir="ltr"] .sidebar{left:0;transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0)!important;}
+  .collapse-toggle{display:none!important;}
+  .hamburger{display:inline-flex;align-items:center;}
+  .content{padding:12px;padding-bottom:78px;}
+  .topbar{padding:8px 10px;gap:6px;}
+  .topbar select{max-width:130px;font-size:11.5px;}
+  .topbar .btn{font-size:0;padding:8px 9px;}
+  .topbar .btn .full-label{display:none;}
+  #newProjectBtn{font-size:12px;padding:8px 9px;}
+  .bottom-nav{display:flex;position:fixed;bottom:0;inset-inline:0;background:var(--paper);border-top:1px solid var(--line);z-index:45;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));justify-content:space-around;}
+  .bottom-nav button{background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9.5px;padding:4px 6px;flex:1;}
+  .bottom-nav button.active{color:var(--primary);font-weight:700;}
+  .bottom-nav button .ic{font-size:17px;}
+}
+.section{display:none;}
+.section.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.card h3{display:flex;align-items:center;gap:8px;}
+.grid{display:grid;gap:14px;}
+.grid.cols-2{grid-template-columns:repeat(2,1fr);}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}}
+.kpi{background:var(--primary-light);border-radius:var(--radius);padding:14px;text-align:center;}
+.kpi .num{font-size:28px;font-weight:900;color:var(--primary);font-family:'Almarai',sans-serif;}
+:root[data-theme="dark"] .kpi .num{color:#8FD6C6;}
+.kpi .lbl{font-size:12px;color:var(--muted);}
+label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px;}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-family:inherit;font-size:13.5px;}
+.field{margin-bottom:12px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:start;}
+th{color:var(--muted);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;}
+.tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;}
+.tag.ok{background:var(--ok-bg);color:var(--ok);}
+.tag.warn{background:var(--warn-bg);color:var(--warn);}
+.tag.danger{background:var(--danger-bg);color:var(--danger);}
+.tag.blueprint{background:var(--blueprint-light);color:var(--blueprint);}
+.progress{height:8px;border-radius:6px;background:var(--line);overflow:hidden;}
+.progress > div{height:100%;background:var(--ok);}
+.hint{font-size:12px;color:var(--muted);margin-top:2px;}
+.certificate{background:var(--paper);border:2px solid var(--gold);border-radius:12px;padding:26px;position:relative;}
+.certificate::before{content:"";position:absolute;inset:8px;border:1px solid var(--gold-light);border-radius:8px;pointer-events:none;}
+.seal{width:78px;height:78px;border-radius:50%;border:3px double var(--gold);display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;color:var(--gold);font-weight:800;line-height:1.2;margin:0 auto;}
+.sign-row{display:flex;justify-content:space-between;gap:16px;margin-top:26px;flex-wrap:wrap;}
+.sign-box{flex:1;min-width:180px;text-align:center;border-top:1px solid var(--line);padding-top:6px;font-size:12.5px;color:var(--muted);}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.gallery-grid figure{margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);}
+.gallery-grid img{width:100%;height:100px;object-fit:cover;display:block;}
+.gallery-grid figcaption{font-size:11px;padding:5px;text-align:center;color:var(--muted);}
+.sla-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px;}
+.pillar-bar{background:var(--line);border-radius:6px;height:14px;overflow:hidden;position:relative;}
+.pillar-bar > div{height:100%;background:linear-gradient(90deg,var(--primary),var(--gold));}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--paper);border-radius:12px;padding:20px;max-width:640px;width:100%;max-height:85vh;overflow:auto;}
+.close-x{float:inline-end;background:none;border:0;font-size:20px;color:var(--muted);}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.audit-item{font-size:12px;color:var(--muted);padding:5px 0;border-bottom:1px dashed var(--line);}
+.small{font-size:12px;color:var(--muted);}
+canvas.sigpad{border:1px dashed var(--line);border-radius:8px;background:#fff;touch-action:none;width:100%;height:130px;}
+.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.right{margin-inline-start:auto;}
+.chart-wrap{position:relative;height:230px;}
+@media print{
+  .sidebar,.topbar,.no-print{display:none!important;}
+  .section{display:none!important;}
+  .section.print-active{display:block!important;}
+  .content{max-width:100%;padding:0;}
+  body{background:#fff;}
+  .card{box-shadow:none;border:1px solid #999;}
+}
+.overflow-x{overflow-x:auto;}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ===================== SIDEBAR ===================== -->
+  <nav class="sidebar no-print">
+    <div class="brand">
+      <svg viewBox="0 0 44 44" width="34" height="34"><circle cx="22" cy="22" r="20" fill="none" stroke="#A9782F" stroke-width="2"/><path d="M12 24l7 7 13-15" fill="none" stroke="#A9782F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><b data-i18n="brandTitle">تقفيل المشروع</b><span data-i18n="brandSub">م. وائل عويس</span></div>
+    </div>
+    <button class="collapse-toggle" id="collapseToggleBtn">↔</button>
+    <div class="nav-group">
+      <div class="nav-group-label" data-i18n="navOverview">نظرة عامة</div>
+      <button class="nav-btn" data-target="dashboard"><span class="ic">📊</span><span data-i18n="navDashboard">لوحة المتابعة</span></button>
+      <button class="nav-btn" data-target="projects"><span class="ic">🗂️</span><span data-i18n="navProjects">سجل المشاريع</span></button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label" data-i18n="navPhases">مراحل التقفيل الخمس</div>
+      <button class="nav-btn" data-target="phase1"><span class="ic">📋</span><span data-i18n="navP1">١. الفحص والملاحظات</span></button>
+      <button class="nav-btn" data-target="phase2"><span class="ic">⚙️</span><span data-i18n="navP2">٢. الاختبارات والتشغيل</span></button>
+      <button class="nav-btn" data-target="phase3"><span class="ic">🤝</span><span data-i18n="navP3">٣. التسوية التعاقدية</span></button>
+      <button class="nav-btn" data-target="phase4"><span class="ic">🏁</span><span data-i18n="navP4">٤. الاستلام النهائي</span></button>
+      <button class="nav-btn" data-target="phase5"><span class="ic">📁</span><span data-i18n="navP5">٥. الأرشفة والمعرفة</span></button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label" data-i18n="navSmart">وحدات ذكية إضافية</div>
+      <button class="nav-btn" data-target="sustainability"><span class="ic">🌿</span><span data-i18n="navSust">مؤشر الاستدامة الخمسة</span></button>
+      <button class="nav-btn" data-target="risk"><span class="ic">⚠️</span><span data-i18n="navRisk">مصفوفة المخاطر الختامية</span></button>
+      <button class="nav-btn" data-target="csi"><span class="ic">💬</span><span data-i18n="navCsi">رضاء الجهة المستفيدة</span></button>
+      <button class="nav-btn" data-target="cost"><span class="ic">💰</span><span data-i18n="navCost">التكاليف الفعلية/التقديرية</span></button>
+      <button class="nav-btn" data-target="calib"><span class="ic">🧪</span><span data-i18n="navCalib">معايرة أجهزة الاختبار</span></button>
+      <button class="nav-btn" data-target="gallery"><span class="ic">🖼️</span><span data-i18n="navGallery">توثيق قبل / بعد</span></button>
+      <button class="nav-btn" data-target="signoff"><span class="ic">✍️</span><span data-i18n="navSign">التوقيع الرقمي والاعتماد</span></button>
+      <button class="nav-btn" data-target="docs"><span class="ic">🗄️</span><span data-i18n="navDocs">إعدادات المستندات الستة</span></button>
+      <button class="nav-btn" data-target="audit"><span class="ic">🕵️</span><span data-i18n="navAudit">سجل التدقيق</span></button>
+      <button class="nav-btn" data-target="report"><span class="ic">🧾</span><span data-i18n="navReport">التقرير الختامي والتصدير</span></button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label" data-i18n="navBackup">النسخ الاحتياطي</div>
+      <button class="nav-btn" id="exportBtn"><span class="ic">⬇️</span><span data-i18n="exportBtn">نسخة احتياطية JSON</span></button>
+      <label class="nav-btn" style="cursor:pointer;"><span class="ic">⬆️</span><span data-i18n="importBtn">استيراد نسخة</span>
+        <input type="file" id="importFile" accept=".json" style="display:none;">
+      </label>
+    </div>
+    <div class="sidebar-foot" data-i18n="footNote">© 2026 — منظومة تقفيل المشروع، إشراف وإدارة المهندس/ وائل عويس</div>
+  </nav>
+  <div class="sidebar-overlay no-print" id="sidebarOverlay"></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <div class="topbar no-print">
+      <button class="hamburger" id="hamburgerBtn" aria-label="menu">☰</button>
+      <select id="projectSelect"></select>
+      <button class="btn ghost" id="newProjectBtn" data-i18n="newProject">+ مشروع</button>
+      <div class="right"></div>
+      <button class="btn ghost" id="themeToggle">🌓</button>
+      <button class="btn secondary" id="langToggle" data-i18n="langBtn">English</button>
+      <button class="btn gold" id="printBtn" data-i18n="printBtn">🖨️ طباعة</button>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <section class="section" id="sec-dashboard">
+        <h1 data-i18n="dashTitle">لوحة المتابعة الهندسية الشاملة</h1>
+        <p class="small" id="dashSub"></p>
+        <div class="grid cols-4" id="kpiRow"></div>
+        <div class="card" id="alertsCard" style="margin-top:14px;"></div>
+        <div class="grid cols-2" style="margin-top:16px;">
+          <div class="card"><h3 data-i18n="chartPunch">📋 حالة قائمة الملاحظات</h3><div class="chart-wrap"><canvas id="chartPunch"></canvas></div></div>
+          <div class="card"><h3 data-i18n="chartSust">🌿 مؤشر أبعاد الاستدامة</h3><div class="chart-wrap"><canvas id="chartSust"></canvas></div></div>
+          <div class="card"><h3 data-i18n="chartCost">💰 التكلفة: تقديري مقابل فعلي</h3><div class="chart-wrap"><canvas id="chartCost"></canvas></div></div>
+          <div class="card"><h3 data-i18n="chartRisk">⚠️ توزيع المخاطر حسب الخطورة</h3><div class="chart-wrap"><canvas id="chartRisk"></canvas></div></div>
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section class="section" id="sec-projects">
+        <h1 data-i18n="navProjects">سجل المشاريع</h1>
+        <div class="card">
+          <div class="grid cols-3">
+            <div class="field"><label data-i18n="pjName">اسم المشروع</label><input id="pjName"></div>
+            <div class="field"><label data-i18n="pjOwner">المالك / الجهة المستفيدة</label><input id="pjOwner"></div>
+            <div class="field"><label data-i18n="pjStatus">الحالة العامة</label>
+              <select id="pjStatus"><option data-i18n="stActive">قيد التقفيل</option><option data-i18n="stDone">مكتمل نهائياً</option></select>
+            </div>
+          </div>
+          <button class="btn" id="addProjectBtn" data-i18n="pjAdd">إضافة مشروع</button>
+        </div>
+        <div class="card overflow-x"><table id="projTable"></table></div>
+      </section>
+
+      <!-- PHASE 1: PUNCH LIST -->
+      <section class="section" id="sec-phase1">
+        <h1 data-i18n="p1Title">المرحلة الأولى: الفحص الابتدائي وحصر الملاحظات (Punch List)</h1>
+        <p class="small" data-i18n="p1Desc">رصد كافة عيوب التشطيبات والملاحظات الفنية وتتبع إغلاقها بنسبة 100% قبل الانتقال لأي مرحلة تالية، مع تنبيهات مهل زمنية ذكية (SLA).</p>
+        <div class="card">
+          <div class="grid cols-3">
+            <div class="field"><label data-i18n="itemDesc">وصف الملاحظة</label><input id="pl_item"></div>
+            <div class="field"><label data-i18n="location">الموقع الدقيق</label><input id="pl_loc"></div>
+            <div class="field"><label data-i18n="responsible">المسؤول عن الإغلاق</label><input id="pl_resp" value="م. وائل عويس"></div>
+            <div class="field"><label data-i18n="deadline">المهلة المحددة</label><input type="date" id="pl_deadline"></div>
+            <div class="field"><label data-i18n="statusLbl">الحالة</label>
+              <select id="pl_status"><option data-i18n="pending">قيد المعالجة</option><option data-i18n="closed">مغلق 100%</option></select>
+            </div>
+            <div class="field"><label data-i18n="remarks">ملاحظات المراجعة</label><input id="pl_remarks"></div>
+          </div>
+          <button class="btn" id="addPunchBtn" data-i18n="addBtn">➕ إضافة للسجل</button>
+        </div>
+        <div class="card">
+          <div class="flex" style="margin-bottom:10px;">
+            <span class="small"><span class="sla-dot" style="background:var(--ok)"></span><span data-i18n="slaOk">ضمن المهلة</span></span>
+            <span class="small"><span class="sla-dot" style="background:var(--warn)"></span><span data-i18n="slaSoon">يقترب من الاستحقاق</span></span>
+            <span class="small"><span class="sla-dot" style="background:var(--danger)"></span><span data-i18n="slaLate">متأخر</span></span>
+          </div>
+          <div class="overflow-x"><table id="punchTable"></table></div>
+        </div>
+      </section>
+
+      <!-- PHASE 2: TESTING -->
+      <section class="section" id="sec-phase2">
+        <h1 data-i18n="p2Title">المرحلة الثانية: الاختبارات والتشغيل التجريبي (Testing &amp; Commissioning)</h1>
+        <p class="small" data-i18n="p2Desc">التحقق الفني من كفاءة الأنظمة الكهروميكانيكية والتمديدات وأنظمة الأمان لضمان جاهزيتها التشغيلية.</p>
+        <div class="card">
+          <div class="grid cols-3">
+            <div class="field"><label data-i18n="testSystem">النظام / البند المختبر</label><input id="ts_system"></div>
+            <div class="field"><label data-i18n="testStandard">المعيار الهندسي المطلوب</label><input id="ts_standard"></div>
+            <div class="field"><label data-i18n="testActual">قيمة الفحص الفعلي</label><input id="ts_actual"></div>
+            <div class="field"><label data-i18n="testEquip">جهاز القياس المستخدم</label><input id="ts_equip"></div>
+            <div class="field"><label data-i18n="testStatus">حالة الاختبار</label>
+              <select id="ts_status"><option data-i18n="passed">اجتاز بنجاح</option><option data-i18n="retest">يحتاج إعادة ضبط</option></select>
+            </div>
+          </div>
+          <button class="btn" id="addTestBtn" data-i18n="addBtn">➕ إضافة للسجل</button>
+        </div>
+        <div class="card overflow-x"><table id="testTable"></table></div>
+      </section>
+
+      <!-- PHASE 3: SETTLEMENT -->
+      <section class="section" id="sec-phase3">
+        <h1 data-i18n="p3Title">المرحلة الثالثة: التسوية التعاقدية والمالية</h1>
+        <p class="small" data-i18n="p3Desc">تسوية المستخلصات الختامية، إغلاق المطالبات المفتوحة، وإصدار شهادة الإنجاز.</p>
+        <div class="card">
+          <div class="grid cols-3">
+            <div class="field"><label data-i18n="settleDesc">تفاصيل التسوية / المطالبة</label><input id="st_desc"></div>
+            <div class="field"><label data-i18n="settleAmount">القيمة (اختياري)</label><input type="number" id="st_amount"></div>
+            <div class="field"><label data-i18n="settleStatus">الحالة</label>
+              <select id="st_status"><option data-i18n="settled">تمت التسوية النهائية</option><option data-i18n="negotiating">قيد التفاوض</option></select>
+            </div>
+          </div>
+          <button class="btn" id="addSettleBtn" data-i18n="addBtn">➕ إضافة للسجل</button>
+        </div>
+        <div class="card overflow-x"><table id="settleTable"></table></div>
+      </section>
+
+      <!-- PHASE 4: HANDOVER -->
+      <section class="section" id="sec-phase4">
+        <h1 data-i18n="p4Title">المرحلة الرابعة: التسليم النهائي والتشغيل</h1>
+        <p class="small" data-i18n="p4Desc">التأكد من استيفاء جميع الشروط المسبقة، ثم إصدار محضر الاستلام الابتدائي والنهائي رسمياً.</p>
+        <div class="card">
+          <h3 data-i18n="readinessTitle">✅ مؤشر جاهزية التسليم (يُحسب تلقائياً)</h3>
+          <div class="grid cols-4" id="readinessKpis"></div>
+        </div>
+        <div class="card">
+          <h3 data-i18n="handoverFormTitle">محضر الاستلام</h3>
+          <div class="grid cols-2">
+            <div class="field"><label data-i18n="handoverType">نوع المحضر</label><input id="ho_type" value="محضر الاستلام الابتدائي والنهائي"></div>
+            <div class="field"><label data-i18n="handoverDate">تاريخ التسليم</label><input type="date" id="ho_date"></div>
+          </div>
+          <button class="btn gold" id="signHandoverBtn" data-i18n="handoverConfirm">توقيع واعتماد محضر الاستلام</button>
+          <p class="hint" id="handoverStatusText"></p>
+        </div>
+      </section>
+
+      <!-- PHASE 5: ARCHIVE -->
+      <section class="section" id="sec-phase5">
+        <h1 data-i18n="p5Title">المرحلة الخامسة: الأرشفة وإغلاق المعرفة</h1>
+        <p class="small" data-i18n="p5Desc">حفظ المخططات النهائية وكتيبات التشغيل والصيانة والمراسلات في الأرشيف الدائم.</p>
+        <div class="card">
+          <div class="grid cols-3">
+            <div class="field"><label data-i18n="archName">اسم المستند</label><input id="ar_name"></div>
+            <div class="field"><label data-i18n="archDiscipline">التخصص</label><input id="ar_disc"></div>
+            <div class="field"><label data-i18n="archStatus">حالة الاعتماد</label>
+              <select id="ar_status"><option data-i18n="approvedFinal">معتمد نهائياً</option><option data-i18n="underReview">قيد المراجعة</option></select>
+            </div>
+          </div>
+          <button class="btn" id="addArchiveBtn" data-i18n="addBtn">➕ حفظ في الأرشيف</button>
+        </div>
+        <div class="card overflow-x"><table id="archiveTable"></table></div>
+      </section>
+
+      <!-- SUSTAINABILITY -->
+      <section class="section" id="sec-sustainability">
+        <h1 data-i18n="sustTitle">🌿 مؤشر الاستدامة الخمسة الذكي</h1>
+        <p class="small" data-i18n="sustDesc">تقييم درجة استدامة التقفيل بناءً على الأبعاد الخمسة: البيئية، الاقتصادية، الاجتماعية، الابتكار، والحوكمة.</p>
+        <div class="card" id="sustSliders"></div>
+        <div class="card">
+          <div class="kpi" style="max-width:220px;"><div class="num" id="sustScore">0%</div><div class="lbl" data-i18n="sustOverall">الدرجة الإجمالية المعتمدة</div></div>
+        </div>
+      </section>
+
+      <!-- RISK MATRIX -->
+      <section class="section" id="sec-risk">
+        <h1 data-i18n="riskTitle">⚠️ مصفوفة تقييم المخاطر الختامية</h1>
+        <p class="small" data-i18n="riskDesc">تصنيف أي مخاطر تشغيلية محتملة بعد التسليم (تأثير × احتمالية) وتحديد المسؤول عن المتابعة.</p>
+        <div class="card">
+          <div class="grid cols-4">
+            <div class="field"><label data-i18n="riskItem">وصف الخطر</label><input id="rk_desc"></div>
+            <div class="field"><label data-i18n="riskImpact">التأثير (1-5)</label><input type="number" min="1" max="5" id="rk_impact" value="3"></div>
+            <div class="field"><label data-i18n="riskProb">الاحتمالية (1-5)</label><input type="number" min="1" max="5" id="rk_prob" value="3"></div>
+            <div class="field"><label data-i18n="riskOwner">المسؤول عن المتابعة</label><input id="rk_owner"></div>
+          </div>
+          <button class="btn" id="addRiskBtn" data-i18n="addBtn">➕ إضافة للمصفوفة</button>
+        </div>
+        <div class="card overflow-x"><table id="riskTable"></table></div>
+      </section>
+
+      <!-- CSI -->
+      <section class="section" id="sec-csi">
+        <h1 data-i18n="csiTitle">💬 مؤشر رضاء الجهة المستفيدة (CSI)</h1>
+        <p class="small" data-i18n="csiDesc">تقييم رضاء المالك أو المشغل كجزء من سجل الأداء المؤسسي للمشروع.</p>
+        <div class="card" id="csiSliders"></div>
+        <div class="card">
+          <div class="field"><label data-i18n="csiComments">ملاحظات الجهة المستفيدة</label><textarea id="csi_comments" rows="3"></textarea></div>
+          <button class="btn" id="saveCsiBtn" data-i18n="saveBtn">💾 حفظ التقييم</button>
+          <div class="kpi" style="max-width:220px;margin-top:10px;"><div class="num" id="csiScore">0%</div><div class="lbl" data-i18n="csiOverall">مؤشر الرضاء الإجمالي</div></div>
+        </div>
+      </section>
+
+      <!-- COST -->
+      <section class="section" id="sec-cost">
+        <h1 data-i18n="costTitle">💰 تقرير التكاليف الفعلية مقابل التقديرية</h1>
+        <p class="small" data-i18n="costDesc">مقارنة الموازنة التقديرية بالتكلفة الفعلية لبنود المعالجات الإضافية ومقاولي الباطن أثناء التقفيل.</p>
+        <div class="card">
+          <div class="grid cols-3">
+            <div class="field"><label data-i18n="costCategory">البند</label><input id="cs_cat"></div>
+            <div class="field"><label data-i18n="costBudget">التكلفة التقديرية</label><input type="number" id="cs_budget"></div>
+            <div class="field"><label data-i18n="costActual">التكلفة الفعلية</label><input type="number" id="cs_actual"></div>
+          </div>
+          <button class="btn" id="addCostBtn" data-i18n="addBtn">➕ إضافة للتقرير</button>
+        </div>
+        <div class="card overflow-x"><table id="costTable"></table></div>
+      </section>
+
+      <!-- CALIBRATION -->
+      <section class="section" id="sec-calib">
+        <h1 data-i18n="calibTitle">🧪 سجل معايرة أجهزة الاختبار</h1>
+        <p class="small" data-i18n="calibDesc">توثيق أرقام أجهزة القياس المستخدمة وتاريخ صلاحية معايرتها لضمان موثوقية نتائج شهادات الاختبار.</p>
+        <div class="card">
+          <div class="grid cols-4">
+            <div class="field"><label data-i18n="calibDevice">اسم الجهاز</label><input id="cl_device"></div>
+            <div class="field"><label data-i18n="calibSerial">الرقم التسلسلي</label><input id="cl_serial"></div>
+            <div class="field"><label data-i18n="calibDate">تاريخ آخر معايرة</label><input type="date" id="cl_date"></div>
+            <div class="field"><label data-i18n="calibExpiry">تاريخ انتهاء الصلاحية</label><input type="date" id="cl_expiry"></div>
+          </div>
+          <button class="btn" id="addCalibBtn" data-i18n="addBtn">➕ إضافة للسجل</button>
+        </div>
+        <div class="card overflow-x"><table id="calibTable"></table></div>
+      </section>
+
+      <!-- GALLERY -->
+      <section class="section" id="sec-gallery">
+        <h1 data-i18n="galleryTitle">🖼️ أرشيف التوثيق البصري (قبل / بعد)</h1>
+        <p class="small" data-i18n="galleryDesc">إثبات بصري موثق لمعالجة ملاحظات البنش ليست، يُرفق مع التقرير الختامي.</p>
+        <div class="card">
+          <div class="grid cols-3">
+            <div class="field"><label data-i18n="galleryCaption">وصف الصورة</label><input id="gl_caption"></div>
+            <div class="field"><label data-i18n="galleryTag">قبل / بعد</label>
+              <select id="gl_tag"><option data-i18n="before">قبل</option><option data-i18n="after">بعد</option></select>
+            </div>
+            <div class="field"><label data-i18n="galleryUpload">اختيار الصورة</label><input type="file" id="gl_file" accept="image/*"></div>
+          </div>
+          <button class="btn" id="addGalleryBtn" data-i18n="addBtn">➕ إضافة للأرشيف البصري</button>
+        </div>
+        <div class="card"><div class="gallery-grid" id="galleryGrid"></div></div>
+      </section>
+
+      <!-- SIGN-OFF -->
+      <section class="section" id="sec-signoff">
+        <h1 data-i18n="signTitle">✍️ التوقيع الرقمي المعتمد والبصمة الزمنية</h1>
+        <p class="small" data-i18n="signDesc">توقيع رقمي معتمد لكل تقرير أو محضر، مع بصمة تشفير (SHA-256) وطابع زمني يمنع أي تعديل لاحق.</p>
+        <div class="card">
+          <div class="grid cols-2">
+            <div class="field"><label data-i18n="signName">اسم المعتمد</label><input id="sg_name" value="م. وائل عويس"></div>
+            <div class="field"><label data-i18n="signRole">الصفة</label><input id="sg_role" value="مدير المشروع / اعتماد الإدارة الهندسية"></div>
+          </div>
+          <label data-i18n="signPad">التوقيع اليدوي (ارسم بالماوس أو باللمس)</label>
+          <canvas class="sigpad" id="sigPad" width="600" height="130"></canvas>
+          <div class="flex" style="margin-top:8px;">
+            <button class="btn secondary" id="clearSigBtn" data-i18n="signClear">مسح التوقيع</button>
+            <button class="btn gold" id="commitSigBtn" data-i18n="signCommit">🔏 اعتماد وتوليد البصمة الرقمية</button>
+          </div>
+          <div id="sigResult" style="margin-top:14px;"></div>
+        </div>
+        <div class="card overflow-x"><table id="sigTable"></table></div>
+      </section>
+
+      <!-- DOCUMENTS SETTINGS -->
+      <section class="section" id="sec-docs">
+        <h1 data-i18n="docsTitle">🗄️ إعدادات المستندات الستة المطلوبة لتقفيل المشروع</h1>
+        <p class="small" data-i18n="docsDesc">إدارة ومتابعة نماذج المستندات المعتمدة في المنظومة؛ اضغط على أي مستند لمعاينته بصيغة شهادة رسمية جاهزة للطباعة.</p>
+        <div class="grid cols-3" id="docsGrid"></div>
+      </section>
+
+      <!-- AUDIT TRAIL -->
+      <section class="section" id="sec-audit">
+        <h1 data-i18n="auditTitle">🕵️ سجل التدقيق (Audit Trail)</h1>
+        <p class="small" data-i18n="auditDesc">تسجيل تلقائي لكل حدث داخل النظام لضمان أعلى معايير الشفافية والمحاسبة الهندسية.</p>
+        <div class="card" id="auditList"></div>
+      </section>
+
+      <!-- FINAL REPORT -->
+      <section class="section" id="sec-report">
+        <h1 data-i18n="reportTitle">🧾 التقرير الختامي الشامل والتصدير</h1>
+        <div class="flex no-print" style="margin-bottom:14px;">
+          <button class="btn gold" id="printReportBtn" data-i18n="printReportBtn">🖨️ طباعة / حفظ التقرير الختامي كـ PDF</button>
+          <button class="btn" id="genQrBtn" data-i18n="genQr">📱 توليد رمز QR للتسليم</button>
+        </div>
+        <div id="qrHolder" class="card no-print" style="text-align:center;display:none;">
+          <div id="qrcode" style="display:inline-block;"></div>
+          <p class="small" data-i18n="qrHint">امسح الرمز للوصول الفوري للتقرير الختامي وكتيبات O&amp;M رقمياً</p>
+        </div>
+        <div class="certificate" id="finalReportBody"></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+<nav class="bottom-nav no-print" id="bottomNav">
+  <button data-target="dashboard"><span class="ic">📊</span><span data-i18n="navDashboard">لوحة المتابعة</span></button>
+  <button data-target="phase1"><span class="ic">📋</span><span data-i18n="navP1">الملاحظات</span></button>
+  <button data-target="phase4"><span class="ic">🏁</span><span data-i18n="navP4">الاستلام</span></button>
+  <button data-target="report"><span class="ic">🧾</span><span data-i18n="navReport">التقرير</span></button>
+  <button id="bottomMenuBtn"><span class="ic">☰</span><span data-i18n="bottomMore">القائمة</span></button>
+</nav>
+
+<!-- MODAL for document templates -->
+<div class="modal-bg" id="docModalBg">
+  <div class="modal">
+    <button class="close-x" id="closeDocModal">×</button>
+    <div id="docModalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ================= I18N ================= */
+const I18N = {
+ar:{
+brandTitle:"تقفيل المشروع", brandSub:"م. وائل عويس", navOverview:"نظرة عامة", navDashboard:"لوحة المتابعة", navProjects:"سجل المشاريع",
+navPhases:"مراحل التقفيل الخمس", navP1:"١. الفحص والملاحظات", navP2:"٢. الاختبارات والتشغيل", navP3:"٣. التسوية التعاقدية", navP4:"٤. الاستلام النهائي", navP5:"٥. الأرشفة والمعرفة",
+navSmart:"وحدات ذكية إضافية", navSust:"مؤشر الاستدامة الخمسة", navRisk:"مصفوفة المخاطر الختامية", navCsi:"رضاء الجهة المستفيدة", navCost:"التكاليف الفعلية/التقديرية",
+navCalib:"معايرة أجهزة الاختبار", navGallery:"توثيق قبل / بعد", navSign:"التوقيع الرقمي والاعتماد", navDocs:"إعدادات المستندات الستة", navAudit:"سجل التدقيق", navReport:"التقرير الختامي والتصدير",
+footNote:"© 2026 — منظومة تقفيل المشروع، إشراف وإدارة المهندس/ وائل عويس", navBackup:"النسخ الاحتياطي", newProject:"+ مشروع جديد", langBtn:"English", printBtn:"🖨️ طباعة", exportBtn:"⬇️ نسخة احتياطية JSON", importBtn:"⬆️ استيراد",
+dashTitle:"لوحة المتابعة الهندسية الشاملة",
+chartPunch:"📋 حالة قائمة الملاحظات", chartSust:"🌿 مؤشر أبعاد الاستدامة", chartCost:"💰 التكلفة: تقديري مقابل فعلي", chartRisk:"⚠️ توزيع المخاطر حسب الخطورة",
+pjName:"اسم المشروع", pjOwner:"المالك / الجهة المستفيدة", pjStatus:"الحالة العامة", stActive:"قيد التقفيل", stDone:"مكتمل نهائياً", pjAdd:"إضافة مشروع",
+p1Title:"المرحلة الأولى: الفحص الابتدائي وحصر الملاحظات (Punch List)",
+p1Desc:"رصد كافة عيوب التشطيبات والملاحظات الفنية وتتبع إغلاقها بنسبة 100% قبل الانتقال لأي مرحلة تالية، مع تنبيهات مهل زمنية ذكية (SLA).",
+itemDesc:"وصف الملاحظة", location:"الموقع الدقيق", responsible:"المسؤول عن الإغلاق", deadline:"المهلة المحددة", statusLbl:"الحالة", pending:"قيد المعالجة", closed:"مغلق 100%", remarks:"ملاحظات المراجعة", addBtn:"➕ إضافة للسجل",
+slaOk:"ضمن المهلة", slaSoon:"يقترب من الاستحقاق", slaLate:"متأخر",
+p2Title:"المرحلة الثانية: الاختبارات والتشغيل التجريبي (Testing & Commissioning)",
+p2Desc:"التحقق الفني من كفاءة الأنظمة الكهروميكانيكية والتمديدات وأنظمة الأمان لضمان جاهزيتها التشغيلية.",
+testSystem:"النظام / البند المختبر", testStandard:"المعيار الهندسي المطلوب", testActual:"قيمة الفحص الفعلي", testEquip:"جهاز القياس المستخدم", testStatus:"حالة الاختبار", passed:"اجتاز بنجاح", retest:"يحتاج إعادة ضبط",
+p3Title:"المرحلة الثالثة: التسوية التعاقدية والمالية", p3Desc:"تسوية المستخلصات الختامية، إغلاق المطالبات المفتوحة، وإصدار شهادة الإنجاز.",
+settleDesc:"تفاصيل التسوية / المطالبة", settleAmount:"القيمة (اختياري)", settleStatus:"الحالة", settled:"تمت التسوية النهائية", negotiating:"قيد التفاوض",
+p4Title:"المرحلة الرابعة: التسليم النهائي والتشغيل", p4Desc:"التأكد من استيفاء جميع الشروط المسبقة، ثم إصدار محضر الاستلام الابتدائي والنهائي رسمياً.",
+readinessTitle:"✅ مؤشر جاهزية التسليم (يُحسب تلقائياً)", handoverFormTitle:"محضر الاستلام", handoverType:"نوع المحضر", handoverDate:"تاريخ التسليم", handoverConfirm:"توقيع واعتماد محضر الاستلام",
+p5Title:"المرحلة الخامسة: الأرشفة وإغلاق المعرفة", p5Desc:"حفظ المخططات النهائية وكتيبات التشغيل والصيانة والمراسلات في الأرشيف الدائم.",
+archName:"اسم المستند", archDiscipline:"التخصص", archStatus:"حالة الاعتماد", approvedFinal:"معتمد نهائياً", underReview:"قيد المراجعة",
+sustTitle:"🌿 مؤشر الاستدامة الخمسة الذكي", sustDesc:"تقييم درجة استدامة التقفيل بناءً على الأبعاد الخمسة: البيئية، الاقتصادية، الاجتماعية، الابتكار، والحوكمة.", sustOverall:"الدرجة الإجمالية المعتمدة",
+riskTitle:"⚠️ مصفوفة تقييم المخاطر الختامية", riskDesc:"تصنيف أي مخاطر تشغيلية محتملة بعد التسليم (تأثير × احتمالية) وتحديد المسؤول عن المتابعة.",
+riskItem:"وصف الخطر", riskImpact:"التأثير (1-5)", riskProb:"الاحتمالية (1-5)", riskOwner:"المسؤول عن المتابعة",
+csiTitle:"💬 مؤشر رضاء الجهة المستفيدة (CSI)", csiDesc:"تقييم رضاء المالك أو المشغل كجزء من سجل الأداء المؤسسي للمشروع.", csiComments:"ملاحظات الجهة المستفيدة", saveBtn:"💾 حفظ التقييم", csiOverall:"مؤشر الرضاء الإجمالي",
+costTitle:"💰 تقرير التكاليف الفعلية مقابل التقديرية", costDesc:"مقارنة الموازنة التقديرية بالتكلفة الفعلية لبنود المعالجات الإضافية ومقاولي الباطن أثناء التقفيل.",
+costCategory:"البند", costBudget:"التكلفة التقديرية", costActual:"التكلفة الفعلية",
+calibTitle:"🧪 سجل معايرة أجهزة الاختبار", calibDesc:"توثيق أرقام أجهزة القياس المستخدمة وتاريخ صلاحية معايرتها لضمان موثوقية نتائج شهادات الاختبار.",
+calibDevice:"اسم الجهاز", calibSerial:"الرقم التسلسلي", calibDate:"تاريخ آخر معايرة", calibExpiry:"تاريخ انتهاء الصلاحية",
+galleryTitle:"🖼️ أرشيف التوثيق البصري (قبل / بعد)", galleryDesc:"إثبات بصري موثق لمعالجة ملاحظات البنش ليست، يُرفق مع التقرير الختامي.",
+galleryCaption:"وصف الصورة", galleryTag:"قبل / بعد", before:"قبل", after:"بعد", galleryUpload:"اختيار الصورة",
+signTitle:"✍️ التوقيع الرقمي المعتمد والبصمة الزمنية", signDesc:"توقيع رقمي معتمد لكل تقرير أو محضر، مع بصمة تشفير (SHA-256) وطابع زمني يمنع أي تعديل لاحق.",
+signName:"اسم المعتمد", signRole:"الصفة", signPad:"التوقيع اليدوي (ارسم بالماوس أو باللمس)", signClear:"مسح التوقيع", signCommit:"🔏 اعتماد وتوليد البصمة الرقمية",
+docsTitle:"🗄️ إعدادات المستندات الستة المطلوبة لتقفيل المشروع", docsDesc:"إدارة ومتابعة نماذج المستندات المعتمدة في المنظومة؛ اضغط على أي مستند لمعاينته بصيغة شهادة رسمية جاهزة للطباعة.",
+auditTitle:"🕵️ سجل التدقيق (Audit Trail)", auditDesc:"تسجيل تلقائي لكل حدث داخل النظام لضمان أعلى معايير الشفافية والمحاسبة الهندسية.",
+reportTitle:"🧾 التقرير الختامي الشامل والتصدير", printReportBtn:"🖨️ طباعة / حفظ التقرير الختامي كـ PDF", genQr:"📱 توليد رمز QR للتسليم", qrHint:"امسح الرمز للوصول الفوري للتقرير الختامي وكتيبات O&M رقمياً",
+sup:"إشراف وإدارة: المهندس/ وائل عويس", del:"حذف", bottomMore:"القائمة",
+alertsTitle:"🔔 تنبيهات ذكية", alertsNone:"لا توجد تنبيهات حالياً — كل شيء ضمن المهلة المحددة.", alertOverdue:"متأخر", alertSoon:"يقترب الاستحقاق", alertCalibExpired:"معايرة منتهية",
+docTitles:["بنش ليست (Punch List)","شهادة الاختبار واجتياز الأنظمة","مخططات ما بعد التنفيذ (As-Built)","كتيبات التشغيل والصيانة (O&M)","محضر الاستلام الابتدائي والنهائي","التقرير الختامي للمشروع"]
+},
+en:{
+brandTitle:"Project Closeout", brandSub:"Eng. Wael Oweis", navOverview:"Overview", navDashboard:"Dashboard", navProjects:"Projects Registry",
+navPhases:"5 Closeout Phases", navP1:"1. Inspection & Punch List", navP2:"2. Testing & Commissioning", navP3:"3. Contractual Settlement", navP4:"4. Final Handover", navP5:"5. Archiving & Knowledge",
+navSmart:"Smart Add-on Modules", navSust:"5-Pillars Sustainability", navRisk:"Final Risk Matrix", navCsi:"Client Satisfaction (CSI)", navCost:"Cost Variance",
+navCalib:"Equipment Calibration", navGallery:"Before/After Gallery", navSign:"Digital Sign-off", navDocs:"6 Documents Settings", navAudit:"Audit Trail", navReport:"Final Report & Export",
+footNote:"© 2026 — Project Closeout System, Supervised by Eng. Wael Oweis", navBackup:"Backup", newProject:"+ New Project", langBtn:"العربية", printBtn:"🖨️ Print", exportBtn:"⬇️ JSON Backup", importBtn:"⬆️ Import",
+dashTitle:"Comprehensive Engineering Dashboard",
+chartPunch:"📋 Punch List Status", chartSust:"🌿 Sustainability Pillars", chartCost:"💰 Budget vs Actual Cost", chartRisk:"⚠️ Risk Distribution by Severity",
+pjName:"Project Name", pjOwner:"Owner / Beneficiary", pjStatus:"Overall Status", stActive:"In Closeout", stDone:"Fully Completed", pjAdd:"Add Project",
+p1Title:"Phase 1: Initial Inspection & Punch List",
+p1Desc:"Track all finishing defects and technical remarks to 100% closure before moving to the next phase, with smart SLA alerts.",
+itemDesc:"Item Description", location:"Exact Location", responsible:"Responsible", deadline:"Deadline", statusLbl:"Status", pending:"Pending", closed:"Closed 100%", remarks:"Review Remarks", addBtn:"➕ Add Record",
+slaOk:"On Track", slaSoon:"Due Soon", slaLate:"Overdue",
+p2Title:"Phase 2: Testing & Commissioning",
+p2Desc:"Technical verification of MEP systems, extensions, and safety systems readiness.",
+testSystem:"System / Item Tested", testStandard:"Required Standard", testActual:"Actual Result", testEquip:"Test Equipment Used", testStatus:"Test Status", passed:"Passed", retest:"Needs Retest",
+p3Title:"Phase 3: Contractual & Financial Settlement", p3Desc:"Settling final statements, closing open claims, and issuing completion certificates.",
+settleDesc:"Settlement / Claim Details", settleAmount:"Amount (optional)", settleStatus:"Status", settled:"Fully Settled", negotiating:"Negotiating",
+p4Title:"Phase 4: Final Handover & Operation", p4Desc:"Confirm all prerequisites are met, then formally issue the initial & final handover minutes.",
+readinessTitle:"✅ Handover Readiness Index (auto-calculated)", handoverFormTitle:"Handover Minutes", handoverType:"Minutes Type", handoverDate:"Handover Date", handoverConfirm:"Sign & Approve Handover Minutes",
+p5Title:"Phase 5: Archiving & Knowledge Closure", p5Desc:"Save final drawings, O&M manuals and correspondence into the permanent archive.",
+archName:"Document Name", archDiscipline:"Discipline", archStatus:"Approval Status", approvedFinal:"Finally Approved", underReview:"Under Review",
+sustTitle:"🌿 5-Pillars Sustainability Scorecard", sustDesc:"Score the closeout's sustainability across 5 pillars: Environmental, Economic, Social, Innovation, Governance.", sustOverall:"Overall Certified Score",
+riskTitle:"⚠️ Final Risk Assessment Matrix", riskDesc:"Classify post-handover operational risks (impact × probability) and assign a follow-up owner.",
+riskItem:"Risk Description", riskImpact:"Impact (1-5)", riskProb:"Probability (1-5)", riskOwner:"Follow-up Owner",
+csiTitle:"💬 Client Satisfaction Index (CSI)", csiDesc:"Score the owner/operator's satisfaction as part of the project's institutional performance record.", csiComments:"Client Comments", saveBtn:"💾 Save Assessment", csiOverall:"Overall Satisfaction Index",
+costTitle:"💰 Actual vs Estimated Cost Report", costDesc:"Compare estimated budget with actual costs of extra works and subcontractors during closeout.",
+costCategory:"Category", costBudget:"Estimated Cost", costActual:"Actual Cost",
+calibTitle:"🧪 Test Equipment Calibration Log", calibDesc:"Document measuring device serials and calibration validity to ensure certificate reliability.",
+calibDevice:"Device Name", calibSerial:"Serial Number", calibDate:"Last Calibration", calibExpiry:"Expiry Date",
+galleryTitle:"🖼️ Visual Documentation Archive (Before/After)", galleryDesc:"Visual proof of punch list remediation, attached to the final report.",
+galleryCaption:"Caption", galleryTag:"Before/After", before:"Before", after:"After", galleryUpload:"Choose Image",
+signTitle:"✍️ Certified Digital Sign-off & Timestamp", signDesc:"A certified digital signature for each report/minutes, with a SHA-256 hash and timestamp preventing later tampering.",
+signName:"Signatory Name", signRole:"Role", signPad:"Handwritten Signature (draw with mouse/touch)", signClear:"Clear Signature", signCommit:"🔏 Approve & Generate Digital Hash",
+docsTitle:"🗄️ 6 Required Closeout Documents Settings", docsDesc:"Manage the system's standard document templates; click any document to preview it as a print-ready certificate.",
+auditTitle:"🕵️ Audit Trail", auditDesc:"Automatic logging of every system event for full transparency and accountability.",
+reportTitle:"🧾 Comprehensive Final Report & Export", printReportBtn:"🖨️ Print / Save Final Report as PDF", genQr:"📱 Generate Handover QR Code", qrHint:"Scan to instantly access the final report and O&M manuals digitally",
+sup:"Supervised & Managed by: Eng. Wael Oweis", del:"Delete", bottomMore:"Menu",
+alertsTitle:"🔔 Smart Alerts", alertsNone:"No alerts right now — everything is within its deadline.", alertOverdue:"Overdue", alertSoon:"Due soon", alertCalibExpired:"Calibration expired",
+docTitles:["Punch List","Testing & Commissioning Certificate","As-Built Drawings & Verification","O&M Manuals","Initial & Final Handover Minutes","Final Project Closeout Report"]
+}
+};
+let LANG = localStorage.getItem('pc_lang') || 'ar';
+
+/* ================= STATE ================= */
+const STORE_KEY = 'projectCloseoutData_v1';
+function defaultProjectData(){
+  return {punch:[], tests:[], settlements:[], archive:[], risks:[], costs:[],
+    calib:[], gallery:[], signatures:[], audit:[],
+    sustainability:{env:60,econ:60,social:60,innov:60,gov:60},
+    csi:{quality:70,schedule:70,accuracy:70,professionalism:70,comments:''},
+    handover:{signed:false, date:'', type:''}, qrData:null};
+}
+let DB = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || {
+  projects:[{id:'PRJ-01', name:'مشروع تشطيبات المنشأة الهندسية', owner:'شركة الاستثمار العقاري', status:'active'}],
+  current:'PRJ-01',
+  data:{'PRJ-01': defaultProjectData()}
+};
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+function cur(){ return DB.data[DB.current]; }
+function log(action){
+  cur().audit.unshift({time:new Date().toLocaleString(LANG==='ar'?'ar-EG':'en-US'), action});
+  save();
+}
+function uid(prefix){ return prefix+'-'+Math.random().toString(36).slice(2,7).toUpperCase(); }
+
+/* ================= I18N APPLY ================= */
+function t(key){ return I18N[LANG][key] || key; }
+function applyI18N(){
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = LANG==='ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
+    if(I18N[LANG][k]!==undefined) el.textContent = I18N[LANG][k];
+  });
+}
+
+/* ================= NAVIGATION ================= */
+function switchSection(target){
+  document.querySelectorAll('.nav-btn, .bottom-nav button[data-target]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll(`[data-target="${target}"]`).forEach(b=>b.classList.add('active'));
+  document.getElementById('sec-'+target).classList.add('active');
+  renderAll();
+  closeSidebar();
+  document.querySelector('.content').scrollTop = 0;
+  window.scrollTo({top:0, behavior:'instant'});
+}
+document.querySelectorAll('.nav-btn[data-target]').forEach(btn=>{
+  btn.addEventListener('click', ()=>switchSection(btn.dataset.target));
+});
+document.querySelectorAll('.bottom-nav button[data-target]').forEach(btn=>{
+  btn.addEventListener('click', ()=>switchSection(btn.dataset.target));
+});
+document.querySelector('.nav-btn[data-target="dashboard"]').classList.add('active');
+document.querySelector('.bottom-nav button[data-target="dashboard"]').classList.add('active');
+document.getElementById('sec-dashboard').classList.add('active');
+
+/* ---- Sidebar open/close (mobile) & collapse (desktop) ---- */
+function openSidebar(){ document.querySelector('.sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
+function closeSidebar(){ document.querySelector('.sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
+document.getElementById('hamburgerBtn').addEventListener('click', openSidebar);
+document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+document.getElementById('bottomMenuBtn').addEventListener('click', openSidebar);
+document.getElementById('collapseToggleBtn').addEventListener('click', ()=>{
+  const sb = document.querySelector('.sidebar');
+  sb.classList.toggle('collapsed');
+  localStorage.setItem('pc_sidebar_collapsed', sb.classList.contains('collapsed')?'1':'0');
+});
+(function(){ if(localStorage.getItem('pc_sidebar_collapsed')==='1' && window.innerWidth>900) document.querySelector('.sidebar').classList.add('collapsed'); })();
+
+/* ================= PROJECT SWITCHER ================= */
+function renderProjectSelect(){
+  const sel = document.getElementById('projectSelect');
+  sel.innerHTML = DB.projects.map(p=>`<option value="${p.id}" ${p.id===DB.current?'selected':''}>${p.name}</option>`).join('');
+}
+document.getElementById('projectSelect').addEventListener('change', e=>{
+  DB.current = e.target.value; save(); renderAll();
+});
+document.getElementById('newProjectBtn').addEventListener('click', ()=>{
+  document.querySelector('.nav-btn[data-target="projects"]').click();
+});
+document.getElementById('addProjectBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('pjName').value.trim();
+  if(!name) return;
+  const id = uid('PRJ');
+  DB.projects.push({id, name, owner:document.getElementById('pjOwner').value, status:document.getElementById('pjStatus').selectedIndex===0?'active':'done'});
+  DB.data[id] = defaultProjectData();
+  DB.current = id; save();
+  document.getElementById('pjName').value=''; document.getElementById('pjOwner').value='';
+  log(LANG==='ar'?`تم إنشاء مشروع جديد: ${name}`:`New project created: ${name}`);
+  renderAll();
+});
+function renderProjectsTable(){
+  const table = document.getElementById('projTable');
+  table.innerHTML = `<tr><th>ID</th><th>${t('pjName')}</th><th>${t('pjOwner')}</th><th>${t('pjStatus')}</th></tr>` +
+    DB.projects.map(p=>`<tr><td>${p.id}</td><td>${p.name}</td><td>${p.owner||'-'}</td><td>${p.status==='active'?`<span class="tag warn">${t('stActive')}</span>`:`<span class="tag ok">${t('stDone')}</span>`}</td></tr>`).join('');
+}
+
+/* ================= SLA HELPERS ================= */
+function slaState(deadline, status){
+  if(status==='closed') return 'ok';
+  if(!deadline) return 'blueprint';
+  const days = (new Date(deadline) - new Date())/86400000;
+  if(days<0) return 'danger';
+  if(days<=2) return 'warn';
+  return 'blueprint';
+}
+
+/* ================= PHASE 1: PUNCH LIST ================= */
+document.getElementById('addPunchBtn').addEventListener('click', ()=>{
+  const item = document.getElementById('pl_item').value.trim(); if(!item) return;
+  const status = document.getElementById('pl_status').selectedIndex===0?'pending':'closed';
+  cur().punch.push({id:uid('PL'), item, loc:document.getElementById('pl_loc').value, resp:document.getElementById('pl_resp').value,
+    deadline:document.getElementById('pl_deadline').value, status, remarks:document.getElementById('pl_remarks').value});
+  save(); log((LANG==='ar'?'إضافة ملاحظة: ':'Added punch item: ')+item);
+  ['pl_item','pl_loc','pl_remarks'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+function renderPunch(){
+  const table = document.getElementById('punchTable');
+  const rows = cur().punch.map(p=>{
+    const s = slaState(p.deadline, p.status);
+    const cls = s==='ok'?'ok':s==='danger'?'danger':s==='warn'?'warn':'blueprint';
+    const label = p.status==='closed'?t('closed'):(s==='danger'?t('slaLate'):s==='warn'?t('slaSoon'):t('slaOk'));
+    return `<tr><td>${p.id}</td><td>${p.item}</td><td>${p.loc||'-'}</td><td>${p.resp||'-'}</td><td>${p.deadline||'-'}</td>
+      <td><span class="tag ${cls}">${label}</span></td><td>${p.remarks||'-'}</td>
+      <td><button class="btn ghost" onclick="delItem('punch','${p.id}')">${t('del')}</button></td></tr>`;
+  }).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('itemDesc')}</th><th>${t('location')}</th><th>${t('responsible')}</th><th>${t('deadline')}</th><th>${t('statusLbl')}</th><th>${t('remarks')}</th><th></th></tr>`+rows;
+}
+window.delItem = function(coll, id){
+  cur()[coll] = cur()[coll].filter(x=>x.id!==id);
+  save(); log(LANG==='ar'?'حذف عنصر':'Deleted item'); renderAll();
+};
+
+/* ================= PHASE 2: TESTS ================= */
+document.getElementById('addTestBtn').addEventListener('click', ()=>{
+  const system = document.getElementById('ts_system').value.trim(); if(!system) return;
+  const status = document.getElementById('ts_status').selectedIndex===0?'passed':'retest';
+  cur().tests.push({id:uid('TS'), system, standard:document.getElementById('ts_standard').value, actual:document.getElementById('ts_actual').value,
+    equip:document.getElementById('ts_equip').value, status});
+  save(); log((LANG==='ar'?'إضافة اختبار: ':'Added test: ')+system);
+  ['ts_system','ts_standard','ts_actual','ts_equip'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+function renderTests(){
+  const table = document.getElementById('testTable');
+  const rows = cur().tests.map(x=>`<tr><td>${x.id}</td><td>${x.system}</td><td>${x.standard||'-'}</td><td>${x.actual||'-'}</td><td>${x.equip||'-'}</td>
+    <td><span class="tag ${x.status==='passed'?'ok':'danger'}">${x.status==='passed'?t('passed'):t('retest')}</span></td>
+    <td><button class="btn ghost" onclick="delItem('tests','${x.id}')">${t('del')}</button></td></tr>`).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('testSystem')}</th><th>${t('testStandard')}</th><th>${t('testActual')}</th><th>${t('testEquip')}</th><th>${t('testStatus')}</th><th></th></tr>`+rows;
+}
+
+/* ================= PHASE 3: SETTLEMENTS ================= */
+document.getElementById('addSettleBtn').addEventListener('click', ()=>{
+  const desc = document.getElementById('st_desc').value.trim(); if(!desc) return;
+  const status = document.getElementById('st_status').selectedIndex===0?'settled':'negotiating';
+  cur().settlements.push({id:uid('ST'), desc, amount:document.getElementById('st_amount').value, status});
+  save(); log((LANG==='ar'?'تسوية جديدة: ':'New settlement: ')+desc);
+  document.getElementById('st_desc').value=''; document.getElementById('st_amount').value='';
+  renderAll();
+});
+function renderSettlements(){
+  const table = document.getElementById('settleTable');
+  const rows = cur().settlements.map(x=>`<tr><td>${x.id}</td><td>${x.desc}</td><td>${x.amount||'-'}</td>
+    <td><span class="tag ${x.status==='settled'?'ok':'warn'}">${x.status==='settled'?t('settled'):t('negotiating')}</span></td>
+    <td><button class="btn ghost" onclick="delItem('settlements','${x.id}')">${t('del')}</button></td></tr>`).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('settleDesc')}</th><th>${t('settleAmount')}</th><th>${t('settleStatus')}</th><th></th></tr>`+rows;
+}
+
+/* ================= PHASE 4: HANDOVER READINESS ================= */
+function computeReadiness(){
+  const d = cur();
+  const punchTotal = d.punch.length, punchClosed = d.punch.filter(p=>p.status==='closed').length;
+  const punchPct = punchTotal? Math.round(punchClosed/punchTotal*100):100;
+  const testTotal = d.tests.length, testPassed = d.tests.filter(x=>x.status==='passed').length;
+  const testPct = testTotal? Math.round(testPassed/testTotal*100):100;
+  const settleTotal = d.settlements.length, settleDone = d.settlements.filter(x=>x.status==='settled').length;
+  const settlePct = settleTotal? Math.round(settleDone/settleTotal*100):100;
+  const archTotal = d.archive.length, archDone = d.archive.filter(x=>x.status==='approved').length;
+  const archPct = archTotal? Math.round(archDone/archTotal*100):100;
+  return {punchPct, testPct, settlePct, archPct, overall:Math.round((punchPct+testPct+settlePct+archPct)/4)};
+}
+function renderReadiness(){
+  const r = computeReadiness();
+  const el = document.getElementById('readinessKpis');
+  const items = [[t('navP1'),r.punchPct],[t('navP2'),r.testPct],[t('navP3'),r.settlePct],[t('navP5'),r.archPct]];
+  el.innerHTML = items.map(([lbl,val])=>`<div class="kpi"><div class="num">${val}%</div><div class="lbl">${lbl}</div><div class="progress" style="margin-top:8px;"><div style="width:${val}%"></div></div></div>`).join('');
+  document.getElementById('ho_date').value = document.getElementById('ho_date').value || new Date().toISOString().slice(0,10);
+  const h = cur().handover;
+  document.getElementById('handoverStatusText').textContent = h.signed
+    ? (LANG==='ar'?`تم توقيع واعتماد محضر الاستلام بتاريخ ${h.date}`:`Handover minutes signed & approved on ${h.date}`)
+    : (LANG==='ar'?'لم يتم توقيع محضر الاستلام بعد.':'Handover minutes not yet signed.');
+}
+document.getElementById('signHandoverBtn').addEventListener('click', ()=>{
+  const d = cur();
+  d.handover = {signed:true, date:document.getElementById('ho_date').value, type:document.getElementById('ho_type').value};
+  save(); log(LANG==='ar'?'تم توقيع محضر الاستلام النهائي':'Final handover minutes signed');
+  renderAll();
+});
+
+/* ================= PHASE 5: ARCHIVE ================= */
+document.getElementById('addArchiveBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('ar_name').value.trim(); if(!name) return;
+  const status = document.getElementById('ar_status').selectedIndex===0?'approved':'review';
+  cur().archive.push({id:uid('ARC'), name, disc:document.getElementById('ar_disc').value, date:new Date().toISOString().slice(0,10), status});
+  save(); log((LANG==='ar'?'أرشفة مستند: ':'Archived document: ')+name);
+  document.getElementById('ar_name').value=''; document.getElementById('ar_disc').value='';
+  renderAll();
+});
+function renderArchive(){
+  const table = document.getElementById('archiveTable');
+  const rows = cur().archive.map(x=>`<tr><td>${x.id}</td><td>${x.name}</td><td>${x.disc||'-'}</td><td>${x.date}</td>
+    <td><span class="tag ${x.status==='approved'?'ok':'warn'}">${x.status==='approved'?t('approvedFinal'):t('underReview')}</span></td>
+    <td><button class="btn ghost" onclick="delItem('archive','${x.id}')">${t('del')}</button></td></tr>`).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('archName')}</th><th>${t('archDiscipline')}</th><th>Date</th><th>${t('archStatus')}</th><th></th></tr>`+rows;
+}
+
+/* ================= SUSTAINABILITY ================= */
+const SUST_KEYS = [['env','🌍', {ar:'البيئية',en:'Environmental'}],['econ','💵',{ar:'الاقتصادية',en:'Economic'}],['social','🤝',{ar:'الاجتماعية',en:'Social'}],['innov','💡',{ar:'الابتكار',en:'Innovation'}],['gov','🏛️',{ar:'الحوكمة',en:'Governance'}]];
+function renderSustainability(){
+  const s = cur().sustainability;
+  const el = document.getElementById('sustSliders');
+  el.innerHTML = SUST_KEYS.map(([k,icon,label])=>`
+    <div class="field">
+      <label>${icon} ${label[LANG]} — <b>${s[k]}%</b></label>
+      <input type="range" min="0" max="100" value="${s[k]}" oninput="updateSust('${k}', this.value)">
+      <div class="pillar-bar"><div style="width:${s[k]}%"></div></div>
+    </div>`).join('');
+  const overall = Math.round(SUST_KEYS.reduce((a,[k])=>a+s[k],0)/5);
+  document.getElementById('sustScore').textContent = overall+'%';
+}
+window.updateSust = function(k,v){
+  cur().sustainability[k] = Number(v); save(); renderSustainability(); renderDashboardCharts();
+};
+
+/* ================= RISK MATRIX ================= */
+document.getElementById('addRiskBtn').addEventListener('click', ()=>{
+  const desc = document.getElementById('rk_desc').value.trim(); if(!desc) return;
+  const impact = Number(document.getElementById('rk_impact').value)||3;
+  const prob = Number(document.getElementById('rk_prob').value)||3;
+  cur().risks.push({id:uid('RK'), desc, impact, prob, owner:document.getElementById('rk_owner').value, score:impact*prob});
+  save(); log((LANG==='ar'?'خطر جديد: ':'New risk: ')+desc);
+  document.getElementById('rk_desc').value=''; document.getElementById('rk_owner').value='';
+  renderAll();
+});
+function riskLevel(score){ return score>=15?'danger':score>=8?'warn':'ok'; }
+function renderRisks(){
+  const table = document.getElementById('riskTable');
+  const rows = cur().risks.map(x=>`<tr><td>${x.id}</td><td>${x.desc}</td><td>${x.impact}</td><td>${x.prob}</td><td><b>${x.score}</b></td><td><span class="tag ${riskLevel(x.score)}">${x.score>=15?(LANG==='ar'?'مرتفع':'High'):x.score>=8?(LANG==='ar'?'متوسط':'Medium'):(LANG==='ar'?'منخفض':'Low')}</span></td><td>${x.owner||'-'}</td>
+    <td><button class="btn ghost" onclick="delItem('risks','${x.id}')">${t('del')}</button></td></tr>`).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('riskItem')}</th><th>${t('riskImpact')}</th><th>${t('riskProb')}</th><th>Score</th><th>${LANG==='ar'?'المستوى':'Level'}</th><th>${t('riskOwner')}</th><th></th></tr>`+rows;
+}
+
+/* ================= CSI ================= */
+const CSI_KEYS=[['quality',{ar:'جودة التشطيبات',en:'Finishing Quality'}],['schedule',{ar:'الالتزام بالجدول الزمني',en:'Schedule Adherence'}],['accuracy',{ar:'دقة المخططات',en:'Drawing Accuracy'}],['professionalism',{ar:'الاحترافية الهندسية',en:'Engineering Professionalism'}]];
+function renderCsi(){
+  const c = cur().csi;
+  document.getElementById('csiSliders').innerHTML = CSI_KEYS.map(([k,label])=>`
+    <div class="field"><label>${label[LANG]} — <b>${c[k]}%</b></label>
+    <input type="range" min="0" max="100" value="${c[k]}" oninput="updateCsi('${k}', this.value)"></div>`).join('');
+  document.getElementById('csi_comments').value = c.comments||'';
+  const overall = Math.round(CSI_KEYS.reduce((a,[k])=>a+c[k],0)/CSI_KEYS.length);
+  document.getElementById('csiScore').textContent = overall+'%';
+}
+window.updateCsi = function(k,v){ cur().csi[k]=Number(v); save(); renderCsi(); };
+document.getElementById('saveCsiBtn').addEventListener('click', ()=>{
+  cur().csi.comments = document.getElementById('csi_comments').value; save();
+  log(LANG==='ar'?'تم حفظ تقييم رضاء العميل':'Client satisfaction assessment saved');
+  renderAll();
+});
+
+/* ================= COST ================= */
+document.getElementById('addCostBtn').addEventListener('click', ()=>{
+  const cat = document.getElementById('cs_cat').value.trim(); if(!cat) return;
+  cur().costs.push({id:uid('CS'), cat, budget:Number(document.getElementById('cs_budget').value)||0, actual:Number(document.getElementById('cs_actual').value)||0});
+  save(); log((LANG==='ar'?'بند تكلفة جديد: ':'New cost item: ')+cat);
+  document.getElementById('cs_cat').value=''; document.getElementById('cs_budget').value=''; document.getElementById('cs_actual').value='';
+  renderAll();
+});
+function renderCosts(){
+  const table = document.getElementById('costTable');
+  const rows = cur().costs.map(x=>{
+    const diff = x.actual - x.budget;
+    return `<tr><td>${x.id}</td><td>${x.cat}</td><td>${x.budget}</td><td>${x.actual}</td><td><span class="tag ${diff>0?'danger':'ok'}">${diff>0?'+':''}${diff}</span></td>
+    <td><button class="btn ghost" onclick="delItem('costs','${x.id}')">${t('del')}</button></td></tr>`;
+  }).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('costCategory')}</th><th>${t('costBudget')}</th><th>${t('costActual')}</th><th>Δ</th><th></th></tr>`+rows;
+}
+
+/* ================= CALIBRATION ================= */
+document.getElementById('addCalibBtn').addEventListener('click', ()=>{
+  const device = document.getElementById('cl_device').value.trim(); if(!device) return;
+  cur().calib.push({id:uid('CAL'), device, serial:document.getElementById('cl_serial').value, date:document.getElementById('cl_date').value, expiry:document.getElementById('cl_expiry').value});
+  save(); log((LANG==='ar'?'إضافة جهاز معايرة: ':'Added calibrated device: ')+device);
+  ['cl_device','cl_serial'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+function renderCalib(){
+  const table = document.getElementById('calibTable');
+  const rows = cur().calib.map(x=>{
+    const expired = x.expiry && new Date(x.expiry) < new Date();
+    return `<tr><td>${x.id}</td><td>${x.device}</td><td>${x.serial||'-'}</td><td>${x.date||'-'}</td><td>${x.expiry||'-'}</td>
+    <td><span class="tag ${expired?'danger':'ok'}">${expired?(LANG==='ar'?'منتهية':'Expired'):(LANG==='ar'?'سارية':'Valid')}</span></td>
+    <td><button class="btn ghost" onclick="delItem('calib','${x.id}')">${t('del')}</button></td></tr>`;
+  }).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('calibDevice')}</th><th>${t('calibSerial')}</th><th>${t('calibDate')}</th><th>${t('calibExpiry')}</th><th>${LANG==='ar'?'الحالة':'Status'}</th><th></th></tr>`+rows;
+}
+
+/* ================= GALLERY ================= */
+document.getElementById('addGalleryBtn').addEventListener('click', ()=>{
+  const file = document.getElementById('gl_file').files[0];
+  const caption = document.getElementById('gl_caption').value.trim();
+  const tag = document.getElementById('gl_tag').selectedIndex===0?'before':'after';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    cur().gallery.push({id:uid('IMG'), caption, tag, src:e.target.result});
+    save(); log((LANG==='ar'?'إضافة صورة توثيق: ':'Added documentation photo: ')+(caption||tag));
+    document.getElementById('gl_caption').value=''; document.getElementById('gl_file').value='';
+    renderAll();
+  };
+  reader.readAsDataURL(file);
+});
+function renderGallery(){
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = cur().gallery.map(g=>`<figure><img src="${g.src}" alt=""><figcaption>${g.tag==='before'?t('before'):t('after')} — ${g.caption||''}
+    <br><button class="btn ghost" style="padding:2px 6px;font-size:10px;" onclick="delItem('gallery','${g.id}')">${t('del')}</button></figcaption></figure>`).join('') || `<p class="small">—</p>`;
+}
+
+/* ================= DIGITAL SIGNATURE ================= */
+let sigCtx, drawing=false;
+function initSigPad(){
+  const canvas = document.getElementById('sigPad');
+  sigCtx = canvas.getContext('2d');
+  sigCtx.lineWidth = 2; sigCtx.strokeStyle = '#0B4F4A'; sigCtx.lineCap='round';
+  function pos(e){
+    const r = canvas.getBoundingClientRect();
+    const clientX = e.touches? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches? e.touches[0].clientY : e.clientY;
+    return [(clientX-r.left)*(canvas.width/r.width), (clientY-r.top)*(canvas.height/r.height)];
+  }
+  function start(e){ drawing=true; const [x,y]=pos(e); sigCtx.beginPath(); sigCtx.moveTo(x,y); e.preventDefault(); }
+  function move(e){ if(!drawing) return; const [x,y]=pos(e); sigCtx.lineTo(x,y); sigCtx.stroke(); e.preventDefault(); }
+  function end(){ drawing=false; }
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', move); canvas.addEventListener('touchend', end);
+}
+document.getElementById('clearSigBtn').addEventListener('click', ()=>{
+  const canvas = document.getElementById('sigPad'); sigCtx.clearRect(0,0,canvas.width,canvas.height);
+});
+document.getElementById('commitSigBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('sg_name').value.trim();
+  const role = document.getElementById('sg_role').value.trim();
+  const canvas = document.getElementById('sigPad');
+  const ts = new Date().toISOString();
+  const payload = name+'|'+role+'|'+ts+'|'+JSON.stringify(cur().punch.length)+JSON.stringify(cur().tests.length);
+  let hash = '';
+  try{
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payload));
+    hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
+  }catch(e){ hash = 'HASH-'+Math.random().toString(36).slice(2,10); }
+  const sigImg = canvas.toDataURL();
+  cur().signatures.push({id:uid('SIG'), name, role, ts, hash, sigImg});
+  save(); log((LANG==='ar'?'اعتماد رقمي جديد بواسطة ':'New digital sign-off by ')+name);
+  document.getElementById('sigResult').innerHTML = `<div class="card" style="background:var(--ok-bg);"><b>${LANG==='ar'?'تم الاعتماد بنجاح':'Successfully certified'}</b><br>
+    <span class="small">${LANG==='ar'?'البصمة الرقمية (SHA-256)':'Digital Hash (SHA-256)'}: <code>${hash}</code></span><br>
+    <span class="small">${ts}</span></div>`;
+  renderAll();
+});
+function renderSignatures(){
+  const table = document.getElementById('sigTable');
+  const rows = cur().signatures.map(s=>`<tr><td>${s.id}</td><td>${s.name}</td><td>${s.role}</td><td>${new Date(s.ts).toLocaleString(LANG==='ar'?'ar-EG':'en-US')}</td><td><code style="font-size:11px;">${s.hash}</code></td></tr>`).join('');
+  table.innerHTML = `<tr><th>ID</th><th>${t('signName')}</th><th>${t('signRole')}</th><th>Timestamp</th><th>SHA-256</th></tr>`+rows;
+}
+
+/* ================= DOCUMENTS SETTINGS (6 templates) ================= */
+const DOC_ICONS = ['📋','⚙️','📐','📘','🖋️','🏁'];
+function docTemplateHtml(idx){
+  const d = cur();
+  const titles = t('docTitles');
+  const sup = t('sup');
+  if(idx===0){
+    return `<h2>${titles[0]}</h2><p class="small">${sup}</p>
+    <table><tr><th>ID</th><th>${t('itemDesc')}</th><th>${t('location')}</th><th>${t('deadline')}</th><th>${t('statusLbl')}</th></tr>
+    ${d.punch.map(p=>`<tr><td>${p.id}</td><td>${p.item}</td><td>${p.loc||'-'}</td><td>${p.deadline||'-'}</td><td>${p.status==='closed'?t('closed'):t('pending')}</td></tr>`).join('')||'<tr><td colspan="5">—</td></tr>'}</table>`;
+  }
+  if(idx===1){
+    return `<h2>${titles[1]}</h2><p class="small">${sup}</p>
+    <table><tr><th>ID</th><th>${t('testSystem')}</th><th>${t('testStandard')}</th><th>${t('testActual')}</th><th>${t('testStatus')}</th></tr>
+    ${d.tests.map(x=>`<tr><td>${x.id}</td><td>${x.system}</td><td>${x.standard||'-'}</td><td>${x.actual||'-'}</td><td>${x.status==='passed'?t('passed'):t('retest')}</td></tr>`).join('')||'<tr><td colspan="5">—</td></tr>'}</table>`;
+  }
+  if(idx===2){
+    return `<h2>${titles[2]}</h2><p class="small">${sup}</p>
+    <table><tr><th>ID</th><th>${t('archName')}</th><th>${t('archDiscipline')}</th><th>${t('archStatus')}</th></tr>
+    ${d.archive.map(x=>`<tr><td>${x.id}</td><td>${x.name}</td><td>${x.disc||'-'}</td><td>${x.status==='approved'?t('approvedFinal'):t('underReview')}</td></tr>`).join('')||'<tr><td colspan="4">—</td></tr>'}</table>`;
+  }
+  if(idx===3){
+    return `<h2>${titles[3]}</h2><p class="small">${sup}</p>
+    <table><tr><th>${t('calibDevice')}</th><th>${t('calibSerial')}</th><th>${t('calibExpiry')}</th></tr>
+    ${d.calib.map(x=>`<tr><td>${x.device}</td><td>${x.serial||'-'}</td><td>${x.expiry||'-'}</td></tr>`).join('')||'<tr><td colspan="3">—</td></tr>'}</table>`;
+  }
+  if(idx===4){
+    return `<h2>${titles[4]}</h2><p class="small">${sup}</p>
+    <p>${LANG==='ar'?'نوع المحضر: '+((d.handover.type)||'-'):'Type: '+((d.handover.type)||'-')}</p>
+    <p>${LANG==='ar'?'حالة التوقيع: ':'Sign status: '}${d.handover.signed?(LANG==='ar'?'موقّع ومعتمد بتاريخ '+d.handover.date:'Signed on '+d.handover.date):(LANG==='ar'?'غير موقّع':'Not signed')}</p>`;
+  }
+  return `<h2>${titles[5]}</h2><p class="small">${sup}</p><p>${LANG==='ar'?'يُنشأ تلقائياً من قسم':'Auto-generated from the'} "${t('navReport')}"</p>`;
+}
+function renderDocsGrid(){
+  const grid = document.getElementById('docsGrid');
+  const titles = t('docTitles');
+  grid.innerHTML = titles.map((title,idx)=>`
+    <div class="card" style="cursor:pointer;text-align:center;" onclick="openDoc(${idx})">
+      <div style="font-size:30px;">${DOC_ICONS[idx]}</div><h3 style="font-size:15px;">${title}</h3>
+      <span class="small">${LANG==='ar'?'اضغط للمعاينة والطباعة':'Click to preview & print'}</span>
+    </div>`).join('');
+}
+window.openDoc = function(idx){
+  document.getElementById('docModalBody').innerHTML = `<div class="certificate">${docTemplateHtml(idx)}
+    <div class="sign-row"><div class="sign-box">${LANG==='ar'?'ممثل المقاول':'Contractor Rep.'}</div><div class="sign-box">${LANG==='ar'?'الاستشاري':'Consultant'}</div><div class="sign-box">${t('sup')}</div></div></div>
+    <div class="flex no-print" style="margin-top:12px;"><button class="btn gold" onclick="window.print()">🖨️ ${LANG==='ar'?'طباعة':'Print'}</button></div>`;
+  document.getElementById('docModalBg').classList.add('open');
+};
+document.getElementById('closeDocModal').addEventListener('click', ()=>document.getElementById('docModalBg').classList.remove('open'));
+
+/* ================= AUDIT ================= */
+function renderAudit(){
+  const el = document.getElementById('auditList');
+  el.innerHTML = cur().audit.slice(0,80).map(a=>`<div class="audit-item">🕒 ${a.time} — ${a.action}</div>`).join('') || `<p class="small">—</p>`;
+}
+
+/* ================= QR CODE ================= */
+document.getElementById('genQrBtn').addEventListener('click', async ()=>{
+  const d = cur();
+  const proj = DB.projects.find(p=>p.id===DB.current);
+  const payload = JSON.stringify({project:proj.name, id:DB.current, date:new Date().toISOString().slice(0,10), readiness:computeReadiness().overall});
+  let hash='';
+  try{ const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payload)); hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,16); }catch(e){}
+  const holder = document.getElementById('qrHolder');
+  holder.style.display='block';
+  document.getElementById('qrcode').innerHTML='';
+  try{
+    new QRCode(document.getElementById('qrcode'), {text: payload+'|'+hash, width:160, height:160, colorDark:'#0B4F4A'});
+  }catch(e){ document.getElementById('qrcode').textContent = LANG==='ar'?'تعذر توليد QR (يتطلب اتصال إنترنت لتحميل المكتبة)':'QR generation unavailable (needs internet to load library)'; }
+  log(LANG==='ar'?'تم توليد رمز QR للتسليم':'Handover QR generated');
+});
+
+/* ================= FINAL REPORT ================= */
+function renderFinalReport(){
+  const d = cur();
+  const proj = DB.projects.find(p=>p.id===DB.current) || {name:'-'};
+  const r = computeReadiness();
+  const sust = d.sustainability;
+  const sustOverall = Math.round(SUST_KEYS.reduce((a,[k])=>a+sust[k],0)/5);
+  const csiOverall = Math.round(CSI_KEYS.reduce((a,[k])=>a+d.csi[k],0)/CSI_KEYS.length);
+  document.getElementById('finalReportBody').innerHTML = `
+    <div style="text-align:center;">
+      <div class="seal">${LANG==='ar'?'معتمد<br>م. وائل عويس':'CERTIFIED<br>Eng. W. Oweis'}</div>
+      <h1>${LANG==='ar'?'التقرير الختامي الشامل لتقفيل المشروع':'Comprehensive Final Project Closeout Report'}</h1>
+      <p class="small">${t('sup')}</p>
+    </div>
+    <hr>
+    <p><b>${t('pjName')}:</b> ${proj.name} &nbsp; | &nbsp; <b>${t('pjOwner')}:</b> ${proj.owner||'-'}</p>
+    <p><b>${LANG==='ar'?'تاريخ الإصدار':'Issue Date'}:</b> ${new Date().toLocaleDateString(LANG==='ar'?'ar-EG':'en-US')}</p>
+    <div class="grid cols-4">
+      <div class="kpi"><div class="num">${r.overall}%</div><div class="lbl">${LANG==='ar'?'جاهزية التسليم':'Handover Readiness'}</div></div>
+      <div class="kpi"><div class="num">${sustOverall}%</div><div class="lbl">${t('sustOverall')}</div></div>
+      <div class="kpi"><div class="num">${csiOverall}%</div><div class="lbl">${t('csiOverall')}</div></div>
+      <div class="kpi"><div class="num">${d.risks.length}</div><div class="lbl">${LANG==='ar'?'مخاطر مرصودة':'Risks Logged'}</div></div>
+    </div>
+    <h3>${LANG==='ar'?'ملخص المراحل الخمس':'5-Phase Summary'}</h3>
+    <table>
+      <tr><th>${LANG==='ar'?'المرحلة':'Phase'}</th><th>${LANG==='ar'?'نسبة الإنجاز':'Completion'}</th></tr>
+      <tr><td>${t('navP1')}</td><td>${r.punchPct}%</td></tr>
+      <tr><td>${t('navP2')}</td><td>${r.testPct}%</td></tr>
+      <tr><td>${t('navP3')}</td><td>${r.settlePct}%</td></tr>
+      <tr><td>${t('navP4')}</td><td>${d.handover.signed?100:0}%</td></tr>
+      <tr><td>${t('navP5')}</td><td>${r.archPct}%</td></tr>
+    </table>
+    <p style="text-align:center;font-weight:800;margin-top:20px;">${LANG==='ar'
+      ? 'أقر أنا الموضح اسمي أعلاه (المهندس/ وائل عويس) بأن المشروع قد استوفى كافة متطلبات التشطيبات، واجتاز الفحوصات الفنية، وأصبح جاهزاً للاستلام النهائي.'
+      : 'I, the undersigned (Eng. Wael Oweis), certify that the project has satisfied all finishing requirements, passed technical inspections, and is ready for final handover.'}</p>
+    <div class="sign-row">
+      <div class="sign-box">${LANG==='ar'?'ممثل المقاول':'Contractor Rep.'}</div>
+      <div class="sign-box">${LANG==='ar'?'ممثل المالك':'Owner Rep.'}</div>
+      <div class="sign-box">${t('sup')}</div>
+    </div>`;
+}
+document.getElementById('printReportBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('print-active'));
+  document.getElementById('sec-report').classList.add('print-active');
+  window.print();
+});
+document.getElementById('printBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('.section.active').forEach(s=>s.classList.add('print-active'));
+  window.print();
+  setTimeout(()=>document.querySelectorAll('.print-active').forEach(s=>s.classList.remove('print-active')), 500);
+});
+
+/* ================= CHARTS ================= */
+let chartPunch, chartSust, chartCost, chartRisk;
+function fallbackBars(canvasId, rows){
+  // rows: [{label, value, max, color}]
+  const canvas = document.getElementById(canvasId);
+  const wrap = canvas.parentElement;
+  wrap.querySelectorAll('.fallback-chart').forEach(x=>x.remove());
+  canvas.style.display='none';
+  const box = document.createElement('div');
+  box.className='fallback-chart';
+  box.style.cssText='display:flex;flex-direction:column;gap:8px;justify-content:center;height:100%;';
+  box.innerHTML = rows.length ? rows.map(r=>`
+    <div>
+      <div class="small" style="display:flex;justify-content:space-between;"><span>${r.label}</span><span>${r.value}</span></div>
+      <div class="progress"><div style="width:${r.max? Math.min(100,Math.round(r.value/r.max*100)) : 0}%;background:${r.color||'var(--primary)'}"></div></div>
+    </div>`).join('') : `<p class="small" style="text-align:center;">—</p>`;
+  wrap.appendChild(box);
+}
+function renderDashboardCharts(){
+  const d = cur();
+  const chartsReady = (typeof Chart !== 'undefined');
+  const punchClosed = d.punch.filter(p=>p.status==='closed').length;
+  const punchOpen = d.punch.length - punchClosed;
+
+  if(chartsReady){
+    try{
+      document.querySelectorAll('.fallback-chart').forEach(x=>x.remove());
+      document.querySelectorAll('.chart-wrap canvas').forEach(c=>c.style.display='block');
+      const ctx1 = document.getElementById('chartPunch').getContext('2d');
+      if(chartPunch) chartPunch.destroy();
+      chartPunch = new Chart(ctx1, {type:'doughnut', data:{labels:[t('closed'), t('pending')], datasets:[{data:[punchClosed,punchOpen], backgroundColor:['#2F7D4F','#B8860B']}]}, options:{plugins:{legend:{position:'bottom'}}}});
+
+      const s = d.sustainability;
+      const ctx2 = document.getElementById('chartSust').getContext('2d');
+      if(chartSust) chartSust.destroy();
+      chartSust = new Chart(ctx2, {type:'radar', data:{labels:SUST_KEYS.map(([k,ic,l])=>l[LANG]), datasets:[{label:'%', data:SUST_KEYS.map(([k])=>s[k]), backgroundColor:'rgba(11,79,74,.25)', borderColor:'#0B4F4A'}]}, options:{scales:{r:{min:0,max:100}}, plugins:{legend:{display:false}}}});
+
+      const ctx3 = document.getElementById('chartCost').getContext('2d');
+      if(chartCost) chartCost.destroy();
+      chartCost = new Chart(ctx3, {type:'bar', data:{labels:d.costs.map(c=>c.cat), datasets:[
+        {label:t('costBudget'), data:d.costs.map(c=>c.budget), backgroundColor:'#1F4E79'},
+        {label:t('costActual'), data:d.costs.map(c=>c.actual), backgroundColor:'#A9782F'}]}, options:{plugins:{legend:{position:'bottom'}}}});
+
+      const high = d.risks.filter(r=>r.score>=15).length, med = d.risks.filter(r=>r.score>=8&&r.score<15).length, low = d.risks.filter(r=>r.score<8).length;
+      const ctx4 = document.getElementById('chartRisk').getContext('2d');
+      if(chartRisk) chartRisk.destroy();
+      chartRisk = new Chart(ctx4, {type:'pie', data:{labels:[LANG==='ar'?'مرتفع':'High',LANG==='ar'?'متوسط':'Medium',LANG==='ar'?'منخفض':'Low'], datasets:[{data:[high,med,low], backgroundColor:['#B3403A','#B8860B','#2F7D4F']}]}, options:{plugins:{legend:{position:'bottom'}}}});
+      return;
+    }catch(e){ /* fall through to fallback rendering below */ }
+  }
+  // Fallback (no internet / Chart.js failed to load): simple bar visualizations, no crash.
+  fallbackBars('chartPunch', [
+    {label:t('closed'), value:punchClosed, max:Math.max(1,d.punch.length), color:'#2F7D4F'},
+    {label:t('pending'), value:punchOpen, max:Math.max(1,d.punch.length), color:'#B8860B'}
+  ]);
+  const s = d.sustainability;
+  fallbackBars('chartSust', SUST_KEYS.map(([k,ic,l])=>({label:ic+' '+l[LANG], value:s[k]+'%', max:100, color:'#0B4F4A'})).map(r=>({...r, value:parseInt(r.value)})));
+  fallbackBars('chartCost', d.costs.map(c=>({label:c.cat, value:c.actual, max:Math.max(c.budget,c.actual,1), color: c.actual>c.budget?'#B3403A':'#2F7D4F'})));
+  const high = d.risks.filter(r=>r.score>=15).length, med = d.risks.filter(r=>r.score>=8&&r.score<15).length, low = d.risks.filter(r=>r.score<8).length;
+  fallbackBars('chartRisk', [
+    {label:LANG==='ar'?'مرتفع':'High', value:high, max:Math.max(1,d.risks.length), color:'#B3403A'},
+    {label:LANG==='ar'?'متوسط':'Medium', value:med, max:Math.max(1,d.risks.length), color:'#B8860B'},
+    {label:LANG==='ar'?'منخفض':'Low', value:low, max:Math.max(1,d.risks.length), color:'#2F7D4F'}
+  ]);
+}
+
+/* ================= DASHBOARD KPIs ================= */
+function renderAlerts(){
+  const d = cur();
+  const alerts = [];
+  d.punch.forEach(p=>{
+    if(p.status==='closed' || !p.deadline) return;
+    const s = slaState(p.deadline, p.status);
+    if(s==='danger') alerts.push({level:'danger', text:`${t('alertOverdue')}: ${p.item} (${p.deadline})`, target:'phase1'});
+    else if(s==='warn') alerts.push({level:'warn', text:`${t('alertSoon')}: ${p.item} (${p.deadline})`, target:'phase1'});
+  });
+  d.calib.forEach(c=>{
+    if(c.expiry && new Date(c.expiry) < new Date()) alerts.push({level:'danger', text:`${t('alertCalibExpired')}: ${c.device}`, target:'calib'});
+  });
+  const el = document.getElementById('alertsCard');
+  el.innerHTML = `<h3>${t('alertsTitle')}</h3>` + (alerts.length
+    ? alerts.slice(0,10).map(a=>`<div class="audit-item" style="cursor:pointer;" onclick="document.querySelector('[data-target=&quot;${a.target}&quot;]').click()"><span class="tag ${a.level}">${a.level==='danger'?t('alertOverdue'):t('alertSoon')}</span> ${a.text}</div>`).join('')
+    : `<p class="small">${t('alertsNone')}</p>`);
+}
+function renderDashboard(){
+  const d = cur();
+  const r = computeReadiness();
+  document.getElementById('dashSub').textContent = (LANG==='ar'?'المشروع الحالي: ':'Current project: ')+(DB.projects.find(p=>p.id===DB.current)||{}).name;
+  const kpis = [
+    [r.overall+'%', LANG==='ar'?'جاهزية التسليم الإجمالية':'Overall Readiness'],
+    [d.punch.length, LANG==='ar'?'إجمالي الملاحظات':'Total Punch Items'],
+    [d.tests.filter(x=>x.status==='passed').length+'/'+d.tests.length, LANG==='ar'?'اختبارات ناجحة':'Tests Passed'],
+    [d.risks.length, LANG==='ar'?'مخاطر مرصودة':'Risks Logged']
+  ];
+  document.getElementById('kpiRow').innerHTML = kpis.map(([v,l])=>`<div class="kpi"><div class="num">${v}</div><div class="lbl">${l}</div></div>`).join('');
+  renderAlerts();
+  renderDashboardCharts();
+}
+
+/* ================= EXPORT / IMPORT ================= */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'project-closeout-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  log(LANG==='ar'?'تم تصدير نسخة احتياطية JSON':'JSON backup exported');
+});
+document.getElementById('importFile').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try{
+      const imported = JSON.parse(ev.target.result);
+      if(imported.projects && imported.data){ DB = imported; save(); log(LANG==='ar'?'تم استيراد نسخة احتياطية':'Backup imported'); renderAll(); alert(LANG==='ar'?'تم الاستيراد بنجاح':'Imported successfully'); }
+    }catch(err){ alert(LANG==='ar'?'ملف غير صالح':'Invalid file'); }
+  };
+  reader.readAsText(file);
+});
+
+/* ================= THEME / LANG TOGGLES ================= */
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', isDark?'light':'dark');
+  localStorage.setItem('pc_theme', isDark?'light':'dark');
+});
+(function(){ const th = localStorage.getItem('pc_theme'); if(th) document.documentElement.setAttribute('data-theme', th); })();
+document.getElementById('langToggle').addEventListener('click', ()=>{
+  LANG = LANG==='ar'?'en':'ar';
+  localStorage.setItem('pc_lang', LANG);
+  renderAll();
+});
+
+/* ================= RENDER ALL ================= */
+function renderAll(){
+  applyI18N();
+  renderProjectSelect();
+  renderProjectsTable();
+  renderPunch();
+  renderTests();
+  renderSettlements();
+  renderReadiness();
+  renderArchive();
+  renderSustainability();
+  renderRisks();
+  renderCsi();
+  renderCosts();
+  renderCalib();
+  renderGallery();
+  renderSignatures();
+  renderDocsGrid();
+  renderAudit();
+  renderFinalReport();
+  renderDashboard();
+}
+initSigPad();
+renderAll();
+</script>
+</body>
+</html>

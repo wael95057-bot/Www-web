@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منظومة إدارة الابتكار | م. وائل عويس</title>
+<style>
+  :root{
+    --primary:#0f4c81; --primary-dark:#0a3a63; --accent:#e8ab1f; --accent2:#1f9d6b;
+    --bg:#f4f7fb; --card:#ffffff; --border:#dfe6ee; --text:#1c2b3a; --muted:#64748b;
+    --danger:#d9483a; --warn:#e8ab1f; --ok:#1f9d6b; --radius:12px;
+    --shadow:0 2px 10px rgba(15,76,129,.08);
+  }
+  html[data-theme="dark"]{
+    --bg:#0f1720; --card:#182430; --border:#2b3a4a; --text:#e6edf5; --muted:#94a7bb;
+    --shadow:0 2px 14px rgba(0,0,0,.4);
+  }
+  html[data-theme="dark"] input, html[data-theme="dark"] select, html[data-theme="dark"] textarea{
+    background:#101a24; color:var(--text); border-color:var(--border);
+  }
+  html[data-theme="dark"] th{background:#101a24;}
+  html[data-theme="dark"] tr:hover{background:#101a24;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);transition:background .2s,color .2s;}
+  header.topbar{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 18px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:var(--shadow);
+    position:sticky;top:0;z-index:200;}
+  header.topbar h1{margin:0;font-size:1.2rem;}
+  header.topbar .sub{font-size:.8rem;opacity:.9;margin-top:2px;}
+  header.topbar .titlewrap{display:flex;align-items:center;gap:10px;}
+  header.topbar .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .menu-toggle{display:none;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.2rem;
+    width:38px;height:38px;border-radius:8px;cursor:pointer;flex-shrink:0;}
+  .icon-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.05rem;
+    width:38px;height:38px;border-radius:8px;cursor:pointer;flex-shrink:0;}
+  .btn{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:.9rem;font-weight:600;transition:.15s;min-height:38px;}
+  .btn-light{background:#fff;color:var(--primary);}
+  .btn-light:hover{background:#eef3f9;}
+  .btn-primary{background:var(--accent2);color:#fff;}
+  .btn-primary:hover{background:#178055;}
+  .btn-outline{background:transparent;border:1px solid #fff;color:#fff;}
+  .btn-outline:hover{background:rgba(255,255,255,.12);}
+  .btn-danger{background:var(--danger);color:#fff;}
+  .layout{display:flex;min-height:calc(100vh - 74px);position:relative;}
+  nav.side{width:230px;background:var(--card);border-inline-end:1px solid var(--border);padding:16px 10px;flex-shrink:0;}
+  nav.side button{display:flex;align-items:center;gap:8px;width:100%;text-align:inherit;background:none;border:none;padding:12px 14px;margin-bottom:4px;
+    border-radius:9px;cursor:pointer;font-size:.92rem;color:var(--text);font-weight:600;min-height:44px;}
+  nav.side button:hover{background:rgba(15,76,129,.08);}
+  nav.side button.active{background:var(--primary);color:#fff;}
+  .nav-overlay{display:none;}
+  main{flex:1;padding:22px 26px;overflow-x:auto;min-width:0;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:var(--shadow);}
+  .card h2{margin-top:0;color:var(--primary-dark);font-size:1.15rem;border-bottom:2px solid var(--border);padding-bottom:10px;}
+  html[data-theme="dark"] .card h2{color:#9fc4ee;}
+  .grid{display:grid;gap:14px;}
+  .grid-2{grid-template-columns:1fr 1fr;}
+  .grid-3{grid-template-columns:1fr 1fr 1fr;}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:900px){
+    .grid-2,.grid-3,.grid-4{grid-template-columns:1fr 1fr;}
+    header.topbar{padding:12px 14px;}
+    header.topbar h1{font-size:1.02rem;}
+    header.topbar .sub{font-size:.7rem;}
+    .menu-toggle{display:inline-flex;align-items:center;justify-content:center;}
+    main{padding:14px;}
+    .card{padding:14px;}
+    .layout{min-height:calc(100vh - 64px);}
+    nav.side{
+      position:fixed;top:0;bottom:0;inset-inline-start:0;width:250px;z-index:1001;
+      transform:translateX(-105%);transition:transform .25s ease;overflow-y:auto;
+      box-shadow:2px 0 18px rgba(0,0,0,.25);padding-top:70px;
+    }
+    html[dir="rtl"] nav.side{transform:translateX(105%);}
+    nav.side.open, html[dir="rtl"] nav.side.open{transform:translateX(0) !important;}
+    .nav-overlay.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;}
+    .kpis{grid-template-columns:repeat(2,1fr) !important;}
+  }
+  @media(max-width:420px){
+    .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+  }
+  label{display:block;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:5px;}
+  input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:.92rem;
+    font-family:inherit;background:#fbfdff;color:var(--text);}
+  textarea{resize:vertical;min-height:70px;}
+  .field{margin-bottom:12px;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px;}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;box-shadow:var(--shadow);}
+  .kpi .num{font-size:1.7rem;font-weight:800;color:var(--primary);}
+  .kpi .lbl{font-size:.8rem;color:var(--muted);margin-top:4px;}
+  table{width:100%;border-collapse:collapse;font-size:.87rem;}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:inherit;}
+  th{background:#f0f4f9;color:var(--primary-dark);font-weight:700;position:sticky;top:0;}
+  tr:hover{background:#f7fafc;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;color:#fff;}
+  .b-draft{background:#94a3b8;} .b-submitted{background:#3b82f6;} .b-review{background:var(--warn);color:#3a2e00;}
+  .b-fasttrack{background:#8b5cf6;} .b-approved{background:var(--ok);} .b-rejected{background:var(--danger);}
+  .b-converted{background:var(--primary);} .b-archived{background:#475569;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:14px;}
+  .toolbar .field{margin-bottom:0;min-width:160px;flex:1;}
+  .rpn-high{color:var(--danger);font-weight:800;} .rpn-mid{color:var(--warn);font-weight:800;} .rpn-low{color:var(--ok);font-weight:800;}
+  footer{text-align:center;padding:16px;color:var(--muted);font-size:.82rem;border-top:1px solid var(--border);background:var(--card);}
+  .empty{text-align:center;color:var(--muted);padding:30px;}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .pill{background:#eef3f9;color:var(--primary-dark);padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;}
+  .note{font-size:.8rem;color:var(--muted);margin-top:6px;}
+  .clickable{cursor:pointer;color:var(--primary);font-weight:700;text-decoration:underline;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:center;justify-content:center;
+    z-index:999;padding:20px;}
+  .modal-box{background:var(--card);border-radius:var(--radius);max-width:640px;width:100%;max-height:88vh;overflow-y:auto;
+    padding:22px;box-shadow:0 10px 40px rgba(0,0,0,.25);}
+  .modal-box h2{margin-top:0;color:var(--primary-dark);}
+  .modal-close{float:inline-end;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:#eef3f9;color:var(--primary-dark);padding:5px 11px;
+    border-radius:16px;font-size:.78rem;margin:3px 4px 3px 0;}
+  .comment{background:#f7fafc;border:1px solid var(--border);border-radius:9px;padding:8px 12px;margin-bottom:8px;font-size:.85rem;}
+  .comment .meta{color:var(--muted);font-size:.72rem;margin-top:3px;}
+  .challenge-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;background:#fbfdff;}
+  .challenge-card h3{margin:0 0 6px;color:var(--primary-dark);font-size:1rem;}
+  .chart-wrap{display:flex;align-items:end;gap:14px;height:180px;padding:10px 4px;overflow-x:auto;}
+  .chart-bar-col{display:flex;flex-direction:column;align-items:center;min-width:60px;}
+  .chart-bar{width:34px;background:linear-gradient(180deg,var(--primary),var(--primary-dark));border-radius:6px 6px 0 0;transition:.3s;}
+  .chart-val{font-size:.75rem;font-weight:700;color:var(--primary-dark);margin-bottom:3px;}
+  .chart-lbl{font-size:.7rem;color:var(--muted);margin-top:6px;text-align:center;}
+  .activity-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--border);font-size:.85rem;}
+  .activity-item:last-child{border-bottom:none;}
+  .activity-dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);margin-top:6px;flex-shrink:0;}
+  .activity-time{color:var(--muted);font-size:.72rem;}
+  .sync-status{padding:10px 14px;border-radius:9px;font-size:.85rem;margin-top:10px;}
+  .sync-ok{background:#e6f7ef;color:var(--ok);border:1px solid var(--ok);}
+  .sync-err{background:#fdeceb;color:var(--danger);border:1px solid var(--danger);}
+  .sync-info{background:#eef3f9;color:var(--primary-dark);border:1px solid var(--primary);}
+  pre.sql{background:#0f1b26;color:#c9e6ff;padding:14px;border-radius:9px;font-size:.78rem;overflow-x:auto;direction:ltr;text-align:left;}
+  .ai-box{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:9px;padding:12px 14px;margin-top:10px;font-size:.85rem;}
+  .ai-box strong{color:#6d28d9;}
+  .dup-warning{background:#fff7ed;border:1px solid var(--warn);border-radius:9px;padding:12px 14px;margin-top:10px;font-size:.85rem;}
+  @media print{
+    nav.side, header .actions, .no-print{display:none !important;}
+    header.topbar{background:#fff !important;color:#000 !important;box-shadow:none;border-bottom:2px solid #000;}
+    body{background:#fff;color:#000;} main{padding:0;} .card{box-shadow:none;border:1px solid #999;background:#fff;color:#000;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="titlewrap">
+    <button class="menu-toggle no-print" id="menuToggleBtn" onclick="toggleMobileNav()" aria-label="menu">☰</button>
+    <div>
+      <h1 id="appTitle">🚀 منظومة إدارة الابتكار</h1>
+      <div class="sub" id="appSub">إشراف وتطوير: المهندس/ وائل عويس</div>
+    </div>
+  </div>
+  <div class="actions no-print">
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Dark mode">🌙</button>
+    <button class="btn btn-outline" onclick="toggleLang()" id="langBtn">English</button>
+    <button class="btn btn-light" onclick="window.print()" id="printBtn">🖨️ طباعة / حفظ PDF</button>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="nav-overlay no-print" id="navOverlay" onclick="closeMobileNav()"></div>
+  <nav class="side no-print" id="sideNav"></nav>
+  <main id="mainArea"></main>
+</div>
+
+<div id="modalRoot"></div>
+
+<footer id="footerText">جميع الحقوق محفوظة © 2026 - إشراف المهندس/ وائل عويس</footer>
+
+<script>
+/* ===================== DATA LAYER ===================== */
+const STORAGE_KEY = "innovation_mgmt_ideas_v1";
+const DEFAULT_CATEGORIES = ["هندسي وتقني","تشغيلي وإداري","أتمتة وبرمجيات","جودة ومخاطر","مالي واستثماري"];
+const DEFAULT_CATEGORIES_EN = ["Engineering & Technical","Operational & Administrative","Automation & Software","Quality & Risk","Financial & Investment"];
+const STATUS_KEYS = ["draft","submitted","review","fasttrack","approved","rejected","converted","archived"];
+
+/* ---- Manageable lists: Categories & Departments (add/remove from Settings page) ---- */
+const CAT_KEY = "innovation_mgmt_categories_v1";
+function loadCategoryLists(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(CAT_KEY));
+    if(saved && saved.ar && saved.en) return saved;
+  }catch(e){}
+  return { ar:[...DEFAULT_CATEGORIES], en:[...DEFAULT_CATEGORIES_EN] };
+}
+function saveCategoryLists(){ try{ localStorage.setItem(CAT_KEY, JSON.stringify({ar:CATEGORIES, en:CATEGORIES_EN})); }catch(e){} }
+let _catLists = loadCategoryLists();
+let CATEGORIES = _catLists.ar;
+let CATEGORIES_EN = _catLists.en;
+
+const DEPT_KEY = "innovation_mgmt_departments_v1";
+function loadDepartments(){
+  try{ const saved = JSON.parse(localStorage.getItem(DEPT_KEY)); if(Array.isArray(saved)) return saved; }catch(e){}
+  return ["الهندسة","إدارة المشاريع","تقنية المعلومات","الجودة","المالية"];
+}
+function saveDepartments(){ try{ localStorage.setItem(DEPT_KEY, JSON.stringify(DEPARTMENTS)); }catch(e){} }
+let DEPARTMENTS = loadDepartments();
+
+/* ---- Custom Tags (extra optional labels — separate layer, does NOT replace the core workflow statuses) ---- */
+const TAG_KEY = "innovation_mgmt_tags_v1";
+function loadTags(){
+  try{ const saved = JSON.parse(localStorage.getItem(TAG_KEY)); if(Array.isArray(saved)) return saved; }catch(e){}
+  return ["Quick Win","مبادرة استراتيجية","بحاجة لموافقة الإدارة العليا"];
+}
+function saveTags(){ try{ localStorage.setItem(TAG_KEY, JSON.stringify(TAGS)); }catch(e){} }
+let TAGS = loadTags();
+
+function loadIdeas(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || seedData(); }
+  catch(e){ return seedData(); }
+}
+function saveIdeas(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(ideas)); }catch(e){} }
+
+function seedData(){
+  return [
+    {id:"INN-001", title:"نظام التبريد الإشعاعي للبيانات", submitter:"م. وائل عويس", dept:"الهندسة", category:DEFAULT_CATEGORIES[0],
+     problem:"ارتفاع استهلاك الطاقة في غرف الخوادم", value:"خفض استهلاك الطاقة 20%", cost:45000, roiExpected:25.4,
+     severity:6, occurrence:4, detection:3, votes:12, fastTrack:false, status:"approved", date:"2026-09-01", notes:"",
+     challengeId:null, attachments:[], comments:[], tags:["Quick Win"]},
+    {id:"INN-002", title:"الأتمتة الذكية لجدولة المشاريع", submitter:"فريق التخطيط", dept:"إدارة المشاريع", category:DEFAULT_CATEGORIES[2],
+     problem:"بطء تحديث الجداول الزمنية يدوياً", value:"توفير 15 ساعة عمل أسبوعياً", cost:12000, roiExpected:18,
+     severity:4, occurrence:5, detection:4, votes:7, fastTrack:true, status:"review", date:"2026-09-15", notes:"",
+     challengeId:null, attachments:[], comments:[], tags:[]}
+  ];
+}
+let ideas = loadIdeas();
+// ensure legacy records (older saved data) have the newer fields
+ideas.forEach(i=>{
+  if(!("challengeId" in i)) i.challengeId = null;
+  if(!("attachments" in i)) i.attachments = [];
+  if(!("comments" in i)) i.comments = [];
+  if(!("tags" in i)) i.tags = [];
+});
+
+/* ---- Innovation Challenges ---- */
+const CH_KEY = "innovation_mgmt_challenges_v1";
+function loadChallenges(){
+  try{ return JSON.parse(localStorage.getItem(CH_KEY)) || seedChallenges(); }
+  catch(e){ return seedChallenges(); }
+}
+function saveChallenges(){ try{ localStorage.setItem(CH_KEY, JSON.stringify(challenges)); }catch(e){} }
+function seedChallenges(){
+  return [
+    {id:"CH-01", title_ar:"خفض استهلاك الطاقة بنسبة 20%", title_en:"Reduce Energy Consumption by 20%",
+     desc_ar:"كيف يمكننا خفض استهلاك الطاقة في المواقع والمكاتب دون التأثير على الإنتاجية؟",
+     desc_en:"How can we cut energy consumption on sites and offices without affecting productivity?", date:"2026-09-10"}
+  ];
+}
+let challenges = loadChallenges();
+
+/* ---- Activity Log ---- */
+const LOG_KEY = "innovation_mgmt_activity_v1";
+function loadLog(){ try{ return JSON.parse(localStorage.getItem(LOG_KEY)) || []; }catch(e){ return []; } }
+function saveLog(){ try{ localStorage.setItem(LOG_KEY, JSON.stringify(activityLog)); }catch(e){} }
+let activityLog = loadLog();
+function logActivity(msg){
+  activityLog.unshift({msg, time: new Date().toLocaleString(lang==='ar'?'ar-EG':'en-US')});
+  activityLog = activityLog.slice(0,30);
+  saveLog();
+}
+
+/* ---- Supabase Cloud Sync ---- */
+const SUPA_CFG_KEY = "innovation_mgmt_supabase_cfg_v1";
+function loadSupaCfg(){
+  try{ return JSON.parse(localStorage.getItem(SUPA_CFG_KEY)) || {url:"", key:"", recordId:"main"}; }
+  catch(e){ return {url:"", key:"", recordId:"main"}; }
+}
+function saveSupaCfg(cfg){ try{ localStorage.setItem(SUPA_CFG_KEY, JSON.stringify(cfg)); }catch(e){} }
+let supaCfg = loadSupaCfg();
+
+async function supaPush(){
+  const url = document.getElementById("supa_url").value.trim();
+  const key = document.getElementById("supa_key").value.trim();
+  const recordId = document.getElementById("supa_id").value.trim() || "main";
+  const statusEl = document.getElementById("supaStatus");
+  if(!url || !key){ statusEl.className="sync-status sync-err"; statusEl.textContent = t().syncMissing; return; }
+  supaCfg = {url, key, recordId}; saveSupaCfg(supaCfg);
+  statusEl.className="sync-status sync-info"; statusEl.textContent = t().syncWorking;
+  const payload = { ideas, challenges, activityLog, updated_at: new Date().toISOString() };
+  try{
+    const res = await fetch(`${url}/rest/v1/innovation_backups`, {
+      method:"POST",
+      headers:{
+        "apikey": key, "Authorization": `Bearer ${key}`,
+        "Content-Type":"application/json", "Prefer":"resolution=merge-duplicates,return=minimal"
+      },
+      body: JSON.stringify([{ id: recordId, payload, updated_at: new Date().toISOString() }])
+    });
+    if(res.ok){ statusEl.className="sync-status sync-ok"; statusEl.textContent = t().syncPushOk; logActivity(t().act_sync_push); }
+    else{ const txt = await res.text(); statusEl.className="sync-status sync-err"; statusEl.textContent = t().syncErr + " " + txt.slice(0,200); }
+  }catch(e){ statusEl.className="sync-status sync-err"; statusEl.textContent = t().syncErr + " " + e.message; }
+}
+
+async function supaPull(){
+  const url = document.getElementById("supa_url").value.trim();
+  const key = document.getElementById("supa_key").value.trim();
+  const recordId = document.getElementById("supa_id").value.trim() || "main";
+  const statusEl = document.getElementById("supaStatus");
+  if(!url || !key){ statusEl.className="sync-status sync-err"; statusEl.textContent = t().syncMissing; return; }
+  supaCfg = {url, key, recordId}; saveSupaCfg(supaCfg);
+  statusEl.className="sync-status sync-info"; statusEl.textContent = t().syncWorking;
+  try{
+    const res = await fetch(`${url}/rest/v1/innovation_backups?id=eq.${encodeURIComponent(recordId)}&select=payload`, {
+      headers:{ "apikey": key, "Authorization": `Bearer ${key}` }
+    });
+    if(res.ok){
+      const data = await res.json();
+      if(data && data[0] && data[0].payload){
+        const p = data[0].payload;
+        if(p.ideas) ideas = p.ideas;
+        if(p.challenges) challenges = p.challenges;
+        if(p.activityLog) activityLog = p.activityLog;
+        saveIdeas(); saveChallenges(); saveLog();
+        statusEl.className="sync-status sync-ok"; statusEl.textContent = t().syncPullOk;
+        logActivity(t().act_sync_pull);
+        render();
+      } else { statusEl.className="sync-status sync-err"; statusEl.textContent = t().syncNoRecord; }
+    } else { const txt = await res.text(); statusEl.className="sync-status sync-err"; statusEl.textContent = t().syncErr + " " + txt.slice(0,200); }
+  }catch(e){ statusEl.className="sync-status sync-err"; statusEl.textContent = t().syncErr + " " + e.message; }
+}
+
+/* ---- Local AI Idea Copilot (rule-based, offline — no live model call) ---- */
+const CLASSIFY_KEYWORDS = [
+  { cat: 0, words: ["هندس","تصميم","معدات","تبريد","كهرباء","ميكانيك","إنشاء","engineering","design","equipment","mechanical","electrical","construction","hvac"] },
+  { cat: 1, words: ["إجراء","موظف","تشغيل","إدارة","سياسة","اجتماع","operation","process","staff","policy","workflow","admin"] },
+  { cat: 2, words: ["برمج","أتمتة","كود","تطبيق","نظام","AI","ذكاء اصطناعي","software","automation","code","app","system","bot","script"] },
+  { cat: 3, words: ["جودة","مخاطر","سلامة","فحص","quality","risk","safety","inspection","fmea","audit"] },
+  { cat: 4, words: ["تكلفة","ميزانية","استثمار","توفير","عائد","cost","budget","investment","saving","roi","finance"] },
+];
+function classifyIdea(text){
+  const low = (text||"").toLowerCase();
+  const scores = CLASSIFY_KEYWORDS.map(c => ({cat:c.cat, score: c.words.filter(w=>low.includes(w.toLowerCase())).length}));
+  scores.sort((a,b)=>b.score-a.score);
+  return scores[0].score>0 ? scores[0] : null;
+}
+function tokenize(text){
+  return (text||"").toLowerCase().replace(/[^\u0600-\u06FFa-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2);
+}
+function similarity(a,b){
+  const ta = new Set(tokenize(a)), tb = new Set(tokenize(b));
+  if(ta.size===0 || tb.size===0) return 0;
+  let inter = 0; ta.forEach(w=>{ if(tb.has(w)) inter++; });
+  const union = new Set([...ta,...tb]).size;
+  return union ? inter/union : 0;
+}
+function findDuplicates(title, excludeId){
+  return ideas.filter(i=>i.id!==excludeId && similarity(i.title, title) >= 0.35);
+}
+function runClassify(){
+  const text = (document.getElementById("in_title").value||"") + " " + (document.getElementById("in_problem").value||"") + " " + (document.getElementById("in_value").value||"");
+  const result = classifyIdea(text);
+  const box = document.getElementById("aiResult");
+  const catName = result ? (lang==='ar'?CATEGORIES:CATEGORIES_EN)[result.cat] : null;
+  if(catName){
+    document.getElementById("in_category").value = catName;
+    box.innerHTML = `<div class="sync-status sync-ok" style="margin-top:8px;">${t().aiSuggested} <strong>${catName}</strong></div>`;
+  } else {
+    box.innerHTML = `<div class="sync-status sync-info" style="margin-top:8px;">${t().aiNoMatch}</div>`;
+  }
+}
+function runDupCheck(){
+  const title = document.getElementById("in_title").value.trim();
+  const box = document.getElementById("aiResult");
+  if(!title){ box.innerHTML = `<div class="sync-status sync-err" style="margin-top:8px;">${t().requiredMsg}</div>`; return; }
+  const dups = findDuplicates(title, null);
+  if(dups.length){
+    box.innerHTML = `<div class="dup-warning">${t().dupFound}<br>` +
+      dups.map(d=>`• ${d.id} — ${d.title}`).join("<br>") + `</div>`;
+  } else {
+    box.innerHTML = `<div class="sync-status sync-ok" style="margin-top:8px;">${t().dupNone}</div>`;
+  }
+}
+
+/* ===================== I18N ===================== */
+let lang = "ar";
+const T = {
+  ar:{
+    appTitle:"🚀 منظومة إدارة الابتكار", appSub:"إشراف وتطوير: المهندس/ وائل عويس",
+    langBtn:"English", printBtn:"🖨️ طباعة / حفظ PDF",
+    footer:"جميع الحقوق محفوظة © 2026 - إشراف المهندس/ وائل عويس",
+    nav:{dashboard:"لوحة المؤشرات",submit:"تقديم فكرة جديدة",evaluate:"التقييم (ROI & FMEA)",fasttrack:"الممر السريع",
+      challenges:"التحديات المؤسسية",registry:"سجل المشاريع والأرشيف",leaderboard:"لوحة الشرف",report:"التقرير النهائي",
+      cloudsync:"المزامنة السحابية", settings:"الإعدادات", knowledge:"بنك المعرفة"},
+    status:{draft:"مسودة",submitted:"مقدمة",review:"قيد المراجعة",fasttrack:"ممر سريع",approved:"معتمدة",
+      rejected:"مرفوضة",converted:"محولة لمشروع",archived:"مؤرشفة"},
+    kpi:{total:"إجمالي الأفكار",inreview:"قيد المراجعة",approved:"معتمدة",converted:"محولة لمشاريع",
+      totalCost:"إجمالي التكلفة المقدرة",avgRoi:"متوسط العائد المتوقع"},
+    submitTitle:"💡 تقديم فكرة ابتكارية جديدة (Idea Charter)",
+    f_title:"عنوان الفكرة", f_submitter:"اسم صاحب المقترح", f_dept:"القسم / الإدارة", f_category:"مجال الفكرة",
+    f_problem:"المشكلة القائمة", f_value:"القيمة المضافة المتوقعة", f_cost:"التكلفة التقديرية (ريال)",
+    f_roi:"العائد المتوقع على الاستثمار (%)", f_fasttrack:"مرشحة للممر السريع (تحسين بسيط / Quick Win)",
+    saveBtn:"حفظ وإرسال الفكرة", requiredMsg:"يرجى إدخال عنوان الفكرة على الأقل",
+    savedMsg:"تم حفظ الفكرة بنجاح برقم مرجعي:",
+    evalTitle:"📊 مصفوفة تقييم الأفكار (ROI ومخاطر FMEA)",
+    fmeaHelp:"درجة المخاطر (RPN) = الخطورة × الاحتمالية × سهولة الاكتشاف (كل عنصر من 1 إلى 10). كلما قلّت الدرجة كان أفضل.",
+    col_id:"الرقم", col_title:"العنوان", col_submitter:"صاحب الفكرة", col_dept:"القسم", col_category:"المجال",
+    col_cost:"التكلفة", col_roi:"العائد%", col_rpn:"RPN", col_status:"الحالة", col_date:"التاريخ", col_actions:"إجراءات",
+    sev:"الخطورة (Severity)", occ:"الاحتمالية (Occurrence)", det:"صعوبة الاكتشاف (Detection)",
+    updateStatusBtn:"تحديث", selectIdea:"اختر الفكرة", newStatus:"الحالة الجديدة",
+    fastTitle:"⚡ الممر السريع للأفكار (Quick Wins)", fastDesc:"الأفكار البسيطة المرشحة للاعتماد والتنفيذ السريع دون دورات تقييم طويلة.",
+    noFastTrack:"لا توجد أفكار في الممر السريع حالياً",
+    registryTitle:"📁 سجل المشاريع والأرشيف", filterStatus:"تصفية حسب الحالة", all:"الكل",
+    searchPh:"بحث بالعنوان أو صاحب الفكرة...", exportCsv:"📥 تصدير CSV", noResults:"لا توجد نتائج مطابقة",
+    leaderTitle:"🏆 لوحة الشرف - الأكثر ابتكاراً", votes:"الأصوات", ideasCount:"عدد الأفكار",
+    reportTitle:"🖨️ التقرير النهائي الشامل للطباعة والحفظ",
+    reportSummary:"ملخص الإحصائيات", reportRegistry:"سجل الأفكار الكامل",
+    printNote:"💡 لطباعة هذه الصفحة أو حفظها كـ PDF، اضغط Ctrl+P أو زر الطباعة في الأعلى.",
+    supervised:"إشراف وإدارة:", reportDate:"تاريخ التقرير:", totalIdeas:"إجمالي الأفكار المسجلة:",
+    approvedIdeas:"الأفكار المعتمدة أو المحولة:", generatedBy:"تم استخراج هذا التقرير آلياً عبر منصة إدارة الابتكار",
+    convertBtn:"تحويل لمشروع", deleteBtn:"حذف", confirmDelete:"هل أنت متأكد من حذف هذه الفكرة؟",
+    challengesTitle:"🎯 التحديات المؤسسية (Innovation Challenges)",
+    challengesDesc:"بدلاً من انتظار أفكار عشوائية، تطرح الإدارة تحديات محددة ليوجه الموظفون طاقاتهم الابتكارية نحو حلها.",
+    newChallengeBtn:"➕ طرح تحدٍ جديد", ch_title:"عنوان التحدي", ch_desc:"وصف المشكلة / التحدي",
+    ch_save:"حفظ التحدي", noChallenges:"لا توجد تحديات مطروحة حالياً", linkedIdeas:"الأفكار المرتبطة",
+    linkChallenge:"ربط بتحدٍ مؤسسي (اختياري)", noneChallenge:"— بدون تحدٍ —",
+    attachTitle:"المرفقات (PDF, DOCX, XLSX, DWG, MP4...)", attachBtn:"إرفاق ملفات",
+    attachNote:"يتم حفظ أسماء الملفات وأنواعها فقط في هذا العرض التجريبي؛ للتخزين الفعلي للملفات يلزم ربط بقاعدة بيانات سحابية مثل Supabase.",
+    noAttachments:"لا توجد مرفقات", commentsTitle:"💬 النقاش والتعليقات", commentPh:"أضف تعليقاً أو اقتراح تطوير...",
+    postComment:"إضافة تعليق", noComments:"لا توجد تعليقات بعد", anonUser:"مستخدم",
+    voteBtn:"👍 تصويت", viewBtn:"عرض التفاصيل", closeBtn:"إغلاق",
+    activityTitle:"🔔 آخر النشاطات", noActivity:"لا توجد نشاطات مسجلة بعد",
+    statusChartTitle:"توزيع الأفكار حسب الحالة",
+    detailTitle:"تفاصيل الفكرة", detailProblem:"المشكلة", detailValue:"القيمة المضافة",
+    act_new:"تم تقديم فكرة جديدة:", act_status:"تم تحديث حالة", act_to:"إلى", act_comment:"تعليق جديد على",
+    act_vote:"تصويت جديد لصالح", act_challenge:"تم طرح تحدٍ مؤسسي جديد:",
+    act_sync_push:"تم رفع نسخة احتياطية إلى Supabase", act_sync_pull:"تم تحميل البيانات من Supabase",
+    cloudsyncTitle:"☁️ المزامنة السحابية (Supabase)",
+    cloudsyncDesc:"اربط مشروع Supabase الخاص بك لتخزين البيانات في السحابة ومشاركتها بين عدة مستخدمين لمنصة الابتكار.",
+    supa_url:"Supabase Project URL", supa_key:"Supabase anon key", supa_id:"معرّف السجل (Record ID)",
+    pushBtn:"⬆️ رفع نسخة إلى السحابة", pullBtn:"⬇️ تحميل من السحابة",
+    syncMissing:"يرجى إدخال رابط Supabase والمفتاح أولاً", syncWorking:"جارٍ التنفيذ...",
+    syncPushOk:"✅ تم رفع النسخة بنجاح إلى Supabase", syncPullOk:"✅ تم تحميل البيانات بنجاح من Supabase",
+    syncNoRecord:"⚠️ لا يوجد سجل بهذا المعرّف في القاعدة بعد", syncErr:"❌ خطأ:",
+    sqlLabel:"استعلام SQL لإنشاء الجدول في Supabase (نفّذه مرة واحدة في SQL Editor):",
+    aiTitle:"🤖 مساعد الابتكار الذكي (تصنيف محلي دون اتصال بنموذج خارجي)",
+    aiClassifyBtn:"تصنيف الفكرة تلقائياً", aiSuggested:"التصنيف المقترح:", aiNoMatch:"لم يتم التعرف على مجال واضح من النص المدخل بعد",
+    aiDupCheckBtn:"فحص التكرار قبل الحفظ", dupFound:"⚠️ توجد أفكار مشابهة محفوظة مسبقاً:", dupNone:"✅ لا توجد أفكار مشابهة",
+    aiNote:"هذا المصنّف يعمل محلياً داخل المتصفح بالاعتماد على كلمات مفتاحية، وليس اتصالاً حياً بنموذج ذكاء اصطناعي خارجي.",
+    settingsTitle:"⚙️ الإعدادات — إدارة القوائم والخيارات",
+    settingsDesc:"أضف أو احذف خيارات مجالات الأفكار والأقسام/الإدارات المستخدمة في نماذج التطبيق. يتم استخدام هذه القوائم في نموذج تقديم الفكرة وفي عوامل التصفية بسجل الأرشيف.",
+    manageCatAr:"مجالات الأفكار (بالعربية)", manageCatEn:"Idea Categories (English)", manageDept:"الأقسام / الإدارات",
+    addCategoryPh:"اسم مجال جديد...", addDeptPh:"اسم قسم جديد...", addBtn:"➕ إضافة", noItems:"لا توجد عناصر بعد",
+    filterCategory:"تصفية حسب المجال",
+    manageTags:"🏷️ الوسوم المخصصة (طبقة إضافية منفصلة عن حالات سير العمل)",
+    manageTagsDesc:"وسوم اختيارية يمكن تعليقها على أي فكرة دون التأثير على حالتها الأساسية (مسودة/معتمدة/إلخ) — مفيدة للتصنيف الحر مثل \"مبادرة استراتيجية\" أو \"بحاجة لموافقة الإدارة العليا\".",
+    addTagPh:"اسم وسم جديد...", tagsTitle:"الوسوم المعلّقة على الفكرة (اضغط لإضافة/إزالة)", filterTag:"تصفية حسب الوسم",
+    localBackupTitle:"💾 نسخة احتياطية محلية (بدون إنترنت)",
+    localBackupDesc:"صدّر كل بيانات التطبيق كملف JSON على جهازك، أو استورد نسخة سابقة لاستعادتها — بديل سريع للمزامنة السحابية.",
+    exportJsonBtn:"⬇️ تصدير نسخة JSON", importJsonBtn:"⬆️ استيراد نسخة JSON",
+    importOk:"✅ تم استيراد البيانات بنجاح", importErr:"❌ فشل استيراد الملف — تأكد أنه ملف نسخة صحيح",
+    act_import:"تم استيراد نسخة احتياطية محلية", act_edit:"تم تعديل الفكرة",
+    editBtn:"✏️ تعديل", printIdeaBtn:"🖨️ طباعة بطاقة الفكرة",
+    knowledgeTitle:"📚 بنك المعرفة والدروس المستفادة",
+    knowledgeDesc:"أرشيف الأفكار المرفوضة أو المؤرشفة مع أسباب الرفض لتجنب تكرارها، وعرض لقصص النجاح لإلهام أفكار جديدة.",
+    lessonsTitle:"🗂️ الأفكار المرفوضة / المؤرشفة وأسباب الرفض", successTitle:"🌟 قصص النجاح",
+    lessonNoteLabel:"سبب الرفض / الدرس المستفاد",
+  },
+  en:{
+    appTitle:"🚀 Innovation Management System", appSub:"Supervised & Developed by: Eng. Wael Oweis",
+    langBtn:"العربية", printBtn:"🖨️ Print / Save PDF",
+    footer:"All Rights Reserved © 2026 - Eng. Wael Oweis",
+    nav:{dashboard:"Dashboard",submit:"Submit New Idea",evaluate:"Evaluation (ROI & FMEA)",fasttrack:"Fast-Track Lane",
+      challenges:"Innovation Challenges",registry:"Projects Log & Archive",leaderboard:"Leaderboard",report:"Final Report",
+      cloudsync:"Cloud Sync", settings:"Settings", knowledge:"Knowledge Base"},
+    status:{draft:"Draft",submitted:"Submitted",review:"In Review",fasttrack:"Fast-Track",approved:"Approved",
+      rejected:"Rejected",converted:"Converted to Project",archived:"Archived"},
+    kpi:{total:"Total Ideas",inreview:"In Review",approved:"Approved",converted:"Converted to Projects",
+      totalCost:"Total Estimated Cost",avgRoi:"Average Expected ROI"},
+    submitTitle:"💡 Submit a New Innovation Idea (Idea Charter)",
+    f_title:"Idea Title", f_submitter:"Submitter Name", f_dept:"Department", f_category:"Idea Category",
+    f_problem:"Current Problem", f_value:"Expected Value Proposition", f_cost:"Estimated Cost (SAR)",
+    f_roi:"Expected ROI (%)", f_fasttrack:"Candidate for Fast-Track (Simple Quick Win)",
+    saveBtn:"Save & Submit Idea", requiredMsg:"Please enter at least the idea title",
+    savedMsg:"Idea saved successfully with reference ID:",
+    evalTitle:"📊 Idea Evaluation Matrix (ROI & FMEA Risk)",
+    fmeaHelp:"Risk Priority Number (RPN) = Severity × Occurrence × Detection (each 1-10). Lower is better.",
+    col_id:"ID", col_title:"Title", col_submitter:"Submitter", col_dept:"Department", col_category:"Category",
+    col_cost:"Cost", col_roi:"ROI%", col_rpn:"RPN", col_status:"Status", col_date:"Date", col_actions:"Actions",
+    sev:"Severity", occ:"Occurrence", det:"Detection",
+    updateStatusBtn:"Update", selectIdea:"Select Idea", newStatus:"New Status",
+    fastTitle:"⚡ Fast-Track Innovation Lane (Quick Wins)", fastDesc:"Simple ideas eligible for rapid approval and execution without long evaluation cycles.",
+    noFastTrack:"No ideas currently in the fast-track lane",
+    registryTitle:"📁 Projects Log & Innovation Archive", filterStatus:"Filter by Status", all:"All",
+    searchPh:"Search by title or submitter...", exportCsv:"📥 Export CSV", noResults:"No matching results",
+    leaderTitle:"🏆 Leaderboard - Top Innovators", votes:"Votes", ideasCount:"Ideas Count",
+    reportTitle:"🖨️ Comprehensive Final Report for Print & Save",
+    reportSummary:"Summary Statistics", reportRegistry:"Full Ideas Log",
+    printNote:"💡 To print or save as PDF, press Ctrl+P or the print button above.",
+    supervised:"Supervised by:", reportDate:"Report Date:", totalIdeas:"Total Ideas Registered:",
+    approvedIdeas:"Approved / Converted Ideas:", generatedBy:"This report was auto-generated via the Innovation Management Platform",
+    convertBtn:"Convert to Project", deleteBtn:"Delete", confirmDelete:"Are you sure you want to delete this idea?",
+    challengesTitle:"🎯 Innovation Challenges",
+    challengesDesc:"Instead of waiting for random ideas, management posts specific challenges so employees can focus their innovative energy on solving them.",
+    newChallengeBtn:"➕ Post New Challenge", ch_title:"Challenge Title", ch_desc:"Problem / Challenge Description",
+    ch_save:"Save Challenge", noChallenges:"No challenges posted yet", linkedIdeas:"Linked Ideas",
+    linkChallenge:"Link to a Challenge (optional)", noneChallenge:"— No Challenge —",
+    attachTitle:"Attachments (PDF, DOCX, XLSX, DWG, MP4...)", attachBtn:"Attach Files",
+    attachNote:"Only file names and types are stored in this demo; real file storage would require connecting a cloud database like Supabase.",
+    noAttachments:"No attachments", commentsTitle:"💬 Discussion & Comments", commentPh:"Add a comment or improvement suggestion...",
+    postComment:"Post Comment", noComments:"No comments yet", anonUser:"User",
+    voteBtn:"👍 Vote", viewBtn:"View Details", closeBtn:"Close",
+    activityTitle:"🔔 Recent Activity", noActivity:"No activity recorded yet",
+    statusChartTitle:"Ideas by Status",
+    detailTitle:"Idea Details", detailProblem:"Problem", detailValue:"Value Proposition",
+    act_new:"New idea submitted:", act_status:"Status updated for", act_to:"to", act_comment:"New comment on",
+    act_vote:"New vote for", act_challenge:"New challenge posted:",
+    act_sync_push:"Backup pushed to Supabase", act_sync_pull:"Data loaded from Supabase",
+    cloudsyncTitle:"☁️ Cloud Sync (Supabase)",
+    cloudsyncDesc:"Connect your own Supabase project to store data in the cloud and share it across multiple users of the innovation platform.",
+    supa_url:"Supabase Project URL", supa_key:"Supabase anon key", supa_id:"Record ID",
+    pushBtn:"⬆️ Push Backup to Cloud", pullBtn:"⬇️ Pull from Cloud",
+    syncMissing:"Please enter the Supabase URL and key first", syncWorking:"Working...",
+    syncPushOk:"✅ Backup pushed successfully to Supabase", syncPullOk:"✅ Data loaded successfully from Supabase",
+    syncNoRecord:"⚠️ No record found with this ID yet", syncErr:"❌ Error:",
+    sqlLabel:"SQL to create the table in Supabase (run once in the SQL Editor):",
+    aiTitle:"🤖 Innovation AI Copilot (local classifier, no external model connection)",
+    aiClassifyBtn:"Auto-Classify Idea", aiSuggested:"Suggested category:", aiNoMatch:"No clear category detected from the text yet",
+    aiDupCheckBtn:"Check for Duplicates Before Saving", dupFound:"⚠️ Similar ideas already exist:", dupNone:"✅ No similar ideas found",
+    aiNote:"This classifier runs locally in the browser using keyword matching — it is not a live connection to an external AI model.",
+    settingsTitle:"⚙️ Settings — Manage Lists & Options",
+    settingsDesc:"Add or remove the idea category and department options used throughout the app's forms. These lists feed the idea submission form and the archive's filters.",
+    manageCatAr:"Idea Categories (Arabic)", manageCatEn:"Idea Categories (English)", manageDept:"Departments",
+    addCategoryPh:"New category name...", addDeptPh:"New department name...", addBtn:"➕ Add", noItems:"No items yet",
+    filterCategory:"Filter by Category",
+    manageTags:"🏷️ Custom Tags (extra layer, separate from workflow statuses)",
+    manageTagsDesc:"Optional tags you can attach to any idea without affecting its core status (draft/approved/etc.) — useful for free-form labels like \"Strategic Initiative\" or \"Needs Executive Approval\".",
+    addTagPh:"New tag name...", tagsTitle:"Tags attached to this idea (click to add/remove)", filterTag:"Filter by Tag",
+    localBackupTitle:"💾 Local Backup (offline)",
+    localBackupDesc:"Export all app data as a JSON file on your device, or import a previous backup to restore it — a quick alternative to cloud sync.",
+    exportJsonBtn:"⬇️ Export JSON Backup", importJsonBtn:"⬆️ Import JSON Backup",
+    importOk:"✅ Data imported successfully", importErr:"❌ Failed to import file — make sure it's a valid backup file",
+    act_import:"Local backup imported", act_edit:"Idea edited",
+    editBtn:"✏️ Edit", printIdeaBtn:"🖨️ Print Idea Charter",
+    knowledgeTitle:"📚 Knowledge Base & Lessons Learned",
+    knowledgeDesc:"Archive of rejected/archived ideas with rejection reasons to avoid repeating them, plus a showcase of success stories to inspire new ideas.",
+    lessonsTitle:"🗂️ Rejected / Archived Ideas & Reasons", successTitle:"🌟 Success Stories",
+    lessonNoteLabel:"Rejection Reason / Lesson Learned",
+  }
+};
+function t(){ return T[lang]; }
+
+/* ===================== APP STATE ===================== */
+let currentPage = "dashboard";
+
+function toggleLang(){
+  lang = lang === "ar" ? "en" : "ar";
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  render();
+}
+
+/* ---- Mobile nav drawer ---- */
+function toggleMobileNav(){
+  document.getElementById("sideNav").classList.toggle("open");
+  document.getElementById("navOverlay").classList.toggle("open");
+}
+function closeMobileNav(){
+  document.getElementById("sideNav").classList.remove("open");
+  document.getElementById("navOverlay").classList.remove("open");
+}
+
+/* ---- Dark mode ---- */
+const THEME_KEY = "innovation_mgmt_theme_v1";
+function initTheme(){
+  const saved = localStorage.getItem(THEME_KEY) || "light";
+  document.documentElement.setAttribute("data-theme", saved);
+  const btn = document.getElementById("themeBtn");
+  if(btn) btn.textContent = saved==="dark" ? "☀️" : "🌙";
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  const btn = document.getElementById("themeBtn");
+  if(btn) btn.textContent = next==="dark" ? "☀️" : "🌙";
+}
+
+function statusBadge(s){
+  const cls = {draft:"b-draft",submitted:"b-submitted",review:"b-review",fasttrack:"b-fasttrack",
+    approved:"b-approved",rejected:"b-rejected",converted:"b-converted",archived:"b-archived"}[s] || "b-draft";
+  return `<span class="badge ${cls}">${t().status[s]}</span>`;
+}
+function rpn(idea){ return (idea.severity||0)*(idea.occurrence||0)*(idea.detection||0); }
+function rpnClass(v){ if(v>=120) return "rpn-high"; if(v>=50) return "rpn-mid"; return "rpn-low"; }
+
+/* ===================== RENDER SHELL ===================== */
+function render(){
+  document.getElementById("appTitle").textContent = t().appTitle;
+  document.getElementById("appSub").textContent = t().appSub;
+  document.getElementById("langBtn").textContent = t().langBtn;
+  document.getElementById("printBtn").textContent = t().printBtn;
+  document.getElementById("footerText").textContent = t().footer;
+
+  const navItems = [
+    ["dashboard","📊"], ["submit","➕"], ["evaluate","🧪"], ["fasttrack","⚡"],
+    ["challenges","🎯"], ["registry","📁"], ["knowledge","📚"], ["leaderboard","🏆"], ["cloudsync","☁️"], ["settings","⚙️"], ["report","🖨️"]
+  ];
+  const nav = document.getElementById("sideNav");
+  nav.innerHTML = navItems.map(([key,icon]) =>
+    `<button class="${currentPage===key?'active':''}" onclick="goTo('${key}')">${icon} ${t().nav[key]}</button>`
+  ).join("");
+
+  renderPage();
+}
+function goTo(page){ currentPage = page; render(); closeMobileNav(); }
+
+function renderPage(){
+  const main = document.getElementById("mainArea");
+  if(currentPage==="dashboard") main.innerHTML = pageDashboard();
+  else if(currentPage==="submit") main.innerHTML = pageSubmit();
+  else if(currentPage==="evaluate") main.innerHTML = pageEvaluate();
+  else if(currentPage==="fasttrack") main.innerHTML = pageFastTrack();
+  else if(currentPage==="challenges") main.innerHTML = pageChallenges();
+  else if(currentPage==="registry") main.innerHTML = pageRegistry();
+  else if(currentPage==="knowledge") main.innerHTML = pageKnowledge();
+  else if(currentPage==="leaderboard") main.innerHTML = pageLeaderboard();
+  else if(currentPage==="cloudsync") main.innerHTML = pageCloudSync();
+  else if(currentPage==="settings") main.innerHTML = pageSettings();
+  else if(currentPage==="report") main.innerHTML = pageReport();
+  attachHandlers();
+}
+
+/* ===================== PAGES ===================== */
+function pageDashboard(){
+  const total = ideas.length;
+  const inreview = ideas.filter(i=>i.status==="review"||i.status==="submitted").length;
+  const approved = ideas.filter(i=>i.status==="approved").length;
+  const converted = ideas.filter(i=>i.status==="converted").length;
+  const totalCost = ideas.reduce((s,i)=>s+(Number(i.cost)||0),0);
+  const avgRoi = ideas.length ? (ideas.reduce((s,i)=>s+(Number(i.roiExpected)||0),0)/ideas.length).toFixed(1) : 0;
+
+  const catCounts = {};
+  ideas.forEach(i=>{ catCounts[i.category] = (catCounts[i.category]||0)+1; });
+  const catRows = Object.entries(catCounts).map(([c,n])=>`<tr><td>${c}</td><td>${n}</td></tr>`).join("")
+    || `<tr><td colspan="2" class="empty">-</td></tr>`;
+
+  const statusCounts = STATUS_KEYS.map(s=>({key:s, n: ideas.filter(i=>i.status===s).length}));
+  const maxCount = Math.max(1, ...statusCounts.map(c=>c.n));
+  const chartBars = statusCounts.map(c=>`
+    <div class="chart-bar-col">
+      <div class="chart-val">${c.n}</div>
+      <div class="chart-bar" style="height:${Math.max(4,(c.n/maxCount)*130)}px;"></div>
+      <div class="chart-lbl">${t().status[c.key]}</div>
+    </div>`).join("");
+
+  const activityItems = activityLog.slice(0,8).map(a=>`
+    <div class="activity-item"><div class="activity-dot"></div>
+      <div><div>${a.msg}</div><div class="activity-time">${a.time}</div></div>
+    </div>`).join("") || `<div class="empty">${t().noActivity}</div>`;
+
+  return `
+    <div class="kpis">
+      <div class="kpi"><div class="num">${total}</div><div class="lbl">${t().kpi.total}</div></div>
+      <div class="kpi"><div class="num">${inreview}</div><div class="lbl">${t().kpi.inreview}</div></div>
+      <div class="kpi"><div class="num">${approved}</div><div class="lbl">${t().kpi.approved}</div></div>
+      <div class="kpi"><div class="num">${converted}</div><div class="lbl">${t().kpi.converted}</div></div>
+      <div class="kpi"><div class="num">${totalCost.toLocaleString()}</div><div class="lbl">${t().kpi.totalCost}</div></div>
+      <div class="kpi"><div class="num">${avgRoi}%</div><div class="lbl">${t().kpi.avgRoi}</div></div>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <h2>${t().statusChartTitle}</h2>
+        <div class="chart-wrap">${chartBars}</div>
+      </div>
+      <div class="card">
+        <h2>${t().activityTitle}</h2>
+        ${activityItems}
+      </div>
+    </div>
+    <div class="card">
+      <h2>${lang==='ar'?'توزيع الأفكار حسب المجال':'Ideas by Category'}</h2>
+      <table><thead><tr><th>${t().f_category}</th><th>${lang==='ar'?'العدد':'Count'}</th></tr></thead>
+      <tbody>${catRows}</tbody></table>
+    </div>
+  `;
+}
+
+function pageSubmit(){
+  const cats = lang==="ar" ? CATEGORIES : CATEGORIES_EN;
+  return `
+  <div class="card">
+    <h2>${t().submitTitle}</h2>
+    <form id="ideaForm">
+      <div class="grid grid-2">
+        <div class="field"><label>${t().f_title} *</label><input id="in_title" required></div>
+        <div class="field"><label>${t().f_category}</label>
+          <select id="in_category">${cats.map(c=>`<option>${c}</option>`).join("")}</select>
+        </div>
+      </div>
+      <div class="grid grid-2">
+        <div class="field"><label>${t().f_submitter}</label><input id="in_submitter"></div>
+        <div class="field"><label>${t().f_dept}</label><input id="in_dept" list="deptList"><datalist id="deptList">${DEPARTMENTS.map(d=>`<option value="${d}">`).join("")}</datalist></div>
+      </div>
+      <div class="field"><label>${t().f_problem}</label><textarea id="in_problem"></textarea></div>
+      <div class="field"><label>${t().f_value}</label><textarea id="in_value"></textarea></div>
+      <div class="ai-box">
+        <strong>${t().aiTitle}</strong>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+          <button type="button" class="btn btn-light" style="border:1px solid #c4b5fd;" onclick="runClassify()">${t().aiClassifyBtn}</button>
+          <button type="button" class="btn btn-light" style="border:1px solid #c4b5fd;" onclick="runDupCheck()">${t().aiDupCheckBtn}</button>
+        </div>
+        <div id="aiResult"></div>
+        <div class="note">${t().aiNote}</div>
+      </div>
+      <div class="grid grid-2">
+        <div class="field"><label>${t().f_cost}</label><input id="in_cost" type="number" min="0" value="0"></div>
+        <div class="field"><label>${t().f_roi}</label><input id="in_roi" type="number" min="0" max="500" value="10"></div>
+      </div>
+      <div class="field">
+        <label>${t().linkChallenge}</label>
+        <select id="in_challenge">
+          <option value="">${t().noneChallenge}</option>
+          ${challenges.map(c=>`<option value="${c.id}">${lang==='ar'?c.title_ar:c.title_en}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field">
+        <label>${t().attachTitle}</label>
+        <input type="file" id="in_files" multiple>
+        <div class="note">${t().attachNote}</div>
+      </div>
+      <div class="field">
+        <label><input type="checkbox" id="in_fast" style="width:auto;display:inline-block;margin-inline-end:8px;">${t().f_fasttrack}</label>
+      </div>
+      <button type="submit" class="btn btn-primary">${t().saveBtn}</button>
+    </form>
+  </div>`;
+}
+
+function pageChallenges(){
+  const cards = challenges.map(c=>{
+    const linked = ideas.filter(i=>i.challengeId===c.id);
+    return `<div class="challenge-card">
+      <h3>🎯 ${lang==='ar'?c.title_ar:c.title_en}</h3>
+      <p>${lang==='ar'?c.desc_ar:c.desc_en}</p>
+      <div class="note">${c.date} · ${t().linkedIdeas}: ${linked.length}</div>
+    </div>`;
+  }).join("") || `<div class="empty">${t().noChallenges}</div>`;
+
+  return `
+  <div class="card">
+    <h2>${t().challengesTitle}</h2>
+    <p class="note">${t().challengesDesc}</p>
+    ${cards}
+  </div>
+  <div class="card">
+    <h2>${t().newChallengeBtn}</h2>
+    <form id="challengeForm">
+      <div class="field"><label>${t().ch_title} *</label><input id="ch_title" required></div>
+      <div class="field"><label>${t().ch_desc}</label><textarea id="ch_desc"></textarea></div>
+      <button type="submit" class="btn btn-primary">${t().ch_save}</button>
+    </form>
+  </div>`;
+}
+
+function pageEvaluate(){
+  const rows = ideas.map(i=>{
+    const r = rpn(i);
+    return `<tr>
+      <td>${i.id}</td><td class="clickable" onclick="openIdea('${i.id}')">${i.title}</td><td>${i.submitter}</td><td>${i.dept}</td>
+      <td>${Number(i.cost).toLocaleString()}</td><td>${i.roiExpected}%</td>
+      <td class="${rpnClass(r)}">${r}</td><td>${statusBadge(i.status)}</td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="8" class="empty">${t().noResults}</td></tr>`;
+
+  const options = ideas.map(i=>`<option value="${i.id}">${i.id} - ${i.title}</option>`).join("");
+  const statusOpts = STATUS_KEYS.map(s=>`<option value="${s}">${t().status[s]}</option>`).join("");
+
+  return `
+  <div class="card">
+    <h2>${t().evalTitle}</h2>
+    <p class="note">${t().fmeaHelp}</p>
+    <div style="overflow-x:auto;">
+    <table><thead><tr>
+      <th>${t().col_id}</th><th>${t().col_title}</th><th>${t().col_submitter}</th><th>${t().col_dept}</th>
+      <th>${t().col_cost}</th><th>${t().col_roi}</th><th>${t().col_rpn}</th><th>${t().col_status}</th>
+    </tr></thead><tbody>${rows}</tbody></table>
+    </div>
+  </div>
+  <div class="card">
+    <h2>${lang==='ar'?'تحديث تقييم / حالة فكرة':'Update Idea Evaluation / Status'}</h2>
+    <div class="grid grid-4">
+      <div class="field"><label>${t().selectIdea}</label><select id="ev_id">${options}</select></div>
+      <div class="field"><label>${t().sev}</label><input id="ev_sev" type="number" min="1" max="10" value="5"></div>
+      <div class="field"><label>${t().occ}</label><input id="ev_occ" type="number" min="1" max="10" value="5"></div>
+      <div class="field"><label>${t().det}</label><input id="ev_det" type="number" min="1" max="10" value="5"></div>
+    </div>
+    <div class="grid grid-2">
+      <div class="field"><label>${t().newStatus}</label><select id="ev_status">${statusOpts}</select></div>
+      <div class="field" style="align-self:end;"><button class="btn btn-primary" onclick="applyEvaluation()">${t().updateStatusBtn}</button></div>
+    </div>
+  </div>`;
+}
+
+function pageFastTrack(){
+  const list = ideas.filter(i=>i.fastTrack);
+  const rows = list.map(i=>`
+    <tr><td>${i.id}</td><td>${i.title}</td><td>${i.submitter}</td><td>${i.dept}</td>
+    <td>${statusBadge(i.status)}</td>
+    <td><button class="btn btn-primary" style="padding:5px 10px;font-size:.78rem;" onclick="setStatus('${i.id}','approved')">${lang==='ar'?'اعتماد سريع':'Quick Approve'}</button></td></tr>
+  `).join("") || `<tr><td colspan="6" class="empty">${t().noFastTrack}</td></tr>`;
+
+  return `
+  <div class="card">
+    <h2>${t().fastTitle}</h2>
+    <p class="note">${t().fastDesc}</p>
+    <table><thead><tr>
+      <th>${t().col_id}</th><th>${t().col_title}</th><th>${t().col_submitter}</th><th>${t().col_dept}</th>
+      <th>${t().col_status}</th><th>${t().col_actions}</th>
+    </tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
+}
+
+function pageRegistry(){
+  const statusOpts = `<option value="all">${t().all}</option>` +
+    STATUS_KEYS.map(s=>`<option value="${s}">${t().status[s]}</option>`).join("");
+  const uniqueCats = [...new Set(ideas.map(i=>i.category).filter(Boolean))];
+  const catOpts = `<option value="all">${t().all}</option>` +
+    uniqueCats.map(c=>`<option value="${c}">${c}</option>`).join("");
+  const tagOpts = `<option value="all">${t().all}</option>` +
+    TAGS.map(tg=>`<option value="${tg}">🏷️ ${tg}</option>`).join("");
+  return `
+  <div class="card">
+    <h2>${t().registryTitle}</h2>
+    <div class="toolbar">
+      <div class="field"><label>${t().filterStatus}</label><select id="reg_filter" onchange="renderRegistryTable()">${statusOpts}</select></div>
+      <div class="field"><label>${t().filterCategory}</label><select id="reg_cat_filter" onchange="renderRegistryTable()">${catOpts}</select></div>
+      <div class="field"><label>${t().filterTag}</label><select id="reg_tag_filter" onchange="renderRegistryTable()">${tagOpts}</select></div>
+      <div class="field"><label>${lang==='ar'?'بحث':'Search'}</label><input id="reg_search" placeholder="${t().searchPh}" oninput="renderRegistryTable()"></div>
+      <button class="btn btn-primary" style="align-self:end;" onclick="exportCSV()">${t().exportCsv}</button>
+    </div>
+    <div id="registryTableWrap" style="overflow-x:auto;"></div>
+  </div>`;
+}
+function renderRegistryTable(){
+  const filter = document.getElementById("reg_filter")?.value || "all";
+  const catFilter = document.getElementById("reg_cat_filter")?.value || "all";
+  const tagFilter = document.getElementById("reg_tag_filter")?.value || "all";
+  const search = (document.getElementById("reg_search")?.value || "").toLowerCase();
+  let list = ideas.filter(i =>
+    (filter==="all" || i.status===filter) &&
+    (catFilter==="all" || i.category===catFilter) &&
+    (tagFilter==="all" || (i.tags||[]).includes(tagFilter)) &&
+    (i.title.toLowerCase().includes(search) || i.submitter.toLowerCase().includes(search))
+  );
+  const rows = list.map(i=>`
+    <tr><td>${i.id}</td><td class="clickable" onclick="openIdea('${i.id}')">${i.title}${(i.tags&&i.tags.length)?`<br>${i.tags.map(tg=>`<span class="chip" style="font-size:.68rem;padding:2px 8px;">🏷️ ${tg}</span>`).join("")}`:""}</td><td>${i.submitter}</td><td>${i.dept}</td><td>${i.category}</td>
+    <td>${Number(i.cost).toLocaleString()}</td><td>${i.roiExpected}%</td><td>${statusBadge(i.status)}</td><td>${i.date}</td>
+    <td>
+      <button class="btn btn-light" style="padding:4px 8px;font-size:.75rem;" onclick="voteIdea('${i.id}')">${t().voteBtn} (${i.votes||0})</button>
+      ${i.status!=="converted" ? `<button class="btn btn-primary" style="padding:4px 8px;font-size:.75rem;" onclick="setStatus('${i.id}','converted')">${t().convertBtn}</button>` : ""}
+      <button class="btn btn-danger" style="padding:4px 8px;font-size:.75rem;" onclick="deleteIdea('${i.id}')">${t().deleteBtn}</button>
+    </td></tr>
+  `).join("") || `<tr><td colspan="10" class="empty">${t().noResults}</td></tr>`;
+
+  document.getElementById("registryTableWrap").innerHTML = `
+    <table><thead><tr>
+      <th>${t().col_id}</th><th>${t().col_title}</th><th>${t().col_submitter}</th><th>${t().col_dept}</th>
+      <th>${t().col_category}</th><th>${t().col_cost}</th><th>${t().col_roi}</th><th>${t().col_status}</th>
+      <th>${t().col_date}</th><th>${t().col_actions}</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function pageLeaderboard(){
+  const sorted = [...ideas].sort((a,b)=>(b.votes||0)-(a.votes||0));
+  const rows = sorted.map((i,idx)=>`
+    <tr><td>${idx+1}</td><td>${i.submitter}</td><td>${i.title}</td><td>${i.votes||0}</td></tr>
+  `).join("") || `<tr><td colspan="4" class="empty">${t().noResults}</td></tr>`;
+  return `
+  <div class="card">
+    <h2>${t().leaderTitle}</h2>
+    <table><thead><tr><th>#</th><th>${t().col_submitter}</th><th>${t().col_title}</th><th>${t().votes}</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+  </div>`;
+}
+
+function pageCloudSync(){
+  const sql = `create table if not exists innovation_backups (
+  id text primary key,
+  payload jsonb not null,
+  updated_at timestamptz default now()
+);
+alter table innovation_backups enable row level security;
+create policy "allow all for now" on innovation_backups
+  for all using (true) with check (true);`;
+  return `
+  <div class="card">
+    <h2>${t().cloudsyncTitle}</h2>
+    <p class="note">${t().cloudsyncDesc}</p>
+    <div class="grid grid-3">
+      <div class="field"><label>${t().supa_url}</label><input id="supa_url" placeholder="https://xxxx.supabase.co" value="${supaCfg.url||''}"></div>
+      <div class="field"><label>${t().supa_key}</label><input id="supa_key" type="password" placeholder="eyJhbGciOi..." value="${supaCfg.key||''}"></div>
+      <div class="field"><label>${t().supa_id}</label><input id="supa_id" value="${supaCfg.recordId||'main'}"></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="supaPush()">${t().pushBtn}</button>
+      <button class="btn btn-light" style="border:1px solid var(--border);" onclick="supaPull()">${t().pullBtn}</button>
+    </div>
+    <div id="supaStatus"></div>
+  </div>
+  <div class="card">
+    <h3>${t().sqlLabel}</h3>
+    <pre class="sql">${sql}</pre>
+  </div>
+  <div class="card">
+    <h2>${t().localBackupTitle}</h2>
+    <p class="note">${t().localBackupDesc}</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-primary" onclick="exportJSON()">${t().exportJsonBtn}</button>
+      <label class="btn btn-light" style="border:1px solid var(--border);margin:0;">
+        ${t().importJsonBtn}
+        <input type="file" accept=".json" id="importFile" style="display:none;" onchange="importJSON(event)">
+      </label>
+    </div>
+    <div id="localBackupStatus"></div>
+  </div>`;
+}
+
+function exportJSON(){
+  const payload = { ideas, challenges, activityLog, categories:{ar:CATEGORIES,en:CATEGORIES_EN}, departments:DEPARTMENTS, tags:TAGS, exportedAt:new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `innovation_backup_${new Date().toISOString().slice(0,10)}.json`;
+  link.click();
+}
+function importJSON(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      if(data.ideas) { ideas = data.ideas; saveIdeas(); }
+      if(data.challenges) { challenges = data.challenges; saveChallenges(); }
+      if(data.activityLog) { activityLog = data.activityLog; saveLog(); }
+      if(data.categories){ CATEGORIES = data.categories.ar||CATEGORIES; CATEGORIES_EN = data.categories.en||CATEGORIES_EN; saveCategoryLists(); }
+      if(data.departments){ DEPARTMENTS = data.departments; saveDepartments(); }
+      if(data.tags){ TAGS = data.tags; saveTags(); }
+      ideas.forEach(i=>{ if(!("tags" in i)) i.tags = []; if(!("attachments" in i)) i.attachments=[]; if(!("comments" in i)) i.comments=[]; if(!("challengeId" in i)) i.challengeId=null; });
+      logActivity(t().act_import);
+      document.getElementById("localBackupStatus").innerHTML = `<div class="sync-status sync-ok">${t().importOk}</div>`;
+      render();
+    }catch(err){
+      document.getElementById("localBackupStatus").innerHTML = `<div class="sync-status sync-err">${t().importErr}</div>`;
+    }
+  };
+  reader.readAsText(file);
+}
+
+function pageSettings(){
+  const catChips = (arr, langKey) => arr.map((c,idx)=>
+    `<span class="chip">${c} <span class="clickable" style="text-decoration:none;color:var(--danger);font-weight:800;margin-inline-start:4px;" onclick="deleteCategory('${langKey}',${idx})">✕</span></span>`
+  ).join("") || `<span class="note">${t().noItems}</span>`;
+
+  const deptChips = DEPARTMENTS.map((d,idx)=>
+    `<span class="chip">${d} <span class="clickable" style="text-decoration:none;color:var(--danger);font-weight:800;margin-inline-start:4px;" onclick="deleteDepartment(${idx})">✕</span></span>`
+  ).join("") || `<span class="note">${t().noItems}</span>`;
+
+  const tagChips = TAGS.map((tg,idx)=>
+    `<span class="chip">🏷️ ${tg} <span class="clickable" style="text-decoration:none;color:var(--danger);font-weight:800;margin-inline-start:4px;" onclick="deleteTag(${idx})">✕</span></span>`
+  ).join("") || `<span class="note">${t().noItems}</span>`;
+
+  return `
+  <div class="card">
+    <h2>${t().settingsTitle}</h2>
+    <p class="note">${t().settingsDesc}</p>
+  </div>
+  <div class="card">
+    <h3>${t().manageCatAr}</h3>
+    <div style="margin-bottom:10px;">${catChips(CATEGORIES,'ar')}</div>
+    <div class="toolbar">
+      <div class="field"><input id="newCatAr" placeholder="${t().addCategoryPh}"></div>
+      <button class="btn btn-primary" onclick="addCategory('ar')">${t().addBtn}</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>${t().manageCatEn}</h3>
+    <div style="margin-bottom:10px;">${catChips(CATEGORIES_EN,'en')}</div>
+    <div class="toolbar">
+      <div class="field"><input id="newCatEn" placeholder="${t().addCategoryPh}"></div>
+      <button class="btn btn-primary" onclick="addCategory('en')">${t().addBtn}</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>${t().manageDept}</h3>
+    <div style="margin-bottom:10px;">${deptChips}</div>
+    <div class="toolbar">
+      <div class="field"><input id="newDept" placeholder="${t().addDeptPh}"></div>
+      <button class="btn btn-primary" onclick="addDepartment()">${t().addBtn}</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>${t().manageTags}</h3>
+    <p class="note">${t().manageTagsDesc}</p>
+    <div style="margin-bottom:10px;">${tagChips}</div>
+    <div class="toolbar">
+      <div class="field"><input id="newTag" placeholder="${t().addTagPh}"></div>
+      <button class="btn btn-primary" onclick="addTag()">${t().addBtn}</button>
+    </div>
+  </div>`;
+}
+function addCategory(langKey){
+  const inputId = langKey==='ar' ? 'newCatAr' : 'newCatEn';
+  const val = document.getElementById(inputId).value.trim();
+  if(!val) return;
+  const arr = langKey==='ar' ? CATEGORIES : CATEGORIES_EN;
+  if(!arr.includes(val)) arr.push(val);
+  saveCategoryLists();
+  render();
+}
+function deleteCategory(langKey, idx){
+  const arr = langKey==='ar' ? CATEGORIES : CATEGORIES_EN;
+  arr.splice(idx,1);
+  saveCategoryLists();
+  render();
+}
+function addDepartment(){
+  const val = document.getElementById("newDept").value.trim();
+  if(!val) return;
+  if(!DEPARTMENTS.includes(val)) DEPARTMENTS.push(val);
+  saveDepartments();
+  render();
+}
+function deleteDepartment(idx){
+  DEPARTMENTS.splice(idx,1);
+  saveDepartments();
+  render();
+}
+function addTag(){
+  const val = document.getElementById("newTag").value.trim();
+  if(!val) return;
+  if(!TAGS.includes(val)) TAGS.push(val);
+  saveTags();
+  render();
+}
+function deleteTag(idx){
+  const removed = TAGS[idx];
+  TAGS.splice(idx,1);
+  saveTags();
+  // also remove this tag from any ideas that had it assigned
+  ideas.forEach(i=>{ if(i.tags) i.tags = i.tags.filter(x=>x!==removed); });
+  saveIdeas();
+  render();
+}
+function toggleIdeaTag(ideaId, tag){
+  const idea = ideas.find(i=>i.id===ideaId);
+  if(!idea) return;
+  idea.tags = idea.tags || [];
+  if(idea.tags.includes(tag)) idea.tags = idea.tags.filter(x=>x!==tag);
+  else idea.tags.push(tag);
+  saveIdeas();
+  openIdea(ideaId);
+}
+
+function pageKnowledge(){
+  const rejectedArchived = ideas.filter(i=>i.status==="rejected"||i.status==="archived");
+  const successStories = ideas.filter(i=>i.status==="approved"||i.status==="converted");
+
+  const lessonsRows = rejectedArchived.map(i=>`
+    <div class="challenge-card">
+      <h3>${statusBadge(i.status)} ${i.title}</h3>
+      <div class="note">${i.id} · ${i.submitter} · ${i.dept} · ${i.date}</div>
+      <div class="field" style="margin-top:8px;">
+        <label>${t().lessonNoteLabel}</label>
+        <textarea id="note_${i.id}">${i.notes||""}</textarea>
+      </div>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:.8rem;" onclick="saveLessonNote('${i.id}')">${t().saveBtn}</button>
+    </div>
+  `).join("") || `<div class="empty">${t().noResults}</div>`;
+
+  const successRows = successStories.map(i=>`
+    <div class="challenge-card">
+      <h3>🌟 ${i.title}</h3>
+      <div class="note">${i.id} · ${i.submitter} · ${i.dept}</div>
+      <p>${t().detailValue}: ${i.value||"—"}</p>
+      <p>${t().f_roi}: <strong>${i.roiExpected}%</strong> &nbsp; ${t().f_cost}: ${Number(i.cost).toLocaleString()}</p>
+    </div>
+  `).join("") || `<div class="empty">${t().noResults}</div>`;
+
+  return `
+  <div class="card">
+    <h2>${t().knowledgeTitle}</h2>
+    <p class="note">${t().knowledgeDesc}</p>
+  </div>
+  <div class="card">
+    <h3>${t().lessonsTitle}</h3>
+    ${lessonsRows}
+  </div>
+  <div class="card">
+    <h3>${t().successTitle}</h3>
+    ${successRows}
+  </div>`;
+}
+function saveLessonNote(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  idea.notes = document.getElementById(`note_${id}`).value;
+  saveIdeas();
+  render();
+}
+
+function pageReport(){
+  const total = ideas.length;
+
+  const approvedOrConverted = ideas.filter(i=>i.status==="approved"||i.status==="converted").length;
+  const rows = ideas.map(i=>`
+    <tr><td>${i.id}</td><td>${i.title}</td><td>${i.submitter}</td><td>${i.dept}</td>
+    <td>${i.category}</td><td>${Number(i.cost).toLocaleString()}</td><td>${i.roiExpected}%</td>
+    <td>${t().status[i.status]}</td><td>${i.date}</td></tr>
+  `).join("");
+  const today = new Date().toISOString().slice(0,10);
+
+  return `
+  <div class="card">
+    <h2>${t().reportTitle}</h2>
+    <p><strong>${t().supervised}</strong> ${lang==='ar'?'المهندس/ وائل عويس':'Eng. Wael Oweis'}</p>
+    <p><strong>${t().reportDate}</strong> ${today}</p>
+    <hr>
+    <h3>${t().reportSummary}</h3>
+    <ul>
+      <li>${t().totalIdeas} ${total}</li>
+      <li>${t().approvedIdeas} ${approvedOrConverted}</li>
+    </ul>
+    <h3>${t().reportRegistry}</h3>
+    <div style="overflow-x:auto;">
+    <table><thead><tr>
+      <th>${t().col_id}</th><th>${t().col_title}</th><th>${t().col_submitter}</th><th>${t().col_dept}</th>
+      <th>${t().col_category}</th><th>${t().col_cost}</th><th>${t().col_roi}</th><th>${t().col_status}</th><th>${t().col_date}</th>
+    </tr></thead><tbody>${rows}</tbody></table>
+    </div>
+    <p style="text-align:center;font-size:.8rem;color:var(--muted);margin-top:14px;">${t().generatedBy} - ${lang==='ar'?'م. وائل عويس':'Eng. Wael Oweis'}</p>
+    <p class="note no-print">${t().printNote}</p>
+  </div>`;
+}
+
+/* ===================== ACTIONS ===================== */
+function attachHandlers(){
+  const form = document.getElementById("ideaForm");
+  if(form){
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      const title = document.getElementById("in_title").value.trim();
+      if(!title){ alert(t().requiredMsg); return; }
+      const newId = "INN-" + String(ideas.length+1).padStart(3,"0");
+      const filesInput = document.getElementById("in_files");
+      const attachments = filesInput && filesInput.files ? Array.from(filesInput.files).map(f=>({
+        name:f.name, type:f.type || "—", size:f.size
+      })) : [];
+      const newIdea = {
+        id:newId, title:title,
+        submitter: document.getElementById("in_submitter").value || (lang==='ar'?'غير محدد':'N/A'),
+        dept: document.getElementById("in_dept").value || (lang==='ar'?'غير محدد':'N/A'),
+        category: document.getElementById("in_category").value,
+        problem: document.getElementById("in_problem").value,
+        value: document.getElementById("in_value").value,
+        cost: Number(document.getElementById("in_cost").value)||0,
+        roiExpected: Number(document.getElementById("in_roi").value)||0,
+        severity:5, occurrence:5, detection:5, votes:0,
+        fastTrack: document.getElementById("in_fast").checked,
+        status: document.getElementById("in_fast").checked ? "fasttrack" : "submitted",
+        date: new Date().toISOString().slice(0,10), notes:"",
+        challengeId: document.getElementById("in_challenge").value || null,
+        attachments: attachments, comments: []
+      };
+      ideas.push(newIdea);
+      saveIdeas();
+      if(newIdea.dept && !DEPARTMENTS.includes(newIdea.dept)){ DEPARTMENTS.push(newIdea.dept); saveDepartments(); }
+      logActivity(`${t().act_new} ${title} (${newId})`);
+      alert(t().savedMsg + " " + newId);
+      goTo("evaluate");
+    });
+  }
+  const chForm = document.getElementById("challengeForm");
+  if(chForm){
+    chForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      const title = document.getElementById("ch_title").value.trim();
+      if(!title) return;
+      const desc = document.getElementById("ch_desc").value.trim();
+      const newCh = {
+        id:"CH-"+String(challenges.length+1).padStart(2,"0"),
+        title_ar: lang==='ar'?title:title, title_en: lang==='en'?title:title,
+        desc_ar: lang==='ar'?desc:desc, desc_en: lang==='en'?desc:desc,
+        date: new Date().toISOString().slice(0,10)
+      };
+      challenges.push(newCh);
+      saveChallenges();
+      logActivity(`${t().act_challenge} ${title}`);
+      render();
+    });
+  }
+  if(currentPage==="registry") renderRegistryTable();
+}
+
+function applyEvaluation(){
+  const id = document.getElementById("ev_id").value;
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  idea.severity = Number(document.getElementById("ev_sev").value)||1;
+  idea.occurrence = Number(document.getElementById("ev_occ").value)||1;
+  idea.detection = Number(document.getElementById("ev_det").value)||1;
+  const oldStatus = idea.status;
+  idea.status = document.getElementById("ev_status").value;
+  saveIdeas();
+  if(oldStatus !== idea.status) logActivity(`${t().act_status} ${idea.id} ${t().act_to} ${t().status[idea.status]}`);
+  render();
+}
+
+function setStatus(id, status){
+  const idea = ideas.find(i=>i.id===id);
+  if(idea){
+    idea.status = status; saveIdeas();
+    logActivity(`${t().act_status} ${idea.id} ${t().act_to} ${t().status[status]}`);
+    render();
+  }
+}
+
+function voteIdea(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(idea){
+    idea.votes = (idea.votes||0)+1; saveIdeas();
+    logActivity(`${t().act_vote} ${idea.title}`);
+    const modalOpen = document.getElementById("modalRoot").innerHTML.length > 0;
+    render();
+    if(modalOpen) openIdea(id);
+  }
+}
+
+function openIdea(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  const ch = challenges.find(c=>c.id===idea.challengeId);
+  const attRows = (idea.attachments||[]).map(a=>
+    `<span class="chip">📎 ${a.name} (${a.type||'-'}, ${Math.round((a.size||0)/1024)}KB)</span>`
+  ).join("") || `<span class="note">${t().noAttachments}</span>`;
+  const commentsHtml = (idea.comments||[]).map(c=>
+    `<div class="comment"><div>${c.text}</div><div class="meta">${c.author} · ${c.date}</div></div>`
+  ).join("") || `<div class="note">${t().noComments}</div>`;
+  const ideaTags = idea.tags || [];
+  const tagToggles = TAGS.map(tg=>{
+    const active = ideaTags.includes(tg);
+    return `<span class="chip" style="cursor:pointer;${active?`background:var(--primary);color:#fff;`:``}" onclick="toggleIdeaTag('${idea.id}','${tg.replace(/'/g,"\\'")}')">🏷️ ${tg}${active?' ✓':''}</span>`;
+  }).join("") || `<span class="note">${t().noItems}</span>`;
+
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h2>💡 ${idea.title}</h2>
+        <div class="note">${idea.id} · ${idea.submitter} · ${idea.dept} · ${idea.date}</div>
+        <p>${statusBadge(idea.status)} &nbsp; ${ch ? `🎯 ${lang==='ar'?ch.title_ar:ch.title_en}` : ""}</p>
+        <p><strong>${t().detailProblem}:</strong> ${idea.problem || "—"}</p>
+        <p><strong>${t().detailValue}:</strong> ${idea.value || "—"}</p>
+        <p><strong>${t().f_cost}:</strong> ${Number(idea.cost).toLocaleString()} &nbsp; <strong>${t().f_roi}:</strong> ${idea.roiExpected}% &nbsp; <strong>RPN:</strong> <span class="${rpnClass(rpn(idea))}">${rpn(idea)}</span></p>
+        <div style="margin:10px 0;"><strong>${t().attachTitle}</strong><br>${attRows}</div>
+        <div style="margin:10px 0;"><strong>${t().tagsTitle}</strong><br>${tagToggles}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-light" onclick="voteIdea('${idea.id}')">${t().voteBtn} (${idea.votes||0})</button>
+          <button class="btn btn-light" style="border:1px solid var(--border);" onclick="editIdeaForm('${idea.id}')">${t().editBtn}</button>
+          <button class="btn btn-light" style="border:1px solid var(--border);" onclick="printIdeaCharter('${idea.id}')">${t().printIdeaBtn}</button>
+        </div>
+        <hr>
+        <h3>${t().commentsTitle}</h3>
+        <div id="commentsList">${commentsHtml}</div>
+        <textarea id="newComment" placeholder="${t().commentPh}" style="margin-top:8px;"></textarea>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="postCommentFor('${idea.id}')">${t().postComment}</button>
+      </div>
+    </div>`;
+}
+function editIdeaForm(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  const cats = lang==='ar' ? CATEGORIES : CATEGORIES_EN;
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h2>✏️ ${t().editBtn} — ${idea.id}</h2>
+        <div class="field"><label>${t().f_title}</label><input id="ed_title" value="${idea.title.replace(/"/g,'&quot;')}"></div>
+        <div class="grid grid-2">
+          <div class="field"><label>${t().f_submitter}</label><input id="ed_submitter" value="${idea.submitter.replace(/"/g,'&quot;')}"></div>
+          <div class="field"><label>${t().f_dept}</label><input id="ed_dept" value="${idea.dept.replace(/"/g,'&quot;')}"></div>
+        </div>
+        <div class="field"><label>${t().f_category}</label>
+          <select id="ed_category">${cats.map(c=>`<option ${c===idea.category?'selected':''}>${c}</option>`).join("")}</select>
+        </div>
+        <div class="field"><label>${t().f_problem}</label><textarea id="ed_problem">${idea.problem||""}</textarea></div>
+        <div class="field"><label>${t().f_value}</label><textarea id="ed_value">${idea.value||""}</textarea></div>
+        <div class="grid grid-2">
+          <div class="field"><label>${t().f_cost}</label><input id="ed_cost" type="number" min="0" value="${idea.cost||0}"></div>
+          <div class="field"><label>${t().f_roi}</label><input id="ed_roi" type="number" min="0" value="${idea.roiExpected||0}"></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="saveIdeaEdit('${idea.id}')">${t().saveBtn}</button>
+          <button class="btn btn-light" style="border:1px solid var(--border);" onclick="openIdea('${idea.id}')">${t().closeBtn}</button>
+        </div>
+      </div>
+    </div>`;
+}
+function saveIdeaEdit(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  idea.title = document.getElementById("ed_title").value.trim() || idea.title;
+  idea.submitter = document.getElementById("ed_submitter").value.trim() || idea.submitter;
+  idea.dept = document.getElementById("ed_dept").value.trim() || idea.dept;
+  idea.category = document.getElementById("ed_category").value;
+  idea.problem = document.getElementById("ed_problem").value;
+  idea.value = document.getElementById("ed_value").value;
+  idea.cost = Number(document.getElementById("ed_cost").value)||0;
+  idea.roiExpected = Number(document.getElementById("ed_roi").value)||0;
+  if(idea.dept && !DEPARTMENTS.includes(idea.dept)){ DEPARTMENTS.push(idea.dept); saveDepartments(); }
+  saveIdeas();
+  logActivity(`${t().act_edit} ${idea.id}`);
+  render();
+  openIdea(id);
+}
+function printIdeaCharter(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  const w = window.open("", "_blank");
+  const dir = lang==='ar' ? 'rtl' : 'ltr';
+  w.document.write(`<html dir="${dir}"><head><meta charset="UTF-8"><title>${idea.id}</title>
+    <style>body{font-family:Arial,sans-serif;padding:30px;color:#1c2b3a;} h1{color:#0a3a63;} table{width:100%;border-collapse:collapse;margin-top:14px;}
+    td{padding:8px;border-bottom:1px solid #ddd;} td:first-child{font-weight:700;width:180px;color:#0a3a63;}</style></head>
+    <body>
+    <h1>💡 ${idea.title}</h1>
+    <p><strong>${lang==='ar'?'إشراف':'Supervised by'}:</strong> ${lang==='ar'?'المهندس/ وائل عويس':'Eng. Wael Oweis'} — ${idea.id}</p>
+    <table>
+      <tr><td>${t().f_submitter}</td><td>${idea.submitter}</td></tr>
+      <tr><td>${t().f_dept}</td><td>${idea.dept}</td></tr>
+      <tr><td>${t().f_category}</td><td>${idea.category}</td></tr>
+      <tr><td>${t().detailProblem}</td><td>${idea.problem||"-"}</td></tr>
+      <tr><td>${t().detailValue}</td><td>${idea.value||"-"}</td></tr>
+      <tr><td>${t().f_cost}</td><td>${Number(idea.cost).toLocaleString()}</td></tr>
+      <tr><td>${t().f_roi}</td><td>${idea.roiExpected}%</td></tr>
+      <tr><td>RPN</td><td>${rpn(idea)}</td></tr>
+      <tr><td>${t().col_status}</td><td>${t().status[idea.status]}</td></tr>
+      <tr><td>${t().col_date}</td><td>${idea.date}</td></tr>
+    </table>
+    </body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(), 300);
+}
+function closeModal(){ document.getElementById("modalRoot").innerHTML = ""; }
+function postCommentFor(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  const text = document.getElementById("newComment").value.trim();
+  if(!text) return;
+  idea.comments = idea.comments || [];
+  idea.comments.push({author: t().anonUser, text, date: new Date().toISOString().slice(0,10)});
+  saveIdeas();
+  logActivity(`${t().act_comment} ${idea.title}`);
+  openIdea(id);
+}
+
+function deleteIdea(id){
+  if(!confirm(t().confirmDelete)) return;
+  ideas = ideas.filter(i=>i.id!==id);
+  saveIdeas();
+  render();
+}
+
+function exportCSV(){
+  const headers = ["ID","Title","Submitter","Department","Category","Cost","ROI%","Status","Date"];
+  const rows = ideas.map(i=>[i.id,i.title,i.submitter,i.dept,i.category,i.cost,i.roiExpected,t().status[i.status],i.date]);
+  let csv = headers.join(",") + "\n" + rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "innovation_archive_wael_oweis.csv";
+  link.click();
+}
+
+/* ===================== INIT ===================== */
+initTheme();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>منظومة الاستدامة الشاملة | م. وائل عويس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --navy:#0A1628; --navy-soft:#152238; --gold:#C9A84C; --gold-soft:#E8D9A8;
+    --teal:#1F6F5C; --teal-soft:#DCEAE5; --bg:#F6F4EE; --surface:#FFFFFF;
+    --ink:#1A2130; --ink-soft:#5B6675; --line:#E3E0D2; --danger:#9C4444;
+    --amber:#B08324; --green:#1F7A4D;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --bg:#0E1420; --surface:#161F30; --ink:#EDEBE2; --ink-soft:#A7AEB9; --line:#2A3549; --navy-soft:#0A1628; }
+  }
+  :root[data-theme="dark"]{ --bg:#0E1420; --surface:#161F30; --ink:#EDEBE2; --ink-soft:#A7AEB9; --line:#2A3549; --navy-soft:#0A1628; }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Cairo','Inter',system-ui,sans-serif;}
+  html[lang="en"] body{font-family:'Inter','Cairo',system-ui,sans-serif;}
+  h1,h2,h3,.display{font-family:'Cairo',sans-serif; font-weight:800;}
+  html[lang="en"] h1, html[lang="en"] h2, html[lang="en"] h3, html[lang="en"] .display{font-family:'Spectral',serif; font-weight:600;}
+  a{color:inherit;}
+
+  header.app-header{background:var(--navy); color:#F3EFE2; border-bottom:3px solid var(--gold); position:sticky; top:0; z-index:50; padding-top:env(safe-area-inset-top,0px);}
+  .header-inner{max-width:1180px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,var(--teal),var(--navy-soft)); display:flex; align-items:center; justify-content:center; font-size:20px; border:1px solid var(--gold-soft); flex-shrink:0;}
+  .brand-text h1{margin:0; font-size:1.05rem; line-height:1.3;}
+  .brand-text p{margin:2px 0 0; font-size:.72rem; color:var(--gold-soft); opacity:.85;}
+  .header-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .btn{border:1px solid transparent; border-radius:8px; padding:8px 14px; font-size:.82rem; font-weight:600; cursor:pointer; transition:transform .12s, opacity .12s; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+  .btn:active{transform:scale(.97);}
+  .btn-gold{background:var(--gold); color:var(--navy); border-color:var(--gold);}
+  .btn-gold:hover{opacity:.9;}
+  .btn-ghost{background:transparent; color:#F3EFE2; border-color:rgba(243,239,226,.35);}
+  .btn-ghost:hover{background:rgba(243,239,226,.08);}
+  .btn-teal{background:var(--teal); color:#fff;}
+  .btn-teal:hover{opacity:.92;}
+  .btn-outline{background:transparent; color:var(--teal); border-color:var(--teal);}
+  .btn-outline:hover{background:var(--teal-soft);}
+  .btn-sm{padding:5px 10px; font-size:.72rem;}
+
+  nav.tabs{background:var(--surface); border-bottom:1px solid var(--line);}
+  .tabs-inner{max-width:1180px; margin:0 auto; padding:0 20px; display:flex; gap:6px; overflow-x:auto;}
+  .tab-btn{background:transparent; border:none; border-bottom:3px solid transparent; padding:14px 16px; font-family:inherit; font-weight:700; font-size:.88rem; color:var(--ink-soft); cursor:pointer; white-space:nowrap;}
+  .tab-btn.active{color:var(--navy); border-bottom-color:var(--gold);}
+  :root:not([data-theme="light"]) .tab-btn.active{color:var(--gold);}
+
+  .util-bar{background:var(--surface); border-bottom:1px solid var(--line);}
+  .util-bar-inner{max-width:1180px; margin:0 auto; padding:8px 20px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  .util-spacer{flex:1;}
+  .util-hint{font-size:.72rem; color:var(--ink-soft);}
+
+  main{max-width:1180px; margin:0 auto; padding:26px 20px 60px;}
+  .section-content{display:none;}
+  .section-content.active{display:block;}
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:22px;}
+  .card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px; flex-wrap:wrap;}
+  .card-head h2{margin:0; font-size:1.25rem; color:var(--navy);}
+  :root[data-theme="dark"] .card-head h2, :root:not([data-theme="light"]) .card-head h2{color:inherit;}
+  .card-sub{color:var(--ink-soft); font-size:.88rem; margin:4px 0 18px; max-width:65ch;}
+
+  .entity-select-row{display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap;}
+  .entity-select-row label{font-weight:700; font-size:.85rem;}
+  .entity-select-row select{border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-family:inherit; background:var(--bg); color:var(--ink); font-weight:700; min-width:200px;}
+
+  .cri-wrap{display:flex; gap:28px; align-items:center; flex-wrap:wrap;}
+  .gauge{position:relative; width:150px; height:150px; flex-shrink:0;}
+  .gauge svg{transform:rotate(-90deg); width:100%; height:100%;}
+  .gauge-bg{fill:none; stroke:var(--line); stroke-width:12;}
+  .gauge-fg{fill:none; stroke:var(--teal); stroke-width:12; stroke-linecap:round; transition:stroke-dashoffset .5s ease;}
+  .gauge-label{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  .gauge-num{font-family:'Spectral',serif; font-size:2.1rem; font-weight:700; color:var(--navy);}
+  :root[data-theme="dark"] .gauge-num, :root:not([data-theme="light"]) .gauge-num{color:var(--gold);}
+  .gauge-tag{font-size:.7rem; color:var(--ink-soft);}
+  .cri-status{font-weight:700; font-size:1rem; margin-bottom:4px;}
+  .bars{flex:1; min-width:240px; display:flex; flex-direction:column; gap:12px;}
+  .bar-row{display:grid; grid-template-columns:120px 1fr 40px; gap:10px; align-items:center; font-size:.78rem;}
+  .bar-track{background:var(--line); border-radius:6px; height:9px; overflow:visible; position:relative;}
+  .bar-fill{height:100%; background:var(--teal); border-radius:6px; transition:width .5s ease;}
+  .bar-target-tick{position:absolute; inset-inline-start:0; top:-3px; bottom:-3px; width:2px; background:var(--navy); opacity:.55;}
+  :root:not([data-theme="light"]) .bar-target-tick{background:var(--gold);}
+  .bar-num{text-align:end; font-weight:700; color:var(--ink-soft);}
+
+  .pillar-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:18px;}
+  .pillar-card{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px;}
+  .pillar-top{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+  .pillar-name{font-weight:700; font-size:.92rem; color:var(--teal);}
+  .pillar-score{font-family:'Spectral',serif; font-weight:700; font-size:1.4rem; color:var(--navy); background:var(--gold-soft); border-radius:8px; padding:2px 10px; min-width:52px; text-align:center;}
+  :root[data-theme="dark"] .pillar-score, :root:not([data-theme="light"]) .pillar-score{background:var(--navy-soft); color:var(--gold);}
+  .field{display:flex; flex-direction:column; gap:4px;}
+  .field label{font-size:.72rem; font-weight:600; color:var(--ink-soft);}
+  .field-context{font-size:.68rem; color:var(--ink-soft); margin-top:2px;}
+  .field input, .field select, .field textarea{border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:.85rem; font-family:inherit; background:var(--surface); color:var(--ink); width:100%;}
+  .form-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;}
+  .save-row{display:flex; justify-content:space-between; align-items:center; margin-top:18px; flex-wrap:wrap; gap:10px;}
+  .saved-note{font-size:.76rem; color:var(--ink-soft);}
+  .gap-tag{font-size:.66rem; font-weight:700; padding:2px 8px; border-radius:999px; display:inline-block;}
+  .gap-good{background:#E3F3EA; color:var(--green);}
+  .gap-mid{background:#FBF0DC; color:var(--amber);}
+  .gap-bad{background:#F6E4E4; color:var(--danger);}
+
+  .trend{font-size:.78rem; font-weight:700; margin-inline-start:4px;}
+  .trend-up{color:var(--green);}
+  .trend-down{color:var(--danger);}
+  .trend-same{color:var(--ink-soft);}
+
+  .save-alerts{display:flex; flex-direction:column; gap:6px; margin-top:12px;}
+  .alert-item{font-size:.78rem; padding:8px 12px; border-radius:8px; background:#FBF0DC; color:#7A5E12; border:1px solid #EAD9A8;}
+  .alert-item.alert-danger{background:#F6E4E4; color:var(--danger); border-color:#E9C6C6;}
+
+  .save-note-field{flex:1; min-width:200px;}
+  .save-note-field input{border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:.82rem; font-family:inherit; width:100%; background:var(--surface); color:var(--ink);}
+
+  .filter-row{display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .filter-row label{font-size:.8rem; font-weight:700;}
+  .filter-row select{border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-family:inherit; background:var(--bg); color:var(--ink);}
+
+  .card-tools{display:flex; gap:8px; flex-wrap:wrap;}
+
+  .hist-table-wrap{overflow-x:auto;}
+
+  .pill-open{background:#F6E4E4; color:var(--danger);}
+  .pill-closed{background:var(--teal-soft); color:var(--teal);}
+  .rpn-high{color:var(--danger); font-weight:800;}
+  .rpn-mid{color:var(--amber); font-weight:800;}
+  .rpn-low{color:var(--green); font-weight:800;}
+  .raci-select{border:1px solid var(--line); border-radius:6px; padding:4px 6px; font-family:inherit; font-size:.78rem; background:var(--surface); color:var(--ink);}
+  .raci-remove-col{width:28px;}
+  .asset-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-top:10px;}
+  .asset-card{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px; display:flex; gap:12px; align-items:flex-start;}
+  .asset-qr{background:#fff; padding:4px; border-radius:6px; flex-shrink:0;}
+  .asset-info h4{margin:0 0 4px; font-size:.88rem;}
+  .asset-info p{margin:2px 0; font-size:.74rem; color:var(--ink-soft);}
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:20px;}
+  .stat-card{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center;}
+  .stat-num{font-family:'Spectral',serif; font-size:1.7rem; font-weight:700; color:var(--navy);}
+  :root:not([data-theme="light"]) .stat-num{color:var(--gold);}
+  .stat-label{font-size:.72rem; color:var(--ink-soft); margin-top:2px;}
+  .exec-list{margin:0; padding:0; list-style:none;}
+  .exec-list li{padding:8px 0; border-bottom:1px solid var(--line); font-size:.85rem;}
+  .exec-list li:last-child{border-bottom:none;}
+
+  .weight-row{display:grid; grid-template-columns:130px 1fr 34px; gap:10px; align-items:center; margin-bottom:12px; font-size:.8rem;}
+  .weight-row input[type=range]{width:100%; accent-color:var(--teal);}
+  .target-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px;}
+  .target-field{display:flex; flex-direction:column; gap:4px;}
+  .target-field label{font-size:.75rem; color:var(--ink-soft); font-weight:600;}
+  .target-field input{border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-family:inherit;}
+
+  .legend-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .legend-chip{border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:4px 10px; font-size:.72rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-family:inherit;}
+  .legend-chip.off{opacity:.35;}
+  .legend-dot{width:9px; height:9px; border-radius:50%; display:inline-block;}
+  .chart-wrap{overflow-x:auto;}
+  .chart-wrap svg{min-width:480px;}
+
+  table{width:100%; border-collapse:collapse; font-size:.85rem;}
+  thead th{text-align:start; font-size:.7rem; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-soft); border-bottom:1px solid var(--line); padding:10px 8px;}
+  tbody td{padding:10px 8px; border-bottom:1px solid var(--line);}
+  tbody tr:last-child td{border-bottom:none;}
+  .pill{border-radius:999px; padding:3px 10px; font-size:.72rem; font-weight:700;}
+  .pill-active{background:var(--teal-soft); color:var(--teal);}
+  .pill-progress{background:var(--gold-soft); color:#7A5E12;}
+  .pill-remove{background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:.9rem;}
+  .cmp-badge{border-radius:8px; padding:3px 10px; font-weight:700; font-size:.8rem; display:inline-block; min-width:34px; text-align:center;}
+
+  .lesson-card{background:var(--bg); border-inline-start:4px solid var(--teal); border-radius:8px; padding:14px 16px; margin-bottom:12px;}
+  .lesson-card h4{margin:0 0 6px; font-size:.92rem;}
+  .lesson-card p{margin:0; font-size:.82rem; color:var(--ink-soft); line-height:1.6;}
+  .lesson-meta{display:flex; justify-content:space-between; margin-top:8px; font-size:.7rem; color:var(--ink-soft);}
+  .empty-state{padding:30px 10px; text-align:center; color:var(--ink-soft); font-size:.85rem;}
+
+  footer{text-align:center; padding:20px; font-size:.75rem; color:var(--ink-soft); border-top:1px solid var(--line); padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));}
+
+  #fullReportArea{display:none;}
+  .report-head{border-bottom:3px solid var(--gold); padding-bottom:10px; margin-bottom:18px;}
+  .report-head h1{color:var(--navy); font-size:1.4rem; margin:0 0 4px;}
+  .report-head p{margin:0; color:var(--ink-soft); font-size:.85rem;}
+  .report-block{margin-bottom:22px;}
+  .report-block h3{font-size:1rem; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:10px;}
+
+  .no-print{}
+  @media print{
+    .no-print{display:none !important;}
+    header.app-header, nav.tabs, .util-bar, footer{display:none !important;}
+    body{background:#fff !important;}
+    .card{border:1px solid #ccc !important; box-shadow:none !important; break-inside:avoid;}
+    main{padding:0; max-width:100%;}
+    .section-content{display:none !important;}
+    .section-content.active{display:block !important;}
+    body.printing-report main > *:not(#fullReportArea){display:none !important;}
+    body.printing-report #fullReportArea{display:block !important;}
+  }
+
+  ::-webkit-scrollbar{height:8px; width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:8px;}
+
+  @media (max-width:640px){
+    .brand-text h1{font-size:.92rem;}
+    .cri-wrap{flex-direction:column; align-items:stretch;}
+    .gauge{margin:0 auto;}
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header no-print">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text">
+        <h1 data-i18n="brandTitle">منظومة الاستدامة الشاملة</h1>
+        <p data-i18n="brandSub">إشراف وتصميم: م. وائل عويس</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" onclick="setLang(currentLang==='ar'?'en':'ar')">🌐 <span data-i18n="langBtn">English</span></button>
+      <button class="btn btn-gold" onclick="window.print()">🖨️ <span data-i18n="printBtn">طباعة</span></button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs no-print">
+  <div class="tabs-inner">
+    <button class="tab-btn active" data-target="dashboard" onclick="showSection('dashboard')" data-i18n="tabDashboard">لوحة الاستدامة الخماسية</button>
+    <button class="tab-btn" data-target="projects" onclick="showSection('projects')" data-i18n="tabProjects">سجل المشاريع والأرشيف</button>
+    <button class="tab-btn" data-target="lessons" onclick="showSection('lessons')" data-i18n="tabLessons">الدروس المستفادة</button>
+    <button class="tab-btn" data-target="risks" onclick="showSection('risks')" data-i18n="tabRisks">سجل المخاطر</button>
+    <button class="tab-btn" data-target="raci" onclick="showSection('raci')" data-i18n="tabRaci">مصفوفة المسؤوليات</button>
+    <button class="tab-btn" data-target="procurement" onclick="showSection('procurement')" data-i18n="tabProc">المشتريات الخضراء</button>
+    <button class="tab-btn" data-target="assets" onclick="showSection('assets')" data-i18n="tabAssets">جواز الأصول</button>
+    <button class="tab-btn" data-target="exec" onclick="showSection('exec')" data-i18n="tabExec">التقرير التنفيذي</button>
+    <button class="tab-btn" data-target="settings" onclick="showSection('settings')" data-i18n="tabSettings">الإعدادات</button>
+  </div>
+</nav>
+
+<div class="util-bar no-print">
+  <div class="util-bar-inner">
+    <button class="btn btn-outline btn-sm" onclick="exportBackup()">⬇️ <span data-i18n="utilExport">تصدير نسخة احتياطية</span></button>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()">⬆️ <span data-i18n="utilImport">استيراد نسخة</span></button>
+    <input type="file" id="importFile" accept="application/json" style="display:none" onchange="handleImportFile(this.files[0])">
+    <button class="btn btn-outline btn-sm" onclick="downloadFullReport()">📄 <span data-i18n="utilReport">تنزيل التقرير الكامل</span></button>
+    <div class="util-spacer"></div>
+    <span class="util-hint" id="importHint"></span>
+  </div>
+</div>
+
+<main>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section id="dashboard" class="section-content active">
+
+    <div class="entity-select-row no-print">
+      <label data-i18n="entityLabel">عرض المؤشرات لـ:</label>
+      <select id="entitySelect" onchange="setActiveEntity(this.value)"></select>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="criTitle">مؤشر الجاهزية والمرونة المركّب (CRI)</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="criDesc">متوسط مرجّح للأركان الخمسة يعكس مدى استعداد المؤسسة أو المشروع المحدد، من 0 إلى 100.</p>
+      <div class="cri-wrap">
+        <div class="gauge">
+          <svg viewBox="0 0 140 140">
+            <circle class="gauge-bg" cx="70" cy="70" r="58"></circle>
+            <circle class="gauge-fg" id="gaugeFg" cx="70" cy="70" r="58" stroke-dasharray="364"></circle>
+          </svg>
+          <div class="gauge-label">
+            <div class="gauge-num" id="criNum">0</div>
+            <div class="gauge-tag" data-i18n="of100">من 100</div>
+          </div>
+        </div>
+        <div style="flex:1; min-width:240px;">
+          <div class="cri-status" id="criStatus" style="color:var(--teal)">—</div>
+          <div class="bars" id="barsWrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2 data-i18n="pillarsTitle">الأركان الخمسة للاستدامة</h2></div>
+      <p class="card-sub" data-i18n="pillarsDesc">أدخل المؤشرات الفعلية لكل ركن؛ يتم احتساب درجة كل ركن ومؤشر CRI تلقائياً عند الحفظ.</p>
+      <div class="pillar-grid" id="pillarGrid"></div>
+      <div class="save-row">
+        <div class="save-note-field no-print">
+          <input type="text" id="saveNoteInput" data-i18n-placeholder="saveNotePh" placeholder="مثال: بعد تركيب الألواح الشمسية">
+        </div>
+        <span class="saved-note" id="savedNote"></span>
+        <button class="btn btn-teal no-print" onclick="saveIndicators()" data-i18n="saveBtn">حفظ مؤشرات الاستدامة</button>
+      </div>
+      <div class="save-alerts no-print" id="saveAlerts"></div>
+    </div>
+
+    <div class="card no-print">
+      <div class="card-head"><h2 data-i18n="weightsTitle">أوزان الأركان (تخصيص CRI)</h2></div>
+      <p class="card-sub" data-i18n="weightsDesc">اسحب لتحديد أهمية كل ركن نسبياً عند احتساب المؤشر المركّب. الوزن نسبي وليس بالضرورة أن يجمع إلى 100.</p>
+      <div id="weightsWrap"></div>
+      <button class="btn btn-outline btn-sm" onclick="resetWeights()" data-i18n="resetWeights">إعادة إلى أوزان متساوية</button>
+    </div>
+
+    <div class="card no-print">
+      <div class="card-head"><h2 data-i18n="targetsTitle">الأهداف والعتبات</h2></div>
+      <p class="card-sub" data-i18n="targetsDesc">حدّد الهدف المطلوب لكل ركن (من 100) لمتابعة الفجوة ولون الإنذار. الأهداف موحّدة لكل الجهات.</p>
+      <div class="target-grid" id="targetsWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="historyTitle">تطور مؤشر الجاهزية عبر الزمن</h2>
+        <div class="card-tools no-print">
+          <button class="btn btn-outline btn-sm" id="histViewToggleBtn" onclick="toggleHistoryView()" data-i18n="viewTableBtn">عرض كجدول</button>
+        </div>
+      </div>
+      <p class="card-sub" data-i18n="historyDesc">كل عملية حفظ تُضيف لقطة جديدة إلى السجل الزمني للجهة المحددة.</p>
+      <div class="legend-row no-print" id="chartLegend"></div>
+      <div class="chart-wrap" id="chartWrap"></div>
+      <div class="hist-table-wrap" id="histTableWrap" style="display:none;"></div>
+      <div class="empty-state" id="historyEmpty" data-i18n="historyEmpty">لا يوجد سجل كافٍ بعد — احفظ المؤشرات أكثر من مرة لعرض الاتجاه.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="compareTitle">مقارنة المشاريع</h2>
+        <div class="card-tools no-print">
+          <button class="btn btn-outline btn-sm" id="sortCompareBtn" onclick="toggleCompareSort()" data-i18n="sortByCriBtn">ترتيب حسب CRI</button>
+        </div>
+      </div>
+      <p class="card-sub" data-i18n="compareDesc">مقارنة مؤشر CRI ودرجات الأركان بين المشاريع المسجّلة والمؤسسة ككل.</p>
+      <div style="overflow-x:auto;" id="compareWrap"></div>
+      <div class="empty-state" id="compareEmpty" data-i18n="compareEmpty">أضف مشروعاً واحداً على الأقل لعرض المقارنة.</div>
+    </div>
+  </section>
+
+  <!-- ================= PROJECTS ================= -->
+  <section id="projects" class="section-content">
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="projTitle">سجل المشاريع والأرشيف الرقمي</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="projDesc">وثّق المشاريع والمنشآت الخاضعة لمنظومة الاستدامة الخماسية؛ سيتوفر لكل مشروع مؤشراته الخماسية الخاصة به في لوحة القيادة.</p>
+
+      <div class="form-grid no-print" style="margin-bottom:14px;">
+        <div class="field"><label data-i18n="projNameLabel">اسم المشروع / المنشأة</label>
+          <input type="text" id="projName" data-i18n-placeholder="projNamePh" placeholder="مثال: مركز بيانات العاصمة الإدارية"></div>
+        <div class="field"><label data-i18n="projTypeLabel">القطاع</label>
+          <select id="projType">
+            <option value="infra" data-i18n="projTypeInfra">بنية تحتية</option>
+            <option value="realestate" data-i18n="projTypeRe">تطوير عقاري</option>
+            <option value="datacenter" data-i18n="projTypeDc">مراكز بيانات</option>
+            <option value="industrial" data-i18n="projTypeInd">منشآت صناعية</option>
+          </select></div>
+        <div class="field"><label data-i18n="projDateLabel">تاريخ التسجيل</label><input type="date" id="projDate"></div>
+        <div class="field"><label data-i18n="projStatusLabel">الحالة</label>
+          <select id="projStatus">
+            <option value="active" data-i18n="statusActive">قيد التشغيل</option>
+            <option value="done" data-i18n="statusDone">مكتمل ومعتمد</option>
+          </select></div>
+      </div>
+      <button class="btn btn-teal no-print" style="margin-bottom:18px;" onclick="addProject()" data-i18n="addProjBtn">إضافة للأرشيف</button>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr>
+            <th data-i18n="thProjName">اسم المشروع</th>
+            <th data-i18n="thProjType">القطاع</th>
+            <th data-i18n="thProjDate">تاريخ التسجيل</th>
+            <th data-i18n="thProjStatus">الحالة</th>
+            <th class="no-print"></th>
+          </tr></thead>
+          <tbody id="projectsTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="projEmpty" data-i18n="projEmpty">لا توجد مشاريع مسجّلة بعد. أضف أول مشروع أعلاه.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LESSONS ================= -->
+  <section id="lessons" class="section-content">
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="lessTitle">سجل الدروس المستفادة</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="lessDesc">وثّق الملاحظات الفنية والإدارية لتطبيقها في المشاريع القادمة.</p>
+      <div class="form-grid no-print" style="grid-template-columns:1fr; margin-bottom:14px;">
+        <div class="field"><label data-i18n="lessTitleLabel">عنوان الدرس أو الملاحظة الفنية</label>
+          <input type="text" id="lessonTitle" data-i18n-placeholder="lessTitlePh" placeholder="مثال: تحسين كفاءة التبريد"></div>
+        <div class="field"><label data-i18n="lessDescLabel">التفاصيل وكيفية الاستفادة منها</label>
+          <textarea id="lessonDesc" rows="3" data-i18n-placeholder="lessDescPh" placeholder="اشرح الملاحظة والإجراء المستقبلي المقترح..."></textarea></div>
+        <div class="field"><label data-i18n="lessonProjectLabel">المشروع المرتبط (اختياري)</label>
+          <select id="lessonProject"></select></div>
+      </div>
+      <button class="btn btn-teal no-print" style="margin-bottom:18px;" onclick="addLesson()" data-i18n="saveLessonBtn">حفظ الدرس المستفاد</button>
+      <div class="filter-row no-print">
+        <label data-i18n="filterLessonsLabel">عرض دروس:</label>
+        <select id="lessonFilter" onchange="onLessonFilterChange(this.value)"></select>
+      </div>
+      <div id="lessonsContainer"></div>
+      <div class="empty-state" id="lessEmpty" data-i18n="lessEmpty">لا توجد دروس موثقة بعد.</div>
+    </div>
+  </section>
+
+  <!-- ================= RISKS (FMEA) ================= -->
+  <section id="risks" class="section-content">
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="risksTitle">سجل المخاطر (FMEA)</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="risksDesc">سجّل المخاطر المحتملة وقيّم احتمالية حدوثها وأثرها؛ رقم أولوية المخاطرة (RPN) يُحتسب تلقائياً.</p>
+      <div class="entity-select-row no-print">
+        <label data-i18n="entityLabel">عرض المؤشرات لـ:</label>
+        <select id="riskEntitySelect" onchange="setRiskEntity(this.value)"></select>
+      </div>
+      <label class="no-print" style="display:flex;align-items:center;gap:8px;font-size:.8rem;margin-bottom:14px;">
+        <input type="checkbox" id="autoRiskToggle" onchange="onAutoRiskToggle(this.checked)">
+        <span data-i18n="autoRiskLabel">ربط تلقائي: احتساب مؤشر المخاطر ضمن ركن الحوكمة من متوسط RPN للمخاطر المفتوحة</span>
+      </label>
+      <div class="form-grid no-print" style="margin-bottom:14px;">
+        <div class="field"><label data-i18n="riskDescLabel">وصف الخطر</label><input type="text" id="riskDesc"></div>
+        <div class="field"><label data-i18n="riskProbLabel">الاحتمالية (1-5)</label><input type="number" id="riskProb" min="1" max="5" value="3"></div>
+        <div class="field"><label data-i18n="riskImpactLabel">الأثر (1-5)</label><input type="number" id="riskImpact" min="1" max="5" value="3"></div>
+        <div class="field"><label data-i18n="riskOwnerLabel">المسؤول</label><input type="text" id="riskOwner"></div>
+      </div>
+      <div class="field no-print" style="margin-bottom:14px;"><label data-i18n="riskMitigationLabel">الإجراء الوقائي</label><textarea id="riskMitigation" rows="2"></textarea></div>
+      <button class="btn btn-teal no-print" style="margin-bottom:18px;" onclick="addRisk()" data-i18n="addRiskBtn">إضافة إلى السجل</button>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr>
+            <th data-i18n="riskDescLabel">وصف الخطر</th><th data-i18n="riskProbLabel">الاحتمالية</th><th data-i18n="riskImpactLabel">الأثر</th><th>RPN</th><th data-i18n="riskOwnerLabel">المسؤول</th><th data-i18n="riskStatusLabel">الحالة</th><th class="no-print"></th>
+          </tr></thead>
+          <tbody id="risksTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="risksEmpty" data-i18n="risksEmpty">لا توجد مخاطر مسجّلة بعد.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RACI ================= -->
+  <section id="raci" class="section-content">
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="raciTitle">مصفوفة المسؤوليات (RACI)</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="raciDesc">حدّد من هو المسؤول (R) والمحاسَب (A) والمُستشار (C) والمُطلع (I) عن كل مهمة، لكل مشروع على حدة.</p>
+      <div class="entity-select-row no-print">
+        <label data-i18n="entityLabel">عرض المؤشرات لـ:</label>
+        <select id="raciEntitySelect" onchange="setRaciEntity(this.value)"></select>
+      </div>
+      <div class="form-grid no-print" style="margin-bottom:14px;">
+        <div class="field"><label data-i18n="raciRoleLabel">إضافة شخص / جهة</label>
+          <div style="display:flex;gap:8px;"><input type="text" id="raciRoleInput" style="flex:1"><button class="btn btn-outline btn-sm" onclick="addRaciRole()">+</button></div></div>
+        <div class="field"><label data-i18n="raciTaskLabel">إضافة مهمة</label>
+          <div style="display:flex;gap:8px;"><input type="text" id="raciTaskInput" style="flex:1"><button class="btn btn-outline btn-sm" onclick="addRaciTask()">+</button></div></div>
+      </div>
+      <div style="overflow-x:auto;" id="raciTableWrap"></div>
+      <div class="empty-state" id="raciEmpty" data-i18n="raciEmpty">أضف مهمة وشخصاً واحداً على الأقل لبناء المصفوفة.</div>
+    </div>
+  </section>
+
+  <!-- ================= GREEN PROCUREMENT ================= -->
+  <section id="procurement" class="section-content">
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="procTitle">سجل المشتريات الخضراء</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="procDesc">قيّم كل مورد على المعايير الخمسة؛ الدرجة الإجمالية وتصنيف الاعتماد يُحتسبان تلقائياً.</p>
+      <div class="form-grid no-print" style="margin-bottom:14px;">
+        <div class="field"><label data-i18n="procNameLabel">اسم المورد</label><input type="text" id="procName"></div>
+        <div class="field"><label data-i18n="procPriceLabel">السعر (0-100)</label><input type="number" id="procPrice" min="0" max="100" value="70"></div>
+        <div class="field"><label data-i18n="procEnvLabel">الأثر البيئي (0-100)</label><input type="number" id="procEnv" min="0" max="100" value="70"></div>
+        <div class="field"><label data-i18n="procLaborLabel">ظروف العمل (0-100)</label><input type="number" id="procLabor" min="0" max="100" value="70"></div>
+        <div class="field"><label data-i18n="procGovLabel">الحوكمة (0-100)</label><input type="number" id="procGov" min="0" max="100" value="70"></div>
+        <div class="field"><label data-i18n="procTechLabel">التقنية (0-100)</label><input type="number" id="procTech" min="0" max="100" value="70"></div>
+      </div>
+      <button class="btn btn-teal no-print" style="margin-bottom:18px;" onclick="addSupplier()" data-i18n="addProcBtn">إضافة المورد</button>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th data-i18n="procNameLabel">اسم المورد</th><th data-i18n="colCri">الدرجة</th><th data-i18n="procStatusLabel">التصنيف</th><th class="no-print"></th></tr></thead>
+          <tbody id="suppliersTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="procEmpty" data-i18n="procEmpty">لا يوجد موردون مسجّلون بعد.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DIGITAL PRODUCT PASSPORT ================= -->
+  <section id="assets" class="section-content">
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="assetsTitle">جواز السفر الرقمي للأصول</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="assetsDesc">وثّق كل معدة أو أصل مع رمز QR يمكن طباعته ولصقه على المعدة نفسها.</p>
+      <div class="form-grid no-print" style="margin-bottom:14px;">
+        <div class="field"><label data-i18n="assetNameLabel">اسم الأصل / المعدة</label><input type="text" id="assetName"></div>
+        <div class="field"><label data-i18n="assetSourceLabel">المصدر / المورّد</label><input type="text" id="assetSource"></div>
+        <div class="field"><label data-i18n="assetDateLabel">تاريخ الشراء</label><input type="date" id="assetDate"></div>
+        <div class="field"><label data-i18n="assetEffLabel">كفاءة الطاقة (%)</label><input type="number" id="assetEff" min="0" max="100" value="80"></div>
+      </div>
+      <div class="field no-print" style="margin-bottom:14px;"><label data-i18n="assetRecycleLabel">خطة إعادة التدوير</label><textarea id="assetRecycle" rows="2"></textarea></div>
+      <button class="btn btn-teal no-print" style="margin-bottom:18px;" onclick="addAsset()" data-i18n="addAssetBtn">إضافة الأصل</button>
+      <div class="asset-grid" id="assetsGrid"></div>
+      <div class="empty-state" id="assetsEmpty" data-i18n="assetsEmpty">لا توجد أصول مسجّلة بعد.</div>
+    </div>
+  </section>
+
+  <!-- ================= EXECUTIVE ONE-PAGER ================= -->
+  <section id="exec" class="section-content">
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="execTitle">التقرير التنفيذي</h2>
+        <button class="btn btn-outline btn-sm no-print" onclick="window.print()" data-i18n="printSection">طباعة هذا القسم</button>
+      </div>
+      <p class="card-sub" data-i18n="execDesc">نظرة سريعة على أهم المؤشرات دون الحاجة لفتح كل تبويب.</p>
+      <div id="execContent"></div>
+    </div>
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <section id="settings" class="section-content">
+    <div class="card">
+      <div class="card-head"><h2 data-i18n="settingsTitle">الإعدادات والهوية المؤسسية</h2></div>
+      <p class="card-sub" data-i18n="settingsDesc">هذه الإعدادات تخص هذا الجهاز/المتصفح فقط، ويمكن نقلها عبر التصدير والاستيراد.</p>
+      <div class="form-grid">
+        <div class="field"><label data-i18n="settOrgNameLabel">اسم الجهة / المؤسسة</label><input type="text" id="settOrgName" data-i18n-placeholder="settOrgNamePh" placeholder="مثال: بناء للمقاولات" oninput="onSettingsChange()"></div>
+        <div class="field"><label data-i18n="settLogoLabel">رمز الشعار (إيموجي)</label><input type="text" id="settLogo" maxlength="2" oninput="onSettingsChange()"></div>
+        <div class="field"><label data-i18n="settCurrencyLabel">العملة المستخدمة في الحقول المالية</label>
+          <select id="settCurrency" onchange="onSettingsChange()">
+            <option value="USD">USD ($)</option><option value="EGP">EGP (ج.م)</option><option value="SAR">SAR (ر.س)</option><option value="AED">AED (د.إ)</option>
+          </select></div>
+        <div class="field"><label data-i18n="settLangLabel">اللغة الافتراضية عند الفتح</label>
+          <select id="settDefaultLang" onchange="onSettingsChange()">
+            <option value="ar">العربية</option><option value="en">English</option>
+          </select></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FULL REPORT (print-only) ================= -->
+  <div id="fullReportArea"></div>
+
+</main>
+
+<footer class="no-print"><p data-i18n="footerText">© 2026 جميع الحقوق محفوظة | منظومة الاستدامة الشاملة — إعداد وتصميم م. وائل عويس</p></footer>
+
+<script>
+/* ============================= i18n ============================= */
+const dict = {
+  brandTitle:{ar:"منظومة الاستدامة الشاملة",en:"Comprehensive Sustainability Ecosystem"},
+  brandSub:{ar:"إشراف وتصميم: م. وائل عويس",en:"Designed & Supervised by Eng. Wael Ewis"},
+  langBtn:{ar:"English",en:"العربية"},
+  printBtn:{ar:"طباعة",en:"Print"},
+  printSection:{ar:"طباعة هذا القسم",en:"Print this section"},
+  tabDashboard:{ar:"لوحة الاستدامة الخماسية",en:"Five-Pillar Dashboard"},
+  tabProjects:{ar:"سجل المشاريع والأرشيف",en:"Projects Archive"},
+  tabLessons:{ar:"الدروس المستفادة",en:"Lessons Learned"},
+  utilExport:{ar:"تصدير نسخة احتياطية",en:"Export backup"},
+  utilImport:{ar:"استيراد نسخة",en:"Import backup"},
+  utilReport:{ar:"تنزيل التقرير الكامل",en:"Download full report"},
+  entityLabel:{ar:"عرض المؤشرات لـ:",en:"Viewing indicators for:"},
+  orgOverview:{ar:"نظرة عامة على المؤسسة",en:"Organization overview"},
+  criTitle:{ar:"مؤشر الجاهزية والمرونة المركّب (CRI)",en:"Comprehensive Resilience Index (CRI)"},
+  criDesc:{ar:"متوسط مرجّح للأركان الخمسة يعكس مدى استعداد المؤسسة أو المشروع المحدد، من 0 إلى 100.",en:"A weighted average of the five pillars reflecting the readiness of the organization or the selected project, from 0 to 100."},
+  of100:{ar:"من 100",en:"out of 100"},
+  pillarsTitle:{ar:"الأركان الخمسة للاستدامة",en:"The Five Pillars of Sustainability"},
+  pillarsDesc:{ar:"أدخل المؤشرات الفعلية لكل ركن؛ يتم احتساب درجة كل ركن ومؤشر CRI تلقائياً عند الحفظ.",en:"Enter the actual indicators for each pillar; each pillar's score and the CRI are calculated automatically on save."},
+  saveBtn:{ar:"حفظ مؤشرات الاستدامة",en:"Save sustainability indicators"},
+  weightsTitle:{ar:"أوزان الأركان (تخصيص CRI)",en:"Pillar weights (customize CRI)"},
+  weightsDesc:{ar:"اسحب لتحديد أهمية كل ركن نسبياً عند احتساب المؤشر المركّب. الوزن نسبي وليس بالضرورة أن يجمع إلى 100.",en:"Drag to set each pillar's relative importance in the composite index. Weights are relative and don't need to add up to 100."},
+  resetWeights:{ar:"إعادة إلى أوزان متساوية",en:"Reset to equal weights"},
+  targetsTitle:{ar:"الأهداف والعتبات",en:"Targets & thresholds"},
+  targetsDesc:{ar:"حدّد الهدف المطلوب لكل ركن (من 100) لمتابعة الفجوة ولون الإنذار. الأهداف موحّدة لكل الجهات.",en:"Set the target for each pillar (out of 100) to track the gap and alert color. Targets are shared across all entities."},
+  historyTitle:{ar:"تطور مؤشر الجاهزية عبر الزمن",en:"Resilience index over time"},
+  historyDesc:{ar:"كل عملية حفظ تُضيف لقطة جديدة إلى السجل الزمني للجهة المحددة.",en:"Every save adds a new snapshot to the selected entity's timeline."},
+  historyEmpty:{ar:"لا يوجد سجل كافٍ بعد — احفظ المؤشرات أكثر من مرة لعرض الاتجاه.",en:"Not enough history yet — save indicators more than once to see the trend."},
+  compareTitle:{ar:"مقارنة المشاريع",en:"Project comparison"},
+  compareDesc:{ar:"مقارنة مؤشر CRI ودرجات الأركان بين المشاريع المسجّلة والمؤسسة ككل.",en:"Compare the CRI and pillar scores across registered projects and the organization overview."},
+  compareEmpty:{ar:"أضف مشروعاً واحداً على الأقل لعرض المقارنة.",en:"Add at least one project to see the comparison."},
+  colCri:{ar:"CRI",en:"CRI"},
+  projTitle:{ar:"سجل المشاريع والأرشيف الرقمي",en:"Projects Ledger & Digital Archive"},
+  projDesc:{ar:"وثّق المشاريع والمنشآت الخاضعة لمنظومة الاستدامة الخماسية؛ سيتوفر لكل مشروع مؤشراته الخماسية الخاصة به في لوحة القيادة.",en:"Document the projects and facilities under the five-pillar system; each project gets its own indicators in the dashboard."},
+  projNameLabel:{ar:"اسم المشروع / المنشأة",en:"Project / facility name"},
+  projNamePh:{ar:"مثال: مركز بيانات العاصمة الإدارية",en:"e.g. New Capital Data Center"},
+  projTypeLabel:{ar:"القطاع",en:"Sector"},
+  projTypeInfra:{ar:"بنية تحتية",en:"Infrastructure"},
+  projTypeRe:{ar:"تطوير عقاري",en:"Real estate"},
+  projTypeDc:{ar:"مراكز بيانات",en:"Data centers"},
+  projTypeInd:{ar:"منشآت صناعية",en:"Industrial facilities"},
+  projDateLabel:{ar:"تاريخ التسجيل",en:"Registration date"},
+  projStatusLabel:{ar:"الحالة",en:"Status"},
+  statusActive:{ar:"قيد التشغيل",en:"In progress"},
+  statusDone:{ar:"مكتمل ومعتمد",en:"Completed & approved"},
+  addProjBtn:{ar:"إضافة للأرشيف",en:"Add to archive"},
+  thProjName:{ar:"اسم المشروع",en:"Project name"},
+  thProjType:{ar:"القطاع",en:"Sector"},
+  thProjDate:{ar:"تاريخ التسجيل",en:"Registered"},
+  thProjStatus:{ar:"الحالة",en:"Status"},
+  projEmpty:{ar:"لا توجد مشاريع مسجّلة بعد. أضف أول مشروع أعلاه.",en:"No projects registered yet. Add your first project above."},
+  lessTitle:{ar:"سجل الدروس المستفادة",en:"Lessons Learned Register"},
+  lessDesc:{ar:"وثّق الملاحظات الفنية والإدارية لتطبيقها في المشاريع القادمة.",en:"Document technical and managerial notes to apply on future projects."},
+  lessTitleLabel:{ar:"عنوان الدرس أو الملاحظة الفنية",en:"Lesson title / technical note"},
+  lessTitlePh:{ar:"مثال: تحسين كفاءة التبريد",en:"e.g. Improving cooling efficiency"},
+  lessDescLabel:{ar:"التفاصيل وكيفية الاستفادة منها",en:"Details and how to apply it"},
+  lessDescPh:{ar:"اشرح الملاحظة والإجراء المستقبلي المقترح...",en:"Explain the observation and the proposed future action..."},
+  saveLessonBtn:{ar:"حفظ الدرس المستفاد",en:"Save lesson"},
+  lessEmpty:{ar:"لا توجد دروس موثقة بعد.",en:"No lessons documented yet."},
+  footerText:{ar:"© 2026 جميع الحقوق محفوظة | منظومة الاستدامة الشاملة — إعداد وتصميم م. وائل عويس",en:"© 2026 All rights reserved | Comprehensive Sustainability Ecosystem — Designed by Eng. Wael Ewis"},
+  fillNameDate:{ar:"يرجى إدخال اسم المشروع وتاريخ التسجيل",en:"Please enter the project name and registration date"},
+  fillLesson:{ar:"يرجى إدخال العنوان والتفاصيل",en:"Please enter the title and details"},
+  savedAt:{ar:"آخر حفظ: ",en:"Last saved: "},
+  criExcellent:{ar:"ممتاز — منظومة استدامة ناضجة",en:"Excellent — mature sustainability system"},
+  criStrong:{ar:"قوي — أداء جيد مع فرص تحسين",en:"Strong — solid performance with room to improve"},
+  criDeveloping:{ar:"قيد التطور — يحتاج متابعة",en:"Developing — needs continued attention"},
+  criRisk:{ar:"في خطر — يتطلب إجراءً عاجلاً",en:"At risk — requires urgent action"},
+  gapOnTarget:{ar:"محقَّق",en:"On target"},
+  gapNear:{ar:"قريب من الهدف",en:"Near target"},
+  gapBelow:{ar:"دون الهدف",en:"Below target"},
+  targetLabel:{ar:"الهدف",en:"Target"},
+  saveNoteLabel:{ar:"ملاحظة على هذا الحفظ (اختياري)",en:"Note for this save (optional)"},
+  saveNotePh:{ar:"مثال: بعد تركيب الألواح الشمسية",en:"e.g. After installing solar panels"},
+  alertBelowTargetPrefix:{ar:"",en:""},
+  alertBelowTarget:{ar:"دون الهدف بمقدار",en:"is below target by"},
+  alertDeclined:{ar:"تراجع عن آخر حفظ بمقدار",en:"declined since the last save by"},
+  points:{ar:"نقطة",en:"points"},
+  lessonProjectLabel:{ar:"المشروع المرتبط (اختياري)",en:"Related project (optional)"},
+  lessonProjectGeneral:{ar:"عام (غير مرتبط بمشروع)",en:"General (not project-specific)"},
+  filterLessonsLabel:{ar:"عرض دروس:",en:"Show lessons for:"},
+  filterAll:{ar:"الكل",en:"All"},
+  sortByCriBtn:{ar:"ترتيب حسب CRI",en:"Sort by CRI"},
+  viewChartBtn:{ar:"عرض كرسم بياني",en:"View as chart"},
+  viewTableBtn:{ar:"عرض كجدول",en:"View as table"},
+  histTableDate:{ar:"التاريخ",en:"Date"},
+  histTableNote:{ar:"ملاحظة",en:"Note"},
+  importConfirm:{ar:"سيؤدي الاستيراد إلى استبدال البيانات الحالية بالكامل. هل تريد المتابعة؟",en:"Importing will completely replace your current data. Continue?"},
+  importSuccess:{ar:"تم استيراد البيانات بنجاح",en:"Data imported successfully"},
+  importError:{ar:"تعذّرت قراءة الملف. تأكد أنه نسخة احتياطية صحيحة.",en:"Couldn't read the file. Make sure it's a valid backup."},
+  exportedNote:{ar:"تم تنزيل النسخة الاحتياطية",en:"Backup downloaded"},
+  reportTitle:{ar:"التقرير الشامل لمنظومة الاستدامة",en:"Comprehensive Sustainability Report"},
+  reportGeneratedOn:{ar:"تاريخ الإصدار: ",en:"Generated on: "},
+  reportOrgSection:{ar:"نظرة عامة على المؤسسة",en:"Organization overview"},
+  reportProjectsSection:{ar:"المشاريع المسجّلة",en:"Registered projects"},
+  reportLessonsSection:{ar:"الدروس المستفادة",en:"Lessons learned"},
+  reportPillarCol:{ar:"الركن",en:"Pillar"},
+  reportScoreCol:{ar:"الدرجة",en:"Score"},
+  reportTargetCol:{ar:"الهدف",en:"Target"},
+  tabRisks:{ar:"سجل المخاطر",en:"Risk Register"},
+  tabRaci:{ar:"مصفوفة المسؤوليات",en:"RACI Matrix"},
+  tabProc:{ar:"المشتريات الخضراء",en:"Green Procurement"},
+  tabAssets:{ar:"جواز الأصول",en:"Asset Passport"},
+  tabExec:{ar:"التقرير التنفيذي",en:"Executive Report"},
+  tabSettings:{ar:"الإعدادات",en:"Settings"},
+  risksTitle:{ar:"سجل المخاطر (FMEA)",en:"Risk Register (FMEA)"},
+  risksDesc:{ar:"سجّل المخاطر المحتملة وقيّم احتمالية حدوثها وأثرها؛ رقم أولوية المخاطرة (RPN) يُحتسب تلقائياً.",en:"Log potential risks and rate their probability and impact; the Risk Priority Number (RPN) is calculated automatically."},
+  autoRiskLabel:{ar:"ربط تلقائي: احتساب مؤشر المخاطر ضمن ركن الحوكمة من متوسط RPN للمخاطر المفتوحة",en:"Auto-link: derive the governance risk indicator from the average RPN of open risks"},
+  riskDescLabel:{ar:"وصف الخطر",en:"Risk description"},
+  riskProbLabel:{ar:"الاحتمالية (1-5)",en:"Probability (1-5)"},
+  riskImpactLabel:{ar:"الأثر (1-5)",en:"Impact (1-5)"},
+  riskOwnerLabel:{ar:"المسؤول",en:"Owner"},
+  riskMitigationLabel:{ar:"الإجراء الوقائي",en:"Mitigation action"},
+  riskStatusLabel:{ar:"الحالة",en:"Status"},
+  riskOpen:{ar:"مفتوح",en:"Open"},
+  riskClosed:{ar:"مغلق",en:"Closed"},
+  addRiskBtn:{ar:"إضافة إلى السجل",en:"Add to register"},
+  risksEmpty:{ar:"لا توجد مخاطر مسجّلة بعد.",en:"No risks logged yet."},
+  riskAutoNote:{ar:"محسوب تلقائياً من ",en:"Auto-computed from "},
+  riskAutoNoteSuffix:{ar:" مخاطر مفتوحة",en:" open risk(s)"},
+  raciTitle:{ar:"مصفوفة المسؤوليات (RACI)",en:"RACI Matrix"},
+  raciDesc:{ar:"حدّد من هو المسؤول (R) والمحاسَب (A) والمُستشار (C) والمُطلع (I) عن كل مهمة، لكل مشروع على حدة.",en:"Define who is Responsible (R), Accountable (A), Consulted (C), and Informed (I) for each task, per project."},
+  raciRoleLabel:{ar:"إضافة شخص / جهة",en:"Add person / role"},
+  raciTaskLabel:{ar:"إضافة مهمة",en:"Add task"},
+  raciEmpty:{ar:"أضف مهمة وشخصاً واحداً على الأقل لبناء المصفوفة.",en:"Add at least one task and one person to build the matrix."},
+  procTitle:{ar:"سجل المشتريات الخضراء",en:"Green Procurement Ledger"},
+  procDesc:{ar:"قيّم كل مورد على المعايير الخمسة؛ الدرجة الإجمالية وتصنيف الاعتماد يُحتسبان تلقائياً.",en:"Rate each supplier on the five criteria; the overall score and approval status are calculated automatically."},
+  procNameLabel:{ar:"اسم المورد",en:"Supplier name"},
+  procPriceLabel:{ar:"السعر (0-100)",en:"Price (0-100)"},
+  procEnvLabel:{ar:"الأثر البيئي (0-100)",en:"Environmental impact (0-100)"},
+  procLaborLabel:{ar:"ظروف العمل (0-100)",en:"Labor conditions (0-100)"},
+  procGovLabel:{ar:"الحوكمة (0-100)",en:"Governance (0-100)"},
+  procTechLabel:{ar:"التقنية (0-100)",en:"Technology (0-100)"},
+  procStatusLabel:{ar:"التصنيف",en:"Status"},
+  addProcBtn:{ar:"إضافة المورد",en:"Add supplier"},
+  procEmpty:{ar:"لا يوجد موردون مسجّلون بعد.",en:"No suppliers registered yet."},
+  procApproved:{ar:"معتمد",en:"Approved"},
+  procReview:{ar:"قيد المراجعة",en:"Under review"},
+  procRejected:{ar:"مرفوض",en:"Rejected"},
+  assetsTitle:{ar:"جواز السفر الرقمي للأصول",en:"Digital Product Passport"},
+  assetsDesc:{ar:"وثّق كل معدة أو أصل مع رمز QR يمكن طباعته ولصقه على المعدة نفسها.",en:"Document each asset or piece of equipment with a QR code you can print and attach to it."},
+  assetNameLabel:{ar:"اسم الأصل / المعدة",en:"Asset / equipment name"},
+  assetSourceLabel:{ar:"المصدر / المورّد",en:"Source / supplier"},
+  assetDateLabel:{ar:"تاريخ الشراء",en:"Purchase date"},
+  assetEffLabel:{ar:"كفاءة الطاقة (%)",en:"Energy efficiency (%)"},
+  assetRecycleLabel:{ar:"خطة إعادة التدوير",en:"Recycling plan"},
+  addAssetBtn:{ar:"إضافة الأصل",en:"Add asset"},
+  assetsEmpty:{ar:"لا توجد أصول مسجّلة بعد.",en:"No assets registered yet."},
+  execTitle:{ar:"التقرير التنفيذي",en:"Executive Report"},
+  execDesc:{ar:"نظرة سريعة على أهم المؤشرات دون الحاجة لفتح كل تبويب.",en:"A quick look at the key indicators without opening every tab."},
+  execOrgCri:{ar:"مؤشر CRI للمؤسسة",en:"Organization CRI"},
+  execProjectsTotal:{ar:"إجمالي المشاريع",en:"Total projects"},
+  execProjectsDone:{ar:"مكتمل ومعتمد",en:"Completed & approved"},
+  execProjectsActive:{ar:"قيد التشغيل",en:"In progress"},
+  execTopRisks:{ar:"أعلى المخاطر المفتوحة",en:"Top open risks"},
+  execNoRisks:{ar:"لا توجد مخاطر مفتوحة حالياً.",en:"No open risks currently."},
+  execRecentLessons:{ar:"آخر الدروس المستفادة",en:"Recent lessons learned"},
+  execNoLessons:{ar:"لا توجد دروس موثقة بعد.",en:"No lessons documented yet."},
+  settingsTitle:{ar:"الإعدادات والهوية المؤسسية",en:"Settings & Organization Identity"},
+  settingsDesc:{ar:"هذه الإعدادات تخص هذا الجهاز/المتصفح فقط، ويمكن نقلها عبر التصدير والاستيراد.",en:"These settings live in this browser only; carry them over via export/import."},
+  settOrgNameLabel:{ar:"اسم الجهة / المؤسسة",en:"Organization name"},
+  settOrgNamePh:{ar:"مثال: بناء للمقاولات",en:"e.g. Bena Construction"},
+  settLogoLabel:{ar:"رمز الشعار (إيموجي)",en:"Logo symbol (emoji)"},
+  settCurrencyLabel:{ar:"العملة المستخدمة في الحقول المالية",en:"Currency used in financial fields"},
+  settLangLabel:{ar:"اللغة الافتراضية عند الفتح",en:"Default language on open"},
+};
+let currentLang = 'ar';
+function t(key){ return (dict[key] && dict[key][currentLang]) || key; }
+
+/* ============================= Pillar definitions ============================= */
+const pillarDefs = [
+  { id:'env', name:{ar:'الاستدامة البيئية',en:'Environmental'}, scoreField:'renewable', color:'#1F6F5C',
+    fields:[
+      {key:'renewable', labelAr:'نسبة الطاقة المتجددة (%)', labelEn:'Renewable energy share (%)', type:'number', min:0, max:100, def:45},
+      {key:'carbon', labelAr:'الانبعاثات الكربونية (طن)', labelEn:'Carbon emissions (tons)', type:'number', min:0, def:120}
+    ]},
+  { id:'econ', name:{ar:'الاستدامة الاقتصادية',en:'Economic'}, scoreField:'roi', color:'#C9A84C',
+    fields:[
+      {key:'roi', labelAr:'عائد الاستثمار الأخضر (ROI %)', labelEn:'Green investment ROI (%)', type:'number', min:0, max:100, def:18},
+      {key:'savings', labelAr:'التوفير في تكلفة التشغيل', labelEn:'Operating cost savings', type:'number', min:0, def:15000}
+    ]},
+  { id:'soc', name:{ar:'الاستدامة الاجتماعية',en:'Social'}, scoreField:'satisfaction', color:'#6C5DD3',
+    fields:[
+      {key:'satisfaction', labelAr:'رضا العاملين والمجتمع (%)', labelEn:'Workforce & community satisfaction (%)', type:'number', min:0, max:100, def:92},
+      {key:'training', labelAr:'ساعات التدريب المهني', labelEn:'Professional training hours', type:'number', min:0, def:350}
+    ]},
+  { id:'gov', name:{ar:'الحوكمة المؤسسية',en:'Governance'}, scoreField:'compliance', color:'#3F6FB0',
+    fields:[
+      {key:'compliance', labelAr:'الالتزام بالمعايير والسياسات (%)', labelEn:'Policy & standards compliance (%)', type:'number', min:0, max:100, def:98},
+      {key:'risk', labelAr:'مؤشر إدارة المخاطر (FMEA 1-5)', labelEn:'Risk index (FMEA 1-5)', type:'number', min:0, max:5, step:0.1, def:2.1}
+    ]},
+  { id:'tech', name:{ar:'الاستدامة التكنولوجية',en:'Technological'}, scoreField:'efficiency', color:'#B0553F',
+    fields:[
+      {key:'efficiency', labelAr:'كفاءة البنية الرقمية (%)', labelEn:'Digital infrastructure efficiency (%)', type:'number', min:0, max:100, def:88},
+      {key:'apiStatus', labelAr:'حالة تكامل الأنظمة (API)', labelEn:'Systems integration (API) status', type:'select',
+       options:[{value:'100',ar:'نشط بالكامل',en:'Fully active'},{value:'60',ar:'جزئي',en:'Partial'},{value:'20',ar:'غير مفعّل',en:'Inactive'}], def:'100'}
+    ]}
+];
+
+function defaultIndicators(){ const v={}; pillarDefs.forEach(p=>p.fields.forEach(f=>{ v[f.key]=f.def; })); return v; }
+function defaultWeights(){ const w={}; pillarDefs.forEach(p=>{ w[p.id]=50; }); return w; }
+function defaultTargets(){ const tg={}; pillarDefs.forEach(p=>{ tg[p.id]=75; }); return tg; }
+
+/* ============================= State ============================= */
+let state = null;
+
+function freshState(){
+  return {
+    lang:'ar',
+    activeEntity:'org',
+    targets: defaultTargets(),
+    entities:{ org:{ name:{ar:'نظرة عامة على المؤسسة',en:'Organization overview'}, indicators:defaultIndicators(), weights:defaultWeights(), history:[], savedAt:null } },
+    projects:[
+      {id:'p1', name:'مشروع البنية التحتية الذكية - العاصمة', type:'infra', date:'2026-06-15', status:'done', indicators:defaultIndicators(), weights:defaultWeights(), history:[], savedAt:null},
+      {id:'p2', name:'تطوير منشأة حدائق السلمانية', type:'realestate', date:'2026-08-10', status:'active', indicators:defaultIndicators(), weights:defaultWeights(), history:[], savedAt:null}
+    ],
+    lessons:[
+      {title:'تحسين كفاءة التبريد في مراكز البيانات', desc:'أدى دمج أنظمة التبريد الامتصاصي وطلاءات العزل الإشعاعي إلى خفض استهلاك الطاقة بنسبة 22% خلال أشهر الذروة الصيفية.', date:new Date().toISOString().slice(0,10)}
+    ],
+    suppliers:[],
+    assets:[],
+    settings:{orgName:'', logoEmoji:'🌿', currency:'USD', defaultLang:'ar'}
+  };
+}
+
+function ensureEntityDefaults(e){
+  if(!e.indicators) e.indicators = defaultIndicators();
+  if(!e.weights) e.weights = defaultWeights();
+  if(!e.history) e.history = [];
+  if(e.savedAt===undefined) e.savedAt = null;
+  if(!e.risks) e.risks = [];
+  if(!e.raci) e.raci = {roles:[], tasks:[]};
+  if(e.autoRiskFromRegister===undefined) e.autoRiskFromRegister = false;
+  return e;
+}
+
+function migrateLegacy(){
+  try{
+    const oldIndicators = localStorage.getItem('sust_indicators');
+    const oldProjects = localStorage.getItem('sust_projects');
+    const oldLessons = localStorage.getItem('sust_lessons');
+    const oldLang = localStorage.getItem('sust_lang');
+    if(!oldIndicators && !oldProjects && !oldLessons) return null;
+    const s = freshState();
+    if(oldIndicators){ try{ s.entities.org.indicators = JSON.parse(oldIndicators); }catch(e){} }
+    if(oldProjects){
+      try{
+        const parsed = JSON.parse(oldProjects);
+        s.projects = parsed.map((p,i)=>ensureEntityDefaults({ id:'legacy'+i, name:p.name, type:p.type, date:p.date, status:p.status }));
+      }catch(e){}
+    }
+    if(oldLessons){ try{ s.lessons = JSON.parse(oldLessons); }catch(e){} }
+    if(oldLang) s.lang = oldLang;
+    return s;
+  }catch(e){ return null; }
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem('sust_state_v2');
+    if(raw){
+      const parsed = JSON.parse(raw);
+      ensureEntityDefaults(parsed.entities.org);
+      parsed.projects.forEach(ensureEntityDefaults);
+      if(!parsed.targets) parsed.targets = defaultTargets();
+      if(!parsed.suppliers) parsed.suppliers = [];
+      if(!parsed.assets) parsed.assets = [];
+      if(!parsed.settings) parsed.settings = {orgName:'', logoEmoji:'🌿', currency:'USD', defaultLang:'ar'};
+      return parsed;
+    }
+  }catch(e){}
+  const migrated = migrateLegacy();
+  if(migrated) return migrated;
+  return freshState();
+}
+
+function persistState(){
+  try{ localStorage.setItem('sust_state_v2', JSON.stringify(state)); }catch(e){}
+}
+
+/* ============================= Entities / scoring ============================= */
+function getActiveEntity(){
+  if(state.activeEntity==='org') return state.entities.org;
+  return state.projects.find(p=>p.id===state.activeEntity) || state.entities.org;
+}
+function entityDisplayName(e){ return (typeof e.name === 'object') ? e.name[currentLang] : e.name; }
+
+function pillarScoreFor(entity, p){
+  const scoreField = p.fields.find(f=>f.key===p.scoreField);
+  let raw = Number(entity.indicators[scoreField.key]);
+  if(isNaN(raw)) raw = 0;
+  if(p.id==='tech'){
+    const eff = Number(entity.indicators.efficiency)||0;
+    const api = Number(entity.indicators.apiStatus)||0;
+    return Math.max(0, Math.min(100,(eff+api)/2));
+  }
+  if(p.id==='gov'){
+    const compliance = Number(entity.indicators.compliance)||0;
+    const riskVal = getEffectiveRiskValue(entity);
+    const riskComponent = Math.max(0, 100 - riskVal*20);
+    return Math.max(0, Math.min(100, (compliance+riskComponent)/2));
+  }
+  return Math.max(0, Math.min(100, raw));
+}
+function computeAutoRiskValue(entity){
+  const open = (entity.risks||[]).filter(r=>r.status!=='closed');
+  if(open.length===0) return null;
+  const avg = open.reduce((a,r)=>a+r.prob*r.impact,0)/open.length;
+  return +(avg/5).toFixed(1);
+}
+function getEffectiveRiskValue(entity){
+  if(entity.autoRiskFromRegister){
+    const auto = computeAutoRiskValue(entity);
+    if(auto!==null) return auto;
+  }
+  return Number(entity.indicators.risk)||0;
+}
+function criFor(entity){
+  let sumW=0, sumWS=0;
+  pillarDefs.forEach(p=>{
+    const w = Number(entity.weights[p.id])||0;
+    const s = pillarScoreFor(entity,p);
+    sumW += w; sumWS += w*s;
+  });
+  return sumW>0 ? sumWS/sumW : pillarDefs.reduce((a,p)=>a+pillarScoreFor(entity,p),0)/pillarDefs.length;
+}
+function criLabelKey(score){
+  if(score>=85) return 'criExcellent';
+  if(score>=65) return 'criStrong';
+  if(score>=40) return 'criDeveloping';
+  return 'criRisk';
+}
+function gapStatus(score,target){
+  const diff = score-target;
+  if(diff>=0) return {cls:'gap-good', key:'gapOnTarget'};
+  if(diff>=-15) return {cls:'gap-mid', key:'gapNear'};
+  return {cls:'gap-bad', key:'gapBelow'};
+}
+function statusColor(score,target){
+  const diff = score-target;
+  if(diff>=0) return getComputedColor('--green');
+  if(diff>=-15) return getComputedColor('--amber');
+  return getComputedColor('--danger');
+}
+function getComputedColor(varName){
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || '#888';
+}
+function currencySymbol(){
+  const map = {USD:'$', EGP:'ج.م', SAR:'ر.س', AED:'د.إ'};
+  return map[state.settings.currency] || '$';
+}
+function applySettingsToUI(){
+  const s = state.settings;
+  document.querySelector('.brand-mark').textContent = s.logoEmoji || '🌿';
+  const subEl = document.querySelector('.brand-text p[data-i18n="brandSub"]');
+  if(subEl) subEl.textContent = t('brandSub') + (s.orgName ? ' — ' + s.orgName : '');
+  const orgNameInput = document.getElementById('settOrgName');
+  const logoInput = document.getElementById('settLogo');
+  const currSel = document.getElementById('settCurrency');
+  const langSel = document.getElementById('settDefaultLang');
+  if(orgNameInput) orgNameInput.value = s.orgName;
+  if(logoInput) logoInput.value = s.logoEmoji;
+  if(currSel) currSel.value = s.currency;
+  if(langSel) langSel.value = s.defaultLang;
+}
+function onSettingsChange(){
+  const prevLang = state.settings.defaultLang;
+  state.settings.orgName = document.getElementById('settOrgName').value.trim();
+  state.settings.logoEmoji = document.getElementById('settLogo').value.trim() || '🌿';
+  state.settings.currency = document.getElementById('settCurrency').value;
+  state.settings.defaultLang = document.getElementById('settDefaultLang').value;
+  persistState();
+  applySettingsToUI();
+  renderPillars();
+  if(state.settings.defaultLang !== prevLang){
+    setLang(state.settings.defaultLang);
+  }
+}
+
+/* ============================= Rendering ============================= */
+function setLang(lang){
+  currentLang = lang;
+  state.lang = lang;
+  const root = document.getElementById('htmlRoot');
+  root.setAttribute('lang', lang);
+  root.setAttribute('dir', lang==='ar' ? 'rtl' : 'ltr');
+  document.title = t('brandTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder'))); });
+  persistState();
+  renderAll();
+  applySettingsToUI();
+}
+
+function populateEntitySelect(){
+  const sel = document.getElementById('entitySelect');
+  const prev = state.activeEntity;
+  sel.innerHTML = '';
+  const orgOpt = document.createElement('option');
+  orgOpt.value='org'; orgOpt.textContent = t('orgOverview');
+  sel.appendChild(orgOpt);
+  state.projects.forEach(p=>{
+    const opt = document.createElement('option');
+    opt.value=p.id; opt.textContent=p.name;
+    sel.appendChild(opt);
+  });
+  sel.value = state.projects.some(p=>p.id===prev) || prev==='org' ? prev : 'org';
+  if(sel.value !== prev) state.activeEntity = sel.value;
+}
+
+function setActiveEntity(id){
+  state.activeEntity = id;
+  persistState();
+  renderDashboard();
+}
+
+function renderPillars(){
+  const entity = getActiveEntity();
+  const grid = document.getElementById('pillarGrid');
+  grid.innerHTML = '';
+  const lastSnapshot = entity.history && entity.history.length ? entity.history[entity.history.length-1] : null;
+  pillarDefs.forEach(p=>{
+    const score = Math.round(pillarScoreFor(entity,p));
+    const target = state.targets[p.id];
+    const gs = gapStatus(score,target);
+    const card = document.createElement('div');
+    card.className = 'pillar-card';
+    let fieldsHtml = '';
+    p.fields.forEach(f=>{
+      let label = currentLang==='ar'?f.labelAr:f.labelEn;
+      if(f.key==='savings'){ label += ` (${currencySymbol()})`; }
+      if(f.key==='risk' && entity.autoRiskFromRegister){
+        const auto = computeAutoRiskValue(entity);
+        const openCount = (entity.risks||[]).filter(r=>r.status!=='closed').length;
+        const val = auto===null ? (entity.indicators.risk||0) : auto;
+        const note = auto===null ? '' : `<div class="field-context">${t('riskAutoNote')}${openCount}${t('riskAutoNoteSuffix')}</div>`;
+        fieldsHtml += `<div class="field"><label>${label}</label><input type="number" value="${val}" disabled style="opacity:.7">${note}</div>`;
+        return;
+      }
+      if(f.type==='select'){
+        const opts = f.options.map(o=>`<option value="${o.value}" ${entity.indicators[f.key]==o.value?'selected':''}>${currentLang==='ar'?o.ar:o.en}</option>`).join('');
+        fieldsHtml += `<div class="field"><label>${label}</label><select data-key="${f.key}" onchange="onFieldChange(this)">${opts}</select></div>`;
+      } else {
+        fieldsHtml += `<div class="field"><label>${label}</label><input type="number" data-key="${f.key}" value="${entity.indicators[f.key]}" min="${f.min||0}" ${f.max!==undefined?`max="${f.max}"`:''} ${f.step?`step="${f.step}"`:''} oninput="onFieldChange(this)"></div>`;
+      }
+    });
+    const trendHtml = trendMarkup(lastSnapshot ? score - lastSnapshot.pillars[p.id] : null);
+    card.innerHTML = `
+      <div class="pillar-top">
+        <span class="pillar-name">${p.name[currentLang]}</span>
+        <span><span class="pillar-score" id="score-${p.id}">${score}</span><span class="trend" id="trend-${p.id}">${trendHtml}</span></span>
+      </div>
+      ${fieldsHtml}
+      <span class="gap-tag ${gs.cls}" id="gap-${p.id}">${t('targetLabel')}: ${target} · ${t(gs.key)}</span>
+    `;
+    grid.appendChild(card);
+  });
+}
+function trendMarkup(delta){
+  if(delta===null || delta===undefined || isNaN(delta)) return '';
+  if(delta>0) return `<span class="trend-up">▲ ${delta}</span>`;
+  if(delta<0) return `<span class="trend-down">▼ ${Math.abs(delta)}</span>`;
+  return `<span class="trend-same">–</span>`;
+}
+
+function onFieldChange(el){
+  const key = el.getAttribute('data-key');
+  const entity = getActiveEntity();
+  entity.indicators[key] = el.value;
+  const p = pillarDefs.find(pd=>pd.fields.some(f=>f.key===key));
+  const score = Math.round(pillarScoreFor(entity,p));
+  document.getElementById('score-'+p.id).textContent = score;
+  const gs = gapStatus(score, state.targets[p.id]);
+  const gapEl = document.getElementById('gap-'+p.id);
+  gapEl.className = 'gap-tag ' + gs.cls;
+  gapEl.textContent = `${t('targetLabel')}: ${state.targets[p.id]} · ${t(gs.key)}`;
+  persistState();
+  renderGaugeAndBars();
+  renderCompare();
+}
+
+function renderGaugeAndBars(){
+  const entity = getActiveEntity();
+  const cri = criFor(entity);
+  const criRounded = Math.round(cri);
+  document.getElementById('criNum').textContent = criRounded;
+  document.getElementById('criStatus').textContent = t(criLabelKey(criRounded));
+  const circumference = 2*Math.PI*58;
+  const fg = document.getElementById('gaugeFg');
+  fg.setAttribute('stroke-dasharray', circumference.toFixed(1));
+  fg.setAttribute('stroke-dashoffset', (circumference*(1-criRounded/100)).toFixed(1));
+
+  const barsWrap = document.getElementById('barsWrap');
+  barsWrap.innerHTML = '';
+  pillarDefs.forEach(p=>{
+    const s = Math.round(pillarScoreFor(entity,p));
+    const target = state.targets[p.id];
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <span>${p.name[currentLang]}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${s}%"></div><div class="bar-target-tick" style="inset-inline-start:${target}%"></div></div>
+      <span class="bar-num">${s}</span>
+    `;
+    barsWrap.appendChild(row);
+  });
+}
+
+function renderWeights(){
+  const entity = getActiveEntity();
+  const wrap = document.getElementById('weightsWrap');
+  wrap.innerHTML = '';
+  pillarDefs.forEach(p=>{
+    const w = entity.weights[p.id];
+    const row = document.createElement('div');
+    row.className = 'weight-row';
+    row.innerHTML = `
+      <span>${p.name[currentLang]}</span>
+      <input type="range" min="0" max="100" value="${w}" data-pillar="${p.id}" oninput="onWeightChange(this)">
+      <span class="bar-num" id="wval-${p.id}">${w}</span>
+    `;
+    wrap.appendChild(row);
+  });
+}
+function onWeightChange(el){
+  const entity = getActiveEntity();
+  const pid = el.getAttribute('data-pillar');
+  entity.weights[pid] = Number(el.value);
+  document.getElementById('wval-'+pid).textContent = el.value;
+  persistState();
+  renderGaugeAndBars();
+  renderCompare();
+}
+function resetWeights(){
+  const entity = getActiveEntity();
+  entity.weights = defaultWeights();
+  persistState();
+  renderWeights();
+  renderGaugeAndBars();
+  renderCompare();
+}
+
+function renderTargets(){
+  const wrap = document.getElementById('targetsWrap');
+  wrap.innerHTML = '';
+  pillarDefs.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'target-field';
+    div.innerHTML = `<label>${p.name[currentLang]}</label><input type="number" min="0" max="100" value="${state.targets[p.id]}" data-pillar="${p.id}" oninput="onTargetChange(this)">`;
+    wrap.appendChild(div);
+  });
+}
+function onTargetChange(el){
+  const pid = el.getAttribute('data-pillar');
+  state.targets[pid] = Number(el.value)||0;
+  persistState();
+  renderPillars();
+  renderGaugeAndBars();
+  renderCompare();
+}
+
+let seriesVisible = {cri:true, env:false, econ:false, soc:false, gov:false, tech:false};
+let historyViewMode = 'chart';
+function toggleHistoryView(){
+  historyViewMode = historyViewMode==='chart' ? 'table' : 'chart';
+  const btn = document.getElementById('histViewToggleBtn');
+  btn.setAttribute('data-i18n', historyViewMode==='chart' ? 'viewTableBtn' : 'viewChartBtn');
+  btn.textContent = historyViewMode==='chart' ? t('viewTableBtn') : t('viewChartBtn');
+  renderHistorySection();
+}
+function renderHistorySection(){
+  const entity = getActiveEntity();
+  const hist = entity.history || [];
+  const chartWrap = document.getElementById('chartWrap');
+  const tableWrap = document.getElementById('histTableWrap');
+  const legend = document.getElementById('chartLegend');
+  const empty = document.getElementById('historyEmpty');
+  if(hist.length<2){
+    chartWrap.innerHTML=''; tableWrap.innerHTML=''; tableWrap.style.display='none'; chartWrap.style.display='block';
+    legend.style.display = historyViewMode==='chart' ? 'flex' : 'none';
+    empty.style.display='block';
+    return;
+  }
+  empty.style.display='none';
+  if(historyViewMode==='table'){
+    chartWrap.style.display='none'; tableWrap.style.display='block'; legend.style.display='none';
+    renderHistoryTable(entity);
+  } else {
+    tableWrap.style.display='none'; chartWrap.style.display='block'; legend.style.display='flex';
+    renderChart();
+  }
+}
+function renderHistoryTable(entity){
+  const wrap = document.getElementById('histTableWrap');
+  const hist = entity.history || [];
+  let html = `<table><thead><tr><th>${t('histTableDate')}</th><th>${t('colCri')}</th>`;
+  pillarDefs.forEach(p=>{ html += `<th>${p.name[currentLang]}</th>`; });
+  html += `<th>${t('histTableNote')}</th></tr></thead><tbody>`;
+  for(let i=hist.length-1; i>=0; i--){
+    const hh = hist[i];
+    html += `<tr><td>${new Date(hh.date).toLocaleString(currentLang==='ar'?'ar-EG':'en-US')}</td><td><strong>${hh.cri}</strong></td>`;
+    pillarDefs.forEach(p=>{ html += `<td>${hh.pillars[p.id]}</td>`; });
+    html += `<td>${hh.note ? hh.note : ''}</td></tr>`;
+  }
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+function renderChartLegend(){
+  const legend = document.getElementById('chartLegend');
+  legend.innerHTML = '';
+  const items = [{id:'cri', label:t('colCri'), color: getComputedColor('--navy')}, ...pillarDefs.map(p=>({id:p.id,label:p.name[currentLang],color:p.color}))];
+  items.forEach(it=>{
+    const chip = document.createElement('button');
+    chip.type='button';
+    chip.className = 'legend-chip' + (seriesVisible[it.id] ? '' : ' off');
+    chip.innerHTML = `<span class="legend-dot" style="background:${it.color}"></span>${it.label}`;
+    chip.onclick = ()=>{ seriesVisible[it.id] = !seriesVisible[it.id]; renderChartLegend(); renderChart(); };
+    legend.appendChild(chip);
+  });
+}
+function escapeXml(str){
+  return String(str).replace(/[<>&'"]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;',"'":'&apos;','"':'&quot;'}[c]));
+}
+function renderChart(){
+  const entity = getActiveEntity();
+  const hist = entity.history || [];
+  const wrap = document.getElementById('chartWrap');
+  const empty = document.getElementById('historyEmpty');
+  if(hist.length<2){ wrap.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  const w=600,h=220,pad=30;
+  function pathFor(values){
+    const stepX = (w-2*pad)/(values.length-1);
+    return values.map((v,i)=>{
+      const x = pad+i*stepX;
+      const y = pad+(h-2*pad)*(1-Math.max(0,Math.min(100,v))/100);
+      return (i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1);
+    }).join(' ');
+  }
+  let svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+  for(let gy=0; gy<=100; gy+=25){
+    const y = pad+(h-2*pad)*(1-gy/100);
+    svg += `<line x1="${pad}" y1="${y.toFixed(1)}" x2="${w-pad}" y2="${y.toFixed(1)}" stroke="${getComputedColor('--line')}" stroke-width="1"/>`;
+    svg += `<text x="${pad-6}" y="${(y+3).toFixed(1)}" font-size="9" fill="${getComputedColor('--ink-soft')}" text-anchor="end">${gy}</text>`;
+  }
+  if(seriesVisible.cri){
+    const criValues = hist.map(hh=>hh.cri);
+    svg += `<path d="${pathFor(criValues)}" fill="none" stroke="${getComputedColor('--navy')}" stroke-width="2.5"/>`;
+    const stepX = (w-2*pad)/(criValues.length-1);
+    hist.forEach((hh,i)=>{
+      const x = pad+i*stepX;
+      const y = pad+(h-2*pad)*(1-Math.max(0,Math.min(100,hh.cri))/100);
+      const label = new Date(hh.date).toLocaleDateString(currentLang==='ar'?'ar-EG':'en-US') + ' — ' + t('colCri') + ': ' + hh.cri + (hh.note ? (' — ' + hh.note) : '');
+      svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${getComputedColor('--gold')}" stroke="${getComputedColor('--navy')}" stroke-width="1"><title>${escapeXml(label)}</title></circle>`;
+    });
+  }
+  pillarDefs.forEach(p=>{
+    if(seriesVisible[p.id]){
+      svg += `<path d="${pathFor(hist.map(hh=>hh.pillars[p.id]))}" fill="none" stroke="${p.color}" stroke-width="1.6" stroke-dasharray="4 2"/>`;
+    }
+  });
+  const firstDate = hist[0].date.slice(0,10);
+  const lastDate = hist[hist.length-1].date.slice(0,10);
+  svg += `<text x="${pad}" y="${h-6}" font-size="9" fill="${getComputedColor('--ink-soft')}">${firstDate}</text>`;
+  svg += `<text x="${w-pad}" y="${h-6}" font-size="9" fill="${getComputedColor('--ink-soft')}" text-anchor="end">${lastDate}</text>`;
+  svg += `</svg>`;
+  wrap.innerHTML = svg;
+}
+
+let compareSortState = 'none'; // 'none' | 'desc' | 'asc'
+function toggleCompareSort(){
+  compareSortState = compareSortState==='none' ? 'desc' : (compareSortState==='desc' ? 'asc' : 'none');
+  renderCompare();
+}
+function renderCompare(){
+  const sortBtn = document.getElementById('sortCompareBtn');
+  if(sortBtn){
+    const arrow = compareSortState==='desc' ? ' ▼' : (compareSortState==='asc' ? ' ▲' : '');
+    sortBtn.textContent = t('sortByCriBtn') + arrow;
+  }
+  const wrap = document.getElementById('compareWrap');
+  const empty = document.getElementById('compareEmpty');
+  if(state.projects.length===0){ wrap.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  let projectsCopy = state.projects.slice();
+  if(compareSortState!=='none'){
+    projectsCopy.sort((a,b)=>{
+      const ca = criFor(a), cb = criFor(b);
+      return compareSortState==='desc' ? cb-ca : ca-cb;
+    });
+  }
+  const entities = [state.entities.org, ...projectsCopy];
+  let html = '<table><thead><tr><th></th>';
+  entities.forEach(e=> html += `<th>${entityDisplayName(e)}</th>`);
+  html += '</tr></thead><tbody>';
+  pillarDefs.forEach(p=>{
+    html += `<tr><td>${p.name[currentLang]}</td>`;
+    entities.forEach(e=>{
+      const score = Math.round(pillarScoreFor(e,p));
+      const color = statusColor(score, state.targets[p.id]);
+      html += `<td><span class="cmp-badge" style="background:${color}22; color:${color}; border:1px solid ${color}55;">${score}</span></td>`;
+    });
+    html += '</tr>';
+  });
+  html += `<tr><td><strong>${t('colCri')}</strong></td>`;
+  entities.forEach(e=>{ html += `<td><strong>${Math.round(criFor(e))}</strong></td>`; });
+  html += '</tr></tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderDashboard(){
+  populateEntitySelect();
+  renderPillars();
+  renderGaugeAndBars();
+  renderWeights();
+  renderTargets();
+  renderChartLegend();
+  renderHistorySection();
+  renderCompare();
+  const entity = getActiveEntity();
+  document.getElementById('savedNote').textContent = entity.savedAt ? (t('savedAt') + new Date(entity.savedAt).toLocaleString(currentLang==='ar'?'ar-EG':'en-US')) : '';
+  const alertsWrap = document.getElementById('saveAlerts');
+  if(alertsWrap) alertsWrap.innerHTML = '';
+}
+
+function saveIndicators(){
+  const entity = getActiveEntity();
+  const previousLast = entity.history && entity.history.length ? entity.history[entity.history.length-1] : null;
+  const now = new Date().toISOString();
+  entity.savedAt = now;
+  const pillars = {};
+  pillarDefs.forEach(p=>{ pillars[p.id] = Math.round(pillarScoreFor(entity,p)); });
+  const noteInput = document.getElementById('saveNoteInput');
+  const note = noteInput ? noteInput.value.trim() : '';
+  entity.history = entity.history || [];
+  entity.history.push({date:now, cri:Math.round(criFor(entity)), pillars, note});
+  if(entity.history.length>30) entity.history = entity.history.slice(-30);
+  persistState();
+  document.getElementById('savedNote').textContent = t('savedAt') + new Date(now).toLocaleString(currentLang==='ar'?'ar-EG':'en-US');
+  if(noteInput) noteInput.value = '';
+  renderSaveAlerts(entity, pillars, previousLast);
+  renderPillars();
+  renderHistorySection();
+  renderCompare();
+}
+
+function renderSaveAlerts(entity, pillars, previousLast){
+  const wrap = document.getElementById('saveAlerts');
+  wrap.innerHTML = '';
+  const items = [];
+  pillarDefs.forEach(p=>{
+    const score = pillars[p.id];
+    const target = state.targets[p.id];
+    if(score < target){
+      items.push({danger:true, text:`${p.name[currentLang]} ${t('alertBelowTarget')} ${target-score} ${t('points')}`});
+    }
+    if(previousLast){
+      const prevScore = previousLast.pillars[p.id];
+      const delta = prevScore - score;
+      if(delta>0){
+        items.push({danger:false, text:`${p.name[currentLang]} ${t('alertDeclined')} ${delta} ${t('points')}`});
+      }
+    }
+  });
+  items.forEach(it=>{
+    const div = document.createElement('div');
+    div.className = 'alert-item' + (it.danger ? ' alert-danger' : '');
+    div.textContent = it.text;
+    wrap.appendChild(div);
+  });
+}
+
+/* ============================= Projects ============================= */
+function renderProjects(){
+  const tbody = document.getElementById('projectsTableBody');
+  const empty = document.getElementById('projEmpty');
+  tbody.innerHTML = '';
+  if(state.projects.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  const typeKeyMap = {infra:'projTypeInfra', realestate:'projTypeRe', datacenter:'projTypeDc', industrial:'projTypeInd'};
+  state.projects.forEach((p,idx)=>{
+    const tr = document.createElement('tr');
+    const statusPillClass = p.status==='done' ? 'pill-active' : 'pill-progress';
+    const statusText = p.status==='done' ? t('statusDone') : t('statusActive');
+    tr.innerHTML = `
+      <td>${p.name}</td>
+      <td>${t(typeKeyMap[p.type]||'projTypeInfra')}</td>
+      <td>${p.date}</td>
+      <td><span class="pill ${statusPillClass}">${statusText}</span></td>
+      <td class="no-print"><button class="pill-remove" onclick="removeProject(${idx})" title="حذف">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function addProject(){
+  const name = document.getElementById('projName').value.trim();
+  const type = document.getElementById('projType').value;
+  const date = document.getElementById('projDate').value;
+  const status = document.getElementById('projStatus').value;
+  if(!name || !date){ alert(t('fillNameDate')); return; }
+  const id = 'p'+Date.now()+Math.floor(Math.random()*1000);
+  state.projects.unshift(ensureEntityDefaults({id,name,type,date,status}));
+  persistState();
+  renderProjects();
+  populateEntitySelect();
+  populateLessonProjectSelects();
+  renderLessons();
+  renderCompare();
+  document.getElementById('projName').value = '';
+  document.getElementById('projDate').value = '';
+}
+function removeProject(idx){
+  const removed = state.projects[idx];
+  state.projects.splice(idx,1);
+  if(state.activeEntity === removed.id) state.activeEntity = 'org';
+  persistState();
+  renderProjects();
+  renderDashboard();
+  populateLessonProjectSelects();
+  renderLessons();
+}
+
+/* ============================= Lessons ============================= */
+let lessonFilterValue = 'all';
+function populateLessonProjectSelects(){
+  const addSel = document.getElementById('lessonProject');
+  const filterSel = document.getElementById('lessonFilter');
+  const prevAdd = addSel.value;
+  addSel.innerHTML = `<option value="">${t('lessonProjectGeneral')}</option>`;
+  state.projects.forEach(p=>{
+    const opt = document.createElement('option'); opt.value=p.id; opt.textContent=p.name; addSel.appendChild(opt);
+  });
+  if(state.projects.some(p=>p.id===prevAdd)) addSel.value = prevAdd;
+
+  const prevFilter = filterSel.value || lessonFilterValue;
+  filterSel.innerHTML = `<option value="all">${t('filterAll')}</option><option value="">${t('lessonProjectGeneral')}</option>`;
+  state.projects.forEach(p=>{
+    const opt = document.createElement('option'); opt.value=p.id; opt.textContent=p.name; filterSel.appendChild(opt);
+  });
+  filterSel.value = (prevFilter==='all' || prevFilter==='' || state.projects.some(p=>p.id===prevFilter)) ? prevFilter : 'all';
+  lessonFilterValue = filterSel.value;
+}
+function onLessonFilterChange(value){ lessonFilterValue = value; renderLessons(); }
+function lessonProjectLabel(l){
+  if(!l.projectId) return '';
+  const proj = state.projects.find(p=>p.id===l.projectId);
+  return proj ? proj.name : '';
+}
+function renderLessons(){
+  const container = document.getElementById('lessonsContainer');
+  const empty = document.getElementById('lessEmpty');
+  container.innerHTML = '';
+  const filtered = state.lessons.filter(l=>{
+    if(lessonFilterValue==='all') return true;
+    if(lessonFilterValue==='') return !l.projectId;
+    return l.projectId===lessonFilterValue;
+  });
+  if(filtered.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  filtered.forEach((l)=>{
+    const idx = state.lessons.indexOf(l);
+    const card = document.createElement('div');
+    card.className = 'lesson-card';
+    const projLabel = lessonProjectLabel(l);
+    card.innerHTML = `
+      <h4>${l.title}</h4><p>${l.desc}</p>
+      <div class="lesson-meta"><span>${l.date}${projLabel ? ' · ' + projLabel : ''}</span><button class="pill-remove no-print" onclick="removeLesson(${idx})" title="حذف">✕</button></div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addLesson(){
+  const title = document.getElementById('lessonTitle').value.trim();
+  const desc = document.getElementById('lessonDesc').value.trim();
+  const projectId = document.getElementById('lessonProject').value;
+  if(!title || !desc){ alert(t('fillLesson')); return; }
+  state.lessons.unshift({title, desc, projectId, date:new Date().toISOString().slice(0,10)});
+  persistState();
+  renderLessons();
+  document.getElementById('lessonTitle').value = '';
+  document.getElementById('lessonDesc').value = '';
+}
+function removeLesson(idx){ state.lessons.splice(idx,1); persistState(); renderLessons(); }
+
+/* ============================= Risk Register (FMEA) ============================= */
+let riskEntityId = 'org';
+function getRiskEntity(){ return riskEntityId==='org' ? state.entities.org : (state.projects.find(p=>p.id===riskEntityId) || state.entities.org); }
+function populateRiskEntitySelect(){
+  const sel = document.getElementById('riskEntitySelect');
+  const prev = riskEntityId;
+  sel.innerHTML = `<option value="org">${t('orgOverview')}</option>`;
+  state.projects.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; sel.appendChild(o); });
+  sel.value = (prev==='org' || state.projects.some(p=>p.id===prev)) ? prev : 'org';
+  riskEntityId = sel.value;
+}
+function setRiskEntity(id){ riskEntityId = id; renderRisks(); }
+function onAutoRiskToggle(checked){
+  const entity = getRiskEntity();
+  entity.autoRiskFromRegister = checked;
+  persistState();
+  renderPillars();
+  renderGaugeAndBars();
+  renderCompare();
+}
+function rpnClass(rpn){ if(rpn>=15) return 'rpn-high'; if(rpn>=8) return 'rpn-mid'; return 'rpn-low'; }
+function addRisk(){
+  const desc = document.getElementById('riskDesc').value.trim();
+  const prob = Number(document.getElementById('riskProb').value)||1;
+  const impact = Number(document.getElementById('riskImpact').value)||1;
+  const owner = document.getElementById('riskOwner').value.trim();
+  const mitigation = document.getElementById('riskMitigation').value.trim();
+  if(!desc) return;
+  const entity = getRiskEntity();
+  entity.risks.push({id:'r'+Date.now(), desc, prob, impact, owner, mitigation, status:'open'});
+  persistState();
+  renderRisks();
+  renderPillars(); renderGaugeAndBars(); renderCompare();
+  document.getElementById('riskDesc').value='';
+  document.getElementById('riskOwner').value='';
+  document.getElementById('riskMitigation').value='';
+}
+function toggleRiskStatus(id){
+  const entity = getRiskEntity();
+  const r = entity.risks.find(rr=>rr.id===id);
+  if(r){ r.status = r.status==='open' ? 'closed' : 'open'; persistState(); renderRisks(); renderPillars(); renderGaugeAndBars(); renderCompare(); }
+}
+function removeRisk(id){
+  const entity = getRiskEntity();
+  entity.risks = entity.risks.filter(r=>r.id!==id);
+  persistState();
+  renderRisks(); renderPillars(); renderGaugeAndBars(); renderCompare();
+}
+function renderRisks(){
+  populateRiskEntitySelect();
+  const entity = getRiskEntity();
+  document.getElementById('autoRiskToggle').checked = !!entity.autoRiskFromRegister;
+  const tbody = document.getElementById('risksTableBody');
+  const empty = document.getElementById('risksEmpty');
+  tbody.innerHTML = '';
+  if(entity.risks.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  entity.risks.forEach(r=>{
+    const rpn = r.prob*r.impact;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.desc}${r.mitigation ? `<div class="field-context">${r.mitigation}</div>` : ''}</td>
+      <td>${r.prob}</td><td>${r.impact}</td>
+      <td class="${rpnClass(rpn)}">${rpn}</td>
+      <td>${r.owner||''}</td>
+      <td><span class="pill ${r.status==='open'?'pill-open':'pill-closed'}" style="cursor:pointer" onclick="toggleRiskStatus('${r.id}')">${t(r.status==='open'?'riskOpen':'riskClosed')}</span></td>
+      <td class="no-print"><button class="pill-remove" onclick="removeRisk('${r.id}')" title="حذف">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ============================= RACI Matrix ============================= */
+let raciEntityId = null;
+function getRaciEntity(){
+  if(!raciEntityId && state.projects.length) raciEntityId = state.projects[0].id;
+  return state.projects.find(p=>p.id===raciEntityId) || state.entities.org;
+}
+function populateRaciEntitySelect(){
+  const sel = document.getElementById('raciEntitySelect');
+  if(!raciEntityId) raciEntityId = state.projects.length ? state.projects[0].id : 'org';
+  const prev = raciEntityId;
+  sel.innerHTML = `<option value="org">${t('orgOverview')}</option>`;
+  state.projects.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; sel.appendChild(o); });
+  sel.value = (prev==='org' || state.projects.some(p=>p.id===prev)) ? prev : 'org';
+  raciEntityId = sel.value;
+}
+function setRaciEntity(id){ raciEntityId = id; renderRaci(); }
+function addRaciRole(){
+  const input = document.getElementById('raciRoleInput');
+  const name = input.value.trim();
+  if(!name) return;
+  const entity = getRaciEntity();
+  if(!entity.raci.roles.includes(name)) entity.raci.roles.push(name);
+  persistState(); renderRaci(); input.value='';
+}
+function removeRaciRole(name){
+  const entity = getRaciEntity();
+  entity.raci.roles = entity.raci.roles.filter(r=>r!==name);
+  entity.raci.tasks.forEach(t=>{ delete t.assignments[name]; });
+  persistState(); renderRaci();
+}
+function addRaciTask(){
+  const input = document.getElementById('raciTaskInput');
+  const name = input.value.trim();
+  if(!name) return;
+  const entity = getRaciEntity();
+  entity.raci.tasks.push({name, assignments:{}});
+  persistState(); renderRaci(); input.value='';
+}
+function removeRaciTask(idx){
+  const entity = getRaciEntity();
+  entity.raci.tasks.splice(idx,1);
+  persistState(); renderRaci();
+}
+function onRaciAssign(taskIdx, role, value){
+  const entity = getRaciEntity();
+  entity.raci.tasks[taskIdx].assignments[role] = value;
+  persistState();
+}
+function renderRaci(){
+  populateRaciEntitySelect();
+  const entity = getRaciEntity();
+  const wrap = document.getElementById('raciTableWrap');
+  const empty = document.getElementById('raciEmpty');
+  const roles = entity.raci.roles, tasks = entity.raci.tasks;
+  if(roles.length===0 || tasks.length===0){ wrap.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  let html = '<table><thead><tr><th></th>';
+  roles.forEach(r=>{ html += `<th>${r} <button class="pill-remove no-print" onclick="removeRaciRole('${r.replace(/'/g,"\\'")}')" title="حذف">✕</button></th>`; });
+  html += '<th class="no-print"></th></tr></thead><tbody>';
+  tasks.forEach((task,ti)=>{
+    html += `<tr><td>${task.name}</td>`;
+    roles.forEach(r=>{
+      const val = task.assignments[r] || '';
+      html += `<td><select class="raci-select" onchange="onRaciAssign(${ti},'${r.replace(/'/g,"\\'")}',this.value)">
+        <option value="" ${val===''?'selected':''}>-</option>
+        <option value="R" ${val==='R'?'selected':''}>R</option>
+        <option value="A" ${val==='A'?'selected':''}>A</option>
+        <option value="C" ${val==='C'?'selected':''}>C</option>
+        <option value="I" ${val==='I'?'selected':''}>I</option>
+      </select></td>`;
+    });
+    html += `<td class="no-print"><button class="pill-remove" onclick="removeRaciTask(${ti})" title="حذف">✕</button></td></tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+/* ============================= Green Procurement ============================= */
+function supplierScore(s){ return Math.round((Number(s.price)+Number(s.env)+Number(s.labor)+Number(s.gov)+Number(s.tech))/5); }
+function supplierStatus(score){ if(score>=75) return {key:'procApproved', cls:'pill-active'}; if(score>=50) return {key:'procReview', cls:'pill-progress'}; return {key:'procRejected', cls:'pill-open'}; }
+function addSupplier(){
+  const name = document.getElementById('procName').value.trim();
+  if(!name) return;
+  const s = {
+    id:'s'+Date.now(), name,
+    price:Number(document.getElementById('procPrice').value)||0,
+    env:Number(document.getElementById('procEnv').value)||0,
+    labor:Number(document.getElementById('procLabor').value)||0,
+    gov:Number(document.getElementById('procGov').value)||0,
+    tech:Number(document.getElementById('procTech').value)||0
+  };
+  state.suppliers.unshift(s);
+  persistState(); renderSuppliers();
+  document.getElementById('procName').value='';
+}
+function removeSupplier(id){ state.suppliers = state.suppliers.filter(s=>s.id!==id); persistState(); renderSuppliers(); }
+function renderSuppliers(){
+  const tbody = document.getElementById('suppliersTableBody');
+  const empty = document.getElementById('procEmpty');
+  tbody.innerHTML = '';
+  if(state.suppliers.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  state.suppliers.forEach(s=>{
+    const score = supplierScore(s);
+    const st = supplierStatus(score);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s.name}</td><td><strong>${score}</strong></td><td><span class="pill ${st.cls}">${t(st.key)}</span></td><td class="no-print"><button class="pill-remove" onclick="removeSupplier('${s.id}')" title="حذف">✕</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ============================= Digital Product Passport ============================= */
+function addAsset(){
+  const name = document.getElementById('assetName').value.trim();
+  const source = document.getElementById('assetSource').value.trim();
+  const date = document.getElementById('assetDate').value;
+  const eff = Number(document.getElementById('assetEff').value)||0;
+  const recycle = document.getElementById('assetRecycle').value.trim();
+  if(!name) return;
+  state.assets.unshift({id:'a'+Date.now(), name, source, date, eff, recycle});
+  persistState(); renderAssets();
+  document.getElementById('assetName').value='';
+  document.getElementById('assetSource').value='';
+  document.getElementById('assetDate').value='';
+  document.getElementById('assetRecycle').value='';
+}
+function removeAsset(id){ state.assets = state.assets.filter(a=>a.id!==id); persistState(); renderAssets(); }
+function renderAssets(){
+  const grid = document.getElementById('assetsGrid');
+  const empty = document.getElementById('assetsEmpty');
+  grid.innerHTML = '';
+  if(state.assets.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  state.assets.forEach(a=>{
+    const card = document.createElement('div');
+    card.className = 'asset-card';
+    card.innerHTML = `
+      <div class="asset-qr" id="qr-${a.id}"></div>
+      <div class="asset-info" style="flex:1">
+        <h4>${a.name}</h4>
+        <p>${a.source||''}${a.date?' · '+a.date:''}</p>
+        <p>${t('assetEffLabel')}: ${a.eff}%</p>
+        ${a.recycle?`<p>${a.recycle}</p>`:''}
+      </div>
+      <button class="pill-remove no-print" onclick="removeAsset('${a.id}')" title="حذف">✕</button>
+    `;
+    grid.appendChild(card);
+  });
+  state.assets.forEach(a=>{
+    const qrEl = document.getElementById('qr-'+a.id);
+    if(qrEl && window.QRCode){
+      qrEl.innerHTML = '';
+      try{
+        new QRCode(qrEl, {text: JSON.stringify({name:a.name, source:a.source, date:a.date, eff:a.eff}), width:76, height:76});
+      }catch(e){}
+    }
+  });
+}
+
+/* ============================= Executive One-Pager ============================= */
+function renderExec(){
+  const content = document.getElementById('execContent');
+  const orgCri = Math.round(criFor(state.entities.org));
+  const done = state.projects.filter(p=>p.status==='done').length;
+  const active = state.projects.filter(p=>p.status==='active').length;
+  let html = `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num">${orgCri}</div><div class="stat-label">${t('execOrgCri')}</div></div>
+      <div class="stat-card"><div class="stat-num">${state.projects.length}</div><div class="stat-label">${t('execProjectsTotal')}</div></div>
+      <div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">${t('execProjectsDone')}</div></div>
+      <div class="stat-card"><div class="stat-num">${active}</div><div class="stat-label">${t('execProjectsActive')}</div></div>
+    </div>
+  `;
+  const allRisks = [];
+  [state.entities.org, ...state.projects].forEach(e=>{
+    (e.risks||[]).filter(r=>r.status!=='closed').forEach(r=>{ allRisks.push({...r, entityName: entityDisplayName(e), rpn:r.prob*r.impact}); });
+  });
+  allRisks.sort((a,b)=>b.rpn-a.rpn);
+  const topRisks = allRisks.slice(0,3);
+  html += `<h3 style="font-size:1rem;color:var(--teal);margin-bottom:8px;">${t('execTopRisks')}</h3>`;
+  if(topRisks.length===0){
+    html += `<p class="card-sub">${t('execNoRisks')}</p>`;
+  } else {
+    html += '<ul class="exec-list">' + topRisks.map(r=>`<li><strong>${r.desc}</strong> — RPN ${r.rpn} (${r.entityName})</li>`).join('') + '</ul>';
+  }
+  html += `<h3 style="font-size:1rem;color:var(--teal);margin:18px 0 8px;">${t('execRecentLessons')}</h3>`;
+  if(state.lessons.length===0){
+    html += `<p class="card-sub">${t('execNoLessons')}</p>`;
+  } else {
+    html += '<ul class="exec-list">' + state.lessons.slice(0,3).map(l=>`<li><strong>${l.title}</strong> (${l.date})</li>`).join('') + '</ul>';
+  }
+  content.innerHTML = html;
+}
+
+/* ============================= Tabs ============================= */
+function showSection(id){
+  document.querySelectorAll('.section-content').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.toggle('active', b.getAttribute('data-target')===id); });
+  if(id==='risks') renderRisks();
+  if(id==='raci') renderRaci();
+  if(id==='procurement') renderSuppliers();
+  if(id==='assets') renderAssets();
+  if(id==='exec') renderExec();
+  if(id==='settings') applySettingsToUI();
+}
+
+/* ============================= Export / Import ============================= */
+async function tryDownload(filename, mimeType, content){
+  try{
+    if(window.claude && typeof window.claude.use === 'function'){
+      const downloads = await window.claude.use('downloads');
+      if(downloads){
+        await downloads.save({filename, data: content});
+        return true;
+      }
+    }
+  }catch(e){ /* fall through to blob fallback */ }
+  try{
+    const blob = new Blob([content], {type:mimeType});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    return true;
+  }catch(e){ return false; }
+}
+
+async function exportBackup(){
+  const data = JSON.stringify(state, null, 2);
+  const stamp = new Date().toISOString().slice(0,10);
+  const ok = await tryDownload(`sustainability-backup-${stamp}.json`, 'application/json', data);
+  document.getElementById('importHint').textContent = ok ? t('exportedNote') : '';
+  setTimeout(()=>{ document.getElementById('importHint').textContent=''; }, 4000);
+}
+
+function handleImportFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(!parsed.entities || !parsed.entities.org || !Array.isArray(parsed.projects) || !Array.isArray(parsed.lessons)){
+        throw new Error('shape');
+      }
+      if(!confirm(t('importConfirm'))) return;
+      ensureEntityDefaults(parsed.entities.org);
+      parsed.projects.forEach(ensureEntityDefaults);
+      if(!parsed.targets) parsed.targets = defaultTargets();
+      if(!parsed.suppliers) parsed.suppliers = [];
+      if(!parsed.assets) parsed.assets = [];
+      if(!parsed.settings) parsed.settings = {orgName:'', logoEmoji:'🌿', currency:'USD', defaultLang:'ar'};
+      state = parsed;
+      currentLang = state.lang || 'ar';
+      persistState();
+      setLang(currentLang);
+      document.getElementById('importHint').textContent = t('importSuccess');
+      setTimeout(()=>{ document.getElementById('importHint').textContent=''; }, 4000);
+    }catch(err){
+      alert(t('importError'));
+    }
+  };
+  reader.readAsText(file);
+  document.getElementById('importFile').value = '';
+}
+
+/* ============================= Full report (print) ============================= */
+function downloadFullReport(){
+  const area = document.getElementById('fullReportArea');
+  const now = new Date();
+  const entities = [state.entities.org, ...state.projects];
+  let html = `
+    <div class="report-head">
+      <h1>${t('reportTitle')}</h1>
+      <p>${t('reportGeneratedOn')}${now.toLocaleString(currentLang==='ar'?'ar-EG':'en-US')} — ${t('brandSub')}</p>
+    </div>
+  `;
+  entities.forEach(e=>{
+    html += `<div class="report-block"><h3>${entityDisplayName(e)} — ${t('colCri')}: ${Math.round(criFor(e))}</h3><table><thead><tr><th>${t('reportPillarCol')}</th><th>${t('reportScoreCol')}</th><th>${t('reportTargetCol')}</th></tr></thead><tbody>`;
+    pillarDefs.forEach(p=>{
+      html += `<tr><td>${p.name[currentLang]}</td><td>${Math.round(pillarScoreFor(e,p))}</td><td>${state.targets[p.id]}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+  if(state.lessons.length){
+    html += `<div class="report-block"><h3>${t('reportLessonsSection')}</h3>`;
+    state.lessons.forEach(l=>{ html += `<p><strong>${l.title}</strong> (${l.date}) — ${l.desc}</p>`; });
+    html += `</div>`;
+  }
+  area.innerHTML = html;
+  document.body.classList.add('printing-report');
+  const cleanup = ()=>{ document.body.classList.remove('printing-report'); window.removeEventListener('afterprint', cleanup); };
+  window.addEventListener('afterprint', cleanup);
+  setTimeout(()=>window.print(), 50);
+}
+
+/* ============================= Init ============================= */
+function renderAll(){
+  renderDashboard();
+  renderProjects();
+  populateLessonProjectSelects();
+  renderLessons();
+  renderRisks();
+  renderRaci();
+  renderSuppliers();
+  renderAssets();
+}
+(function init(){
+  state = loadState();
+  currentLang = state.lang || 'ar';
+  const root = document.getElementById('htmlRoot');
+  root.setAttribute('lang', currentLang);
+  root.setAttribute('dir', currentLang==='ar' ? 'rtl' : 'ltr');
+  document.title = t('brandTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder'))); });
+  renderAll();
+  applySettingsToUI();
+})();
+</script>
+</body>
+</html>

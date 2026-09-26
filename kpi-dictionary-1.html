@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>قاموس الكي بي آي إس | KPI Dictionary</title>
+<style>
+:root{
+  --primary:#1e3a8a; --primary2:#3b82f6; --bg:#f1f5f9; --card:#ffffff; --border:#e2e8f0;
+  --text:#1e293b; --muted:#64748b; --green:#16a34a; --yellow:#ca8a04; --red:#dc2626;
+  --greenBg:#dcfce7; --yellowBg:#fef9c3; --redBg:#fee2e2;
+}
+[data-theme="dark"]{
+  --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8;
+  --greenBg:#052e16; --yellowBg:#422006; --redBg:#450a0a;
+}
+[data-theme="dark"] select, [data-theme="dark"] input, [data-theme="dark"] textarea{background:#0f172a;color:var(--text);border-color:var(--border)}
+[data-theme="dark"] th{background:#1e293b}
+[data-theme="dark"] .metric{background:#0f172a}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:linear-gradient(180deg,var(--primary),#111d4e);color:#fff;padding:18px;flex-shrink:0}
+.sidebar h2{font-size:16px;margin:0 0 4px}
+.sidebar .sub{font-size:12px;opacity:.8;margin-bottom:18px}
+.nav-btn{display:block;width:100%;text-align:inherit;background:rgba(255,255,255,.06);border:none;color:#fff;
+  padding:10px 12px;margin-bottom:6px;border-radius:8px;cursor:pointer;font-size:13.5px}
+.nav-btn.active{background:var(--primary2)}
+.nav-btn:hover{background:rgba(255,255,255,.18)}
+.main{flex:1;padding:22px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.topbar h1{font-size:20px;margin:0}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+button.btn{background:var(--primary2);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+button.btn.secondary{background:#e2e8f0;color:#1e293b}
+button.btn.danger{background:var(--red);color:#fff}
+button.btn:hover{opacity:.9}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+.grid.cols-4{grid-template-columns:repeat(4,1fr)}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){
+  .grid.cols-4,.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}
+  .sidebar{position:fixed;inset:0;z-index:500;width:100%;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto}
+  [dir="ltr"] .sidebar{transform:translateX(-100%)}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .mobile-menu-btn{display:inline-flex !important}
+  .sidebar-close-btn{display:block !important}
+}
+.mobile-menu-btn{display:none}
+.sidebar-close-btn{display:none;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:8px;padding:8px 14px;margin-bottom:14px;cursor:pointer;font-size:14px;width:100%;text-align:center}
+.metric{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px}
+.metric .v{font-size:24px;font-weight:700}
+.metric .l{font-size:12px;color:var(--muted)}
+select,input,textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;color:var(--text)}
+label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:4px}
+.field{margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:right}
+th{background:#f8fafc;color:var(--muted);font-weight:600}
+.badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block}
+.badge.ideal{background:var(--greenBg);color:var(--green)}
+.badge.warning{background:var(--yellowBg);color:var(--yellow)}
+.badge.danger{background:var(--redBg);color:var(--red)}
+.report{border-radius:10px;padding:16px;margin-top:14px;border:1px solid var(--border)}
+.report.ideal{background:var(--greenBg)}
+.report.warning{background:var(--yellowBg)}
+.report.danger{background:var(--redBg)}
+.report h4{margin:10px 0 4px;font-size:13.5px}
+.report p{margin:2px 0;font-size:13.5px;line-height:1.6}
+.heat-cell{width:26px;height:26px;border-radius:5px;display:inline-block;margin:2px}
+.small{font-size:12px;color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px;padding-top:14px;border-top:1px solid var(--border)}
+.kpi-list{max-height:420px;overflow:auto}
+.kpi-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--border);cursor:pointer}
+.kpi-row:hover{background:#f8fafc}
+@media print{
+  .sidebar,.tools,.no-print{display:none !important}
+  .main{padding:0}
+  body{background:#fff}
+}
+[dir="ltr"] table{text-align:left}
+[dir="ltr"] th,[dir="ltr"] td{text-align:left}
+.warroom-body{background:#1a0505}
+.warroom-card{background:#2a0a0a;border:1px solid #7f1d1d;color:#fecaca;border-radius:12px;padding:16px;margin-bottom:14px}
+.warroom-card h3{color:#fff;margin-top:0}
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.slider-row input[type=range]{flex:1}
+.slider-val{min-width:70px;text-align:center;font-weight:700;background:#f1f5f9;border-radius:6px;padding:2px 6px}
+.trend-arrow{font-weight:700}
+.anomaly-box{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;border-radius:10px;padding:12px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar no-print" id="sidebar">
+    <button class="sidebar-close-btn" onclick="toggleMobileMenu(false)">✕ <span id="t_close">إغلاق القائمة</span></button>
+    <h2 id="t_title">📖 قاموس الكي بي آي إس</h2>
+    <div class="sub" id="t_by">تصميم وتطوير: المهندس وائل عويس</div>
+    <button class="nav-btn" data-page="dash" id="nav_dash"></button>
+    <button class="nav-btn" data-page="engine" id="nav_engine"></button>
+    <button class="nav-btn" data-page="bulk" id="nav_bulk" style="background:rgba(255,255,255,.15)"></button>
+    <button class="nav-btn" data-page="library" id="nav_library"></button>
+    <button class="nav-btn" data-page="heatmap" id="nav_heatmap"></button>
+    <button class="nav-btn" data-page="registry" id="nav_registry"></button>
+    <button class="nav-btn" data-page="archive" id="nav_archive"></button>
+    <button class="nav-btn" data-page="lessons" id="nav_lessons"></button>
+    <button class="nav-btn" data-page="report" id="nav_report"></button>
+    <button class="nav-btn" data-page="whatif" id="nav_whatif"></button>
+    <button class="nav-btn" data-page="warroom" id="nav_warroom" style="background:rgba(220,38,38,.25)"></button>
+    <button class="nav-btn" data-page="subs" id="nav_subs"></button>
+    <button class="nav-btn" data-page="audit" id="nav_audit"></button>
+    <hr style="border-color:rgba(255,255,255,.15);margin:14px 0">
+    <label style="color:#cbd5e1">🌐 <span id="t_lang">اللغة</span></label>
+    <select id="langSelect" style="margin-bottom:10px">
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+    </select>
+    <button class="btn secondary" style="width:100%;margin-bottom:10px" id="themeToggleBtn" onclick="toggleTheme()"></button>
+    <button class="btn secondary" style="width:100%;margin-bottom:6px" onclick="exportBackup()" id="t_export">⬇️ تصدير نسخة احتياطية</button>
+    <button class="btn secondary" style="width:100%" onclick="document.getElementById('importFile').click()" id="t_import">⬆️ استيراد نسخة</button>
+    <input type="file" id="importFile" style="display:none" onchange="importBackup(event)">
+  </div>
+
+  <div class="main">
+    <div id="storageWarning" style="display:none;background:#fef3c7;border:1px solid #fbbf24;color:#92400e;padding:8px 14px;border-radius:8px;margin-bottom:10px;font-size:12.5px"></div>
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn secondary mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu(true)">☰</button>
+        <h1 id="pageTitle"></h1>
+      </div>
+      <div class="tools no-print">
+        <button class="btn danger" id="alertBell" style="display:none" onclick="goWarRoom()"></button>
+        <select id="activeProjectSelect" style="min-width:180px"></select>
+        <button class="btn secondary" id="csvExportBtn" onclick="exportProjectCSV()"></button>
+        <button class="btn secondary" onclick="window.print()" id="t_print">🖨️ طباعة / حفظ</button>
+      </div>
+    </div>
+    <div id="pageContent"></div>
+    <div class="footer" id="t_footer">© 2026 KPI Dictionary — Developed &amp; Architected by Eng. Wael Oweis</div>
+  </div>
+</div>
+
+<script>
+/* ===================== Global Safety Net ===================== */
+/* Ensures the app NEVER shows a silent blank page — any uncaught error becomes a visible, readable message. */
+function showFatalError(msg){
+  try{
+    const box = document.createElement('div');
+    box.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;font-family:sans-serif;direction:rtl;overflow:auto';
+    box.innerHTML = `
+      <h2 style="color:#dc2626">⚠️ حدث خطأ غير متوقع / An unexpected error occurred</h2>
+      <p>حصل خطأ برمجي منع التطبيق من العمل بشكل طبيعي. الرجاء نسخ الرسالة أدناه وإرسالها للمطور لإصلاحها فوراً.</p>
+      <p>A script error prevented the app from working normally. Please copy the message below and send it to the developer so it can be fixed immediately.</p>
+      <pre style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:14px;white-space:pre-wrap;direction:ltr;text-align:left;font-size:13px">${(msg||'').toString().replace(/</g,'&lt;')}</pre>
+      <p style="color:#64748b;font-size:13px">© Eng. Wael Oweis — KPI Dictionary</p>`;
+    document.body.appendChild(box);
+  }catch(e){ /* absolute last resort: do nothing rather than throw again */ }
+}
+window.addEventListener('error', function(e){
+  showFatalError((e && e.error && e.error.stack) ? e.error.stack : (e.message||'Unknown error'));
+});
+window.addEventListener('unhandledrejection', function(e){
+  showFatalError('Unhandled promise rejection: ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason));
+});
+
+/* ===================== i18n ===================== */
+const I18N = {
+  ar:{title:'قاموس الكي بي آي إس — منصة إدارة مؤشرات الأداء الهندسية والتشغيلية',by:'تصميم وتطوير: المهندس وائل عويس',
+    nav_dash:'📊 اللوحة التنفيذية',nav_engine:'⚙️ إدخال البيانات وحساب المؤشر',nav_library:'📚 مكتبة الـ 50 مؤشراً',
+    nav_heatmap:'🗺️ خريطة الحرارة للمشاريع',nav_registry:'🗂️ سجل المشاريع',nav_archive:'🗄️ الأرشيف',
+    nav_lessons:'💡 الدروس المستفادة',nav_report:'📑 التقرير التنفيذي الشامل',
+    lang:'اللغة',export:'⬇️ تصدير نسخة احتياطية',import:'⬆️ استيراد نسخة',print:'🖨️ طباعة / حفظ',
+    footer:'© 2026 قاموس الكي بي آي إس — تصميم وتطوير المهندس وائل عويس',
+    noProject:'لا يوجد مشروع نشط — أنشئ مشروعاً من سجل المشاريع',
+    newProject:'+ مشروع جديد',projectName:'اسم المشروع',sector:'القطاع',client:'المالك / العميل',
+    create:'إنشاء',projects:'المشاريع',phi:'مؤشر صحة المشروع (PHI)',activeKpis:'مؤشرات مدخلة',
+    idealCount:'مثالي 🟢',warnCount:'إنذار مبكر 🟡',dangerCount:'خطر 🔴',statusDist:'توزيع حالات المؤشرات',
+    trend:'اتجاه صحة المشروع (PHI) عبر آخر الإدخالات',selectKpi:'اختر المؤشر',category:'القطاع',
+    calc:'حساب المؤشر وتوليد التقرير',value:'القيمة المحسوبة',status:'حالة الأداء',trendDir:'الاتجاه',
+    summary:'الخلاصة التنفيذية',cause:'التحليل السببي والانعكاسات',action:'خطة العمل التصحيحية',
+    raci:'المسؤول المباشر (Accountable)',nextReview:'موعد المراجعة القادمة',save:'حفظ النتيجة في سجل المشروع',
+    searchKpi:'ابحث في المؤشرات...',formula:'أسلوب الحساب',thresholds:'معايير التقييم',
+    ideal:'مثالي',warning:'إنذار مبكر',danger:'خطر',history:'سجل القياسات السابقة',
+    noHistory:'لا توجد قياسات مسجلة بعد لهذا المشروع',archiveEmpty:'لا توجد مشاريع مؤرشفة',
+    archiveBtn:'أرشفة المشروع',restoreBtn:'استعادة من الأرشيف',deleteBtn:'حذف نهائي',
+    lessonCat:'تصنيف الدرس',lessonDesc:'وصف الدرس المستفاد والتوصية',addLesson:'حفظ في قاعدة المعرفة',
+    lessonsBank:'الأرشيف النشط للدروس المستفادة',reportTitle:'التقرير التنفيذي الشامل لكل المشاريع',
+    reportDate:'التاريخ',preparedBy:'إعداد',noData:'لا توجد بيانات كافية بعد — قم بإدخال بعض المؤشرات أولاً',
+    weight:'الوزن النسبي',warnConfirm:'هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.',
+    inputsTitle:'المدخلات الخام',required:'مطلوب',allKpis:'كل القطاعات',
+    nav_whatif:'🧪 محاكاة السيناريوهات',nav_warroom:'🚨 غرفة الطوارئ',nav_subs:'🏗️ تقييم المقاولين والموردين',
+    nav_bulk:'📋 حساب كل المؤشرات دفعة واحدة',
+    whatifDesc:'حرّك المدخلات لترى تأثيرها الفوري على المؤشر دون حفظ أي بيانات — أداة استكشافية بحتة.',
+    whatifBase:'القيمة الأساسية (آخر قياس محفوظ)',whatifNew:'القيمة بعد التعديل',whatifImpact:'الأثر المتوقع',
+    noBaseline:'لا يوجد قياس محفوظ لهذا المؤشر بعد — احسبه واحفظه أولاً من صفحة "إدخال البيانات".',
+    warroomTitle:'🚨 وضع غرفة الطوارئ — المؤشرات الحرجة فقط',warroomEmpty:'لا توجد مؤشرات في حالة "خطر" حالياً — كل شيء تحت السيطرة 🟢',
+    warroomAction:'خطة الطوارئ الفورية (Emergency Action Plan)',anomaly:'⚠️ تنبيه: بيانات مدخلة تبدو شاذة',
+    anomalyMsg:'القيمة الجديدة تختلف بشكل كبير جداً (أكثر من 60%) عن آخر قياس مسجل لنفس المؤشر. تأكد من صحة الأرقام قبل المتابعة.',
+    proceedAnyway:'متابعة رغم التنبيه',cancel:'إلغاء وتصحيح المدخلات',
+    trendUp:'تحسن ↗',trendFlat:'استقرار ➡️',trendDown:'تراجع ↘',forecastNote:'توقع تقريبي',
+    willReachDanger:'بمعدل التراجع الحالي، يُتوقع دخول هذا المؤشر منطقة الخطر خلال القياسات القادمة إذا استمر الاتجاه.',
+    subsAdd:'+ إضافة مقاول / مورد',subName:'اسم المقاول / المورد',subScope:'نطاق العمل',
+    subQuality:'تقييم الجودة (0-100)',subSchedule:'الالتزام بالجدول (0-100)',subHse:'الالتزام بالسلامة (0-100)',
+    subOverall:'التقييم الإجمالي',subRank:'الترتيب',subsEmpty:'لا يوجد مقاولون أو موردون مسجلون بعد',
+    subsTitle:'بطاقة الأداء الآلية للمقاولين والموردين',
+    nav_audit:'🔒 سجل التدقيق (Audit Trail)',auditDesc:'سجل زمني غير قابل للتعديل لكل عمليات الحفظ والإنشاء والحذف — للشفافية ومواجهة النزاعات.',
+    auditEmpty:'لا توجد أحداث مسجلة بعد',alertBell:'مؤشرات حرجة',
+    act_kpi_save:'حفظ مؤشر',act_kpi_save_bulk:'حفظ مؤشر (دفعة)',act_sub_add:'إضافة مقاول/مورد',
+    act_project_create:'إنشاء مشروع',act_project_delete:'حذف مشروع',act_project_archive:'أرشفة مشروع',
+    themeDark:'🌙 الوضع الداكن',themeLight:'☀️ الوضع الفاتح',csvExport:'⬇️ تصدير Excel (CSV)',csvNoData:'لا توجد بيانات لتصديرها لهذا المشروع بعد',
+    closeMenu:'إغلاق القائمة'},
+  en:{title:'KPI Dictionary — Engineering & Operational Performance Management Platform',by:'Architect & Developer: Eng. Wael Oweis',
+    nav_dash:'📊 Executive Dashboard',nav_engine:'⚙️ Data Input & KPI Engine',nav_library:'📚 KPI Library (50)',
+    nav_heatmap:'🗺️ Multi-Project Heatmap',nav_registry:'🗂️ Project Registry',nav_archive:'🗄️ Archive',
+    nav_lessons:'💡 Lessons Learned',nav_report:'📑 Comprehensive Executive Report',
+    lang:'Language',export:'⬇️ Export Backup',import:'⬆️ Import Backup',print:'🖨️ Print / Save',
+    footer:'© 2026 KPI Dictionary — Developed & Architected by Eng. Wael Oweis',
+    noProject:'No active project — create one from Project Registry',
+    newProject:'+ New Project',projectName:'Project Name',sector:'Sector',client:'Owner / Client',
+    create:'Create',projects:'Projects',phi:'Project Health Index (PHI)',activeKpis:'KPIs Recorded',
+    idealCount:'Ideal 🟢',warnCount:'Early Warning 🟡',dangerCount:'Danger 🔴',statusDist:'KPI Status Distribution',
+    trend:'Project Health (PHI) Trend Across Entries',selectKpi:'Select KPI',category:'Category',
+    calc:'Calculate & Generate Report',value:'Calculated Value',status:'Performance Status',trendDir:'Trend',
+    summary:'Executive Summary',cause:'Root Cause & Impact',action:'Corrective Action Plan',
+    raci:'Accountable',nextReview:'Next Review Date',save:'Save Result to Project Log',
+    searchKpi:'Search KPIs...',formula:'Calculation Method',thresholds:'Thresholds',
+    ideal:'Ideal',warning:'Early Warning',danger:'Danger',history:'Measurement History',
+    noHistory:'No measurements recorded yet for this project',archiveEmpty:'No archived projects',
+    archiveBtn:'Archive Project',restoreBtn:'Restore from Archive',deleteBtn:'Delete Permanently',
+    lessonCat:'Lesson Category',lessonDesc:'Lesson description & recommendation',addLesson:'Save to Knowledge Base',
+    lessonsBank:'Active Lessons Learned Archive',reportTitle:'Comprehensive Executive Report - All Projects',
+    reportDate:'Date',preparedBy:'Prepared by',noData:'Not enough data yet — enter some KPI values first',
+    weight:'Weight',warnConfirm:'Are you sure? This cannot be undone.',
+    inputsTitle:'Raw Inputs',required:'required',allKpis:'All Categories',
+    nav_whatif:'🧪 What-If Simulator',nav_warroom:'🚨 War Room',nav_subs:'🏗️ Subcontractor Scoring',
+    nav_bulk:'📋 Calculate All KPIs at Once',
+    whatifDesc:'Move the inputs to see the immediate impact on the KPI — purely exploratory, nothing is saved.',
+    whatifBase:'Baseline (last saved measurement)',whatifNew:'Adjusted Value',whatifImpact:'Projected Impact',
+    noBaseline:'No saved measurement for this KPI yet — calculate and save one first from "Data Input".',
+    warroomTitle:'🚨 War Room Mode — Critical KPIs Only',warroomEmpty:'No KPIs currently in "danger" status — everything is under control 🟢',
+    warroomAction:'Emergency Action Plan',anomaly:'⚠️ Alert: input looks anomalous',
+    anomalyMsg:'The new value differs by more than 60% from the last recorded measurement for this KPI. Verify the figures before proceeding.',
+    proceedAnyway:'Proceed Anyway',cancel:'Cancel & Fix Inputs',
+    trendUp:'Improving ↗',trendFlat:'Stable ➡️',trendDown:'Declining ↘',forecastNote:'Rough forecast',
+    willReachDanger:'At the current rate of decline, this KPI is projected to enter the danger zone within the next few measurements if the trend continues.',
+    subsAdd:'+ Add Contractor / Supplier',subName:'Contractor / Supplier Name',subScope:'Scope of Work',
+    subQuality:'Quality Score (0-100)',subSchedule:'Schedule Adherence (0-100)',subHse:'HSE Compliance (0-100)',
+    subOverall:'Overall Score',subRank:'Rank',subsEmpty:'No contractors or suppliers registered yet',
+    subsTitle:'Automated Subcontractor & Supplier Scorecard',
+    nav_audit:'🔒 Audit Trail',auditDesc:'An immutable timestamped log of every save, creation, and deletion — for transparency and dispute defense.',
+    auditEmpty:'No events logged yet',alertBell:'Critical KPIs',
+    act_kpi_save:'KPI Saved',act_kpi_save_bulk:'KPI Saved (Bulk)',act_sub_add:'Contractor/Supplier Added',
+    act_project_create:'Project Created',act_project_delete:'Project Deleted',act_project_archive:'Project Archived',
+    themeDark:'🌙 Dark Mode',themeLight:'☀️ Light Mode',csvExport:'⬇️ Export Excel (CSV)',csvNoData:'No data to export for this project yet',
+    closeMenu:'Close Menu'}
+};
+let LANG = 'ar';
+function tr(k){return I18N[LANG][k] || k;}
+
+/* ===================== Categories ===================== */
+const CATS = {
+  fin:{ar:'مالي وتعاقدي',en:'Financial & Contractual',role_ar:'المدير المالي / مدير المشروع',role_en:'Finance / Project Manager'},
+  hse:{ar:'الصحة والسلامة والبيئة',en:'HSE & Sustainability',role_ar:'مدير السلامة والبيئة',role_en:'HSE Manager'},
+  quality:{ar:'الجودة والهندسة',en:'Quality & Engineering',role_ar:'مدير الجودة / الهندسة',role_en:'Quality / Engineering Manager'},
+  risk:{ar:'المخاطر والحوكمة',en:'Risk & Governance',role_ar:'مدير المخاطر والامتثال',role_en:'Risk & Compliance Manager'},
+  supply:{ar:'الموارد وسلسلة الإمداد',en:'Resources & Supply Chain',role_ar:'مدير المشتريات واللوجستيات',role_en:'Procurement & Logistics Manager'},
+  people:{ar:'الموارد البشرية والتواصل',en:'People & Communication',role_ar:'مدير الموارد البشرية',role_en:'HR Manager'},
+  tech:{ar:'التقنية والذكاء الاصطناعي',en:'Technology & AI',role_ar:'مدير تقنية المعلومات / الأصول',role_en:'IT / Asset Manager'},
+  strategic:{ar:'استراتيجي وابتكار',en:'Strategic & Innovation',role_ar:'الإدارة العليا / مكتب إدارة المشاريع',role_en:'Executive Management / PMO'}
+};
+
+const TPL = {
+ fin:{ideal:{ar:['انضباط مالي وتعاقدي كامل، وتوافق تام بين الأداء الفعلي والمخطط.','كفاءة عالية في تخصيص الموارد المالية وضبط التدفقات النقدية.','الاستمرار في نفس النهج وتوثيق الممارسات الناجحة في قاعدة المعرفة المؤسسية.'],
+      en:['Full financial and contractual discipline; actual performance is aligned with plan.','High efficiency in resource allocation and cash-flow control.','Continue the current approach and document these practices in the knowledge base.']},
+   warning:{ar:['وجود تجاوز طفيف في التكاليف أو بطء محدود مقارنة بالمخطط يتطلب متابعة.','تأخير في اعتماد بعض المستخلصات أو ارتفاع طفيف في أسعار التوريدات.','مراجعة فورية لبنود الإنفاق وتكثيف الموارد لمعالجة الفجوة خلال الفترة القادمة.'],
+      en:['A moderate cost or schedule slippage versus plan requiring close monitoring.','Delayed certificate approvals or a mild rise in procurement pricing.','Review spend items immediately and reallocate resources to close the gap.']},
+   danger:{ar:['خطر تجاوز الميزانية أو تعثر مالي وزمني حقيقي يهدد ربحية المشروع.','هدر في الموارد الميدانية أو نزاعات تعاقدية معلقة تستنزف السيولة.','إيقاف المصروفات غير الضرورية فوراً وإعادة هيكلة التدفقات النقدية خلال 48 ساعة.'],
+      en:['Real risk of budget overrun or financial/schedule distress threatening project margin.','Field resource waste or pending contractual disputes draining liquidity.','Freeze non-essential spend immediately and restructure cash flow within 48 hours.']}},
+ hse:{ideal:{ar:['بيئة عمل آمنة وصحية بالكامل، والتزام صارم بمعايير السلامة والبيئة.','ثقافة سلامة وقائية عالية بين جميع فرق العمل الميدانية.','الاستمرار في التفتيش الدوري والحفاظ على مستوى الوعي الوقائي الحالي.'],
+      en:['A fully safe and healthy work environment with strict HSE compliance.','A strong proactive safety culture across field teams.','Maintain routine inspections and current awareness levels.']},
+   warning:{ar:['ظهور مؤشرات محدودة لعدم الالتزام أو حوادث طفيفة غير جسيمة.','تراخٍ جزئي في استخدام معدات الوقاية الشخصية أو الإجراءات الوقائية.','تشديد الرقابة الميدانية وعقد جلسات توعية فورية (Toolbox Talks).'],
+      en:['Limited non-compliance indicators or minor incidents observed.','Partial laxity in PPE use or preventive procedures.','Intensify field supervision and hold immediate toolbox-talk sessions.']},
+   danger:{ar:['خلل جسيم في إجراءات السلامة أو البيئة يهدد حياة العاملين أو يخالف الأنظمة.','ضعف الرقابة الميدانية أو تجاوزات بيئية متكررة غير معالجة.','إيقاف الأنشطة غير الآمنة فوراً، والتحقيق في الأسباب الجذرية، ومحاسبة المقصرين.'],
+      en:['Serious HSE breakdown threatening worker safety or regulatory compliance.','Weak field supervision or repeated unresolved environmental exceedances.','Halt unsafe activities immediately, conduct root-cause investigation, and enforce accountability.']}},
+ quality:{ideal:{ar:['مطابقة تامة للمواصفات الفنية والهندسية وانخفاض شبه كامل لأعمال الإعادة.','دقة عالية في التنفيذ والتصميم وكفاءة ممتازة لفرق ضبط الجودة.','اعتماد المخرجات والاستمرار في نفس معايير الفحص الحالية.'],
+      en:['Full compliance with technical specifications and near-zero rework.','High execution and design accuracy with excellent QC team performance.','Approve deliverables and maintain current inspection standards.']},
+   warning:{ar:['نسبة ملحوظة من الفحوصات أو المخرجات تتطلب تعديلاً أو مراجعة إضافية.','قصور جزئي في التنسيق الهندسي أو تكرار محدود لبعض الملاحظات الفنية.','تشديد رقابة ضبط الجودة (QC) على الفرق المنفذة ومراجعة التدقيق الداخلي قبل التسليم.'],
+      en:['A noticeable share of inspections or deliverables require rework or review.','Partial engineering-coordination gaps or recurring minor technical comments.','Tighten QC oversight on execution teams and reinforce internal review before submission.']},
+   danger:{ar:['ضعف واضح في جودة التنفيذ أو التصميم مع اكتشاف عيوب متكررة.','عشوائية في إعداد المستندات الهندسية أو تكرار الرفض من الجهة الاستشارية.','إيقاف الحزم المتضررة فوراً، وإلزام المقاول بإعادة التنفيذ، وإعادة هيكلة فريق التصميم/التنفيذ.'],
+      en:['Clear execution or design quality weakness with recurring defects.','Ad-hoc engineering documentation or repeated consultant rejections.','Stop affected work packages immediately, mandate rework, and restructure the design/execution team.']}},
+ risk:{ideal:{ar:['إدارة استباقية رفيعة المستوى للمخاطر والامتثال التنظيمي الكامل.','رصد دقيق للمهددات وجاهزية تامة لاستمرارية العمليات.','الاستمرار في المراجعة الدورية لسجل المخاطر ونشر أفضل الممارسات.'],
+      en:['High-level proactive risk management and full regulatory compliance.','Precise threat monitoring and full operational-continuity readiness.','Continue periodic risk-register review and share best practices.']},
+   warning:{ar:['وجود مخاطر أو ملاحظات رقابية معلقة لم يتم إغلاقها بعد.','تأخر طفيف في تجديد بعض التراخيص أو خطط الاستجابة للمخاطر.','تفعيل لجان مراجعة المخاطر الدورية ومعالجة الملاحظات الرقابية قبل تفاقمها.'],
+      en:['Open risks or audit findings not yet closed.','Minor delays in license renewals or risk-response plans.','Activate periodic risk-review committees and address findings before escalation.']},
+   danger:{ar:['فقدان السيطرة على المخاطر أو رصد مخالفات تنظيمية وقانونية جسيمة.','غياب خطط بديلة أو تصاعد التهديدات دون معالجة.','إعلان حالة الطوارئ المؤسسية، وتشكيل لجنة طوارئ، وتفعيل خطة التعافي فوراً.'],
+      en:['Loss of risk control or serious regulatory/legal violations detected.','Absence of contingency plans or escalating unaddressed threats.','Declare an institutional emergency, form a task force, and activate the recovery plan immediately.']}},
+ supply:{ideal:{ar:['سلسلة إمداد منضبطة ومستقرة تضمن استمرار العمل الميداني دون عوائق.','جودة عالية للتوريدات وتنسيق ممتاز مع الموردين الرئيسيين.','الاستمرار في التعاقد مع نفس الموردين وتوثيق أداءهم كمرجع مستقبلي.'],
+      en:['A disciplined, stable supply chain ensuring uninterrupted site work.','High supply quality and excellent coordination with key suppliers.','Continue with current suppliers and document their performance for future reference.']},
+   warning:{ar:['تأخيرات متفرقة في التوريد أو تباين في جودة بعض المواد الواردة.','ظهور تكدس أو بطء في دوران بعض بنود المخزون.','متابعة لصيقة لجداول التوريد وتفعيل خطط بديلة للموردين محدودي الأداء.'],
+      en:['Scattered delivery delays or inconsistent quality of some incoming materials.','Emerging inventory buildup or slow turnover on some items.','Closely track delivery schedules and activate backup plans for underperforming suppliers.']},
+   danger:{ar:['إمدادات متعثرة بشكل خطير تهدد بتوقف العمالة والمعدات.','تجميد مالي في مخزون راكد أو جودة توريدات متدهورة بشكل حاد.','البحث الفوري عن موردين بدلاء وتعليق التعامل مع الموردين المتعثرين.'],
+      en:['Severely disrupted supply threatening labor and equipment downtime.','Capital frozen in stagnant inventory or sharply degraded supply quality.','Urgently source backup suppliers and suspend dealings with underperforming ones.']}},
+ people:{ideal:{ar:['استقرار مؤسسي عالٍ ورضا وظيفي واضح بين الكوادر.','تواصل داخلي شفاف وانسيابية تامة في تدفق المعلومات والقرارات.','الاستمرار في برامج التحفيز الحالية وتوثيقها كنموذج مؤسسي ناجح.'],
+      en:['High institutional stability and clear staff satisfaction.','Transparent internal communication and smooth information flow.','Continue current retention programs and document them as a success model.']},
+   warning:{ar:['ظهور مؤشرات أولية لعدم الرضا الوظيفي أو تأخر محدود في تدفق المعلومات.','ضغوط تشغيلية أو فجوات مهارية طفيفة لدى بعض الفرق.','مراجعة حوافز العاملين وتكثيف برامج التدريب والدعم الإداري المباشر.'],
+      en:['Early signs of job dissatisfaction or limited information-flow delays.','Operational pressure or minor skill gaps within some teams.','Review staff incentives and intensify training and direct managerial support.']},
+   danger:{ar:['نزيف واضح للكفاءات أو انعزال تام بين الإدارات يؤثر على اتخاذ القرار.','فوضى معلوماتية أو استقالات متتالية تهدد استقرار المشروع.','تحقيق فوري في أسباب التسرب الوظيفي وإطلاق حزمة استثنائية للاحتفاظ بالكوادر.'],
+      en:['Clear talent drain or complete departmental isolation affecting decisions.','Information chaos or successive resignations threatening project stability.','Immediately investigate attrition causes and launch an exceptional retention package.']}},
+ tech:{ideal:{ar:['كفاءة تشغيلية رقمية عالية جداً واستقرار كامل للأنظمة والأصول الذكية.','تكامل تقني ممتاز بين البيانات الميدانية ومنصات اتخاذ القرار.','الاعتماد على المنصة الرقمية في القرارات الاستباقية والتوسع في تطبيقها.'],
+      en:['Very high digital operational efficiency and full smart-asset stability.','Excellent technical integration between field data and decision platforms.','Rely on the digital platform for proactive decisions and expand its use.']},
+   warning:{ar:['وجود هدر تشغيلي أو انقطاعات متفرقة في أداء الأنظمة أو الحساسات.','أعطال متكررة تحتاج مراجعة لبرامج الصيانة أو الاتصالات الرقمية.','مراجعة كفاءة الصيانة الوقائية وتحديث بروتوكولات الاتصال بالحساسات.'],
+      en:['Operational waste or scattered outages in systems or sensors.','Recurring faults requiring a review of maintenance or connectivity protocols.','Review preventive-maintenance efficiency and update sensor connectivity protocols.']},
+   danger:{ar:['تراجع خطير في كفاءة الأصول أو انفصال بين الواقع الميداني والمنصة الرقمية.','فشل الأنظمة التنبؤية أو استنزاف تشغيلي حاد.','توقف هندسي فوري للمراجعة الفنية وإعادة هندسة تدفق البيانات ومسارات الربط.'],
+      en:['Serious decline in asset efficiency or a field/digital-platform disconnect.','Predictive-system failure or severe operational drain.','Immediate engineering shutdown for review and re-engineering of data flows and integration paths.']}},
+ strategic:{ideal:{ar:['بيئة عمل تفاعلية تشجع على الابتكار وتوظف الحلول الحديثة بكفاءة عالية.','نضج استراتيجي عالٍ وقدرة قوية على التكيف مع المتغيرات.','الاستمرار في دعم مبادرات الابتكار وتوسيع نطاقها عبر الأقسام.'],
+      en:['An engaged environment that fosters innovation and adopts modern solutions.','High strategic maturity and strong adaptability to change.','Continue supporting innovation initiatives and expand them across departments.']},
+   warning:{ar:['أفكار أو مبادرات مقدمة لكنها تتأخر في الدراسة أو الاعتماد.','بطء تنظيمي في استيعاب المبادرات الجديدة.','تفعيل لجنة تقييم سريعة لتحفيز العاملين واستثمار مقترحاتهم في وقتها.'],
+      en:['Ideas or initiatives are submitted but delayed in review/approval.','Organizational slowness in absorbing new initiatives.','Activate a rapid evaluation committee to incentivize staff and act on proposals promptly.']},
+   danger:{ar:['جمود فكري وانعدام تام للمقترحات أو مقاومة واسعة للتغيير.','ثقافة مؤسسية تقليدية منغلقة تهدد استمرارية التطوير.','إطلاق برامج تحفيزية عاجلة وإشراك القيادات في دعم الابتكار والتغيير فوراً.'],
+      en:['Intellectual stagnation, no proposals, or widespread resistance to change.','A closed traditional culture threatening continuous improvement.','Launch urgent incentive programs and involve leadership in driving change immediately.']}}
+};
+
+/* ===================== KPI Dictionary (50) ===================== */
+// mode: 'percent' -> value = a/b*100 ; 'ratio' -> a/b ; 'direct' -> value = a ; 'evm' -> min(a/b, c/d)
+// dir: 'h' higher-better, 'l' lower-better
+const KPIS = [
+{id:1,cat:'fin',ar:'مؤشر القيمة المكتسبة (EVM - CPI &amp; SPI)',en:'Earned Value Mgmt (CPI &amp; SPI)',mode:'evm',dir:'h',ideal:1.0,warn:0.90,
+  inputs:[{k:'ev',ar:'القيمة المكتسبة EV',en:'Earned Value (EV)'},{k:'ac',ar:'التكلفة الفعلية AC',en:'Actual Cost (AC)'},{k:'ev2',ar:'القيمة المكتسبة EV (لـ SPI)',en:'Earned Value (for SPI)'},{k:'pv',ar:'القيمة المخططة PV',en:'Planned Value (PV)'}],
+  formula_ar:'CPI = EV/AC ، SPI = EV/PV — يؤخذ الأقل بينهما',formula_en:'CPI = EV/AC, SPI = EV/PV — the lower of the two is used'},
+{id:2,cat:'fin',ar:'مؤشر التدفق النقدي',en:'Cash Flow KPI',mode:'sub',dir:'h',ideal:1,warn:0,
+  inputs:[{k:'a',ar:'التدفقات النقدية الداخلة',en:'Cash Inflows'},{k:'b',ar:'التدفقات النقدية الخارجة',en:'Cash Outflows'}],
+  formula_ar:'صافي التدفق = الداخل − الخارج',formula_en:'Net Flow = Inflows − Outflows'},
+{id:3,cat:'fin',ar:'مؤشر زحف النطاق',en:'Scope Creep KPI',mode:'percent',dir:'l',ideal:1,warn:5,
+  inputs:[{k:'a',ar:'قيمة الأعمال الإضافية غير المعتمدة',en:'Unapproved Additional Work'},{k:'b',ar:'قيمة العقد الأصلي',en:'Original Contract Value'}],
+  formula_ar:'النسبة = (أعمال إضافية غير معتمدة ÷ قيمة العقد الأصلي) × 100',formula_en:'Rate = (Unapproved Extra Work ÷ Original Contract Value) × 100'},
+{id:4,cat:'fin',ar:'مؤشر أوامر التغيير',en:'Change Order KPI',mode:'percent',dir:'l',ideal:5,warn:10,
+  inputs:[{k:'a',ar:'إجمالي قيمة أوامر التغيير',en:'Total Change Order Value'},{k:'b',ar:'قيمة العقد الأصلي',en:'Original Contract Value'}],
+  formula_ar:'النسبة = (قيمة أوامر التغيير ÷ قيمة العقد الأصلي) × 100',formula_en:'Rate = (Change Order Value ÷ Original Contract Value) × 100'},
+{id:5,cat:'hse',ar:'مؤشر الصحة والسلامة والبيئة (LTIR)',en:'HSE KPI (LTIR)',mode:'ratio1000',dir:'l',ideal:0.5,warn:1.0,
+  inputs:[{k:'a',ar:'عدد إصابات الوقت الضائع',en:'Lost Time Injuries'},{k:'b',ar:'إجمالي ساعات العمل',en:'Total Hours Worked'}],
+  formula_ar:'LTIR = (عدد الإصابات ÷ ساعات العمل) × 200,000',formula_en:'LTIR = (Injuries ÷ Hours Worked) × 200,000'},
+{id:6,cat:'quality',ar:'مؤشر الجودة',en:'Quality KPI',mode:'percent',dir:'h',ideal:95,warn:85,
+  inputs:[{k:'a',ar:'عدد الفحوصات المقبولة من المرة الأولى',en:'Inspections Passed First Time'},{k:'b',ar:'إجمالي عدد الفحوصات',en:'Total Inspections'}],
+  formula_ar:'النسبة = (فحوصات مقبولة أول مرة ÷ إجمالي الفحوصات) × 100',formula_en:'Rate = (First-Pass Inspections ÷ Total Inspections) × 100'},
+{id:7,cat:'risk',ar:'مؤشرات المخاطر',en:'Risk KPIs',mode:'percent',dir:'h',ideal:80,warn:60,
+  inputs:[{k:'a',ar:'عدد المخاطر التي تمت معالجتها',en:'Risks Mitigated'},{k:'b',ar:'إجمالي المخاطر المرصودة',en:'Total Risks Logged'}],
+  formula_ar:'النسبة = (مخاطر معالجة ÷ إجمالي المخاطر المرصودة) × 100',formula_en:'Rate = (Risks Mitigated ÷ Total Risks Logged) × 100'},
+{id:8,cat:'supply',ar:'مؤشرات الموارد وسلسلة الإمداد (OTD)',en:'Resource &amp; Supply Chain KPI (OTD)',mode:'percent',dir:'h',ideal:95,warn:85,
+  inputs:[{k:'a',ar:'عدد الشحنات المسلمة في الموعد',en:'Shipments Delivered On Time'},{k:'b',ar:'إجمالي عدد الشحنات',en:'Total Shipments'}],
+  formula_ar:'OTD = (شحنات في الموعد ÷ إجمالي الشحنات) × 100',formula_en:'OTD = (On-Time Shipments ÷ Total Shipments) × 100'},
+{id:9,cat:'people',ar:'مؤشرات الاتصالات',en:'Communication KPI',mode:'ratioDiv',dir:'l',ideal:0.8,warn:1.0,
+  inputs:[{k:'a',ar:'متوسط زمن الاستجابة الفعلي (ساعة)',en:'Actual Avg Response Time (hrs)'},{k:'b',ar:'الحد التعاقدي الأقصى (ساعة)',en:'Contractual Max (hrs)'}],
+  formula_ar:'النسبة = متوسط زمن الاستجابة الفعلي ÷ الحد التعاقدي الأقصى',formula_en:'Ratio = Actual Avg Response Time ÷ Contractual Max'},
+{id:10,cat:'tech',ar:'مؤشر الإنتاجية الميدانية وكفاءة العمالة',en:'Site Productivity &amp; Labor Efficiency',mode:'percent',dir:'h',ideal:95,warn:80,
+  inputs:[{k:'a',ar:'الإنجاز الفعلي (وحدة/ساعة عمل)',en:'Actual Output (unit/labor-hr)'},{k:'b',ar:'الإنجاز المخطط (وحدة/ساعة عمل)',en:'Planned Output (unit/labor-hr)'}],
+  formula_ar:'النسبة = (الإنجاز الفعلي ÷ الإنجاز المخطط) × 100',formula_en:'Rate = (Actual Output ÷ Planned Output) × 100'},
+{id:11,cat:'tech',ar:'الكفاءة الشاملة للمعدات (OEE)',en:'Overall Equipment Effectiveness',mode:'oee',dir:'h',ideal:85,warn:70,
+  inputs:[{k:'a',ar:'التوافر %',en:'Availability %'},{k:'b',ar:'الأداء %',en:'Performance %'},{k:'c',ar:'الجودة %',en:'Quality %'}],
+  formula_ar:'OEE = التوافر × الأداء × الجودة',formula_en:'OEE = Availability × Performance × Quality'},
+{id:12,cat:'strategic',ar:'بطاقة الأداء المتوازن (Balanced Scorecard)',en:'Balanced Scorecard Index',mode:'direct',dir:'h',ideal:85,warn:70,
+  inputs:[{k:'a',ar:'النتيجة المركبة (مالي، عملاء، عمليات، تعلّم) %',en:'Composite Score (Financial/Customer/Process/Learning) %'}],
+  formula_ar:'متوسط مرجح لأبعاد البطاقة الأربعة',formula_en:'Weighted average of the four BSC dimensions'},
+{id:13,cat:'strategic',ar:'مؤشر المقارنة المعيارية (Benchmarking)',en:'Benchmarking Index',mode:'percent',dir:'h',ideal:100,warn:85,
+  inputs:[{k:'a',ar:'الأداء الفعلي للمنشأة',en:'Actual Facility Performance'},{k:'b',ar:'متوسط الأداء القطاعي المرجعي',en:'Industry Benchmark Average'}],
+  formula_ar:'النسبة = (الأداء الفعلي ÷ المعيار القطاعي) × 100',formula_en:'Rate = (Actual Performance ÷ Industry Benchmark) × 100'},
+{id:14,cat:'tech',ar:'مؤشرات إنترنت الأشياء (IoT)',en:'IoT Reliability KPI',mode:'percent',dir:'h',ideal:98,warn:90,
+  inputs:[{k:'a',ar:'قراءات الحساسات المستلمة بنجاح',en:'Successfully Received Sensor Readings'},{k:'b',ar:'إجمالي القراءات المتوقعة',en:'Total Expected Readings'}],
+  formula_ar:'الموثوقية = (قراءات ناجحة ÷ إجمالي القراءات المتوقعة) × 100',formula_en:'Reliability = (Successful Readings ÷ Expected Readings) × 100'},
+{id:15,cat:'tech',ar:'كفاءة استهلاك الطاقة لمراكز البيانات (PUE)',en:'Power Usage Effectiveness (PUE)',mode:'ratioDiv',dir:'l',ideal:1.2,warn:1.5,
+  inputs:[{k:'a',ar:'إجمالي طاقة المنشأة',en:'Total Facility Energy'},{k:'b',ar:'طاقة أجهزة تقنية المعلومات (IT)',en:'IT Equipment Energy'}],
+  formula_ar:'PUE = إجمالي طاقة المنشأة ÷ طاقة أجهزة IT',formula_en:'PUE = Total Facility Energy ÷ IT Equipment Energy'},
+{id:16,cat:'quality',ar:'معدل إعادة العمل (Rework Rate)',en:'Rework Rate',mode:'percent',dir:'l',ideal:3,warn:8,
+  inputs:[{k:'a',ar:'تكلفة أعمال إعادة التنفيذ',en:'Cost of Reworked Items'},{k:'b',ar:'التكلفة الإجمالية للأعمال المنفذة',en:'Total Cost of Work Performed'}],
+  formula_ar:'النسبة = (تكلفة الإعادة ÷ التكلفة الإجمالية) × 100',formula_en:'Rate = (Rework Cost ÷ Total Work Cost) × 100'},
+{id:17,cat:'quality',ar:'مؤشر نمذجة معلومات المباني والاعتماد الرقمي (BIM)',en:'BIM &amp; Digital Adoption',mode:'percent',dir:'h',ideal:90,warn:70,
+  inputs:[{k:'a',ar:'الحزم المنفذة عبر بيئة BIM/CDE',en:'Packages Executed via BIM/CDE'},{k:'b',ar:'إجمالي حزم العمل',en:'Total Work Packages'}],
+  formula_ar:'النسبة = (حزم عبر BIM ÷ إجمالي الحزم) × 100',formula_en:'Rate = (BIM-executed Packages ÷ Total Packages) × 100'},
+{id:18,cat:'people',ar:'مؤشر رضا أصحاب المصلحة والعملاء',en:'Stakeholder &amp; Client Satisfaction',mode:'direct',dir:'h',ideal:85,warn:75,
+  inputs:[{k:'a',ar:'نتيجة استبيان الرضا %',en:'Satisfaction Survey Score %'}],
+  formula_ar:'يُحسب من نتائج استبيانات التقييم الدورية',formula_en:'Calculated from periodic satisfaction surveys'},
+{id:19,cat:'quality',ar:'مؤشر إنجاز المخالصات وطلبات المعلومات (Submittal &amp; RFI)',en:'Submittal &amp; RFI Turnaround',mode:'ratioDiv',dir:'l',ideal:0.8,warn:1.0,
+  inputs:[{k:'a',ar:'متوسط زمن الرد الفعلي (يوم)',en:'Actual Avg Turnaround (days)'},{k:'b',ar:'الزمن التعاقدي المسموح (يوم)',en:'Contractual Allowed Time (days)'}],
+  formula_ar:'النسبة = متوسط الزمن الفعلي ÷ الزمن التعاقدي المسموح',formula_en:'Ratio = Actual Avg Time ÷ Contractual Allowed Time'},
+{id:20,cat:'tech',ar:'مؤشر موثوقية وصحة الأصول (Uptime)',en:'Asset Health &amp; Reliability (Uptime)',mode:'percent',dir:'h',ideal:95,warn:85,
+  inputs:[{k:'a',ar:'ساعات التشغيل الفعلية الخالية من الأعطال',en:'Actual Fault-Free Uptime Hours'},{k:'b',ar:'إجمالي ساعات التشغيل المخططة',en:'Total Planned Operating Hours'}],
+  formula_ar:'النسبة = (ساعات التشغيل الخالية من الأعطال ÷ الساعات المخططة) × 100',formula_en:'Rate = (Fault-Free Hours ÷ Planned Hours) × 100'},
+{id:21,cat:'fin',ar:'العائد على الاستثمار (ROI)',en:'Return on Investment (ROI)',mode:'percent',dir:'h',ideal:20,warn:5,
+  inputs:[{k:'a',ar:'صافي العائد من الاستثمار',en:'Net Return from Investment'},{k:'b',ar:'تكلفة الاستثمار',en:'Cost of Investment'}],
+  formula_ar:'ROI = (صافي العائد ÷ تكلفة الاستثمار) × 100',formula_en:'ROI = (Net Return ÷ Investment Cost) × 100'},
+{id:22,cat:'people',ar:'مؤشر نقل المعرفة والاحتفاظ بها',en:'Knowledge Transfer &amp; Retention',mode:'percent',dir:'h',ideal:90,warn:70,
+  inputs:[{k:'a',ar:'عدد الدروس والملفات الموثقة',en:'Documented Lessons/Files'},{k:'b',ar:'إجمالي المشاريع أو المراحل المنجزة',en:'Total Completed Projects/Phases'}],
+  formula_ar:'النسبة = (دروس موثقة ÷ مشاريع/مراحل منجزة) × 100',formula_en:'Rate = (Documented Lessons ÷ Completed Projects) × 100'},
+{id:23,cat:'strategic',ar:'مؤشر المرونة المؤسسية وسرعة التكيف (Business Agility)',en:'Business Agility &amp; Resilience',mode:'percent',dir:'h',ideal:85,warn:65,
+  inputs:[{k:'a',ar:'المبادرات/التغييرات المطبقة بنجاح',en:'Successfully Implemented Changes'},{k:'b',ar:'إجمالي المبادرات المستهدفة',en:'Total Targeted Initiatives'}],
+  formula_ar:'النسبة = (مبادرات مطبقة بنجاح ÷ إجمالي المبادرات) × 100',formula_en:'Rate = (Successful Changes ÷ Total Initiatives) × 100'},
+{id:24,cat:'fin',ar:'مؤشر تكلفة دورة الحياة (LCC)',en:'Life Cycle Cost (LCC) Efficiency',mode:'ratioDiv',dir:'l',ideal:1.0,warn:1.15,
+  inputs:[{k:'a',ar:'تكلفة دورة الحياة الفعلية',en:'Actual Life Cycle Cost'},{k:'b',ar:'تكلفة دورة الحياة المخططة',en:'Planned Life Cycle Cost'}],
+  formula_ar:'النسبة = التكلفة الفعلية ÷ التكلفة المخططة لدورة الحياة',formula_en:'Ratio = Actual LCC ÷ Planned LCC'},
+{id:25,cat:'hse',ar:'مؤشر كثافة الكربون والمباني الخضراء',en:'Carbon Intensity &amp; Green Building',mode:'ratioDiv',dir:'l',ideal:1.0,warn:1.1,
+  inputs:[{k:'a',ar:'الانبعاثات الفعلية (طن CO2)',en:'Actual Emissions (tCO2)'},{k:'b',ar:'الانبعاثات المستهدفة (طن CO2)',en:'Target Emissions (tCO2)'}],
+  formula_ar:'النسبة = الانبعاثات الفعلية ÷ الانبعاثات المستهدفة',formula_en:'Ratio = Actual Emissions ÷ Target Emissions'},
+{id:26,cat:'supply',ar:'مؤشر دوران المخزون',en:'Inventory Turnover',mode:'ratio',dir:'h',ideal:6,warn:3,
+  inputs:[{k:'a',ar:'تكلفة البضاعة المستهلكة',en:'Cost of Goods Consumed'},{k:'b',ar:'متوسط قيمة المخزون',en:'Average Inventory Value'}],
+  formula_ar:'الدوران = تكلفة البضاعة المستهلكة ÷ متوسط المخزون',formula_en:'Turnover = COGS ÷ Average Inventory'},
+{id:27,cat:'people',ar:'مؤشر الالتزام بمصفوفة التدريب والمهارات',en:'Training &amp; Skill Matrix Compliance',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'ساعات التدريب المنجزة',en:'Training Hours Completed'},{k:'b',ar:'ساعات التدريب المستهدفة',en:'Target Training Hours'}],
+  formula_ar:'النسبة = (ساعات منجزة ÷ ساعات مستهدفة) × 100',formula_en:'Rate = (Completed Hours ÷ Target Hours) × 100'},
+{id:28,cat:'strategic',ar:'مؤشر التحسين المستمر ومقترحات كايزن',en:'Continuous Improvement &amp; Kaizen',mode:'percent',dir:'h',ideal:75,warn:50,
+  inputs:[{k:'a',ar:'مقترحات تم اعتمادها وتنفيذها',en:'Approved &amp; Implemented Suggestions'},{k:'b',ar:'إجمالي المقترحات المقدمة',en:'Total Suggestions Submitted'}],
+  formula_ar:'النسبة = (مقترحات منفذة ÷ إجمالي المقترحات) × 100',formula_en:'Rate = (Implemented ÷ Total Submitted) × 100'},
+{id:29,cat:'people',ar:'العائد على رأس المال البشري (HCROI)',en:'Human Capital ROI (HCROI)',mode:'sub_div',dir:'h',ideal:2.0,warn:1.0,
+  inputs:[{k:'a',ar:'إجمالي الإيرادات',en:'Total Revenue'},{k:'b',ar:'إجمالي المصروفات التشغيلية (غير الرواتب)',en:'Total Operating Expenses (excl. pay)'},{k:'c',ar:'إجمالي تكلفة الموظفين',en:'Total Employee Cost'}],
+  formula_ar:'HCROI = (الإيرادات − المصروفات غير الرواتب) ÷ تكلفة الموظفين',formula_en:'HCROI = (Revenue − Non-Pay Expenses) ÷ Employee Cost'},
+{id:30,cat:'fin',ar:'مؤشر تكرار المطالبات والنزاعات التعاقدية',en:'Contract Claims &amp; Dispute Frequency',mode:'percent',dir:'l',ideal:5,warn:15,
+  inputs:[{k:'a',ar:'عدد المطالبات/النزاعات المفتوحة',en:'Open Claims/Disputes'},{k:'b',ar:'إجمالي أوامر التغيير والمطالبات',en:'Total Change Orders &amp; Claims'}],
+  formula_ar:'النسبة = (مطالبات مفتوحة ÷ إجمالي المطالبات) × 100',formula_en:'Rate = (Open Claims ÷ Total Claims) × 100'},
+{id:31,cat:'tech',ar:'مؤشر نضج المنصة التشغيلية الرقمية',en:'Digital Operations Platform Maturity',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'الوحدات المؤتمتة والمتكاملة',en:'Automated &amp; Integrated Modules'},{k:'b',ar:'إجمالي الوحدات المستهدفة',en:'Total Target Modules'}],
+  formula_ar:'النسبة = (وحدات مؤتمتة ومتكاملة ÷ إجمالي الوحدات) × 100',formula_en:'Rate = (Integrated Modules ÷ Total Modules) × 100'},
+{id:32,cat:'hse',ar:'مؤشر استهلاك الطاقة وكفاءة الاستدامة',en:'Energy Consumption &amp; Sustainability',mode:'ratioDiv',dir:'l',ideal:0.95,warn:1.05,
+  inputs:[{k:'a',ar:'الاستهلاك الفعلي (kWh)',en:'Actual Consumption (kWh)'},{k:'b',ar:'الاستهلاك المستهدف (kWh)',en:'Target Consumption (kWh)'}],
+  formula_ar:'النسبة = الاستهلاك الفعلي ÷ الاستهلاك المستهدف',formula_en:'Ratio = Actual Consumption ÷ Target Consumption'},
+{id:33,cat:'fin',ar:'مؤشر إدارة العقود ومنازعات المقاولين',en:'Contract Mgmt &amp; Contractor Dispute',mode:'percent',dir:'h',ideal:85,warn:65,
+  inputs:[{k:'a',ar:'مطالبات تمت تسويتها في الوقت المحدد',en:'Claims Settled On Time'},{k:'b',ar:'إجمالي المطالبات المفتوحة',en:'Total Open Claims'}],
+  formula_ar:'النسبة = (مطالبات مسواة في الوقت ÷ إجمالي المطالبات) × 100',formula_en:'Rate = (On-Time Settled Claims ÷ Total Claims) × 100'},
+{id:34,cat:'risk',ar:'مؤشر الأمن السيبراني وجاهزية البنية الرقمية',en:'Cybersecurity &amp; Digital Readiness',mode:'percent',dir:'h',ideal:100,warn:85,
+  inputs:[{k:'a',ar:'الأنظمة المتوافقة أمنياً',en:'Security-Compliant Systems'},{k:'b',ar:'إجمالي الأنظمة الرقمية',en:'Total Digital Systems'}],
+  formula_ar:'النسبة = (أنظمة متوافقة أمنياً ÷ إجمالي الأنظمة) × 100',formula_en:'Rate = (Compliant Systems ÷ Total Systems) × 100'},
+{id:35,cat:'fin',ar:'مؤشر الابتكار المالي والعائد على الاستثمار الرقمي',en:'Financial Innovation &amp; Digital ROI',mode:'percent',dir:'h',ideal:25,warn:5,
+  inputs:[{k:'a',ar:'صافي الوفر والعوائد من الرقمنة',en:'Net Digital Savings &amp; Returns'},{k:'b',ar:'تكلفة تطوير الحلول الرقمية',en:'Cost of Digital Solutions'}],
+  formula_ar:'Digital ROI = (صافي الوفر ÷ تكلفة الحلول الرقمية) × 100',formula_en:'Digital ROI = (Net Savings ÷ Digital Solution Cost) × 100'},
+{id:36,cat:'supply',ar:'مؤشر كفاءة سلسلة الإمداد وإدارة المواد (OTIF)',en:'Supply Chain Efficiency (OTIF)',mode:'percent',dir:'h',ideal:90,warn:80,
+  inputs:[{k:'a',ar:'شحنات مسلمة في الوقت وبالكامل',en:'Deliveries On-Time &amp; In-Full'},{k:'b',ar:'إجمالي الشحنات',en:'Total Deliveries'}],
+  formula_ar:'OTIF = (شحنات في الوقت وبالكامل ÷ إجمالي الشحنات) × 100',formula_en:'OTIF = (On-Time-In-Full ÷ Total Deliveries) × 100'},
+{id:37,cat:'risk',ar:'مؤشر إدارة المخاطر واستمرارية الأعمال',en:'Risk Mgmt &amp; Business Continuity',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'مخاطر تم احتواؤها بفاعلية',en:'Risks Effectively Contained'},{k:'b',ar:'إجمالي المخاطر المقيّمة',en:'Total Assessed Risks'}],
+  formula_ar:'النسبة = (مخاطر محتواة ÷ إجمالي المخاطر المقيّمة) × 100',formula_en:'Rate = (Contained Risks ÷ Total Assessed Risks) × 100'},
+{id:38,cat:'quality',ar:'مؤشر جودة المخرجات الهندسية ومطابقتها للتصميم',en:'Engineering Deliverables Quality',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'مخططات معتمدة من المرة الأولى',en:'Deliverables Approved First Time'},{k:'b',ar:'إجمالي المخططات المقدمة',en:'Total Deliverables Submitted'}],
+  formula_ar:'النسبة = (معتمدة أول مرة ÷ إجمالي المقدمة) × 100',formula_en:'Rate = (First-Time Approved ÷ Total Submitted) × 100'},
+{id:39,cat:'tech',ar:'مؤشر كفاءة استغلال المعدات الثقيلة',en:'Equipment Utilization Efficiency',mode:'percent',dir:'h',ideal:80,warn:65,
+  inputs:[{k:'a',ar:'ساعات التشغيل الفعلية',en:'Actual Operating Hours'},{k:'b',ar:'ساعات الإتاحة المخططة',en:'Planned Availability Hours'}],
+  formula_ar:'النسبة = (ساعات التشغيل الفعلية ÷ ساعات الإتاحة المخططة) × 100',formula_en:'Rate = (Actual Hours ÷ Planned Availability) × 100'},
+{id:40,cat:'people',ar:'مؤشر إدارة التغيير التنظيمي والتقني',en:'Change Mgmt &amp; Organizational Agility',mode:'percent',dir:'h',ideal:85,warn:65,
+  inputs:[{k:'a',ar:'موظفون/إدارات تبنّوا التغيير بنجاح',en:'Staff/Depts Successfully Adopting Change'},{k:'b',ar:'إجمالي المستهدفين بالتغيير',en:'Total Targeted by Change'}],
+  formula_ar:'النسبة = (تبنّوا التغيير بنجاح ÷ إجمالي المستهدفين) × 100',formula_en:'Rate = (Successful Adopters ÷ Total Targeted) × 100'},
+{id:41,cat:'quality',ar:'مؤشر كفاءة تسليم المشاريع وإغلاق الأعمال',en:'Project Closeout &amp; Handover Efficiency',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'بنود الملاحظات الختامية المغلقة',en:'Closed Punch-List Items'},{k:'b',ar:'إجمالي بنود الملاحظات الختامية',en:'Total Punch-List Items'}],
+  formula_ar:'النسبة = (بنود مغلقة ÷ إجمالي بنود الملاحظات) × 100',formula_en:'Rate = (Closed Items ÷ Total Punch-List) × 100'},
+{id:42,cat:'strategic',ar:'مؤشر إدارة المعرفة المؤسسية والتوثيق الرقمي',en:'Organizational Knowledge Mgmt',mode:'percent',dir:'h',ideal:90,warn:70,
+  inputs:[{k:'a',ar:'مشاريع/مراحل موثقة رقمياً',en:'Projects/Phases Digitally Archived'},{k:'b',ar:'إجمالي المشاريع أو المراحل المنجزة',en:'Total Completed Projects/Phases'}],
+  formula_ar:'النسبة = (موثقة رقمياً ÷ إجمالي المنجزة) × 100',formula_en:'Rate = (Digitally Archived ÷ Total Completed) × 100'},
+{id:43,cat:'hse',ar:'مؤشر جودة الهواء والبيئة الداخلية للموقع',en:'Indoor Environmental &amp; Air Quality',mode:'percent',dir:'h',ideal:95,warn:80,
+  inputs:[{k:'a',ar:'قياسات بيئية ضمن الحدود الآمنة',en:'Environmental Readings Within Safe Limits'},{k:'b',ar:'إجمالي القياسات الدورية',en:'Total Periodic Readings'}],
+  formula_ar:'النسبة = (قياسات آمنة ÷ إجمالي القياسات) × 100',formula_en:'Rate = (Safe Readings ÷ Total Readings) × 100'},
+{id:44,cat:'risk',ar:'مؤشر حوكمة الامتثال والشفافية المؤسسية',en:'Governance, Compliance &amp; Transparency',mode:'percent',dir:'h',ideal:100,warn:85,
+  inputs:[{k:'a',ar:'بنود حوكمة ملتزم بها دون مخالفات',en:'Governance Items Compliant, No Violations'},{k:'b',ar:'إجمالي بنود الحوكمة المستهدفة',en:'Total Targeted Governance Items'}],
+  formula_ar:'النسبة = (بنود ملتزم بها ÷ إجمالي بنود الحوكمة) × 100',formula_en:'Rate = (Compliant Items ÷ Total Governance Items) × 100'},
+{id:45,cat:'fin',ar:'مؤشر الأداء المالي المتكامل (CPI×SPI المركّب)',en:'Integrated EVM Financial Performance',mode:'evm',dir:'h',ideal:1.0,warn:0.90,
+  inputs:[{k:'ev',ar:'القيمة المكتسبة EV',en:'Earned Value (EV)'},{k:'ac',ar:'التكلفة الفعلية AC',en:'Actual Cost (AC)'},{k:'ev2',ar:'القيمة المكتسبة EV (لـ SPI)',en:'Earned Value (for SPI)'},{k:'pv',ar:'القيمة المخططة PV',en:'Planned Value (PV)'}],
+  formula_ar:'مؤشر مركّب = أقل قيمة بين CPI و SPI',formula_en:'Composite = min(CPI, SPI)'},
+{id:46,cat:'people',ar:'مؤشر توطين واختيار الكوادر الهندسية',en:'Workforce Localization &amp; Competency Fit',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'كوادر اجتازت تقييم الكفاءة',en:'Staff Passing Competency Evaluation'},{k:'b',ar:'إجمالي الموظفين الجدد المستقطبين',en:'Total New Hires'}],
+  formula_ar:'النسبة = (اجتازوا التقييم ÷ إجمالي المستقطبين) × 100',formula_en:'Rate = (Passed Evaluation ÷ Total New Hires) × 100'},
+{id:47,cat:'risk',ar:'مؤشر أمن المعلومات الصناعية وإنترنت الأشياء',en:'Industrial Cybersecurity &amp; IoT Security',mode:'percent',dir:'h',ideal:100,warn:85,
+  inputs:[{k:'a',ar:'أجهزة IoT محدثة أمنياً وخالية من الثغرات',en:'IoT Devices Updated &amp; Vulnerability-Free'},{k:'b',ar:'إجمالي الأجهزة الذكية المتصلة',en:'Total Connected Smart Devices'}],
+  formula_ar:'النسبة = (أجهزة آمنة ÷ إجمالي الأجهزة المتصلة) × 100',formula_en:'Rate = (Secure Devices ÷ Total Connected) × 100'},
+{id:48,cat:'fin',ar:'مؤشر إدارة العقود الذكية والتوثيق بالبلوكشين',en:'Smart Contract &amp; Blockchain Mgmt',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'معاملات منفذة آلياً عبر العقود الذكية',en:'Transactions Auto-Executed via Smart Contracts'},{k:'b',ar:'إجمالي المعاملات المستهدفة',en:'Total Targeted Transactions'}],
+  formula_ar:'النسبة = (معاملات مؤتمتة ÷ إجمالي المعاملات المستهدفة) × 100',formula_en:'Rate = (Automated Transactions ÷ Total Targeted) × 100'},
+{id:49,cat:'tech',ar:'مؤشر كفاءة الصيانة التنبؤية المدعومة بالذكاء الاصطناعي',en:'AI-Driven Predictive Maintenance',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'أعطال تم التنبؤ بها بدقة',en:'Failures Accurately Predicted'},{k:'b',ar:'إجمالي الأعطال الفعلية خلال الفترة',en:'Total Actual Failures in Period'}],
+  formula_ar:'النسبة = (أعطال تم التنبؤ بها ÷ إجمالي الأعطال الفعلية) × 100',formula_en:'Rate = (Accurately Predicted ÷ Total Actual Failures) × 100'},
+{id:50,cat:'tech',ar:'مؤشر كفاءة التوأم الرقمي والتشغيل الذكي',en:'Digital Twin &amp; Smart Operations',mode:'percent',dir:'h',ideal:90,warn:75,
+  inputs:[{k:'a',ar:'أصول مرتبطة ومحدثة لحظياً بالتوأم الرقمي',en:'Assets Synced Live with Digital Twin'},{k:'b',ar:'إجمالي الأصول الحرجة المستهدفة للربط',en:'Total Critical Assets Targeted'}],
+  formula_ar:'النسبة = (أصول مرتبطة لحظياً ÷ إجمالي الأصول الحرجة) × 100',formula_en:'Rate = (Live-Synced Assets ÷ Total Critical Assets) × 100'}
+];
+
+/* ===================== State / Storage (safe — never throws) ===================== */
+let storageOK = true;
+const memStore = {}; // in-memory fallback if localStorage is blocked (private mode, locked-down file:// context, etc.)
+const safeStorage = {
+  getItem(k){ try{ return localStorage.getItem(k); }catch(e){ storageOK=false; return memStore[k]!==undefined?memStore[k]:null; } },
+  setItem(k,v){ try{ localStorage.setItem(k,v); }catch(e){ storageOK=false; memStore[k]=v; } }
+};
+let DB;
+try{
+  DB = JSON.parse(safeStorage.getItem('oip_db') || '{"projects":[],"archive":[],"lessons":[],"subcontractors":[],"auditLog":[],"activeProjectId":null}');
+}catch(e){
+  DB = {projects:[],archive:[],lessons:[],subcontractors:[],auditLog:[],activeProjectId:null};
+}
+if(!DB.subcontractors) DB.subcontractors = [];
+if(!DB.auditLog) DB.auditLog = [];
+function logAudit(action, detail){
+  DB.auditLog.push({ts:Date.now(), action, detail});
+  if(DB.auditLog.length>500) DB.auditLog = DB.auditLog.slice(-500); // keep log lean
+}
+function saveDB(){ safeStorage.setItem('oip_db', JSON.stringify(DB)); }
+function activeProject(){ return DB.projects.find(p=>p.id===DB.activeProjectId); }
+
+/* ---------- Theme ---------- */
+let THEME = safeStorage.getItem('oip_theme') || 'light';
+function toggleTheme(){
+  THEME = (THEME==='dark') ? 'light' : 'dark';
+  safeStorage.setItem('oip_theme', THEME);
+  applyTheme();
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', THEME);
+  const btn = document.getElementById('themeToggleBtn');
+  if(btn) btn.textContent = THEME==='dark' ? tr('themeLight') : tr('themeDark');
+}
+
+/* ---------- CSV Export ---------- */
+function exportProjectCSV(){
+  const p = activeProject();
+  if(!p || !p.history || p.history.length===0){ alert(tr('csvNoData')); return; }
+  const header = ['Date','KPI_ID','KPI_Name_AR','KPI_Name_EN','Category','Value','Status'];
+  const rows = p.history.map(h=>{
+    const k = KPIS.find(x=>x.id===h.kpiId);
+    return [new Date(h.date).toISOString(), h.kpiId, k?k.ar.replace(/,/g,' '):'', k?k.en.replace(/,/g,' '):'', k?(LANG==='ar'?CATS[k.cat].ar:CATS[k.cat].en):'', h.value, h.status];
+  });
+  const csv = [header.join(','), ...rows.map(r=>r.join(','))].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = (p.name||'project').replace(/[^\w\u0600-\u06FF-]+/g,'_') + '_kpi_history.csv'; a.click();
+}
+
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'oip_backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+function importBackup(e){
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ try{ DB = JSON.parse(r.result); saveDB(); refreshProjectSelect(); render(); }catch(err){ alert('ملف غير صالح / Invalid file'); } };
+  r.readAsText(f);
+}
+
+/* ===================== Calculation Engine ===================== */
+function evalKpi(kpi, vals){
+  let value;
+  if(kpi.mode==='percent') value = (vals.a/vals.b)*100;
+  else if(kpi.mode==='ratio') value = vals.a/vals.b;
+  else if(kpi.mode==='ratioDiv') value = vals.a/vals.b;
+  else if(kpi.mode==='sub') value = vals.a - vals.b;
+  else if(kpi.mode==='sub_div') value = (vals.a - vals.b)/vals.c;
+  else if(kpi.mode==='direct') value = vals.a;
+  else if(kpi.mode==='ratio1000') value = (vals.a/vals.b)*200000;
+  else if(kpi.mode==='oee') value = (vals.a/100)*(vals.b/100)*(vals.c/100)*100;
+  else if(kpi.mode==='evm'){ const cpi=vals.ev/vals.ac, spi=vals.ev2/vals.pv; value = Math.min(cpi,spi); }
+  value = Math.round(value*1000)/1000;
+  let status;
+  if(kpi.dir==='h'){ status = value>=kpi.ideal?'ideal':(value>=kpi.warn?'warning':'danger'); }
+  else { status = value<=kpi.ideal?'ideal':(value<=kpi.warn?'warning':'danger'); }
+  return {value, status};
+}
+
+function statusLabel(s){ return s==='ideal'?tr('ideal'):(s==='warning'?tr('warning'):tr('danger')); }
+function statusColor(s){ return s==='ideal'?'#16a34a':(s==='warning'?'#ca8a04':'#dc2626'); }
+
+/* ===================== PHI (Project Health Index) ===================== */
+function computePHI(project){
+  if(!project || !project.history || project.history.length===0) return null;
+  const latestByKpi = {};
+  project.history.forEach(h=>{ latestByKpi[h.kpiId] = h; });
+  const entries = Object.values(latestByKpi);
+  if(entries.length===0) return null;
+  const score = s=> s==='ideal'?100:(s==='warning'?60:20);
+  const avg = entries.reduce((sum,e)=>sum+score(e.status),0)/entries.length;
+  return {phi:Math.round(avg), count:entries.length,
+    ideal:entries.filter(e=>e.status==='ideal').length,
+    warning:entries.filter(e=>e.status==='warning').length,
+    danger:entries.filter(e=>e.status==='danger').length};
+}
+
+/* ===================== Pages ===================== */
+let currentPage = 'dash';
+let selectedKpiId = null;
+
+function render(){
+  document.documentElement.lang = LANG; document.documentElement.dir = LANG==='ar'?'rtl':'ltr';
+  document.getElementById('t_title').textContent = (LANG==='ar'?'📖 قاموس الكي بي آي إس':'📖 KPI Dictionary');
+  document.getElementById('t_by').textContent = tr('by');
+  document.getElementById('t_lang').textContent = tr('lang');
+  document.getElementById('t_export').textContent = tr('export');
+  document.getElementById('t_import').textContent = tr('import');
+  document.getElementById('t_print').textContent = tr('print');
+  document.getElementById('t_footer').innerHTML = tr('footer');
+  document.getElementById('t_close').textContent = tr('closeMenu');
+  document.getElementById('csvExportBtn').textContent = tr('csvExport');
+  applyTheme();
+  ['dash','engine','bulk','library','heatmap','registry','archive','lessons','report','whatif','warroom','subs','audit'].forEach(p=>{
+    document.getElementById('nav_'+p).textContent = tr('nav_'+p);
+  });
+  updateAlertBell();
+  const warnEl = document.getElementById('storageWarning');
+  if(warnEl){
+    if(!storageOK){
+      warnEl.style.display='block';
+      warnEl.textContent = LANG==='ar'
+        ? '⚠️ متصفحك يمنع التخزين الدائم في هذا السياق — التطبيق يعمل بشكل طبيعي، لكن البيانات لن تُحفظ بعد إغلاق الصفحة. استخدم "تصدير نسخة احتياطية" باستمرار، أو افتح الملف من متصفح آخر (Chrome/Edge) بدل الوضع الخاص.'
+        : '⚠️ Your browser is blocking persistent storage in this context — the app works normally, but data won\'t be saved after closing the page. Use "Export Backup" regularly, or open this file in a different browser (Chrome/Edge) instead of private mode.';
+    } else { warnEl.style.display='none'; }
+  }
+  refreshProjectSelect();
+  const el = document.getElementById('pageContent');
+  if(currentPage==='dash'){ document.getElementById('pageTitle').textContent = tr('nav_dash'); el.innerHTML = pageDash(); setTimeout(mountDashCharts,0); }
+  else if(currentPage==='engine'){ document.getElementById('pageTitle').textContent = tr('nav_engine'); el.innerHTML = pageEngine(); mountEngineEvents(); }
+  else if(currentPage==='bulk'){ document.getElementById('pageTitle').textContent = tr('nav_bulk'); el.innerHTML = pageBulk(); mountBulkEvents(); }
+  else if(currentPage==='library'){ document.getElementById('pageTitle').textContent = tr('nav_library'); el.innerHTML = pageLibrary(); mountLibraryEvents(); }
+  else if(currentPage==='heatmap'){ document.getElementById('pageTitle').textContent = tr('nav_heatmap'); el.innerHTML = pageHeatmap(); }
+  else if(currentPage==='registry'){ document.getElementById('pageTitle').textContent = tr('nav_registry'); el.innerHTML = pageRegistry(); mountRegistryEvents(); }
+  else if(currentPage==='archive'){ document.getElementById('pageTitle').textContent = tr('nav_archive'); el.innerHTML = pageArchive(); mountArchiveEvents(); }
+  else if(currentPage==='lessons'){ document.getElementById('pageTitle').textContent = tr('nav_lessons'); el.innerHTML = pageLessons(); mountLessonsEvents(); }
+  else if(currentPage==='report'){ document.getElementById('pageTitle').textContent = tr('nav_report'); el.innerHTML = pageReport(); }
+  else if(currentPage==='whatif'){ document.getElementById('pageTitle').textContent = tr('nav_whatif'); el.innerHTML = pageWhatIf(); mountWhatIfEvents(); }
+  else if(currentPage==='warroom'){ document.getElementById('pageTitle').textContent = tr('nav_warroom'); el.innerHTML = pageWarRoom(); document.body.classList.toggle('warroom-body', true); }
+  else if(currentPage==='subs'){ document.getElementById('pageTitle').textContent = tr('nav_subs'); el.innerHTML = pageSubs(); mountSubsEvents(); }
+  else if(currentPage==='audit'){ document.getElementById('pageTitle').textContent = tr('nav_audit'); el.innerHTML = pageAudit(); }
+  if(currentPage!=='warroom') document.body.classList.remove('warroom-body');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===currentPage));
+}
+
+function refreshProjectSelect(){
+  const sel = document.getElementById('activeProjectSelect');
+  sel.innerHTML = '';
+  if(DB.projects.length===0){
+    const o=document.createElement('option'); o.textContent = tr('noProject'); sel.appendChild(o); return;
+  }
+  DB.projects.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; sel.appendChild(o); });
+  sel.value = DB.activeProjectId || DB.projects[0].id;
+  DB.activeProjectId = sel.value; saveDB();
+  sel.onchange = ()=>{ DB.activeProjectId = sel.value; saveDB(); render(); };
+}
+
+/* ---------- Dashboard ---------- */
+function pageDash(){
+  const p = activeProject();
+  if(!p) return `<div class="card">${tr('noProject')}</div>`;
+  const phi = computePHI(p);
+  return `
+  <div class="grid cols-4">
+    <div class="metric"><div class="v">${phi?phi.phi+'%':'—'}</div><div class="l">${tr('phi')}</div></div>
+    <div class="metric"><div class="v">${phi?phi.count:0}</div><div class="l">${tr('activeKpis')}</div></div>
+    <div class="metric"><div class="v" style="color:var(--green)">${phi?phi.ideal:0}</div><div class="l">${tr('idealCount')}</div></div>
+    <div class="metric"><div class="v" style="color:var(--red)">${phi?phi.danger:0}</div><div class="l">${tr('dangerCount')}</div></div>
+  </div>
+  <div class="grid cols-2" style="margin-top:16px">
+    <div class="card"><h3>${tr('statusDist')}</h3><div id="pieChart"></div></div>
+    <div class="card"><h3>${tr('trend')}</h3><div id="lineChart"></div></div>
+  </div>`;
+}
+function mountDashCharts(){
+  const p = activeProject(); if(!p) return;
+  const phi = computePHI(p);
+  const box1 = document.getElementById('pieChart');
+  if(box1) renderStatusBars(box1, phi);
+  const hist = (p.history||[]).slice(-15);
+  const vals = hist.map(h=> h.status==='ideal'?100:(h.status==='warning'?60:20));
+  const box2 = document.getElementById('lineChart');
+  if(box2) renderTrendSparkline(box2, vals);
+}
+function renderStatusBars(el, phi){
+  if(!phi){ el.innerHTML = `<div class="small">${tr('noHistory')}</div>`; return; }
+  const total = Math.max(1, phi.ideal+phi.warning+phi.danger);
+  el.innerHTML = [['idealCount','#16a34a',phi.ideal],['warnCount','#ca8a04',phi.warning],['dangerCount','#dc2626',phi.danger]].map(([labelKey,color,val])=>`
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span>${tr(labelKey)}</span><span><b>${val}</b></span></div>
+        <div style="background:#e2e8f0;border-radius:6px;height:14px;overflow:hidden">
+          <div style="width:${(val/total)*100}%;height:100%;background:${color}"></div>
+        </div>
+      </div>`).join('');
+}
+function renderTrendSparkline(el, vals){
+  if(vals.length===0){ el.innerHTML = `<div class="small">${tr('noHistory')}</div>`; return; }
+  el.innerHTML = `<div style="display:flex;align-items:flex-end;gap:4px;height:150px">
+        ${vals.map(v=>`<div title="PHI: ${v}" style="flex:1;background:${v>=100?'#16a34a':v>=60?'#ca8a04':'#dc2626'};height:${v}%;border-radius:3px 3px 0 0;min-height:4px"></div>`).join('')}
+      </div>`;
+}
+
+/* ---------- Engine ---------- */
+function pageEngine(){
+  const p = activeProject();
+  if(!p) return `<div class="card">${tr('noProject')}</div>`;
+  const options = KPIS.map(k=>`<option value="${k.id}">${k.id}. ${LANG==='ar'?k.ar:k.en} (${LANG==='ar'?CATS[k.cat].ar:CATS[k.cat].en})</option>`).join('');
+  const kpi = KPIS.find(k=>k.id===selectedKpiId) || KPIS[0];
+  selectedKpiId = kpi.id;
+  const inputsHtml = kpi.inputs.map(inp=>`
+    <div class="field"><label>${LANG==='ar'?inp.ar:inp.en} <span class="small">(${tr('required')})</span></label>
+    <input type="number" step="any" id="in_${inp.k}"></div>`).join('');
+  const hist = (p.history||[]).filter(h=>h.kpiId===kpi.id).slice(-8).reverse();
+  const histRows = hist.length? hist.map((h,i)=>{
+      const prev = hist[i+1];
+      return `<tr><td>${new Date(h.date).toLocaleDateString(LANG==='ar'?'ar-EG':'en-US')}</td><td>${h.value}</td><td><span class="badge ${h.status}">${statusLabel(h.status)}</span></td><td>${trendArrowHtml(kpi,h,prev)}</td></tr>`;
+    }).join('')
+    : `<tr><td colspan="4" class="small">${tr('noHistory')}</td></tr>`;
+  const forecast = forecastNote(kpi,hist);
+  return `
+  <div class="card">
+    <div class="field"><label>${tr('selectKpi')}</label>
+      <select id="kpiSelect">${options}</select>
+    </div>
+    <div class="small" style="margin-bottom:10px">📐 ${LANG==='ar'?kpi.formula_ar:kpi.formula_en}</div>
+    <div class="grid cols-2">${inputsHtml}</div>
+    <button class="btn" id="calcBtn" style="margin-top:6px">${tr('calc')} 🚀</button>
+    <div id="reportOutput"></div>
+  </div>
+  <div class="card">
+    <h3>${tr('history')}</h3>
+    ${forecast?`<div class="anomaly-box">📉 ${forecast}</div>`:''}
+    <table><thead><tr><th>${tr('reportDate')}</th><th>${tr('value')}</th><th>${tr('status')}</th><th>${tr('trendDir')}</th></tr></thead>
+    <tbody>${histRows}</tbody></table>
+  </div>`;
+}
+function trendArrowHtml(kpi,cur,prev){
+  if(!prev) return '<span class="small">—</span>';
+  const improved = kpi.dir==='h'? cur.value>prev.value : cur.value<prev.value;
+  const same = cur.value===prev.value;
+  const cls = same?'':( improved?'color:var(--green)':'color:var(--red)');
+  const label = same? tr('trendFlat') : (improved? tr('trendUp') : tr('trendDown'));
+  return `<span class="trend-arrow" style="${cls}">${label}</span>`;
+}
+function forecastNote(kpi,histDesc){
+  // histDesc is newest-first (already reversed in caller)
+  if(!histDesc || histDesc.length<2) return null;
+  const h = histDesc.slice(0,3); // newest 3
+  const declining = kpi.dir==='h'? (h[0].value<h[1].value) : (h[0].value>h[1].value);
+  const alreadyDanger = h[0].status==='danger';
+  if(declining && !alreadyDanger && h[0].status!=='ideal') return tr('willReachDanger');
+  return null;
+}
+function mountEngineEvents(){
+  const sel = document.getElementById('kpiSelect');
+  if(sel){ sel.value = selectedKpiId; sel.onchange = ()=>{ selectedKpiId = Number(sel.value); render(); currentPage='engine'; }; }
+  const btn = document.getElementById('calcBtn');
+  if(btn) btn.onclick = runCalc;
+}
+function lastSavedValue(kpiId){
+  const p = activeProject(); if(!p||!p.history) return null;
+  const list = p.history.filter(h=>h.kpiId===kpiId);
+  return list.length? list[list.length-1] : null;
+}
+function runCalc(){
+  const kpi = KPIS.find(k=>k.id===selectedKpiId);
+  const vals = {};
+  for(const inp of kpi.inputs){
+    const v = parseFloat(document.getElementById('in_'+inp.k).value);
+    if(isNaN(v)){ alert(LANG==='ar'?'يرجى تعبئة جميع الحقول بقيم رقمية':'Please fill all fields with numeric values'); return; }
+    vals[inp.k]=v;
+  }
+  const res = evalKpi(kpi, vals);
+  const last = lastSavedValue(kpi.id);
+  const out = document.getElementById('reportOutput');
+  if(last && last.value!==0){
+    const diff = Math.abs(res.value-last.value)/Math.abs(last.value);
+    if(diff>0.6){
+      out.innerHTML = `
+      <div class="anomaly-box">
+        <b>${tr('anomaly')}</b>
+        <p>${tr('anomalyMsg')}</p>
+        <p class="small">${tr('whatifBase')}: ${last.value} → ${tr('value')}: ${res.value}</p>
+        <button class="btn" id="proceedBtn" style="margin-top:6px">${tr('proceedAnyway')}</button>
+        <button class="btn secondary" id="cancelBtn">${tr('cancel')}</button>
+      </div>`;
+      document.getElementById('proceedBtn').onclick = ()=>showReport(kpi,res);
+      document.getElementById('cancelBtn').onclick = ()=>{ out.innerHTML=''; };
+      return;
+    }
+  }
+  showReport(kpi,res);
+}
+function showReport(kpi,res){
+  const cat = CATS[kpi.cat];
+  const t = TPL[kpi.cat][res.status];
+  const lines = LANG==='ar'?t.ar:t.en;
+  const role = LANG==='ar'?cat.role_ar:cat.role_en;
+  const nextDate = new Date(); nextDate.setDate(nextDate.getDate()+14);
+  const out = document.getElementById('reportOutput');
+  out.innerHTML = `
+  <div class="report ${res.status}">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div><b>${tr('value')}:</b> ${res.value}${kpi.mode==='percent'?'%':''}</div>
+      <div><span class="badge ${res.status}">${statusLabel(res.status)} ${res.status==='ideal'?'🟢':res.status==='warning'?'🟡':'🔴'}</span></div>
+    </div>
+    <h4>1️⃣ ${tr('summary')}</h4><p>${lines[0]}</p>
+    <h4>2️⃣ ${tr('cause')}</h4><p>${lines[1]}</p>
+    <h4>3️⃣ ${tr('action')}</h4><p>${lines[2]}</p>
+    <h4>4️⃣ RACI</h4><p><b>${tr('raci')}:</b> ${role} — <b>${tr('nextReview')}:</b> ${nextDate.toLocaleDateString(LANG==='ar'?'ar-EG':'en-US')}</p>
+    <button class="btn no-print" style="margin-top:8px" id="saveResultBtn">${tr('save')} 💾</button>
+  </div>`;
+  document.getElementById('saveResultBtn').onclick = ()=>{
+    const p = activeProject();
+    p.history = p.history || [];
+    p.history.push({kpiId:kpi.id, value:res.value, status:res.status, date:Date.now()});
+    logAudit('kpi_save', `${p.name} — ${LANG==='ar'?kpi.ar:kpi.en} = ${res.value} (${res.status})`);
+    saveDB(); render(); currentPage='engine';
+  };
+}
+
+/* ---------- Bulk Calculate All KPIs ---------- */
+function pageBulk(){
+  const p = activeProject();
+  if(!p) return `<div class="card">${tr('noProject')}</div>`;
+  const groups = {};
+  KPIS.forEach(k=>{ groups[k.cat]=groups[k.cat]||[]; groups[k.cat].push(k); });
+  let html = `<div class="card"><p class="small">${LANG==='ar'?'إملأ المؤشرات التي تملك بياناتها الآن واترك الباقي فارغاً — سيتم حساب وحفظ كل مؤشر مُكتمل البيانات فقط، دفعة واحدة.':'Fill in the KPIs you have data for now and leave the rest blank — every fully-filled KPI will be calculated and saved in one pass.'}</p>
+    <button class="btn" id="calcAllBtn" style="margin-bottom:10px">${LANG==='ar'?'🚀 احسب واحفظ كل المؤشرات المُكتملة':'🚀 Calculate & Save All Completed KPIs'}</button>
+    <div id="bulkSummary"></div></div>`;
+  Object.entries(groups).forEach(([catKey,list])=>{
+    html += `<div class="card"><h3>${LANG==='ar'?CATS[catKey].ar:CATS[catKey].en}</h3>`;
+    list.forEach(k=>{
+      html += `<div style="border-bottom:1px solid var(--border);padding:10px 0">
+        <b>${k.id}. ${LANG==='ar'?k.ar:k.en}</b>
+        <div class="grid cols-3" style="margin-top:6px">
+          ${k.inputs.map(inp=>`<div><label class="small">${LANG==='ar'?inp.ar:inp.en}</label><input type="number" step="any" id="bulk_${k.id}_${inp.k}"></div>`).join('')}
+        </div>
+        <div class="small" id="bulk_result_${k.id}"></div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  return html;
+}
+function mountBulkEvents(){
+  const btn = document.getElementById('calcAllBtn'); if(!btn) return;
+  btn.onclick = ()=>{
+    const p = activeProject(); p.history = p.history || [];
+    let calculated=0, skipped=0;
+    KPIS.forEach(k=>{
+      const vals = {}; let complete = true;
+      for(const inp of k.inputs){
+        const el = document.getElementById(`bulk_${k.id}_${inp.k}`);
+        const v = parseFloat(el ? el.value : NaN);
+        if(isNaN(v)){ complete=false; break; }
+        vals[inp.k]=v;
+      }
+      if(!complete){ skipped++; return; }
+      const res = evalKpi(k, vals);
+      p.history.push({kpiId:k.id, value:res.value, status:res.status, date:Date.now()});
+      logAudit('kpi_save_bulk', `${p.name} — ${LANG==='ar'?k.ar:k.en} = ${res.value} (${res.status})`);
+      calculated++;
+      const cell = document.getElementById('bulk_result_'+k.id);
+      if(cell) cell.innerHTML = `<span class="badge ${res.status}">${res.value} — ${statusLabel(res.status)}</span>`;
+    });
+    saveDB();
+    const summary = document.getElementById('bulkSummary');
+    summary.innerHTML = `<div class="report ideal" style="margin-top:0">
+      ✅ ${LANG==='ar'?`تم حساب وحفظ`:'Calculated & saved'} <b>${calculated}</b> ${LANG==='ar'?'مؤشراً':'KPIs'} —
+      ${LANG==='ar'?'تم تخطي':'skipped'} <b>${skipped}</b> ${LANG==='ar'?'(بيانات غير مكتملة)':'(incomplete data)'}.
+    </div>`;
+  };
+}
+
+/* ---------- What-If Simulator ---------- */
+function pageWhatIf(){
+  const options = KPIS.map(k=>`<option value="${k.id}">${k.id}. ${LANG==='ar'?k.ar:k.en}</option>`).join('');
+  const kpi = KPIS.find(k=>k.id===selectedKpiId) || KPIS[0];
+  const last = lastSavedValue(kpi.id);
+  const inputsHtml = kpi.inputs.map(inp=>`
+    <div class="field"><label>${LANG==='ar'?inp.ar:inp.en}</label>
+    <input type="number" step="any" id="wi_${inp.k}" oninput="whatIfRecalc()"></div>`).join('');
+  return `
+  <div class="card">
+    <div class="field"><label>${tr('selectKpi')}</label><select id="whatifKpiSelect">${options}</select></div>
+    <p class="small">${tr('whatifDesc')}</p>
+    ${last? `<p class="small">${tr('whatifBase')}: <b>${last.value}</b> (${statusLabel(last.status)})</p>` : `<p class="small">${tr('noBaseline')}</p>`}
+    <div class="grid cols-2">${inputsHtml}</div>
+    <div id="whatifOutput" style="margin-top:12px"></div>
+  </div>`;
+}
+function mountWhatIfEvents(){
+  const sel = document.getElementById('whatifKpiSelect');
+  if(sel){ sel.value = selectedKpiId; sel.onchange = ()=>{ selectedKpiId = Number(sel.value); render(); currentPage='whatif'; }; }
+}
+window.whatIfRecalc = function(){
+  const kpi = KPIS.find(k=>k.id===selectedKpiId);
+  const vals = {}; let complete=true;
+  for(const inp of kpi.inputs){
+    const v = parseFloat(document.getElementById('wi_'+inp.k).value);
+    if(isNaN(v)){ complete=false; break; }
+    vals[inp.k]=v;
+  }
+  const out = document.getElementById('whatifOutput');
+  if(!complete){ out.innerHTML=''; return; }
+  const res = evalKpi(kpi, vals);
+  out.innerHTML = `<div class="report ${res.status}" style="margin-top:0">
+    <b>${tr('whatifImpact')}:</b> ${res.value}${kpi.mode==='percent'?'%':''} —
+    <span class="badge ${res.status}">${statusLabel(res.status)} ${res.status==='ideal'?'🟢':res.status==='warning'?'🟡':'🔴'}</span>
+  </div>`;
+};
+
+/* ---------- War Room ---------- */
+function pageWarRoom(){
+  const p = activeProject();
+  if(!p) return `<div class="card">${tr('noProject')}</div>`;
+  const latestByKpi = {};
+  (p.history||[]).forEach(h=>{ latestByKpi[h.kpiId]=h; });
+  const dangerList = Object.values(latestByKpi).filter(h=>h.status==='danger');
+  if(dangerList.length===0) return `<div class="card"><h2>${tr('warroomTitle')}</h2><p>${tr('warroomEmpty')}</p></div>`;
+  const cards = dangerList.map(h=>{
+    const kpi = KPIS.find(k=>k.id===h.kpiId);
+    const cat = CATS[kpi.cat];
+    const t = TPL[kpi.cat].danger;
+    const line = (LANG==='ar'?t.ar:t.en)[2];
+    const role = LANG==='ar'?cat.role_ar:cat.role_en;
+    return `<div class="warroom-card">
+      <h3>🔴 ${LANG==='ar'?kpi.ar:kpi.en}</h3>
+      <p><b>${tr('value')}:</b> ${h.value}${kpi.mode==='percent'?'%':''}</p>
+      <p><b>${tr('warroomAction')}:</b> ${line}</p>
+      <p><b>${tr('raci')}:</b> ${role}</p>
+    </div>`;
+  }).join('');
+  return `<h2>${tr('warroomTitle')}</h2>${cards}`;
+}
+
+/* ---------- Subcontractor Scoring ---------- */
+function pageSubs(){
+  const rows = DB.subcontractors.slice().map(s=>({...s, overall: Math.round((s.quality+s.schedule+s.hse)/3)}))
+    .sort((a,b)=>b.overall-a.overall);
+  const rowsHtml = rows.length? rows.map((s,i)=>`
+    <tr><td>${i+1}</td><td><b>${s.name}</b><div class="small">${s.scope||''}</div></td>
+    <td>${s.quality}</td><td>${s.schedule}</td><td>${s.hse}</td>
+    <td><span class="badge ${s.overall>=85?'ideal':s.overall>=70?'warning':'danger'}">${s.overall}%</span></td>
+    <td><button class="btn danger" onclick="deleteSub('${s.id}')">${tr('deleteBtn')}</button></td></tr>`).join('')
+    : `<tr><td colspan="7" class="small">${tr('subsEmpty')}</td></tr>`;
+  return `
+  <div class="card">
+    <h3>${tr('subsAdd')}</h3>
+    <div class="grid cols-3">
+      <div class="field"><label>${tr('subName')}</label><input id="sub_name"></div>
+      <div class="field"><label>${tr('subScope')}</label><input id="sub_scope"></div>
+      <div></div>
+      <div class="field"><label>${tr('subQuality')}</label><input type="number" min="0" max="100" id="sub_quality"></div>
+      <div class="field"><label>${tr('subSchedule')}</label><input type="number" min="0" max="100" id="sub_schedule"></div>
+      <div class="field"><label>${tr('subHse')}</label><input type="number" min="0" max="100" id="sub_hse"></div>
+    </div>
+    <button class="btn" id="addSubBtn">${tr('subsAdd')} ➕</button>
+  </div>
+  <div class="card">
+    <h3>${tr('subsTitle')}</h3>
+    <table><thead><tr><th>${tr('subRank')}</th><th>${tr('subName')}</th><th>${tr('subQuality')}</th><th>${tr('subSchedule')}</th><th>${tr('subHse')}</th><th>${tr('subOverall')}</th><th></th></tr></thead>
+    <tbody>${rowsHtml}</tbody></table>
+  </div>`;
+}
+function mountSubsEvents(){
+  const btn = document.getElementById('addSubBtn'); if(!btn) return;
+  btn.onclick = ()=>{
+    const name = document.getElementById('sub_name').value.trim();
+    const quality = parseFloat(document.getElementById('sub_quality').value);
+    const schedule = parseFloat(document.getElementById('sub_schedule').value);
+    const hse = parseFloat(document.getElementById('sub_hse').value);
+    if(!name || isNaN(quality) || isNaN(schedule) || isNaN(hse)){
+      alert(LANG==='ar'?'يرجى تعبئة جميع الحقول':'Please fill all fields'); return;
+    }
+    DB.subcontractors.push({id:'s'+Date.now(), name, scope:document.getElementById('sub_scope').value, quality, schedule, hse});
+    logAudit('sub_add', name);
+    saveDB(); currentPage='subs'; render();
+  };
+}
+window.deleteSub = function(id){
+  if(!confirm(tr('warnConfirm'))) return;
+  DB.subcontractors = DB.subcontractors.filter(s=>s.id!==id);
+  saveDB(); render();
+};
+
+/* ---------- Alert Bell ---------- */
+function updateAlertBell(){
+  const bell = document.getElementById('alertBell');
+  if(!bell) return;
+  const p = activeProject();
+  if(!p){ bell.style.display='none'; return; }
+  const latestByKpi = {};
+  (p.history||[]).forEach(h=>{ latestByKpi[h.kpiId]=h; });
+  const dangerCount = Object.values(latestByKpi).filter(h=>h.status==='danger').length;
+  if(dangerCount>0){
+    bell.style.display='inline-block';
+    bell.textContent = `🚨 ${dangerCount} ${tr('alertBell')}`;
+  } else { bell.style.display='none'; }
+}
+window.goWarRoom = function(){ currentPage='warroom'; render(); };
+
+/* ---------- Audit Trail ---------- */
+function pageAudit(){
+  const log = DB.auditLog.slice().reverse();
+  const rows = log.length? log.map(l=>`
+    <tr><td>${new Date(l.ts).toLocaleString(LANG==='ar'?'ar-EG':'en-US')}</td>
+    <td>${tr('act_'+l.action) || l.action}</td><td>${l.detail}</td></tr>`).join('')
+    : `<tr><td colspan="3" class="small">${tr('auditEmpty')}</td></tr>`;
+  return `
+  <div class="card"><p class="small">🔒 ${tr('auditDesc')}</p></div>
+  <div class="card"><table><thead><tr><th>${tr('reportDate')}</th><th>${LANG==='ar'?'الحدث':'Event'}</th><th>${LANG==='ar'?'التفاصيل':'Detail'}</th></tr></thead>
+  <tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- Library ---------- */
+
+function pageLibrary(){
+  const catOptions = `<option value="">${tr('allKpis')}</option>` + Object.entries(CATS).map(([k,v])=>`<option value="${k}">${LANG==='ar'?v.ar:v.en}</option>`).join('');
+  return `
+  <div class="card">
+    <div class="grid cols-2">
+      <input type="text" id="kpiSearch" placeholder="${tr('searchKpi')}">
+      <select id="catFilter">${catOptions}</select>
+    </div>
+    <div class="kpi-list" id="kpiListBox" style="margin-top:12px"></div>
+  </div>`;
+}
+function mountLibraryEvents(){
+  const search = document.getElementById('kpiSearch');
+  const catF = document.getElementById('catFilter');
+  function draw(){
+    const q = (search.value||'').toLowerCase();
+    const c = catF.value;
+    const box = document.getElementById('kpiListBox');
+    const filtered = KPIS.filter(k=>{
+      const name = (LANG==='ar'?k.ar:k.en).toLowerCase();
+      return (!c || k.cat===c) && (!q || name.includes(q));
+    });
+    box.innerHTML = filtered.map(k=>`
+      <div class="kpi-row" onclick="openKpiDetail(${k.id})">
+        <div><b>${k.id}.</b> ${LANG==='ar'?k.ar:k.en}<div class="small">${LANG==='ar'?CATS[k.cat].ar:CATS[k.cat].en}</div></div>
+        <div class="small">${k.dir==='h'?'▲':'▼'} ${tr('ideal')} ${k.dir==='h'?'≥':'≤'} ${k.ideal}</div>
+      </div>`).join('') || `<div class="small">—</div>`;
+  }
+  search.oninput = draw; catF.onchange = draw; draw();
+}
+window.openKpiDetail = function(id){
+  selectedKpiId = id; currentPage='engine'; render();
+};
+
+/* ---------- Heatmap ---------- */
+function pageHeatmap(){
+  if(DB.projects.length===0) return `<div class="card">${tr('noProject')}</div>`;
+  const rows = DB.projects.map(p=>{
+    const phi = computePHI(p);
+    const cells = KPIS.slice(0,20).map(k=>{
+      const entries = (p.history||[]).filter(h=>h.kpiId===k.id);
+      const last = entries[entries.length-1];
+      const color = last? statusColor(last.status) : '#e2e8f0';
+      return `<span class="heat-cell" title="${LANG==='ar'?k.ar:k.en}" style="background:${color}"></span>`;
+    }).join('');
+    return `<tr><td><b>${p.name}</b><div class="small">${phi?phi.phi+'% PHI':'—'}</div></td><td>${cells}</td></tr>`;
+  }).join('');
+  return `<div class="card"><table><thead><tr><th>${tr('projects')}</th><th>KPI 1-20</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- Registry ---------- */
+function pageRegistry(){
+  const rows = DB.projects.map(p=>{
+    const phi = computePHI(p);
+    return `<tr>
+      <td><b>${p.name}</b></td><td>${p.sector||'—'}</td><td>${p.client||'—'}</td>
+      <td>${phi?phi.phi+'%':'—'}</td>
+      <td>
+        <button class="btn secondary" onclick="archiveProject('${p.id}')">${tr('archiveBtn')}</button>
+        <button class="btn danger" onclick="deleteProject('${p.id}')">${tr('deleteBtn')}</button>
+      </td></tr>`;
+  }).join('') || `<tr><td colspan="5" class="small">—</td></tr>`;
+  return `
+  <div class="card">
+    <h3>${tr('newProject')}</h3>
+    <div class="grid cols-3">
+      <div class="field"><label>${tr('projectName')}</label><input id="np_name"></div>
+      <div class="field"><label>${tr('sector')}</label><input id="np_sector"></div>
+      <div class="field"><label>${tr('client')}</label><input id="np_client"></div>
+    </div>
+    <button class="btn" id="createProjectBtn">${tr('create')} ➕</button>
+  </div>
+  <div class="card">
+    <h3>${tr('projects')}</h3>
+    <table><thead><tr><th>${tr('projectName')}</th><th>${tr('sector')}</th><th>${tr('client')}</th><th>PHI</th><th></th></tr></thead>
+    <tbody>${rows}</tbody></table>
+  </div>`;
+}
+function mountRegistryEvents(){
+  document.getElementById('createProjectBtn').onclick = ()=>{
+    const name = document.getElementById('np_name').value.trim();
+    if(!name){ alert(LANG==='ar'?'الرجاء إدخال اسم المشروع':'Please enter a project name'); return; }
+    const p = {id:'p'+Date.now(), name, sector:document.getElementById('np_sector').value,
+      client:document.getElementById('np_client').value, history:[], createdAt:Date.now()};
+    DB.projects.push(p); DB.activeProjectId = p.id; logAudit('project_create', p.name); saveDB(); currentPage='registry'; render();
+  };
+}
+window.deleteProject = function(id){
+  if(!confirm(tr('warnConfirm'))) return;
+  const proj = DB.projects.find(p=>p.id===id);
+  DB.projects = DB.projects.filter(p=>p.id!==id);
+  if(DB.activeProjectId===id) DB.activeProjectId = DB.projects[0]?DB.projects[0].id:null;
+  if(proj) logAudit('project_delete', proj.name);
+  saveDB(); render();
+};
+window.archiveProject = function(id){
+  const idx = DB.projects.findIndex(p=>p.id===id); if(idx<0) return;
+  const [p] = DB.projects.splice(idx,1); p.archivedAt = Date.now(); DB.archive.push(p);
+  if(DB.activeProjectId===id) DB.activeProjectId = DB.projects[0]?DB.projects[0].id:null;
+  logAudit('project_archive', p.name);
+  saveDB(); render();
+};
+
+/* ---------- Archive ---------- */
+function pageArchive(){
+  const rows = DB.archive.map(p=>{
+    const phi = computePHI(p);
+    return `<tr><td><b>${p.name}</b></td><td>${p.sector||'—'}</td><td>${phi?phi.phi+'%':'—'}</td>
+    <td><button class="btn secondary" onclick="restoreProject('${p.id}')">${tr('restoreBtn')}</button></td></tr>`;
+  }).join('') || `<tr><td colspan="4" class="small">${tr('archiveEmpty')}</td></tr>`;
+  return `<div class="card"><table><thead><tr><th>${tr('projectName')}</th><th>${tr('sector')}</th><th>PHI</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function mountArchiveEvents(){}
+window.restoreProject = function(id){
+  const idx = DB.archive.findIndex(p=>p.id===id); if(idx<0) return;
+  const [p] = DB.archive.splice(idx,1); DB.projects.push(p); DB.activeProjectId = p.id; saveDB(); render();
+};
+
+/* ---------- Lessons ---------- */
+function pageLessons(){
+  const cats = LANG==='ar'? ['التكاليف','الجودة والهندسة','السلامة والبيئة','العقود والمطالبات','التقنية والذكاء الاصطناعي','الموارد البشرية']
+    : ['Cost','Quality/Engineering','HSE','Contracts/Claims','Technology/AI','HR'];
+  const options = cats.map(c=>`<option>${c}</option>`).join('');
+  const rows = DB.lessons.slice().reverse().map(l=>`<div class="card" style="padding:12px"><b>[${l.cat}]</b> ${l.desc}<div class="small">${new Date(l.date).toLocaleDateString(LANG==='ar'?'ar-EG':'en-US')}</div></div>`).join('') || `<div class="small">—</div>`;
+  return `
+  <div class="card">
+    <div class="field"><label>${tr('lessonCat')}</label><select id="lessonCat">${options}</select></div>
+    <div class="field"><label>${tr('lessonDesc')}</label><textarea id="lessonDesc" rows="3"></textarea></div>
+    <button class="btn" id="addLessonBtn">${tr('addLesson')} 💾</button>
+  </div>
+  <div class="card"><h3>${tr('lessonsBank')}</h3>${rows}</div>`;
+}
+function mountLessonsEvents(){
+  document.getElementById('addLessonBtn').onclick = ()=>{
+    const desc = document.getElementById('lessonDesc').value.trim();
+    if(!desc) return;
+    DB.lessons.push({cat:document.getElementById('lessonCat').value, desc, date:Date.now()});
+    saveDB(); render(); currentPage='lessons';
+  };
+}
+
+/* ---------- Comprehensive Report ---------- */
+function pageReport(){
+  if(DB.projects.length===0) return `<div class="card">${tr('noData')}</div>`;
+  const rows = DB.projects.map(p=>{
+    const phi = computePHI(p);
+    if(!phi) return `<div class="card"><h3>${p.name}</h3><div class="small">${tr('noData')}</div></div>`;
+    const bySector = {};
+    (p.history||[]).forEach(h=>{
+      const k = KPIS.find(x=>x.id===h.kpiId); if(!k) return;
+      bySector[k.cat] = bySector[k.cat] || [];
+      bySector[k.cat].push(h);
+    });
+    const secRows = Object.entries(bySector).map(([cat,list])=>{
+      const last = list[list.length-1];
+      const kpi = KPIS.find(k=>k.id===last.kpiId);
+      return `<li><b>${LANG==='ar'?CATS[cat].ar:CATS[cat].en}:</b> ${LANG==='ar'?kpi.ar:kpi.en} = ${last.value} — <span class="badge ${last.status}">${statusLabel(last.status)}</span></li>`;
+    }).join('');
+    return `<div class="card">
+      <h3>${p.name} <span class="small">(${p.sector||'—'})</span></h3>
+      <p><b>${tr('phi')}:</b> ${phi.phi}% — 🟢 ${phi.ideal} · 🟡 ${phi.warning} · 🔴 ${phi.danger}</p>
+      <ul>${secRows}</ul>
+    </div>`;
+  }).join('');
+  const now = new Date();
+  return `
+  <div class="card">
+    <h2>${tr('reportTitle')}</h2>
+    <p class="small">${tr('reportDate')}: ${now.toLocaleDateString(LANG==='ar'?'ar-EG':'en-US')} | ${tr('preparedBy')}: Eng. Wael Oweis</p>
+  </div>
+  ${rows}`;
+}
+
+/* ===================== Nav wiring ===================== */
+window.toggleMobileMenu = function(open){
+  const sb = document.getElementById('sidebar');
+  if(!sb) return;
+  sb.classList.toggle('mobile-open', open);
+};
+document.querySelectorAll('.nav-btn').forEach(b=>{
+  b.addEventListener('click', ()=>{ try{ currentPage = b.dataset.page; render(); toggleMobileMenu(false); }catch(err){ showFatalError(err.stack||err.message); } });
+});
+document.getElementById('langSelect').addEventListener('change', (e)=>{ try{ LANG = e.target.value; render(); }catch(err){ showFatalError(err.stack||err.message); } });
+
+/* bootstrap: seed a default project if empty */
+try{
+  if(DB.projects.length===0){
+    DB.projects.push({id:'p_demo', name: 'مشروع تجريبي / Demo Project', sector:'إنشاءات عامة', client:'—', history:[], createdAt:Date.now()});
+    DB.activeProjectId='p_demo'; saveDB();
+  }
+  render();
+}catch(err){ showFatalError(err.stack||err.message); }
+</script>
+</body>
+</html>

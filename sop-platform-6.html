@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منصة المعايير التشغيلية الموحدة | OpsMatrix</title>
+<style>
+:root{
+  --navy-950:#0a1420;
+  --navy-900:#0f1e2e;
+  --navy-800:#152a3d;
+  --navy-700:#1c3650;
+  --navy-600:#254562;
+  --steel-500:#3d6d8f;
+  --steel-300:#7fa8c2;
+  --amber-500:#d19a3a;
+  --amber-400:#e0ae52;
+  --amber-glow:#f2c464;
+  --paper:#eef1ee;
+  --paper-dim:#dfe4e0;
+  --ink:#101917;
+  --ok:#4b8f6b;
+  --warn:#c76b3f;
+  --crit:#b5443a;
+  --font-head:'Zilla Slab', Georgia, 'Times New Roman', serif;
+  --font-body:'Inter', 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+  --radius:3px;
+  --dur:.2s;
+}
+[data-theme="light"]{
+  --bg:var(--paper);
+  --bg-alt:#e5e9e5;
+  --surface:#ffffff;
+  --surface-2:#f4f6f4;
+  --text:var(--ink);
+  --text-dim:#4a5652;
+  --border:#c9d0c9;
+  --accent:var(--amber-500);
+  --accent-ink:#3a2c10;
+}
+[data-theme="dark"]{
+  --bg:var(--navy-950);
+  --bg-alt:var(--navy-900);
+  --surface:var(--navy-800);
+  --surface-2:var(--navy-700);
+  --text:#e7edf1;
+  --text-dim:#93a8b8;
+  --border:#274257;
+  --accent:var(--amber-400);
+  --accent-ink:#1a1002;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overscroll-behavior-y:none;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.55;
+  min-height:100vh;
+  transition:background var(--dur),color var(--dur);
+}
+h1,h2,h3,h4{font-family:var(--font-head);font-weight:600;margin:0 0 .4em;color:var(--text);}
+a{color:inherit;}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
+.mono{font-family:var(--font-mono);}
+
+/* ===== layout shell ===== */
+#shell{display:flex;min-height:100vh;}
+#sidebar{
+  width:250px;flex:0 0 250px;background:var(--bg-alt);
+  border-inline-end:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  z-index:40;transition:transform var(--dur);
+}
+#sidebar .brand{
+  padding:22px 18px 16px;border-bottom:1px solid var(--border);
+}
+#sidebar .brand .mark{
+  display:flex;align-items:center;gap:10px;
+}
+#sidebar .brand .mark .glyph{
+  width:34px;height:34px;border:2px solid var(--accent);border-radius:2px;
+  display:flex;align-items:center;justify-content:center;color:var(--accent);
+  font-family:var(--font-head);font-weight:700;font-size:16px;flex:none;
+  transform:rotate(45deg);
+}
+#sidebar .brand .mark .glyph span{transform:rotate(-45deg);}
+#sidebar .brand h1{font-size:16px;margin:0;line-height:1.25;}
+#sidebar .brand .sub{font-size:11px;color:var(--text-dim);letter-spacing:.02em;margin-top:2px;}
+nav.nav{padding:14px 10px;flex:1;}
+nav.nav .grp-label{font-size:10.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;padding:14px 10px 6px;}
+nav.nav button.nav-btn{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:start;
+  background:none;border:none;padding:9px 10px;border-radius:var(--radius);
+  color:var(--text-dim);cursor:pointer;font-size:13.5px;margin-bottom:2px;
+  border-inline-start:2px solid transparent;
+}
+nav.nav button.nav-btn:hover{background:var(--surface);color:var(--text);}
+nav.nav button.nav-btn.active{background:var(--surface);color:var(--text);border-inline-start-color:var(--accent);font-weight:600;}
+nav.nav button.nav-btn .ic{width:16px;text-align:center;flex:none;font-size:14px;}
+#sidebar .foot{padding:14px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dim);}
+
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:35;}
+
+#main{flex:1;min-width:0;display:flex;flex-direction:column;}
+header#topbar{
+  position:sticky;top:0;z-index:30;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;padding:10px 20px;
+}
+#hamburger{display:none;background:none;border:1px solid var(--border);border-radius:var(--radius);width:36px;height:36px;color:var(--text);cursor:pointer;font-size:16px;position:relative;z-index:50;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+#topbar .page-title{font-family:var(--font-head);font-size:19px;flex:1;}
+#topbar .page-title small{display:block;font-family:var(--font-body);font-size:11px;color:var(--text-dim);font-weight:400;}
+.icon-btn{
+  background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text);font-size:15px;flex:none;
+}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+#content{padding:22px 26px 60px;max-width:1180px;width:100%;margin:0 auto;}
+.page{display:none;}
+.page.active{display:block;animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* ===== components ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
+.card h3{font-size:15px;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.grid{display:grid;gap:14px;}
+.grid.cols-2{grid-template-columns:1fr 1fr;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}}
+
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden;}
+.kpi::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--accent);}
+.kpi .val{font-family:var(--font-head);font-size:28px;line-height:1;}
+.kpi .lbl{font-size:11.5px;color:var(--text-dim);margin-top:6px;}
+
+.sector-tile{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;cursor:pointer;transition:border-color var(--dur),transform var(--dur);
+  position:relative;
+}
+.sector-tile:hover{border-color:var(--accent);transform:translateY(-2px);}
+.sector-tile.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+.sector-tile .glyph{font-size:22px;margin-bottom:8px;color:var(--accent);}
+.sector-tile h4{font-size:14px;margin-bottom:3px;}
+.sector-tile p{font-size:11.5px;color:var(--text-dim);margin:0;}
+
+label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;margin-top:10px;}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 10px;color:var(--text);
+}
+textarea{min-height:70px;resize:vertical;}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:var(--accent-ink);
+  border:none;border-radius:var(--radius);padding:9px 16px;font-weight:600;font-size:13px;
+  cursor:pointer;
+}
+.btn:hover{filter:brightness(1.07);}
+.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn.danger{background:var(--crit);color:#fff;}
+.btn.sm{padding:6px 11px;font-size:12px;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:start;}
+th{color:var(--text-dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;}
+tr:hover td{background:var(--surface-2);}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.active{background:rgba(75,143,107,.18);color:var(--ok);}
+.badge.pending{background:rgba(209,154,58,.2);color:var(--amber-500);}
+.badge.archived{background:rgba(120,120,120,.2);color:var(--text-dim);}
+.badge.crit{background:rgba(181,68,58,.18);color:var(--crit);}
+
+.gate-track{display:flex;gap:4px;margin:16px 0;}
+.gate-step{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--border);font-size:11.5px;cursor:pointer;position:relative;}
+.gate-step .num{display:block;font-family:var(--font-head);font-size:16px;margin-bottom:2px;}
+.gate-step.done{background:rgba(75,143,107,.15);border-color:var(--ok);color:var(--ok);}
+.gate-step.current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+.gate-step.locked{opacity:.45;cursor:not-allowed;}
+
+.check-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px dashed var(--border);}
+.check-row input[type=checkbox]{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex:none;}
+.check-row .txt{font-size:13.5px;flex:1;}
+
+.doc-sheet{
+  background:var(--surface);border:1px solid var(--border);padding:26px 30px;
+  font-size:13px;line-height:1.7;border-radius:var(--radius);
+}
+.doc-sheet .doc-head{border-bottom:2px solid var(--accent);padding-bottom:12px;margin-bottom:16px;}
+.doc-sheet .doc-head .code{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
+.doc-sheet .doc-head h2{font-size:19px;margin:4px 0;}
+.doc-sheet .doc-head .meta{font-size:12px;color:var(--text-dim);}
+.doc-sheet section{margin-bottom:14px;}
+.doc-sheet section h4{font-size:13px;color:var(--accent);margin-bottom:5px;border-bottom:1px solid var(--border);padding-bottom:4px;}
+.doc-sheet .sign-block{display:flex;justify-content:space-between;margin-top:22px;padding-top:14px;border-top:1px dashed var(--border);font-size:12px;}
+.doc-sheet .stamp{position:absolute;}
+
+.rpn-hi{color:var(--crit);font-weight:700;}
+.rpn-mid{color:var(--amber-500);font-weight:700;}
+.rpn-lo{color:var(--ok);font-weight:700;}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-dim);}
+.empty-state .ic{font-size:30px;margin-bottom:10px;color:var(--accent);}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px;}
+.modal-bg.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);max-width:640px;width:100%;padding:22px 24px;}
+.modal h3{margin-bottom:14px;}
+.modal-close{float:inline-end;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;}
+
+.toast{position:fixed;bottom:20px;inset-inline:0;margin:0 auto;width:max-content;max-width:90vw;background:var(--surface);border:1px solid var(--accent);color:var(--text);padding:10px 18px;border-radius:var(--radius);font-size:13px;z-index:200;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;}
+.toast.show{opacity:1;transform:none;}
+
+.sub-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+.sub-tabs button{background:none;border:none;padding:9px 14px;color:var(--text-dim);cursor:pointer;font-size:13px;border-bottom:2px solid transparent;}
+.sub-tabs button.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+
+.flow-row{display:flex;gap:8px;align-items:center;overflow-x:auto;padding:4px 0 12px;}
+.flow-row .fnode{flex:none;background:var(--surface-2);border:1px solid var(--border);padding:8px 12px;border-radius:var(--radius);font-size:12px;white-space:nowrap;}
+.flow-row .arrow{color:var(--accent);flex:none;}
+
+::placeholder{color:var(--text-dim);opacity:.7;}
+.hint{font-size:11.5px;color:var(--text-dim);margin-top:4px;}
+.pillbar{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+.pill{background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;}
+.pill.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;}
+
+/* language / rtl handling */
+html[dir="ltr"] body{font-family:var(--font-body);}
+[data-ar]{}
+html[dir="ltr"] [data-ar-only]{display:none !important;}
+html[dir="rtl"] [data-en-only]{display:none !important;}
+
+@media(max-width:920px){
+  #sidebar{position:fixed;inset-inline-start:0;top:0;transform:translateX(-100%);}
+  html[dir="rtl"] #sidebar{transform:translateX(100%);}
+  #sidebar.open{transform:none !important;}
+  #hamburger{display:flex;}
+  #content{padding:16px;}
+  .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}
+  .doc-sheet{padding:18px;}
+}
+
+@media print{
+  #sidebar,#topbar,#sidebar-overlay,.no-print{display:none !important;}
+  #content{padding:0;max-width:100%;}
+  body{background:#fff;color:#000;}
+  .page{display:none !important;}
+  .page.print-active{display:block !important;}
+  .card,.doc-sheet{border:1px solid #999;box-shadow:none;background:#fff;color:#000;}
+}
+</style>
+</head>
+<body data-theme="dark">
+<div id="shell">
+
+  <div id="sidebar-overlay" onclick="closeSidebar(true)"></div>
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="mark">
+        <div class="glyph"><span>OM</span></div>
+        <div>
+          <h1 data-ar="منصة المعايير التشغيلية" data-en="OpsMatrix Platform">منصة المعايير التشغيلية</h1>
+          <div class="sub" data-ar="نظام SOP وإدارة المراحل" data-en="SOP & Stage-Gate Operations">نظام SOP وإدارة المراحل</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav" id="navList"></nav>
+    <div class="foot">
+      <div data-ar="إشراف وتصميم" data-en="Supervised & designed by">إشراف وتصميم</div>
+      <div style="color:var(--accent);font-weight:600;">م. وائل عويس <span data-en-only>/ Eng. Wael Oweis</span></div>
+    </div>
+  </aside>
+
+  <div id="main">
+    <header id="topbar">
+      <button id="hamburger" onclick="toggleSidebar(event)">☰</button>
+      <div class="page-title" id="pageTitle">
+        <span id="pageTitleMain">لوحة التحكم</span>
+        <small id="pageTitleSub">نظرة عامة على جميع المشاريع والقطاعات</small>
+      </div>
+      <button class="icon-btn no-print" title="طباعة الصفحة" onclick="printCurrentPage()">🖨️</button>
+      <button class="icon-btn no-print" title="تبديل الوضع الليلي" onclick="toggleTheme()">🌓</button>
+      <button class="icon-btn no-print" id="langBtn" title="Toggle Language" onclick="toggleLang()">EN</button>
+    </header>
+
+    <div id="content">
+
+      <!-- ===================== DASHBOARD ===================== -->
+      <section class="page active" id="page-dashboard">
+        <div class="grid cols-4" id="kpiRow"></div>
+
+        <div class="card">
+          <h3><span data-ar="خريطة القطاعات" data-en="Sector Heatmap">خريطة القطاعات</span></h3>
+          <div class="grid cols-4" id="sectorHeatmap"></div>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="card">
+            <h3><span data-ar="المشاريع الأحدث" data-en="Recent Projects">المشاريع الأحدث</span>
+              <button class="btn sm ghost" onclick="go('projects')" data-ar="عرض الكل" data-en="View all">عرض الكل</button>
+            </h3>
+            <div id="recentProjects"></div>
+          </div>
+          <div class="card">
+            <h3><span data-ar="آخر الدروس المستفادة" data-en="Latest Lessons Learned">آخر الدروس المستفادة</span>
+              <button class="btn sm ghost" onclick="go('lessons')" data-ar="عرض الكل" data-en="View all">عرض الكل</button>
+            </h3>
+            <div id="recentLessons"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SECTORS & SOP GENERATOR ===================== -->
+      <section class="page" id="page-sectors">
+        <div class="card">
+          <h3><span data-ar="١. اختر القطاع" data-en="1. Choose the sector">١. اختر القطاع</span></h3>
+          <div class="grid cols-4" id="sectorPicker"></div>
+        </div>
+
+        <div class="card" id="sopGenCard" style="display:none;">
+          <h3><span data-ar="٢. مولّد إجراء التشغيل القياسي (SOP)" data-en="2. SOP Generator">٢. مولّد إجراء التشغيل القياسي (SOP)</span></h3>
+          <div class="grid cols-2">
+            <div>
+              <label data-ar="اسم الإجراء" data-en="Procedure name">اسم الإجراء</label>
+              <select id="sopTemplatePick"></select>
+              <label data-ar="اسم المشروع / المنشأة" data-en="Project / facility name">اسم المشروع / المنشأة</label>
+              <input type="text" id="sopProjectName" placeholder="...">
+              <label data-ar="القسم / المرحلة المعنية" data-en="Department / stage covered">القسم / المرحلة المعنية</label>
+              <input type="text" id="sopDept" placeholder="...">
+            </div>
+            <div>
+              <label data-ar="الهدف من الإجراء" data-en="Objective">الهدف من الإجراء</label>
+              <textarea id="sopObjective" placeholder="..."></textarea>
+              <label data-ar="خطوات التنفيذ (سطر لكل خطوة)" data-en="Steps (one per line)">خطوات التنفيذ (سطر لكل خطوة)</label>
+              <textarea id="sopSteps" placeholder="..."></textarea>
+            </div>
+          </div>
+          <button class="btn" style="margin-top:14px;" onclick="generateSOP()" data-ar="توليد وثيقة الـSOP" data-en="Generate SOP document">توليد وثيقة الـSOP</button>
+        </div>
+
+        <div class="card" id="sopResultCard" style="display:none;">
+          <h3><span data-ar="الوثيقة الناتجة" data-en="Generated document">الوثيقة الناتجة</span>
+            <span>
+              <button class="btn sm ghost no-print" onclick="printCurrentPage()" data-ar="طباعة/حفظ PDF" data-en="Print / Save PDF">طباعة/حفظ PDF</button>
+              <button class="btn sm ghost no-print" onclick="saveSOPToLibrary()" data-ar="حفظ في المكتبة" data-en="Save to library">حفظ في المكتبة</button>
+            </span>
+          </h3>
+          <div class="doc-sheet" id="sopOutput"></div>
+        </div>
+
+        <div class="card">
+          <h3><span data-ar="مكتبة SOPs المحفوظة" data-en="Saved SOP Library">مكتبة SOPs المحفوظة</span></h3>
+          <table id="sopLibraryTable"><thead><tr>
+            <th data-ar="الكود" data-en="Code">الكود</th>
+            <th data-ar="الإجراء" data-en="Procedure">الإجراء</th>
+            <th data-ar="القطاع" data-en="Sector">القطاع</th>
+            <th data-ar="المشروع" data-en="Project">المشروع</th>
+            <th></th>
+          </tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- ===================== PROJECTS / REGISTRY ===================== -->
+      <section class="page" id="page-projects">
+        <div class="card">
+          <h3><span data-ar="تسجيل مشروع جديد" data-en="Register new project">تسجيل مشروع جديد</span></h3>
+          <div class="grid cols-3">
+            <div>
+              <label data-ar="اسم المشروع" data-en="Project name">اسم المشروع</label>
+              <input type="text" id="newProjName" placeholder="...">
+            </div>
+            <div>
+              <label data-ar="القطاع" data-en="Sector">القطاع</label>
+              <select id="newProjSector"></select>
+            </div>
+            <div>
+              <label data-ar="تاريخ البدء" data-en="Start date">تاريخ البدء</label>
+              <input type="date" id="newProjDate">
+            </div>
+          </div>
+          <button class="btn" style="margin-top:12px;" onclick="createProject()" data-ar="+ إنشاء المشروع" data-en="+ Create project">+ إنشاء المشروع</button>
+        </div>
+
+        <div class="card">
+          <h3>
+            <span data-ar="سجل المشاريع" data-en="Project registry">سجل المشاريع</span>
+            <span class="pillbar" style="margin:0;" id="projFilterBar"></span>
+          </h3>
+          <table><thead><tr>
+            <th data-ar="الرمز" data-en="ID">الرمز</th>
+            <th data-ar="الاسم" data-en="Name">الاسم</th>
+            <th data-ar="القطاع" data-en="Sector">القطاع</th>
+            <th data-ar="المرحلة الحالية" data-en="Current stage">المرحلة الحالية</th>
+            <th data-ar="الحالة" data-en="Status">الحالة</th>
+            <th></th>
+          </tr></thead><tbody id="projTableBody"></tbody></table>
+          <div class="empty-state" id="projEmpty" style="display:none;">
+            <div class="ic">📁</div>
+            <div data-ar="لا توجد مشاريع بعد — أنشئ أول مشروع أعلاه" data-en="No projects yet — create your first one above">لا توجد مشاريع بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PROJECT DETAIL (Stage-Gate) ===================== -->
+      <section class="page" id="page-project-detail">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+            <div>
+              <h3 id="pdName" style="border:none;margin:0;font-size:20px;"></h3>
+              <div class="hint" id="pdMeta"></div>
+            </div>
+            <div>
+              <span class="badge active" id="pdBadge"></span>
+            </div>
+          </div>
+          <div class="gate-track" id="gateTrack"></div>
+        </div>
+
+        <div class="card" id="stageDetailCard"></div>
+
+        <div class="card">
+          <h3><span data-ar="سجل مخاطر المشروع (FMEA)" data-en="Project risk register (FMEA)">سجل مخاطر المشروع (FMEA)</span></h3>
+          <div class="grid cols-4">
+            <div><label data-ar="الخطر" data-en="Risk">الخطر</label><input type="text" id="riskDesc"></div>
+            <div><label data-ar="الاحتمالية O (١-١٠)" data-en="Occurrence O (1-10)">الاحتمالية O</label><input type="number" min="1" max="10" id="riskO" value="5"></div>
+            <div><label data-ar="الخطورة S (١-١٠)" data-en="Severity S (1-10)">الخطورة S</label><input type="number" min="1" max="10" id="riskS" value="5"></div>
+            <div><label data-ar="الكشف D (١-١٠)" data-en="Detection D (1-10)">الكشف D</label><input type="number" min="1" max="10" id="riskD" value="5"></div>
+          </div>
+          <button class="btn sm" style="margin-top:8px;" onclick="addRisk()" data-ar="+ إضافة للسجل" data-en="+ Add to register">+ إضافة للسجل</button>
+          <table style="margin-top:12px;"><thead><tr>
+            <th data-ar="الخطر" data-en="Risk">الخطر</th><th>O</th><th>S</th><th>D</th>
+            <th data-ar="RPN" data-en="RPN">RPN</th><th></th>
+          </tr></thead><tbody id="riskTableBody"></tbody></table>
+        </div>
+
+        <div class="card">
+          <h3><span data-ar="مصفوفة الصلاحيات RACI" data-en="RACI matrix">مصفوفة الصلاحيات RACI</span>
+            <button class="btn sm ghost no-print" onclick="printCurrentPage()" data-ar="طباعة" data-en="Print">طباعة</button>
+          </h3>
+          <table><thead><tr>
+            <th data-ar="النشاط" data-en="Activity">النشاط</th>
+            <th data-ar="مدير المشروع" data-en="Project Mgr">مدير المشروع</th>
+            <th data-ar="مهندس الموقع" data-en="Site Eng.">مهندس الموقع</th>
+            <th data-ar="مسؤول الجودة" data-en="QA/QC">مسؤول الجودة</th>
+            <th data-ar="الفريق الفني" data-en="Field Team">الفريق الفني</th>
+          </tr></thead>
+          <tbody>
+            <tr><td data-ar="إعداد وتوثيق مسودة الـSOP" data-en="Draft & document the SOP">إعداد وتوثيق مسودة الـSOP</td><td>C</td><td>R</td><td>A</td><td>I</td></tr>
+            <tr><td data-ar="تنفيذ خطوات المرحلة" data-en="Execute stage steps">تنفيذ خطوات المرحلة</td><td>I</td><td>R</td><td>C</td><td>A</td></tr>
+            <tr><td data-ar="فحص الجودة واعتماد البوابة" data-en="QA check & gate approval">فحص الجودة واعتماد البوابة</td><td>A</td><td>C</td><td>R</td><td>I</td></tr>
+            <tr><td data-ar="توثيق الدروس المستفادة" data-en="Document lessons learned">توثيق الدروس المستفادة</td><td>A</td><td>R</td><td>C</td><td>I</td></tr>
+          </tbody></table>
+        </div>
+
+        <button class="btn ghost no-print" onclick="go('projects')" data-ar="← العودة لسجل المشاريع" data-en="← Back to registry">← العودة لسجل المشاريع</button>
+      </section>
+
+      <!-- ===================== LESSONS LEARNED ===================== -->
+      <section class="page" id="page-lessons">
+        <div class="card">
+          <h3><span data-ar="توثيق درس مستفاد جديد" data-en="Log a new lesson learned">توثيق درس مستفاد جديد</span></h3>
+          <div class="grid cols-2">
+            <div>
+              <label data-ar="المشروع المرتبط" data-en="Related project">المشروع المرتبط</label>
+              <select id="llProject"></select>
+              <label data-ar="عنوان المشكلة" data-en="Issue title">عنوان المشكلة</label>
+              <input type="text" id="llTitle">
+              <label data-ar="جذر المشكلة" data-en="Root cause">جذر المشكلة</label>
+              <textarea id="llRoot"></textarea>
+            </div>
+            <div>
+              <label data-ar="الإجراء التصحيحي" data-en="Corrective action">الإجراء التصحيحي</label>
+              <textarea id="llFix"></textarea>
+              <label data-ar="التوصية المستقبلية" data-en="Future recommendation">التوصية المستقبلية</label>
+              <textarea id="llRec"></textarea>
+            </div>
+          </div>
+          <button class="btn" style="margin-top:10px;" onclick="addLesson()" data-ar="+ حفظ في بنك المعرفة" data-en="+ Save to knowledge bank">+ حفظ في بنك المعرفة</button>
+        </div>
+
+        <div class="card">
+          <h3><span data-ar="بنك الدروس المستفادة" data-en="Lessons learned bank">بنك الدروس المستفادة</span></h3>
+          <input type="text" id="llSearch" placeholder="بحث..." oninput="renderLessons()" style="margin-bottom:12px;">
+          <div id="lessonsList"></div>
+        </div>
+      </section>
+
+      <!-- ===================== ARCHIVE ===================== -->
+      <section class="page" id="page-archive">
+        <div class="card">
+          <h3><span data-ar="الأرشيف الرقمي الموحد" data-en="Unified digital archive">الأرشيف الرقمي الموحد</span></h3>
+          <table><thead><tr>
+            <th data-ar="المشروع" data-en="Project">المشروع</th>
+            <th data-ar="القطاع" data-en="Sector">القطاع</th>
+            <th data-ar="تاريخ الأرشفة" data-en="Archived on">تاريخ الأرشفة</th>
+            <th data-ar="SOPs" data-en="SOPs">SOPs</th>
+            <th data-ar="الدروس" data-en="Lessons">الدروس</th>
+            <th></th>
+          </tr></thead><tbody id="archiveTableBody"></tbody></table>
+          <div class="empty-state" id="archiveEmpty" style="display:none;">
+            <div class="ic">🗄️</div>
+            <div data-ar="لا توجد مشاريع مؤرشفة بعد" data-en="No archived projects yet">لا توجد مشاريع مؤرشفة بعد</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <section class="page" id="page-settings">
+        <div class="card">
+          <h3><span data-ar="النسخ الاحتياطي المحلي" data-en="Local backup">النسخ الاحتياطي المحلي</span></h3>
+          <p class="hint" data-ar="تُحفظ كل البيانات تلقائياً في هذا المتصفح. يمكنك أيضاً تصدير/استيراد ملف JSON كنسخة احتياطية." data-en="All data is auto-saved in this browser. You can also export/import a JSON backup file.">تُحفظ كل البيانات تلقائياً في هذا المتصفح.</p>
+          <button class="btn sm" onclick="exportData()" data-ar="⬇ تصدير نسخة احتياطية" data-en="⬇ Export backup">⬇ تصدير نسخة احتياطية</button>
+          <button class="btn sm ghost" onclick="document.getElementById('importFile').click()" data-ar="⬆ استيراد نسخة" data-en="⬆ Import backup">⬆ استيراد نسخة</button>
+          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        </div>
+        <div class="card">
+          <h3><span data-ar="إعادة تعيين النظام" data-en="Reset system">إعادة تعيين النظام</span></h3>
+          <p class="hint" data-ar="سيؤدي هذا لحذف جميع المشاريع، الـSOPs، والدروس المستفادة نهائياً." data-en="This permanently deletes all projects, SOPs, and lessons learned.">سيؤدي هذا لحذف جميع البيانات نهائياً.</p>
+          <button class="btn sm danger" onclick="resetAll()" data-ar="حذف كل البيانات" data-en="Delete all data">حذف كل البيانات</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   SAFE STORAGE (never throws — some browsers block localStorage
+   entirely when a page is opened straight from disk / file://)
+   ============================================================ */
+let _memStore = {};
+const safeLS = {
+  getItem(k){ try{ return localStorage.getItem(k); }catch(e){ return (k in _memStore) ? _memStore[k] : null; } },
+  setItem(k,v){ try{ localStorage.setItem(k,v); }catch(e){ _memStore[k]=v; } },
+  removeItem(k){ try{ localStorage.removeItem(k); }catch(e){ delete _memStore[k]; } }
+};
+
+/* ============================================================
+   DATA MODEL
+   ============================================================ */
+const STORAGE_KEY = 'opsmatrix_sop_platform_v1';
+
+const SECTORS = {
+  datacenter:{ar:'مراكز البيانات',en:'Data Centers',glyph:'🖥️',
+    sops:[
+      {ar:'دليل إجراءات غرف الخوادم (تبريد وطاقة)',en:'Server Room SOP Manual (Cooling & Power)'},
+      {ar:'سجل تدقيق منظومة التبريد CRAC/CRAH',en:'CRAC/CRAH Inspection Ledger'},
+      {ar:'فحص جاهزية الأرضيات المرتفعة والطاقة',en:'Raised Floor & Power Readiness Check'},
+      {ar:'خطة الطوارئ واستمرارية التشغيل BCP/DRP',en:'BCP/DRP Emergency Plan'}
+    ],
+    gates:[
+      {ar:'اختبار الاعتمادية والتبريد (Commissioning)',en:'Cooling & reliability commissioning test'},
+      {ar:'مطابقة كود الـ Tier المعتمد',en:'Tier-level code compliance'},
+      {ar:'فحص أنظمة UPS والطاقة الاحتياطية',en:'UPS & backup power inspection'}
+    ]},
+  construction:{ar:'الإنشاءات والمقاولات',en:'Construction & Infrastructure',glyph:'🏗️',
+    sops:[
+      {ar:'دليل السلامة والصحة المهنية بالموقع',en:'Site Health & Safety SOP'},
+      {ar:'سجل الفحص والاختبار الهندسي للمواد (MITL)',en:'Material Inspection & Testing Log'},
+      {ar:'وثيقة اعتماد المرحلة وفتح بوابة التقدم',en:'Stage Gate Sign-off Document'},
+      {ar:'سجل تتبع مخلفات البناء',en:'Construction Waste Manifest'}
+    ],
+    gates:[
+      {ar:'اختبارات مكعبات الخرسانة والضغط',en:'Concrete cube & pressure tests'},
+      {ar:'المطابقة الهندسية وفق FIDIC',en:'FIDIC engineering compliance'},
+      {ar:'تصاريح الدفاع المدني والبلدية',en:'Civil defense & municipality permits'}
+    ]},
+  industrial:{ar:'الصناعة وخطوط الإنتاج',en:'Industrial & Manufacturing',glyph:'⚙️',
+    sops:[
+      {ar:'دليل تشغيل وصيانة خطوط الإنتاج',en:'Machine Operation & Preventive Maintenance SOP'},
+      {ar:'سجل مراقبة الجودة (Six Sigma / DMAIC)',en:'Quality Control Ledger (Six Sigma / DMAIC)'},
+      {ar:'إجراءات إدارة المواد الخطرة',en:'HazMat Handling SOP'}
+    ],
+    gates:[
+      {ar:'مؤشرات القدرة الإحصائية Cp/Cpk',en:'Statistical capability Cp/Cpk'},
+      {ar:'صفر تقارير انحراف مفتوحة (CAR)',en:'Zero open corrective-action reports'},
+      {ar:'اختبار تشغيلي كامل للخط',en:'Full line operational test'}
+    ]},
+  energy:{ar:'الطاقة والطاقة المتجددة',en:'Energy & Renewables',glyph:'🔋',
+    sops:[
+      {ar:'دليل تشغيل المحطات وربط الشبكة',en:'Plant Operation & Grid Connection SOP'},
+      {ar:'سجل فحص الألواح/التوربينات الدوري',en:'Panel/Turbine Periodic Inspection Log'},
+      {ar:'خطة السلامة الكهربائية عالية الجهد',en:'High-Voltage Electrical Safety Plan'}
+    ],
+    gates:[
+      {ar:'اختبار الربط مع الشبكة الوطنية',en:'National grid synchronization test'},
+      {ar:'شهادة سلامة الجهد العالي',en:'High-voltage safety certification'}
+    ]},
+  infrastructure:{ar:'البنية التحتية والموانئ',en:'Infrastructure & Ports',glyph:'🌉',
+    sops:[
+      {ar:'دليل تنفيذ الطرق والجسور',en:'Roads & Bridges Execution SOP'},
+      {ar:'سجل فحص التربة والرصف',en:'Soil & Pavement Testing Log'},
+      {ar:'خطة إدارة المرور أثناء التنفيذ',en:'Traffic Management Plan'}
+    ],
+    gates:[
+      {ar:'اختبارات تحمل التربة والرصف',en:'Soil bearing & pavement load tests'},
+      {ar:'اعتماد الجهات الحكومية المختصة',en:'Government authority sign-off'}
+    ]}
+};
+
+const STAGE_DEFS = [
+  {key:'initiation',ar:'التأسيس وإعداد الـSOP',en:'Initiation & SOP Setup',
+    common:['اعتماد وثيقة الـSOP من مدير المشروع','تحديد مصفوفة الصلاحيات RACI','اختيار القطاع والمعايير المرجعية']},
+  {key:'planning',ar:'التخطيط وتوزيع الموارد',en:'Planning & Resource Allocation',
+    common:['إعداد الجدول الزمني للمشروع','تحديد نقاط الفحص الحرجة','التقييم المبدئي للمخاطر (FMEA)']},
+  {key:'execution',ar:'التنفيذ والمراقبة الميدانية',en:'Execution & Real-Time Monitoring',
+    common:['بدء الأعمال الميدانية وفق الـSOP','تسجيل الانحرافات اليومية','رفع أدلة التنفيذ (صور/تقارير)']},
+  {key:'audit',ar:'التدقيق وإغلاق البوابة',en:'Audit & Gate Closure',
+    common:['اجتياز فحص الجودة والمطابقة','رفع مستندات الاعتماد والمحاضر الموقعة','توقيع شهادة إغلاق البوابة']},
+  {key:'lessons',ar:'الدروس المستفادة والأرشيف',en:'Lessons Learned & Archive',
+    common:['توثيق درس مستفاد واحد على الأقل','إصدار وثيقة التسليم والأرشفة النهائية']}
+];
+
+let DB = null;
+function loadDB(){
+  try{
+    const raw = safeLS.getItem(STORAGE_KEY);
+    DB = raw ? JSON.parse(raw) : null;
+  }catch(e){DB=null;}
+  if(!DB){
+    DB = {projects:[], lessons:[], sopLibrary:[], nextProjSeq:1};
+  }
+  if(!DB.nextProjSeq) DB.nextProjSeq = 1;
+}
+function saveDB(){
+  safeLS.setItem(STORAGE_KEY, JSON.stringify(DB));
+}
+function uid(prefix){return prefix+'-'+Math.random().toString(36).slice(2,8).toUpperCase();}
+
+/* ============================================================
+   I18N
+   ============================================================ */
+let LANG = safeLS.getItem('opsmatrix_lang') || 'ar';
+const PAGE_TITLES = {
+  dashboard:{ar:['لوحة التحكم','نظرة عامة على جميع المشاريع والقطاعات'],en:['Dashboard','Overview across every project and sector']},
+  sectors:{ar:['القطاعات ومولّد الـSOP','اختر قطاعاً وولّد وثيقة إجراء تشغيل قياسي'],en:['Sectors & SOP Generator','Pick a sector and generate a standard procedure']},
+  projects:{ar:['سجل المشاريع','إنشاء ومتابعة مشاريع الشركة عبر كل القطاعات'],en:['Project Registry','Create and track company projects across all sectors']},
+  'project-detail':{ar:['تفاصيل المشروع',''],en:['Project detail','']},
+  lessons:{ar:['بنك الدروس المستفادة','تحويل أخطاء الماضي إلى معرفة للمستقبل'],en:['Lessons Learned Bank','Turning past issues into future-ready knowledge']},
+  archive:{ar:['الأرشيف الرقمي','المشاريع المغلقة والموثقة بالكامل'],en:['Digital Archive','Fully closed and documented projects']},
+  settings:{ar:['الإعدادات','النسخ الاحتياطي وإدارة النظام'],en:['Settings','Backup and system management']}
+};
+const NAV_ITEMS = [
+  {key:'dashboard',ic:'▦',ar:'لوحة التحكم',en:'Dashboard'},
+  {key:'sectors',ic:'⌘',ar:'القطاعات و SOP',en:'Sectors & SOP'},
+  {key:'projects',ic:'▤',ar:'سجل المشاريع',en:'Projects'},
+  {key:'lessons',ic:'◈',ar:'الدروس المستفادة',en:'Lessons Learned'},
+  {key:'archive',ic:'▣',ar:'الأرشيف',en:'Archive'},
+  {key:'settings',ic:'⚙',ar:'الإعدادات',en:'Settings'}
+];
+
+function applyLang(){
+  document.documentElement.lang = LANG==='ar'?'ar':'en';
+  document.documentElement.dir = LANG==='ar'?'rtl':'ltr';
+  document.getElementById('langBtn').textContent = LANG==='ar'?'EN':'AR';
+  document.querySelectorAll('[data-ar]').forEach(el=>{
+    const val = el.getAttribute(LANG==='ar'?'data-ar':'data-en');
+    if(val!==null) el.textContent = val;
+  });
+  safeLS.setItem('opsmatrix_lang', LANG);
+}
+function toggleLang(){
+  LANG = LANG==='ar'?'en':'ar';
+  applyLang();
+  renderAll();
+}
+function t(obj){ return LANG==='ar'?obj.ar:obj.en; }
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function toggleTheme(){
+  const b=document.body;
+  const cur=b.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  b.setAttribute('data-theme', next);
+  safeLS.setItem('opsmatrix_theme', next);
+}
+(function initTheme(){
+  const saved = safeLS.getItem('opsmatrix_theme');
+  document.body.setAttribute('data-theme', saved || 'dark');
+})();
+
+/* ============================================================
+   NAV / ROUTING
+   ============================================================ */
+let currentPage = 'dashboard';
+let currentProjectId = null;
+
+function buildNav(){
+  const nav = document.getElementById('navList');
+  nav.innerHTML = '';
+  const label = document.createElement('div');
+  label.className='grp-label';
+  label.textContent = LANG==='ar' ? 'التنقل' : 'Navigate';
+  nav.appendChild(label);
+  NAV_ITEMS.forEach(it=>{
+    const b = document.createElement('button');
+    b.className='nav-btn'+(it.key===currentPage?' active':'');
+    b.innerHTML = `<span class="ic">${it.ic}</span><span>${LANG==='ar'?it.ar:it.en}</span>`;
+    b.onclick = ()=>go(it.key);
+    nav.appendChild(b);
+  });
+}
+function go(page, projectId){
+  currentPage = page;
+  if(projectId) currentProjectId = projectId;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(el) el.classList.add('active');
+  const titles = PAGE_TITLES[page];
+  if(titles){
+    const [main,sub] = LANG==='ar'?titles.ar:titles.en;
+    document.getElementById('pageTitleMain').textContent = main;
+    document.getElementById('pageTitleSub').textContent = sub;
+  }
+  buildNav();
+  closeSidebar();
+  renderAll();
+  window.scrollTo(0,0);
+}
+let sidebarOpenedAt = 0;
+function toggleSidebar(e){
+  if(e) e.stopPropagation();
+  const sb = document.getElementById('sidebar');
+  if(sb.classList.contains('open')){ closeSidebar(); return; }
+  sb.classList.add('open');
+  document.getElementById('sidebar-overlay').style.display='block';
+  sidebarOpenedAt = Date.now();
+}
+function closeSidebar(fromOverlay){
+  if(fromOverlay && Date.now() - sidebarOpenedAt < 400) return;
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').style.display='none';
+}
+
+function printCurrentPage(){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('print-active'));
+  document.getElementById('page-'+currentPage).classList.add('print-active');
+  window.print();
+}
+
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+/* ============================================================
+   RENDER: DASHBOARD
+   ============================================================ */
+function renderDashboard(){
+  const active = DB.projects.filter(p=>p.status!=='archived');
+  const archived = DB.projects.filter(p=>p.status==='archived');
+  const openGates = active.filter(p=>p.currentStage<4).length;
+  const kpis = [
+    {val:DB.projects.length, lbl:t({ar:'إجمالي المشاريع',en:'Total projects'})},
+    {val:active.length, lbl:t({ar:'مشاريع نشطة',en:'Active projects'})},
+    {val:DB.lessons.length, lbl:t({ar:'دروس مستفادة موثقة',en:'Lessons logged'})},
+    {val:archived.length, lbl:t({ar:'مشاريع مؤرشفة',en:'Archived projects'})}
+  ];
+  document.getElementById('kpiRow').innerHTML = kpis.map(k=>`
+    <div class="kpi"><div class="val">${k.val}</div><div class="lbl">${k.lbl}</div></div>
+  `).join('');
+
+  const heat = document.getElementById('sectorHeatmap');
+  heat.innerHTML = Object.keys(SECTORS).map(key=>{
+    const s = SECTORS[key];
+    const count = DB.projects.filter(p=>p.sector===key && p.status!=='archived').length;
+    return `<div class="sector-tile" onclick="go('projects')">
+      <div class="glyph">${s.glyph}</div>
+      <h4>${t(s)}</h4>
+      <p>${count} ${t({ar:'مشروع نشط',en:'active project(s)'})}</p>
+    </div>`;
+  }).join('');
+
+  const rp = document.getElementById('recentProjects');
+  const recents = [...DB.projects].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,5);
+  rp.innerHTML = recents.length ? recents.map(p=>`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--border);cursor:pointer;" onclick="openProject('${p.id}')">
+      <span>${p.name}</span>
+      <span class="badge ${p.status}">${statusLabel(p.status)}</span>
+    </div>`).join('') : `<div class="hint">${t({ar:'لا توجد مشاريع بعد',en:'No projects yet'})}</div>`;
+
+  const rl = document.getElementById('recentLessons');
+  const rls = [...DB.lessons].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,5);
+  rl.innerHTML = rls.length ? rls.map(l=>`
+    <div style="padding:8px 0;border-bottom:1px dashed var(--border);">
+      <div style="font-weight:600;font-size:13px;">${l.title}</div>
+      <div class="hint">${l.projectName||''}</div>
+    </div>`).join('') : `<div class="hint">${t({ar:'لا توجد دروس بعد',en:'No lessons yet'})}</div>`;
+}
+
+function statusLabel(s){
+  if(s==='active') return t({ar:'نشط',en:'Active'});
+  if(s==='pending') return t({ar:'معلّق',en:'Pending'});
+  return t({ar:'مؤرشف',en:'Archived'});
+}
+
+/* ============================================================
+   RENDER: SECTORS & SOP GENERATOR
+   ============================================================ */
+let selectedSector = null;
+function renderSectorPicker(){
+  const el = document.getElementById('sectorPicker');
+  el.innerHTML = Object.keys(SECTORS).map(key=>{
+    const s = SECTORS[key];
+    return `<div class="sector-tile ${selectedSector===key?'selected':''}" onclick="pickSector('${key}')">
+      <div class="glyph">${s.glyph}</div>
+      <h4>${t(s)}</h4>
+      <p>${s.sops.length} ${t({ar:'قوالب SOP جاهزة',en:'ready SOP templates'})}</p>
+    </div>`;
+  }).join('');
+}
+function pickSector(key){
+  selectedSector = key;
+  renderSectorPicker();
+  const card = document.getElementById('sopGenCard');
+  card.style.display='block';
+  const pick = document.getElementById('sopTemplatePick');
+  pick.innerHTML = SECTORS[key].sops.map((s,i)=>`<option value="${i}">${t(s)}</option>`).join('')
+    + `<option value="custom">${t({ar:'— إجراء مخصص —',en:'— Custom procedure —'})}</option>`;
+  document.getElementById('sopResultCard').style.display='none';
+}
+
+function generateSOP(){
+  if(!selectedSector){showToast(t({ar:'اختر قطاعاً أولاً',en:'Choose a sector first'}));return;}
+  const pickEl = document.getElementById('sopTemplatePick');
+  const idx = pickEl.value;
+  const sector = SECTORS[selectedSector];
+  const procName = idx==='custom' ? (t({ar:'إجراء مخصص',en:'Custom Procedure'})) : t(sector.sops[idx]);
+  const projName = document.getElementById('sopProjectName').value || '—';
+  const dept = document.getElementById('sopDept').value || '—';
+  const objective = document.getElementById('sopObjective').value || t({ar:'تحديد الغرض الأساسي من هذا الإجراء وضمان الالتزام بمعايير الجودة والسلامة.',en:'Define the core purpose of this procedure and ensure compliance with quality and safety standards.'});
+  const stepsRaw = document.getElementById('sopSteps').value;
+  const steps = stepsRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+  const code = 'SOP-'+selectedSector.slice(0,3).toUpperCase()+'-'+String(DB.sopLibrary.length+1).padStart(3,'0');
+  const today = new Date().toISOString().slice(0,10);
+
+  const stepsHtml = steps.length ? steps.map((s,i)=>`<div>${t({ar:'الخطوة',en:'Step'})} ${i+1}: ${escapeHtml(s)}</div>`).join('')
+    : `<div class="hint">${t({ar:'لم تُدخل خطوات بعد',en:'No steps entered yet'})}</div>`;
+
+  const html = `
+    <div class="doc-head">
+      <div class="code">${code} | ${t({ar:'الإصدار',en:'Version'})}: 1.0 | ${today}</div>
+      <h2>${escapeHtml(procName)}</h2>
+      <div class="meta">${t({ar:'القطاع',en:'Sector'})}: ${t(sector)} &nbsp;•&nbsp; ${t({ar:'المشروع/المنشأة',en:'Project/Facility'})}: ${escapeHtml(projName)} &nbsp;•&nbsp; ${t({ar:'إشراف وتصميم',en:'Supervised & designed by'})}: <strong style="color:var(--accent)">م. وائل عويس</strong></div>
+    </div>
+    <section><h4>1. ${t({ar:'الهدف',en:'Objective'})}</h4><div>${escapeHtml(objective)}</div></section>
+    <section><h4>2. ${t({ar:'النطاق',en:'Scope'})}</h4><div>${t({ar:'يطبق هذا الإجراء على جميع فرق العمل في قسم',en:'This procedure applies to all teams in the'})} ${escapeHtml(dept)} ${t({ar:'',en:'department'})}.</div></section>
+    <section><h4>3. ${t({ar:'المسؤوليات',en:'Responsibilities'})}</h4>
+      <div>${t({ar:'مدير المشروع: الاعتماد والمتابعة. مهندس الموقع/التشغيل: التنفيذ المباشر. مسؤول الجودة: التدقيق والاعتماد الفني.',en:'Project Manager: approval & follow-up. Site/Operations Engineer: direct execution. QA/QC: technical audit & sign-off.'})}</div>
+    </section>
+    <section><h4>4. ${t({ar:'خطوات التنفيذ',en:'Step-by-step procedure'})}</h4>${stepsHtml}</section>
+    <section><h4>5. ${t({ar:'معايير القبول والفحص',en:'Acceptance criteria'})}</h4>
+      <div>${t({ar:'اكتمال جميع الخطوات أعلاه ومطابقتها لمعايير الجودة والسلامة المعتمدة للقطاع.',en:'All steps above completed and matching the approved quality and safety standards for this sector.'})}</div>
+    </section>
+    <section><h4>6. ${t({ar:'إجراءات الطوارئ والسلامة',en:'Safety & contingency'})}</h4>
+      <div>${t({ar:'في حال حدوث انحراف، يتم إيقاف العمل فوراً وإبلاغ مسؤول الجودة وتوثيق الحادثة في سجل الدروس المستفادة.',en:'On any deviation, work stops immediately, QA is notified, and the incident is logged in the lessons-learned bank.'})}</div>
+    </section>
+    <div class="sign-block">
+      <div>${t({ar:'تاريخ الإصدار',en:'Issue date'})}: ${today}</div>
+      <div>${t({ar:'التوقيع/الاعتماد الرقمي',en:'Digital sign-off'})}: <strong>${t({ar:'معتمد',en:'Approved'})}</strong></div>
+    </div>`;
+
+  document.getElementById('sopOutput').innerHTML = html;
+  document.getElementById('sopResultCard').style.display='block';
+  window._lastGeneratedSOP = {code, procName, sector:selectedSector, projName, html};
+  document.getElementById('sopResultCard').scrollIntoView({behavior:'smooth'});
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function saveSOPToLibrary(){
+  if(!window._lastGeneratedSOP){showToast(t({ar:'ولّد وثيقة أولاً',en:'Generate a document first'}));return;}
+  DB.sopLibrary.push({id:uid('SOP'), ...window._lastGeneratedSOP, createdAt:new Date().toISOString()});
+  saveDB();
+  renderSopLibrary();
+  showToast(t({ar:'تم الحفظ في المكتبة',en:'Saved to library'}));
+}
+function renderSopLibrary(){
+  const tb = document.querySelector('#sopLibraryTable tbody');
+  tb.innerHTML = DB.sopLibrary.length ? DB.sopLibrary.map(s=>`
+    <tr>
+      <td class="mono">${s.code}</td>
+      <td>${s.procName}</td>
+      <td>${t(SECTORS[s.sector])}</td>
+      <td>${s.projName}</td>
+      <td><button class="btn sm ghost" onclick="viewLibDoc('${s.id}')">${t({ar:'عرض',en:'View'})}</button>
+          <button class="btn sm ghost" onclick="deleteLibDoc('${s.id}')">🗑</button></td>
+    </tr>`).join('') : `<tr><td colspan="5" class="hint">${t({ar:'المكتبة فارغة',en:'Library is empty'})}</td></tr>`;
+}
+function viewLibDoc(id){
+  const doc = DB.sopLibrary.find(s=>s.id===id);
+  if(!doc) return;
+  document.getElementById('sopOutput').innerHTML = doc.html;
+  document.getElementById('sopResultCard').style.display='block';
+  document.getElementById('sopResultCard').scrollIntoView({behavior:'smooth'});
+}
+function deleteLibDoc(id){
+  DB.sopLibrary = DB.sopLibrary.filter(s=>s.id!==id);
+  saveDB(); renderSopLibrary();
+}
+
+/* ============================================================
+   RENDER: PROJECTS
+   ============================================================ */
+let projFilter = 'all';
+function renderProjSectorSelect(){
+  const sel = document.getElementById('newProjSector');
+  sel.innerHTML = Object.keys(SECTORS).map(k=>`<option value="${k}">${t(SECTORS[k])}</option>`).join('');
+}
+function createProject(){
+  const name = document.getElementById('newProjName').value.trim();
+  const sector = document.getElementById('newProjSector').value;
+  const date = document.getElementById('newProjDate').value || new Date().toISOString().slice(0,10);
+  if(!name){showToast(t({ar:'أدخل اسم المشروع',en:'Enter a project name'}));return;}
+  const proj = {
+    id: uid('PRJ'),
+    seq: DB.nextProjSeq++,
+    name, sector, startDate:date,
+    createdAt:new Date().toISOString(),
+    status:'active',
+    currentStage:0,
+    stages: STAGE_DEFS.map(sd=>({
+      checks: sd.common.map(()=>false),
+      closed:false, closedAt:null, notes:''
+    })),
+    risks:[]
+  };
+  DB.projects.push(proj);
+  saveDB();
+  document.getElementById('newProjName').value='';
+  renderProjects();
+  renderDashboard();
+  showToast(t({ar:'تم إنشاء المشروع',en:'Project created'}));
+}
+function renderProjFilterBar(){
+  const bar = document.getElementById('projFilterBar');
+  const opts = [
+    {k:'all',l:t({ar:'الكل',en:'All'})},
+    {k:'active',l:t({ar:'نشط',en:'Active'})},
+    {k:'archived',l:t({ar:'مؤرشف',en:'Archived'})}
+  ];
+  bar.innerHTML = opts.map(o=>`<span class="pill ${projFilter===o.k?'on':''}" onclick="setProjFilter('${o.k}')">${o.l}</span>`).join('');
+}
+function setProjFilter(k){projFilter=k;renderProjects();}
+function renderProjects(){
+  renderProjSectorSelect();
+  renderProjFilterBar();
+  const tb = document.getElementById('projTableBody');
+  let list = DB.projects;
+  if(projFilter!=='all') list = list.filter(p=>p.status===projFilter);
+  document.getElementById('projEmpty').style.display = list.length?'none':'block';
+  tb.innerHTML = list.map(p=>`
+    <tr style="cursor:pointer" onclick="openProject('${p.id}')">
+      <td class="mono">${p.id}</td>
+      <td>${p.name}</td>
+      <td>${t(SECTORS[p.sector])}</td>
+      <td>${t({ar:STAGE_DEFS[p.currentStage].ar,en:STAGE_DEFS[p.currentStage].en})}</td>
+      <td><span class="badge ${p.status}">${statusLabel(p.status)}</span></td>
+      <td><button class="btn sm ghost" onclick="event.stopPropagation();deleteProject('${p.id}')">🗑</button></td>
+    </tr>`).join('');
+}
+function deleteProject(id){
+  if(!confirm(t({ar:'حذف هذا المشروع نهائياً؟',en:'Permanently delete this project?'}))) return;
+  DB.projects = DB.projects.filter(p=>p.id!==id);
+  saveDB(); renderAll();
+}
+function openProject(id){
+  currentProjectId = id;
+  go('project-detail', id);
+}
+
+/* ============================================================
+   RENDER: PROJECT DETAIL / STAGE-GATE
+   ============================================================ */
+function getProject(id){ return DB.projects.find(p=>p.id===id); }
+
+function renderProjectDetail(){
+  const p = getProject(currentProjectId);
+  const wrap = document.getElementById('page-project-detail');
+  if(!p){
+    wrap.innerHTML = `<div class="empty-state"><div class="ic">❓</div><div>${t({ar:'المشروع غير موجود',en:'Project not found'})}</div></div>`;
+    return;
+  }
+  document.getElementById('pdName').textContent = p.name;
+  document.getElementById('pdMeta').textContent = `${p.id} · ${t(SECTORS[p.sector])} · ${t({ar:'بدأ في',en:'started'})} ${p.startDate}`;
+  const badge = document.getElementById('pdBadge');
+  badge.className = 'badge '+p.status;
+  badge.textContent = statusLabel(p.status);
+
+  const track = document.getElementById('gateTrack');
+  track.innerHTML = STAGE_DEFS.map((sd,i)=>{
+    let cls='gate-step';
+    if(i<p.currentStage || p.stages[i].closed) cls+=' done';
+    else if(i===p.currentStage) cls+=' current';
+    else cls+=' locked';
+    return `<div class="${cls}" onclick="viewStage(${i})">
+      <span class="num">${i+1}</span>${t({ar:sd.ar,en:sd.en})}
+    </div>`;
+  }).join('');
+
+  viewStage(Math.min(viewingStage, STAGE_DEFS.length-1));
+  renderRiskTable();
+}
+let viewingStage = 0;
+function viewStage(i){
+  viewingStage = i;
+  const p = getProject(currentProjectId);
+  if(!p) return;
+  const sd = STAGE_DEFS[i];
+  const stageState = p.stages[i];
+  const locked = i > p.currentStage && !stageState.closed;
+  const sector = SECTORS[p.sector];
+  const extraGates = (i===3) ? sector.gates : []; // audit stage gets sector-specific gates too
+  const allChecks = sd.common.map((c,idx)=>({label:t({ar:c,en:sd.common===STAGE_DEFS[i].common?sd.common[idx]:c}),idx}));
+
+  const checkListHtml = sd.common.map((c,idx)=>`
+    <div class="check-row">
+      <input type="checkbox" ${stageState.checks[idx]?'checked':''} ${locked?'disabled':''}
+        onchange="toggleCheck(${i},${idx},this.checked)">
+      <div class="txt">${LANG==='ar'?c:enFallback(sd,idx,c)}</div>
+    </div>`).join('');
+
+  const sectorGateHtml = extraGates.length ? `
+    <div class="hint" style="margin-top:14px;margin-bottom:4px;">${t({ar:'متطلبات خاصة بالقطاع',en:'Sector-specific requirements'})}:</div>
+    ${extraGates.map(g=>`<div class="check-row"><input type="checkbox" disabled><div class="txt">${t(g)}</div></div>`).join('')}
+  ` : '';
+
+  const allDone = stageState.checks.every(Boolean);
+  const isLast = i===STAGE_DEFS.length-1;
+
+  document.getElementById('stageDetailCard').innerHTML = `
+    <h3>
+      <span>${t({ar:sd.ar,en:sd.en})} ${locked?('🔒'):''}</span>
+      <span class="badge ${stageState.closed?'active':'pending'}">${stageState.closed? t({ar:'مغلقة',en:'Closed'}) : t({ar:'مفتوحة',en:'Open'})}</span>
+    </h3>
+    ${locked ? `<div class="hint">${t({ar:'هذه المرحلة مقفلة حتى إغلاق المرحلة السابقة',en:'This stage is locked until the previous stage is closed'})}</div>` : `
+    ${checkListHtml}
+    ${sectorGateHtml}
+    <label style="margin-top:14px;">${t({ar:'ملاحظات/مرفقات الاعتماد',en:'Sign-off notes / attachments ref'})}</label>
+    <textarea id="stageNotes" ${stageState.closed?'disabled':''} onchange="setStageNotes(${i},this.value)">${stageState.notes||''}</textarea>
+    ${!stageState.closed ? `
+      <button class="btn" style="margin-top:12px;" ${allDone?'':'disabled'} onclick="closeStage(${i})">
+        ${isLast ? t({ar:'إغلاق المرحلة وأرشفة المشروع',en:'Close stage & archive project'}) : t({ar:'إغلاق المرحلة وفتح البوابة التالية',en:'Close stage & open next gate'})}
+      </button>
+      ${!allDone?`<div class="hint">${t({ar:'أكمل جميع البنود لإغلاق البوابة',en:'Complete every item to close the gate'})}</div>`:''}
+    ` : `<div class="hint">${t({ar:'أُغلقت في',en:'Closed on'})} ${stageState.closedAt}</div>`}
+    `}
+  `;
+}
+function enFallback(sd,idx,arText){ return sd.common[idx]; }
+
+function toggleCheck(stageIdx, checkIdx, val){
+  const p = getProject(currentProjectId);
+  p.stages[stageIdx].checks[checkIdx] = val;
+  saveDB();
+  viewStage(stageIdx);
+}
+function setStageNotes(stageIdx, val){
+  const p = getProject(currentProjectId);
+  p.stages[stageIdx].notes = val;
+  saveDB();
+}
+function closeStage(stageIdx){
+  const p = getProject(currentProjectId);
+  p.stages[stageIdx].closed = true;
+  p.stages[stageIdx].closedAt = new Date().toISOString().slice(0,10);
+  if(stageIdx === STAGE_DEFS.length-1){
+    p.status = 'archived';
+    showToast(t({ar:'تم أرشفة المشروع بنجاح',en:'Project archived successfully'}));
+  } else {
+    p.currentStage = stageIdx+1;
+    showToast(t({ar:'تم فتح البوابة التالية',en:'Next gate opened'}));
+  }
+  saveDB();
+  renderProjectDetail();
+  renderAll();
+}
+
+/* Risk register */
+function addRisk(){
+  const p = getProject(currentProjectId);
+  const desc = document.getElementById('riskDesc').value.trim();
+  const O = +document.getElementById('riskO').value||1;
+  const S = +document.getElementById('riskS').value||1;
+  const D = +document.getElementById('riskD').value||1;
+  if(!desc){showToast(t({ar:'أدخل وصف الخطر',en:'Enter a risk description'}));return;}
+  p.risks.push({id:uid('RSK'),desc,O,S,D});
+  saveDB();
+  document.getElementById('riskDesc').value='';
+  renderRiskTable();
+}
+function renderRiskTable(){
+  const p = getProject(currentProjectId);
+  const tb = document.getElementById('riskTableBody');
+  if(!p || !p.risks.length){
+    tb.innerHTML = `<tr><td colspan="6" class="hint">${t({ar:'لا توجد مخاطر مسجلة',en:'No risks logged'})}</td></tr>`;
+    return;
+  }
+  tb.innerHTML = p.risks.map(r=>{
+    const rpn = r.O*r.S*r.D;
+    const cls = rpn>=125?'rpn-hi':rpn>=50?'rpn-mid':'rpn-lo';
+    return `<tr><td>${r.desc}</td><td>${r.O}</td><td>${r.S}</td><td>${r.D}</td>
+      <td class="${cls}">${rpn}</td>
+      <td><button class="btn sm ghost" onclick="deleteRisk('${r.id}')">🗑</button></td></tr>`;
+  }).join('');
+}
+function deleteRisk(id){
+  const p = getProject(currentProjectId);
+  p.risks = p.risks.filter(r=>r.id!==id);
+  saveDB(); renderRiskTable();
+}
+
+/* ============================================================
+   RENDER: LESSONS LEARNED
+   ============================================================ */
+function renderLLProjectSelect(){
+  const sel = document.getElementById('llProject');
+  sel.innerHTML = `<option value="">${t({ar:'— بدون مشروع —',en:'— No project —'})}</option>` +
+    DB.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+}
+function addLesson(){
+  const projectId = document.getElementById('llProject').value;
+  const proj = getProject(projectId);
+  const title = document.getElementById('llTitle').value.trim();
+  const root = document.getElementById('llRoot').value.trim();
+  const fix = document.getElementById('llFix').value.trim();
+  const rec = document.getElementById('llRec').value.trim();
+  if(!title){showToast(t({ar:'أدخل عنوان المشكلة',en:'Enter an issue title'}));return;}
+  DB.lessons.push({
+    id:uid('LL'), projectId, projectName: proj?proj.name:'', title, root, fix, rec,
+    createdAt:new Date().toISOString()
+  });
+  saveDB();
+  ['llTitle','llRoot','llFix','llRec'].forEach(id=>document.getElementById(id).value='');
+  renderLessons();
+  showToast(t({ar:'تم الحفظ في بنك المعرفة',en:'Saved to knowledge bank'}));
+}
+function renderLessons(){
+  renderLLProjectSelect();
+  const q = (document.getElementById('llSearch').value||'').toLowerCase();
+  const list = DB.lessons.filter(l=> (l.title+l.root+l.fix+l.rec+l.projectName).toLowerCase().includes(q));
+  const el = document.getElementById('lessonsList');
+  el.innerHTML = list.length ? [...list].reverse().map(l=>`
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>${l.title}</strong>
+        <span class="hint">${l.projectName||t({ar:'عام',en:'General'})}</span>
+      </div>
+      ${l.root?`<div style="margin-top:6px;"><strong>${t({ar:'الجذر:',en:'Root cause:'})}</strong> ${l.root}</div>`:''}
+      ${l.fix?`<div><strong>${t({ar:'الحل:',en:'Fix:'})}</strong> ${l.fix}</div>`:''}
+      ${l.rec?`<div><strong>${t({ar:'التوصية:',en:'Recommendation:'})}</strong> ${l.rec}</div>`:''}
+    </div>`).join('') : `<div class="empty-state"><div class="ic">◈</div><div>${t({ar:'لا توجد دروس مطابقة',en:'No matching lessons'})}</div></div>`;
+}
+
+/* ============================================================
+   RENDER: ARCHIVE
+   ============================================================ */
+function renderArchive(){
+  const tb = document.getElementById('archiveTableBody');
+  const archived = DB.projects.filter(p=>p.status==='archived');
+  document.getElementById('archiveEmpty').style.display = archived.length?'none':'block';
+  tb.innerHTML = archived.map(p=>{
+    const lessonCount = DB.lessons.filter(l=>l.projectId===p.id).length;
+    const sopCount = DB.sopLibrary.filter(s=>true).length; // library is global, show total as reference
+    const closedDate = p.stages[p.stages.length-1].closedAt || '';
+    return `<tr>
+      <td>${p.name}</td><td>${t(SECTORS[p.sector])}</td><td>${closedDate}</td>
+      <td>${sopCount}</td><td>${lessonCount}</td>
+      <td><button class="btn sm ghost" onclick="openProject('${p.id}')">${t({ar:'فتح',en:'Open'})}</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   SETTINGS / BACKUP
+   ============================================================ */
+function exportData(){
+  const blob = new Blob([JSON.stringify(DB,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'opsmatrix-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.projects) throw new Error('invalid');
+      DB = data;
+      saveDB();
+      renderAll();
+      showToast(t({ar:'تم الاستيراد بنجاح',en:'Import successful'}));
+    }catch(err){
+      showToast(t({ar:'ملف غير صالح',en:'Invalid file'}));
+    }
+  };
+  reader.readAsText(file);
+}
+function resetAll(){
+  if(!confirm(t({ar:'هل أنت متأكد؟ سيتم حذف كل شيء نهائياً.',en:'Are you sure? Everything will be permanently deleted.'}))) return;
+  safeLS.removeItem(STORAGE_KEY);
+  loadDB();
+  renderAll();
+  go('dashboard');
+  showToast(t({ar:'تمت إعادة التعيين',en:'System reset'}));
+}
+
+/* ============================================================
+   MASTER RENDER
+   ============================================================ */
+function renderAll(){
+  applyLang();
+  buildNav();
+  renderDashboard();
+  renderSectorPicker();
+  renderSopLibrary();
+  renderProjects();
+  if(currentPage==='project-detail') renderProjectDetail();
+  renderLessons();
+  renderArchive();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+try{
+  loadDB();
+  applyLang();
+  buildNav();
+  renderAll();
+  go('dashboard');
+}catch(err){
+  document.getElementById('content').innerHTML =
+    '<div class="card"><h3>تعذّر تشغيل التطبيق / App failed to start</h3>'+
+    '<p style="color:var(--crit)">'+ (err && err.message ? err.message : err) +'</p>'+
+    '<p class="hint">جرّب فتح الملف في متصفح مختلف (Chrome/Edge) بدلاً من فتحه مباشرة، أو تأكد أن جافاسكربت مفعّل.</p></div>';
+  console.error(err);
+}
+</script>
+</body>
+</html>

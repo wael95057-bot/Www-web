@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMS - نظام إدارة أوامر التغيير | Change Order Management System</title>
+<style>
+  :root{
+    --primary:#004085; --primary-dark:#00265a; --primary-light:#e8f0fb;
+    --accent:#ff8f00; --green:#1e7e34; --red:#c82333; --gray:#6c757d;
+    --bg:#f4f6f9; --card:#ffffff; --border:#dfe4ea; --text:#1c2733;
+  }
+  :root[data-theme="dark"]{
+    --primary-light:#12283f; --bg:#0f1720; --card:#141d29; --border:#2a3542; --text:#e8edf2; --gray:#93a1ad;
+  }
+  :root[data-theme="dark"] input[type=text],
+  :root[data-theme="dark"] input[type=number],
+  :root[data-theme="dark"] input[type=date],
+  :root[data-theme="dark"] select,
+  :root[data-theme="dark"] textarea{
+    background:#1b2530;color:var(--text);border-color:var(--border);
+  }
+  :root[data-theme="dark"] th{background:#16283c;color:#cfe3ff;}
+  :root[data-theme="dark"] tr:hover td{background:#182430;}
+  :root[data-theme="dark"] .modal{background:var(--card);color:var(--text);}
+  :root[data-theme="dark"] .ai-box{background:#2a2412;}
+  :root[data-theme="dark"] header select option{color:#111;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:Tahoma,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+  [dir="ltr"] body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;}
+  header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:8px 14px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);position:sticky;top:0;z-index:50;}
+  header .brand{display:flex;align-items:center;gap:8px;}
+  header .brand .logo{width:28px;height:28px;border-radius:6px;background:#fff2;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  header h1{font-size:13px;margin:0;line-height:1.2;}
+  header small{opacity:.85;font-size:9px;}
+  header .tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  select,input,textarea,button{font-family:inherit;font-size:12px;}
+  header select{background:#ffffff22;color:#fff;border:1px solid #ffffff55;border-radius:6px;padding:4px 6px;font-size:11px;}
+  header select option{color:#111;}
+  .btn{border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:bold;transition:.15s;font-size:12px;}
+  .btn-light{background:#ffffff22;color:#fff;border:1px solid #ffffff55;}
+  .btn-light:hover{background:#ffffff3a;}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .btn-green{background:var(--green);color:#fff;}
+  .btn-red{background:var(--red);color:#fff;}
+  .btn-outline{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+  .btn-sm{padding:3px 9px;font-size:11px;}
+  nav.tabs{display:flex;gap:2px;background:#fff;padding:2px 10px;overflow-x:auto;border-bottom:1px solid var(--border);
+    position:sticky;top:44px;z-index:40;}
+  nav.tabs button{background:transparent;border:none;padding:7px 11px;font-size:12px;cursor:pointer;border-radius:8px 8px 0 0;
+    color:var(--gray);white-space:nowrap;font-weight:bold;}
+  nav.tabs button.active{background:var(--primary-light);color:var(--primary);}
+  main{max-width:1150px;margin:0 auto;padding:12px;}
+  .view{display:none;animation:fade .2s;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;
+    box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .card h2{margin:0 0 10px;font-size:14px;color:var(--primary-dark);border-bottom:2px solid var(--primary-light);padding-bottom:6px;}
+  .card h3{font-size:13px;color:var(--primary);margin:10px 0 6px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:10px;}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;
+    border-top:3px solid var(--primary);}
+  .kpi .num{font-size:19px;font-weight:bold;color:var(--primary-dark);}
+  .kpi .lbl{font-size:10.5px;color:var(--gray);margin-top:2px;}
+  .kpi.warn{border-top-color:var(--accent);}
+  .kpi.warn .num{color:var(--accent);}
+  .kpi.danger{border-top-color:var(--red);}
+  .kpi.danger .num{color:var(--red);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr;}}
+  label{display:block;font-size:11px;color:var(--gray);margin-bottom:3px;font-weight:bold;}
+  .field{margin-bottom:8px;}
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);font-size:12px;}
+  textarea{min-height:54px;resize:vertical;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th,td{border:1px solid var(--border);padding:5px 6px;text-align:center;}
+  th{background:var(--primary-light);color:var(--primary-dark);}
+  tr:hover td{background:#fafcff;}
+  .status{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;display:inline-block;}
+  .st-Draft{background:#e2e3e5;color:#383d41;}
+  .st-Under_Review{background:#fff3cd;color:#856404;}
+  .st-Pending_Approval{background:#cce5ff;color:#004085;}
+  .st-Approved{background:#d4edda;color:#155724;}
+  .st-Rejected{background:#f8d7da;color:#721c24;}
+  .st-Closed{background:#d1ecf1;color:#0c5460;}
+  .pill{display:inline-block;padding:1px 7px;border-radius:10px;background:var(--primary-light);color:var(--primary);font-size:10px;margin-inline-end:4px;}
+  .row-actions{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;}
+  .empty{text-align:center;color:var(--gray);padding:18px;font-size:12px;}
+  .item-row{display:grid;grid-template-columns:2.2fr .8fr .8fr 1fr 1fr .9fr auto;gap:5px;margin-bottom:5px;align-items:center;}
+  .item-row input{padding:5px;font-size:11.5px;}
+  .total-line{text-align:left;font-weight:bold;color:var(--primary-dark);font-size:13px;margin-top:6px;}
+  [dir=rtl] .total-line{text-align:right;}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0;}
+  .flow .stage{background:var(--primary-light);color:var(--primary-dark);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:bold;}
+  .flow .stage.done{background:#d4edda;color:#155724;}
+  .flow .arrow{color:var(--gray);}
+  .modal-bg{display:none;position:fixed;inset:0;background:#0006;z-index:100;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 10px;}
+  .modal-bg.active{display:flex;}
+  .modal{background:#fff;border-radius:10px;max-width:800px;width:100%;padding:16px;position:relative;}
+  .modal .close{position:absolute;top:8px;inset-inline-end:12px;cursor:pointer;font-size:20px;color:var(--gray);background:none;border:none;}
+  .badge-count{background:var(--red);color:#fff;border-radius:10px;padding:0 6px;font-size:10px;margin-inline-start:4px;}
+  .toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px;justify-content:space-between;}
+  .search-box{display:flex;gap:6px;flex-wrap:wrap;}
+  .search-box input,.search-box select{width:auto;min-width:130px;}
+  .ai-box{background:#fff8ec;border:1px dashed var(--accent);border-radius:8px;padding:8px;margin:8px 0;font-size:12px;}
+  .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+  .doc-card{border:1px solid var(--border);border-radius:8px;padding:9px;background:#fff;}
+  .doc-card h4{margin:0 0 4px;color:var(--primary-dark);font-size:12px;}
+  .doc-card p{margin:0;font-size:11px;color:var(--gray);}
+  .sig-box{border:1px dashed var(--border);border-radius:8px;padding:10px;text-align:center;font-size:11px;color:var(--gray);}
+  .sig-box.signed{border-color:var(--green);color:var(--green);background:#f2fbf4;font-weight:bold;}
+  footer{text-align:center;padding:12px;color:var(--gray);font-size:11px;}
+  @media print{
+    header,nav.tabs,.toolbar,.row-actions,.btn,footer,.no-print{display:none !important;}
+    body{background:#fff;}
+    main{padding:0;max-width:100%;}
+    .card{box-shadow:none;border:none;}
+  }
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">🔄</div>
+    <div>
+      <h1 data-t="appTitle">نظام إدارة أوامر التغيير</h1>
+      <small>COMS — Change Order Management System · بناء للتطوير الاستراتيجي</small>
+    </div>
+  </div>
+  <div class="tools">
+    <span id="lastSavedIndicator" style="font-size:9px;opacity:.85;white-space:nowrap;"></span>
+    <select id="projectSelect" onchange="onProjectChange()"></select>
+    <select id="langSelect" onchange="setLang(this.value)">
+      <option value="ar">AR / عربي</option>
+      <option value="en">EN / English</option>
+    </select>
+    <button class="btn btn-light" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <button class="btn btn-light" onclick="openModal('projectModal')" data-t="manageProjects">إدارة المشاريع</button>
+  </div>
+</header>
+<div id="offlineBanner" class="hidden" style="position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#fff;text-align:center;padding:7px;font-size:12px;z-index:200;font-weight:bold;"></div>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-view="dashboard" onclick="showView('dashboard')" data-t="tabDashboard">📊 لوحة المؤشرات</button>
+  <button class="tab-btn" data-view="newcr" onclick="showView('newcr')" data-t="tabNew">➕ طلب تغيير جديد</button>
+  <button class="tab-btn" data-view="approvals" onclick="showView('approvals')" data-t="tabApprovals">🔍 المراجعة والاعتماد</button>
+  <button class="tab-btn" data-view="archive" onclick="showView('archive')" data-t="tabArchive">📦 الأرشيف والتقارير</button>
+  <button class="tab-btn" data-view="docs" onclick="showView('docs')" data-t="tabDocs">📑 الوثائق المرتبطة</button>
+  <button class="tab-btn" data-view="ipc" onclick="showView('ipc')" data-t="tabIPC">💳 مستخلصات IPC</button>
+  <button class="tab-btn" data-view="lessons" onclick="showView('lessons')" data-t="tabLessons">📚 الدروس المستفادة</button>
+</nav>
+
+<main>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section id="view-dashboard" class="view active">
+    <div class="kpi-grid">
+      <div class="kpi"><div class="num" id="kpiTotal">0</div><div class="lbl" data-t="kpiTotal">إجمالي طلبات التغيير</div></div>
+      <div class="kpi"><div class="num" id="kpiCost">0</div><div class="lbl" data-t="kpiCost">التكلفة المعتمدة الإضافية ($)</div></div>
+      <div class="kpi"><div class="num" id="kpiDays">0</div><div class="lbl" data-t="kpiDays">أيام التمديد المعتمدة (EOT)</div></div>
+      <div class="kpi warn"><div class="num" id="kpiPending">0</div><div class="lbl" data-t="kpiPending">طلبات قيد الاعتماد</div></div>
+      <div class="kpi danger" id="kpiAgingCard"><div class="num" id="kpiAging">0</div><div class="lbl" data-t="kpiAging">طلبات متأخرة عن الاعتماد</div></div>
+    </div>
+
+    <div id="erosionBanner"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <h2 data-t="chartReason">توزيع التغييرات حسب السبب</h2>
+        <canvas id="reasonChart" height="120"></canvas>
+      </div>
+      <div class="card">
+        <h2 data-t="budgetStatus">حالة الميزانية والاحتياطي</h2>
+        <div id="budgetBox"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="latestCr">آخر أوامر التغيير المسجلة</h2>
+      <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th data-t="colCode">الكود</th><th data-t="colTitle">العنوان</th><th data-t="colCost">التكلفة</th>
+          <th data-t="colDays">التمديد</th><th data-t="colStatus">الحالة</th><th data-t="colAction">إجراء</th>
+        </tr></thead>
+        <tbody id="latestTable"></tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEW CR ============ -->
+  <section id="view-newcr" class="view">
+    <div class="card">
+      <h2 data-t="crNewTitle">➕ تسجيل طلب تغيير جديد (Change Request)</h2>
+      <div class="grid2">
+        <div class="field"><label data-t="lblProject">المشروع</label>
+          <input type="text" id="crProjectShow" disabled></div>
+        <div class="field"><label data-t="lblCrNumber">رقم الطلب (تلقائي)</label>
+          <input type="text" id="crNumber" disabled></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label data-t="lblTitle">عنوان التغيير</label>
+          <input type="text" id="crTitle" placeholder="مثال: إضافة كابلات مسار كهروميكانيكي..."></div>
+        <div class="field"><label data-t="lblReason">سبب التغيير</label>
+          <select id="crReason">
+            <option value="Client_Request" data-t="rClient">طلب مالك (Client Request)</option>
+            <option value="Design_Error_Omission" data-t="rDesign">خطأ/سهو في التصميم</option>
+            <option value="Unforeseen_Site_Condition" data-t="rSite">ظروف ميدانية غير متوقعة</option>
+            <option value="Regulatory_Change" data-t="rReg">تغيّر التشريعات والقوانين</option>
+            <option value="Value_Engineering" data-t="rVE">هندسة قيمية (Value Engineering)</option>
+          </select></div>
+      </div>
+      <div class="grid3">
+        <div class="field"><label data-t="lblPriority">مستوى الأهمية</label>
+          <select id="crPriority">
+            <option value="Low" data-t="pLow">منخفض</option>
+            <option value="Medium" selected data-t="pMed">متوسط</option>
+            <option value="High" data-t="pHigh">عالي</option>
+            <option value="Critical" data-t="pCrit">حرج / عاجل</option>
+          </select></div>
+        <div class="field"><label data-t="lblRef">الوثيقة المرجعية</label>
+          <input type="text" id="crRef" placeholder="SI-042 / RFI-018 ..."></div>
+        <div class="field"><label data-t="lblContractBasis">السند التعاقدي</label>
+          <input type="text" id="crContract" placeholder="FIDIC Clause 13.1"></div>
+      </div>
+      <div class="field"><label data-t="lblDesc">وصف التغيير الميداني</label>
+        <div style="display:flex;gap:6px;align-items:flex-start;">
+          <textarea id="crDesc" style="flex:1;"></textarea>
+          <button type="button" class="btn btn-outline btn-sm" id="voiceBtnCr" onclick="startVoiceInput('crDesc','voiceBtnCr')" data-t="voiceBtn">🎙️ إملاء صوتي</button>
+        </div></div>
+
+      <div class="grid3">
+        <div class="field"><label data-t="lblTimeImpact">الأثر الزمني المطلوب (أيام)</label>
+          <input type="number" id="crTimeImpact" min="0" value="0"></div>
+        <div class="field"><label><input type="checkbox" id="crCritical"> <span data-t="lblCritical">يؤثر على المسار الحرِج (Critical Path)</span></label></div>
+        <div class="field"><label data-t="lblCreatedBy">مُقدم الطلب</label>
+          <input type="text" id="crCreatedBy" placeholder="اسم المهندس"></div>
+      </div>
+
+      <h3 data-t="pricingTitle">💰 جدول التسعير وتحليل التكلفة (Pricing Breakdown)</h3>
+      <div class="ai-box">
+        🤖 <span data-t="aiHint">اختر فئة البند ثم اضغط "اقتراح تسعير ذكي" لجلب سعر تقديري من أرشيف المشاريع السابقة.</span>
+        <select id="aiCategory" style="width:auto;display:inline-block;margin:0 6px;">
+          <option value="MEP">MEP</option><option value="Electrical">Electrical</option>
+          <option value="Finishes">Finishes</option><option value="Civil">Civil</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="aiSuggest()" data-t="aiBtn">اقتراح التسعير بالذكاء الاصطناعي</button>
+        <span id="aiResult" style="font-weight:bold;color:var(--accent)"></span>
+      </div>
+      <div id="itemsHeader" class="item-row" style="font-weight:bold;font-size:12px;color:var(--gray)">
+        <div data-t="ihDesc">وصف البند</div><div data-t="ihQty">الكمية</div><div data-t="ihUnit">الوحدة</div>
+        <div data-t="ihCost">السعر المباشر</div><div data-t="ihOhp">إدارية وربح %</div><div data-t="ihTotal">الإجمالي</div><div></div>
+      </div>
+      <div id="itemsContainer"></div>
+      <button class="btn btn-outline btn-sm" onclick="addItemRow()" data-t="addItemBtn">+ إضافة بند</button>
+      <div class="total-line"><span data-t="totalCost">إجمالي التكلفة التقديرية:</span> <span id="crTotalCost">0</span> $</div>
+
+      <div class="grid2">
+        <div class="field"><label data-t="lblLinkType">تصنيف الاستحقاق (Entitlement)</label>
+          <select id="crLinkType" onchange="refreshTotals()">
+            <option value="Owner_Entitled" data-t="linkOwner">حق المالك - RFI (Owner Entitled)</option>
+            <option value="Contractor_NCR" data-t="linkNCR">خطأ المقاول - NCR (غير محمّل على المالك)</option>
+          </select></div>
+        <div class="field"><label data-t="lblCreditMemo">💳 قيمة تفكيك/تنازل عن مواد $ (Credit Memo)</label>
+          <input type="number" id="crCreditMemo" min="0" value="0" oninput="refreshTotals()"></div>
+      </div>
+      <div class="ai-box" id="netCostLine"></div>
+
+      <h3 data-t="riskTitle">⚠️ سجل مخاطر أمر التغيير (Change Risk Register)</h3>
+      <div id="riskHeader" class="item-row" style="grid-template-columns:2.4fr .8fr .8fr .9fr 1.6fr auto;font-weight:bold;font-size:12px;color:var(--gray)">
+        <div data-t="rhDesc">وصف الخطر</div><div data-t="rhProb">الاحتمالية (1-5)</div><div data-t="rhImpact">الأثر (1-5)</div>
+        <div data-t="rhScore">الدرجة</div><div data-t="rhMitigation">خطة الاستجابة</div><div></div>
+      </div>
+      <div id="risksContainer"></div>
+      <button class="btn btn-outline btn-sm" onclick="addRiskRow()" data-t="addRiskBtn">+ إضافة خطر</button>
+
+      <h3 data-t="attachTitle">📎 المرفقات (أسماء الملفات كإثبات)</h3>
+      <div class="field" style="display:flex;gap:6px;">
+        <input type="text" id="crAttachInput" placeholder="مثال: SI-042.pdf, site-photo-01.jpg" style="flex:1;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="addGeoTag('crAttachInput')" data-t="geoTagBtn">📍 إضافة موقع GPS</button>
+      </div>
+
+      <div class="flow">
+        <span class="pill" data-t="flowPreview">مسار الاعتماد المتوقع:</span>
+        <div class="stage">👷 <span data-t="stEngineer">مهندس الموقع</span></div><div class="arrow">➔</div>
+        <div class="stage">💵 <span data-t="stCost">مهندس التكاليف</span></div><div class="arrow">➔</div>
+        <div class="stage">🧾 <span data-t="stContracts">مدير العقود</span></div><div class="arrow">➔</div>
+        <div class="stage">✅ <span data-t="stPM">مدير المشروع</span></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="btn btn-outline" onclick="saveCR('Draft')" data-t="btnDraft">💾 حفظ كمسودة</button>
+        <button class="btn btn-primary" onclick="saveCR('Under_Review')" data-t="btnSubmit">🚀 تقديم للاعتماد</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APPROVALS ============ -->
+  <section id="view-approvals" class="view">
+    <div class="card">
+      <h2 data-t="approvalsTitle">🔍 مسار المراجعة والاعتماد</h2>
+      <div class="toolbar">
+        <div class="search-box">
+          <select id="approvalFilter" onchange="renderApprovals()">
+            <option value="all" data-t="fAll">كل الحالات القابلة للمراجعة</option>
+            <option value="Technical_Review" data-t="stTechnical">مراجعة فنية</option>
+            <option value="Financial_Review" data-t="stFinancial">مراجعة مالية</option>
+            <option value="Contracts_Review" data-t="stContractsStage">مراجعة تعاقدية</option>
+            <option value="Client_Approval" data-t="stClient">اعتماد العميل</option>
+          </select>
+        </div>
+        <button class="btn btn-light" style="color:var(--primary);border:1px solid var(--primary)" onclick="openModal('doaModal')" data-t="doaBtn">🔑 مصفوفة التفويض المالي (DOA)</button>
+      </div>
+      <div id="approvalsList"></div>
+    </div>
+  </section>
+
+  <!-- ============ ARCHIVE ============ -->
+  <section id="view-archive" class="view">
+    <div class="card">
+      <h2 data-t="archiveTitle">📦 الأرشيف الرقمي وتوليد التقارير</h2>
+      <div class="toolbar">
+        <div class="search-box">
+          <input type="text" id="archiveSearch" placeholder="بحث بالعنوان أو الكود..." oninput="renderArchive()">
+          <select id="archiveStatusFilter" onchange="renderArchive()">
+            <option value="" data-t="fAllStatus">كل الحالات</option>
+            <option value="Draft">Draft</option><option value="Under_Review">Under_Review</option>
+            <option value="Pending_Approval">Pending_Approval</option><option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option><option value="Closed">Closed</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="printArchiveReport()" data-t="printAll">🖨️ طباعة/تصدير التقرير الشامل</button>
+        <button class="btn btn-outline btn-sm" onclick="exportArchiveCSV()" data-t="exportCsv">⬇️ تصدير Excel/CSV</button>
+      </div>
+      <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th>الكود</th><th data-t="colTitle">العنوان</th><th data-t="colReason">السبب</th>
+          <th data-t="colCost">التكلفة</th><th data-t="colDays">الأيام</th><th data-t="colStatus">الحالة</th><th data-t="colAction">إجراء</th>
+        </tr></thead>
+        <tbody id="archiveTable"></tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RELATED DOCS ============ -->
+  <section id="view-docs" class="view">
+    <div class="card">
+      <h2 data-t="docsTitle">📑 الوثائق المرتبطة بدورة أمر التغيير</h2>
+      <p style="color:var(--gray);font-size:13px" data-t="docsIntro">
+        هذه الوثائق تمثل المسار الكامل من الرصد الميداني حتى الإغلاق المالي، ويمكن ربط كل منها بطلب تغيير مباشرة.</p>
+      <div class="toolbar">
+        <div class="search-box">
+          <select id="docTypeFilter" onchange="renderDocuments()">
+            <option value="" data-t="docFilterAll">كل الأنواع</option>
+            <option value="NOC" data-t="docNOC">إخطار التغيير المبدئي</option>
+            <option value="SI" data-t="docSI">تعليمات الموقع</option>
+            <option value="RFI" data-t="docRFI">طلب استفسار فني (RFI)</option>
+            <option value="MAR" data-t="docMAR">اعتماد المواد / المخططات</option>
+            <option value="NCR" data-t="docNCR">تقرير عدم مطابقة (NCR)</option>
+            <option value="EOT" data-t="docEOT">طلب تمديد الوقت (EOT)</option>
+            <option value="BOQ" data-t="docBOQ">تحليل أسعار البنود المستحدثة</option>
+            <option value="MIN" data-t="docMIN">محضر التفاوض</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openDocForm()" data-t="addDocBtn">+ إضافة وثيقة جديدة</button>
+      </div>
+      <div style="overflow-x:auto">
+      <table><thead><tr>
+        <th data-t="docColType">النوع</th><th data-t="docColNumber">الرقم</th><th data-t="colTitle">العنوان</th>
+        <th data-t="docColLinkedCR">مرتبط بأمر تغيير</th><th data-t="docColDate">التاريخ</th><th data-t="colAction">إجراء</th>
+      </tr></thead><tbody id="documentsTable"></tbody></table>
+      </div>
+      <h3 data-t="docsRefTitle">📚 دليل مرجعي لأنواع الوثائق</h3>
+      <div class="doc-grid" id="docsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ IPC LINKING ============ -->
+  <section id="view-ipc" class="view">
+    <div class="card">
+      <h2 data-t="ipcTitle">💳 ربط أوامر التغيير المعتمدة بمستخلصات IPC</h2>
+      <p style="color:var(--gray);font-size:13px" data-t="ipcIntro">
+        لا يجوز إدراج أي بند تغيير في مستخلص الدفعات إلا بعد ربطه برقم IPC معتمد؛ يمنع هذا صرف أي بند غير موثق.</p>
+      <div style="overflow-x:auto">
+      <table><thead><tr>
+        <th data-t="colCode">الكود</th><th data-t="colTitle">العنوان</th><th data-t="ipcOwnerCharge">المستحق للمالك</th>
+        <th data-t="ipcNumber">رقم المستخلص</th><th data-t="ipcDate">تاريخ الربط</th><th data-t="colAction">إجراء</th>
+      </tr></thead><tbody id="ipcTable"></tbody></table>
+      </div>
+      <h3 data-t="ipcSummaryTitle">ملخص المستخلصات</h3>
+      <div id="ipcSummary"></div>
+    </div>
+  </section>
+
+  <!-- ============ LESSONS LEARNED ============ -->
+  <section id="view-lessons" class="view">
+    <div class="card">
+      <h2 data-t="lessonsTitle">📚 سجل الدروس المستفادة ومؤشر تآكل التكلفة</h2>
+      <p style="color:var(--gray);font-size:13px" data-t="lessonsIntro">
+        يُبنى هذا السجل تلقائياً من أسباب أوامر التغيير المعتمدة والمرفوضة لتحسين التقديرات والتصاميم المستقبلية.</p>
+      <div id="lessonsErosion"></div>
+      <h3 data-t="lessonsFreqTitle">تكرار أسباب التغيير</h3>
+      <div style="overflow-x:auto">
+      <table><thead><tr><th data-t="colReason">السبب</th><th data-t="lessonsCount">عدد المرات</th><th data-t="lessonsCostShare">التكلفة الإجمالية</th></tr></thead>
+      <tbody id="lessonsTable"></tbody></table>
+      </div>
+      <h3 data-t="lessonsTopTitle">💡 التوصية الآلية</h3>
+      <div id="lessonsTop" class="ai-box"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>COMS — Change Order Management System · م. وائل علي عويس محمود — بناء للتطوير الاستراتيجي © 2026</footer>
+
+<!-- ===== CR Detail Modal ===== -->
+<div class="modal-bg" id="crModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal('crModal')">×</button>
+    <div id="crModalBody"></div>
+  </div>
+</div>
+
+<!-- ===== Project Manage Modal ===== -->
+<div class="modal-bg" id="projectModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal('projectModal')">×</button>
+    <h2 data-t="projModalTitle">إدارة المشاريع</h2>
+    <div class="grid3">
+      <div class="field"><label data-t="lblProjCode">كود المشروع</label><input type="text" id="npCode"></div>
+      <div class="field"><label data-t="lblProjName">اسم المشروع</label><input type="text" id="npName"></div>
+      <div class="field"><label data-t="lblProjBudget">الميزانية الأصلية ($)</label><input type="number" id="npBudget" value="0"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label data-t="lblProjDuration">المدة الأصلية (يوم)</label><input type="number" id="npDuration" value="0"></div>
+      <div class="field"><label data-t="lblProjContingency">احتياطي الطوارئ ($)</label><input type="number" id="npContingency" value="0"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addProject()" data-t="btnAddProj">+ إضافة مشروع</button>
+    <h3 style="margin-top:18px" data-t="projListTitle">المشاريع الحالية</h3>
+    <table><thead><tr><th data-t="lblProjCode">الكود</th><th data-t="lblProjName">الاسم</th><th data-t="lblProjBudget">الميزانية</th><th data-t="colAction">إجراء</th></tr></thead>
+    <tbody id="projectsTable"></tbody></table>
+    <div style="display:flex;gap:8px;margin-top:16px;border-top:1px solid var(--border);padding-top:12px;flex-wrap:wrap;">
+      <button class="btn btn-outline btn-sm" onclick="exportBackup()" data-t="backupExportBtn">⬇️ تصدير نسخة احتياطية كاملة (JSON)</button>
+      <label class="btn btn-outline btn-sm" style="cursor:pointer;margin:0;">
+        <span data-t="backupImportBtn">⬆️ استيراد نسخة احتياطية</span>
+        <input type="file" accept="application/json" style="display:none" onchange="importBackup(this)">
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DOA Modal ===== -->
+<div class="modal-bg" id="doaModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal('doaModal')">×</button>
+    <h2 data-t="doaModalTitle">🔑 مصفوفة التفويض المالي (Delegation of Authority)</h2>
+    <p style="color:var(--gray);font-size:13px" data-t="doaIntro">
+      الحد الأقصى للتكلفة التي يحق لكل دور اعتمادها. أي أمر تغيير يتجاوز حد الدور يُرفض تلقائياً ويُطلب تصعيده لدور أعلى.</p>
+    <div id="doaFields"></div>
+    <button class="btn btn-primary" onclick="saveDOAFromForm()" data-t="doaSaveBtn">💾 حفظ الحدود</button>
+  </div>
+</div>
+
+<!-- ===== Document Form Modal ===== -->
+<div class="modal-bg" id="docFormModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal('docFormModal')">×</button>
+    <h2 data-t="docFormTitle">📝 إضافة وثيقة جديدة</h2>
+    <div class="grid2">
+      <div class="field"><label data-t="docColType">نوع الوثيقة</label>
+        <select id="docType" onchange="onDocTypeChange()"></select></div>
+      <div class="field"><label data-t="docColNumber">الرقم (تلقائي)</label>
+        <input type="text" id="docNumber" disabled></div>
+    </div>
+    <div class="field"><label data-t="lblTitle">العنوان</label><input type="text" id="docTitle"></div>
+    <div class="field"><label data-t="lblDesc">الوصف / التفاصيل</label>
+      <div style="display:flex;gap:6px;align-items:flex-start;">
+        <textarea id="docDesc" style="flex:1;"></textarea>
+        <button type="button" class="btn btn-outline btn-sm" id="voiceBtnDoc" onclick="startVoiceInput('docDesc','voiceBtnDoc')" data-t="voiceBtn">🎙️ إملاء صوتي</button>
+      </div></div>
+    <div class="grid3">
+      <div class="field"><label data-t="docLinkCR">ربط بأمر تغيير (اختياري)</label>
+        <select id="docLinkedCR"></select></div>
+      <div class="field"><label data-t="docDate">التاريخ</label><input type="date" id="docDateField"></div>
+      <div class="field"><label data-t="docAmount">قيمة مالية $ (إن وجدت)</label><input type="number" id="docAmount" min="0" value="0"></div>
+    </div>
+    <div class="grid2">
+      <div class="field" id="docDaysField"><label data-t="docDays">عدد الأيام (إن وجدت)</label><input type="number" id="docDays" min="0" value="0"></div>
+      <div class="field" id="docChargeField" style="display:none;align-items:center;gap:6px;margin-top:20px;">
+        <label style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="docChargeable" style="width:auto;"> <span data-t="docChargeable">قابل للتحميل على المالك</span></label>
+      </div>
+    </div>
+    <div class="field"><label data-t="attachTitle">📎 المرفقات</label>
+      <div style="display:flex;gap:6px;">
+        <input type="text" id="docAttach" placeholder="مثال: photo1.jpg, letter.pdf" style="flex:1;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="addGeoTag('docAttach')" data-t="geoTagBtn">📍 إضافة موقع GPS</button>
+      </div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn btn-primary" onclick="saveDocument()" data-t="docSaveBtn">💾 حفظ الوثيقة</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================== I18N ================== */
+const I18N = {
+ar:{appTitle:"نظام إدارة أوامر التغيير",manageProjects:"إدارة المشاريع",
+tabDashboard:"📊 لوحة المؤشرات",tabNew:"➕ طلب تغيير جديد",tabApprovals:"🔍 المراجعة والاعتماد",
+tabArchive:"📦 الأرشيف والتقارير",tabDocs:"📑 الوثائق المرتبطة",
+kpiTotal:"إجمالي طلبات التغيير",kpiCost:"التكلفة المعتمدة الإضافية ($)",kpiDays:"أيام التمديد المعتمدة (EOT)",
+kpiPending:"طلبات قيد الاعتماد",chartReason:"توزيع التغييرات حسب السبب",budgetStatus:"حالة الميزانية والاحتياطي",
+latestCr:"آخر أوامر التغيير المسجلة",colCode:"الكود",colTitle:"العنوان",colCost:"التكلفة",colDays:"التمديد",
+colStatus:"الحالة",colAction:"إجراء",colReason:"السبب",
+crNewTitle:"➕ تسجيل طلب تغيير جديد (Change Request)",lblProject:"المشروع",lblCrNumber:"رقم الطلب (تلقائي)",
+lblTitle:"عنوان التغيير",lblReason:"سبب التغيير",rClient:"طلب مالك (Client Request)",rDesign:"خطأ/سهو في التصميم",
+rSite:"ظروف ميدانية غير متوقعة",rReg:"تغيّر التشريعات والقوانين",rVE:"هندسة قيمية (Value Engineering)",
+lblPriority:"مستوى الأهمية",pLow:"منخفض",pMed:"متوسط",pHigh:"عالي",pCrit:"حرج / عاجل",
+lblRef:"الوثيقة المرجعية",lblContractBasis:"السند التعاقدي",lblDesc:"وصف التغيير الميداني",
+lblTimeImpact:"الأثر الزمني المطلوب (أيام)",lblCritical:"يؤثر على المسار الحرِج (Critical Path)",
+lblCreatedBy:"مُقدم الطلب",pricingTitle:"💰 جدول التسعير وتحليل التكلفة (Pricing Breakdown)",
+aiHint:'اختر فئة البند ثم اضغط "اقتراح تسعير ذكي" لجلب سعر تقديري من أرشيف المشاريع السابقة.',
+aiBtn:"اقتراح التسعير بالذكاء الاصطناعي",ihDesc:"وصف البند",ihQty:"الكمية",ihUnit:"الوحدة",ihCost:"السعر المباشر",
+ihOhp:"إدارية وربح %",ihTotal:"الإجمالي",addItemBtn:"+ إضافة بند",totalCost:"إجمالي التكلفة التقديرية:",
+attachTitle:"📎 المرفقات (أسماء الملفات كإثبات)",flowPreview:"مسار الاعتماد المتوقع:",
+stEngineer:"مهندس الموقع",stCost:"مهندس التكاليف",stContracts:"مدير العقود",stPM:"مدير المشروع",
+btnDraft:"💾 حفظ كمسودة",btnSubmit:"🚀 تقديم للاعتماد",
+approvalsTitle:"🔍 مسار المراجعة والاعتماد",fAll:"كل الحالات القابلة للمراجعة",fUnder:"قيد المراجعة الفنية",
+fPending:"بانتظار الاعتماد النهائي",archiveTitle:"📦 الأرشيف الرقمي وتوليد التقارير",fAllStatus:"كل الحالات",
+printAll:"🖨️ طباعة/تصدير التقرير الشامل",docsTitle:"📑 الوثائق المرتبطة بدورة أمر التغيير",
+docsIntro:'هذه الوثائق تمثل المسار الكامل من الرصد الميداني حتى الإغلاق المالي، ويمكن ربط كل منها بطلب تغيير من شاشة "الأرشيف".',
+projModalTitle:"إدارة المشاريع",lblProjCode:"كود المشروع",lblProjName:"اسم المشروع",lblProjBudget:"الميزانية الأصلية ($)",
+lblProjDuration:"المدة الأصلية (يوم)",lblProjContingency:"احتياطي الطوارئ ($)",btnAddProj:"+ إضافة مشروع",
+projListTitle:"المشاريع الحالية",noItems:"لا توجد بنود بعد.",noCR:"لا توجد طلبات تغيير مسجلة.",noPending:"لا توجد طلبات معلقة تنتظر الاعتماد حالياً.",
+view:"عرض",approve:"✅ اعتماد",reject:"❌ رفض",print:"🖨️ طباعة",review:"مراجعة",requestRevision:"↩️ إعادة",
+approveComment:"ملاحظات الاعتماد (اختياري)",contingencyRemain:"المتبقي من احتياطي الطوارئ",
+originalBudget:"الميزانية الأصلية",currentBudget:"الميزانية الحالية بعد التغييرات",
+selectProjectFirst:"يرجى اختيار/إضافة مشروع أولاً من زر «إدارة المشاريع»",fillRequired:"يرجى تعبئة عنوان التغيير على الأقل",
+savedDraft:"تم حفظ الطلب كمسودة",savedSubmit:"تم تقديم الطلب للمراجعة والاعتماد",
+approvedMsg:"تم اعتماد أمر التغيير وتحديث الميزانية والمخطط الزمني",rejectedMsg:"تم رفض طلب التغيير",
+enterComment:"أدخل سبب الرفض / الملاحظات:",crDetailsTitle:"تفاصيل أمر التغيير",activityLog:"سجل الاعتمادات",
+by:"بواسطة",on:"بتاريخ",noLog:"لا يوجد سجل بعد.",docNOC:"إخطار التغيير المبدئي",docNOCd:"توثيق حدث التغيير خلال المدة التعاقدية (مثل 28 يوماً FIDIC) لحفظ الحق.",
+docSI:"تعليمات الموقع",docSId:"توثيق الأوامر الشفهية/الميدانية من الاستشاري، تُحفّز إصدار طلب تغيير.",
+docEOT:"طلب تمديد الوقت (EOT)",docEOTd:"تحليل المسار الحرِج لربط التأخير بأوامر التغيير المعتمدة.",
+docBOQ:"تحليل أسعار البنود المستحدثة",docBOQd:"تفكيك التكلفة: مواد + عمالة + معدات + إدارية وربح.",
+docMIN:"محضر التفاوض",docMINd:"توثيق جلسات التقييم بين المقاول والاستشاري والمالك.",
+docIPC:"مستخلص الدفعات (IPC)",docIPCd:"ربط البنود المعتمدة بالتدفقات النقدية ومنع صرف غير المعتمد.",
+docFSR:"شهادة التسوية النهائية",docFSRd:"إغلاق الملف المالي وتنازل الطرفين عن مطالبات إضافية.",
+docLL:"سجل الدروس المستفادة",docLLd:"تحليل أسباب التكرار لتحسين التقديرات المستقبلية.",
+docRFI:"طلب استفسار فني (RFI)",docRFId:"توثيق الغموض/التضارب في التصاميم، قد يتحول لطلب تغيير.",
+docMAR:"اعتماد المواد / المخططات",docMARd:"توثيق اعتماد البدائل الفنية والهندسة القيمية.",
+docNCR:"تقرير عدم مطابقة (NCR)",docNCRd:"تمييز إعادة العمل بسبب خطأ المقاول عن التغيير المستحق للمالك.",
+docDOA:"مصفوفة التفويض المالي (DOA)",docDOAd:"صلاحيات التوقيع حسب قيمة أمر التغيير.",
+aiNoMatch:"لا توجد بيانات تاريخية كافية لهذه الفئة.",aiFound:"تم اقتراح السعر بنسبة ثقة",
+tabLessons:"📚 الدروس المستفادة",
+riskTitle:"⚠️ سجل مخاطر أمر التغيير (Change Risk Register)",rhDesc:"وصف الخطر",rhProb:"الاحتمالية (1-5)",
+rhImpact:"الأثر (1-5)",rhScore:"الدرجة",rhMitigation:"خطة الاستجابة",addRiskBtn:"+ إضافة خطر",
+stTechnical:"مراجعة فنية",stFinancial:"مراجعة مالية",stContractsStage:"مراجعة تعاقدية",stClient:"اعتماد العميل",
+doaBtn:"🔑 مصفوفة التفويض المالي (DOA)",doaModalTitle:"🔑 مصفوفة التفويض المالي (Delegation of Authority)",
+doaIntro:"الحد الأقصى للتكلفة التي يحق لكل دور اعتمادها. أي أمر تغيير يتجاوز حد الدور يُرفض تلقائياً ويُطلب تصعيده لدور أعلى.",
+doaSaveBtn:"💾 حفظ الحدود",doaBlocked:"⛔ التكلفة تتجاوز صلاحية الدور المختار. يرجى اختيار دور أعلى صلاحية للاعتماد.",
+approveAsRole:"اعتماد بصفة:",currentStage:"المرحلة الحالية",stageAdvanced:"تم الاعتماد وترحيل الطلب لمرحلة:",
+lessonsTitle:"📚 سجل الدروس المستفادة ومؤشر تآكل التكلفة",
+lessonsIntro:"يُبنى هذا السجل تلقائياً من أسباب أوامر التغيير المعتمدة والمرفوضة لتحسين التقديرات والتصاميم المستقبلية.",
+lessonsFreqTitle:"تكرار أسباب التغيير",lessonsCount:"عدد المرات",lessonsCostShare:"التكلفة الإجمالية",
+lessonsTopTitle:"💡 التوصية الآلية",erosionTitle:"مؤشر تآكل التكلفة",
+erosionOk:"ضمن الحدود الآمنة (أقل من 5% من الميزانية الأصلية).",
+erosionWarn:"تنبيه: التغييرات المعتمدة تجاوزت 5% من الميزانية الأصلية — يُنصح بمراجعة أسباب التكرار.",
+erosionDanger:"⚠️ خطر: التغييرات المعتمدة تجاوزت 10% من الميزانية الأصلية — يتطلب تدخل الإدارة العليا فوراً.",
+tabIPC:"💳 مستخلصات IPC",
+lblLinkType:"تصنيف الاستحقاق (Entitlement)",linkOwner:"حق المالك - RFI (Owner Entitled)",linkNCR:"خطأ المقاول - NCR (غير محمّل على المالك)",
+lblCreditMemo:"💳 قيمة تفكيك/تنازل عن مواد $ (Credit Memo)",grossCost:"إجمالي التكلفة الأولية",creditMemoLbl:"خصم مواد مرتجعة",
+netOwnerCharge:"صافي المستحق على المالك",ncrBadge:"NCR - خطأ مقاول",
+closeBtn:"🔒 إغلاق نهائي (Final Settlement)",settlementBtn:"📄 شهادة التسوية",confirmClose:"هل تريد إغلاق أمر التغيير نهائياً وإصدار شهادة التسوية؟",
+verifyBtn:"🔍 تحقق من سلامة السجل",integrityOk:"السجل سليم ولم يتم التلاعب به (تطابق جميع بصمات التشفير).",
+integrityFail:"⚠️ تحذير: تم اكتشاف تعارض في سلسلة التشفير — قد يكون السجل معدَّلاً!",
+ipcTitle:"💳 ربط أوامر التغيير المعتمدة بمستخلصات IPC",
+ipcIntro:"لا يجوز إدراج أي بند تغيير في مستخلص الدفعات إلا بعد ربطه برقم IPC معتمد؛ يمنع هذا صرف أي بند غير موثق.",
+ipcOwnerCharge:"المستحق للمالك",ipcNumber:"رقم المستخلص",ipcDate:"تاريخ الربط",ipcSummaryTitle:"ملخص المستخلصات",
+ipcUnlinked:"غير مرتبط",ipcLink:"🔗 ربط بمستخلص",ipcRelink:"✏️ تعديل الربط",ipcTotalLinked:"إجمالي المرتبط",
+ipcPromptNumber:"أدخل رقم مستخلص IPC:",ipcNumberRequired:"رقم المستخلص مطلوب.",
+exportCsv:"⬇️ تصدير Excel/CSV",
+docFilterAll:"كل الأنواع",addDocBtn:"+ إضافة وثيقة جديدة",docColType:"النوع",docColNumber:"الرقم",
+docColLinkedCR:"مرتبط بأمر تغيير",docColDate:"التاريخ",docsRefTitle:"📚 دليل مرجعي لأنواع الوثائق",
+docFormTitle:"📝 إضافة وثيقة جديدة",docLinkCR:"ربط بأمر تغيير (اختياري)",docDate:"التاريخ",
+docAmount:"قيمة مالية $ (إن وجدت)",docDays:"عدد الأيام (إن وجدت)",docChargeable:"قابل للتحميل على المالك",
+docSaveBtn:"💾 حفظ الوثيقة",docAddBtn:"+ إضافة",docConvertBtn:"🔄 تحويل لأمر تغيير",docNone:"لا توجد وثائق مسجلة بعد.",
+docConfirmDelete:"هل تريد حذف هذه الوثيقة؟",docSaved:"تم حفظ الوثيقة بنجاح.",
+voiceBtn:"إملاء صوتي",voiceListening:"جارٍ الاستماع...",voiceNotSupported:"المتصفح لا يدعم الإملاء الصوتي.",voiceError:"تعذّر الإملاء الصوتي، حاول مرة أخرى.",
+geoTagBtn:"📍 إضافة موقع GPS",geoNotSupported:"المتصفح لا يدعم تحديد الموقع الجغرافي.",geoError:"تعذّر الحصول على الموقع الجغرافي.",
+lastSaved:"آخر حفظ:",offlineMsg:"لا يوجد اتصال بالإنترنت — البيانات تُحفظ محلياً على جهازك وستستمر في العمل بدون مشاكل.",
+backupExportBtn:"⬇️ تصدير نسخة احتياطية كاملة (JSON)",backupImportBtn:"⬆️ استيراد نسخة احتياطية",
+importConfirm:"سيتم استبدال جميع بيانات المشاريع والطلبات الحالية بالنسخة المستوردة. هل تريد المتابعة؟",
+importSuccess:"تم استيراد النسخة الاحتياطية بنجاح.",importError:"⚠️ ملف غير صالح، تعذّر الاستيراد.",
+kpiAging:"طلبات متأخرة عن الاعتماد",agingBadge:"متأخر",
+},
+en:{appTitle:"Change Order Management System",manageProjects:"Manage Projects",
+tabDashboard:"📊 Dashboard",tabNew:"➕ New Change Request",tabApprovals:"🔍 Review & Approval",
+tabArchive:"📦 Archive & Reports",tabDocs:"📑 Related Documents",
+kpiTotal:"Total Change Requests",kpiCost:"Approved Additional Cost ($)",kpiDays:"Approved EOT Days",
+kpiPending:"Pending Approval",chartReason:"Distribution by Reason",budgetStatus:"Budget & Contingency Status",
+latestCr:"Latest Change Requests",colCode:"Code",colTitle:"Title",colCost:"Cost",colDays:"Days",
+colStatus:"Status",colAction:"Action",colReason:"Reason",
+crNewTitle:"➕ New Change Request",lblProject:"Project",lblCrNumber:"Request No. (Auto)",
+lblTitle:"Change Title",lblReason:"Change Reason",rClient:"Client Request",rDesign:"Design Error / Omission",
+rSite:"Unforeseen Site Condition",rReg:"Regulatory Change",rVE:"Value Engineering",
+lblPriority:"Priority",pLow:"Low",pMed:"Medium",pHigh:"High",pCrit:"Critical",
+lblRef:"Reference Document",lblContractBasis:"Contractual Basis",lblDesc:"Field Description",
+lblTimeImpact:"Time Impact Required (days)",lblCritical:"Affects Critical Path",
+lblCreatedBy:"Submitted By",pricingTitle:"💰 Pricing Breakdown",
+aiHint:'Pick a category and click "AI Pricing Suggestion" to get an estimate from historical archive.',
+aiBtn:"AI Pricing Suggestion",ihDesc:"Description",ihQty:"Qty",ihUnit:"Unit",ihCost:"Direct Cost",
+ihOhp:"OH & Profit %",ihTotal:"Total",addItemBtn:"+ Add Item",totalCost:"Total Estimated Cost:",
+attachTitle:"📎 Attachments (file names as evidence)",flowPreview:"Expected Approval Flow:",
+stEngineer:"Site Engineer",stCost:"Cost Engineer",stContracts:"Contracts Manager",stPM:"Project Manager",
+btnDraft:"💾 Save as Draft",btnSubmit:"🚀 Submit for Approval",
+approvalsTitle:"🔍 Review & Approval Workflow",fAll:"All Reviewable Statuses",fUnder:"Under Technical Review",
+fPending:"Pending Final Approval",archiveTitle:"📦 Digital Archive & Reports",fAllStatus:"All Statuses",
+printAll:"🖨️ Print / Export Full Report",docsTitle:"📑 Documents Linked to the Change Order Cycle",
+docsIntro:'These documents represent the full trail from site identification to financial closure.',
+projModalTitle:"Manage Projects",lblProjCode:"Project Code",lblProjName:"Project Name",lblProjBudget:"Original Budget ($)",
+lblProjDuration:"Original Duration (days)",lblProjContingency:"Contingency Reserve ($)",btnAddProj:"+ Add Project",
+projListTitle:"Current Projects",noItems:"No items yet.",noCR:"No change requests recorded.",noPending:"No pending requests awaiting approval.",
+view:"View",approve:"✅ Approve",reject:"❌ Reject",print:"🖨️ Print",review:"Review",requestRevision:"↩️ Revise",
+approveComment:"Approval remarks (optional)",contingencyRemain:"Remaining Contingency",
+originalBudget:"Original Budget",currentBudget:"Current Budget after changes",
+selectProjectFirst:'Please select/add a project first via "Manage Projects"',fillRequired:"Please fill in at least the change title",
+savedDraft:"Saved as draft",savedSubmit:"Submitted for review and approval",
+approvedMsg:"Change order approved and budget/schedule updated",rejectedMsg:"Change request rejected",
+enterComment:"Enter rejection reason / remarks:",crDetailsTitle:"Change Order Details",activityLog:"Approval Log",
+by:"By",on:"On",noLog:"No log yet.",docNOC:"Notice of Change (NOC)",docNOCd:"Document the change event within the contractual notice period (e.g. 28 days FIDIC) to preserve entitlement.",
+docSI:"Site Instruction (SI)",docSId:"Document verbal/field instructions from the consultant; triggers a change request.",
+docEOT:"Extension of Time Claim (EOT)",docEOTd:"Critical path analysis linking delay to approved change orders.",
+docBOQ:"BOQ Rate Analysis",docBOQd:"Cost breakdown: materials + labor + equipment + overhead & profit.",
+docMIN:"Negotiation Minutes",docMINd:"Document evaluation sessions between contractor, consultant and owner.",
+docIPC:"Interim Payment Certificate (IPC)",docIPCd:"Links approved items to cash flow and blocks unapproved payments.",
+docFSR:"Final Settlement & Release",docFSRd:"Closes the financial file and waives further claims.",
+docLL:"Lessons Learned Log",docLLd:"Analyzes recurring causes to improve future estimates.",
+docRFI:"Request for Information (RFI)",docRFId:"Documents design ambiguity/conflict; may convert into a change request.",
+docMAR:"Material / Shop Drawing Approval",docMARd:"Documents approval of technical alternatives and value engineering.",
+docNCR:"Non-Conformance Report (NCR)",docNCRd:"Distinguishes contractor rework from owner-entitled changes.",
+docDOA:"Delegation of Authority Matrix",docDOAd:"Signature authority based on change order value.",
+aiNoMatch:"Not enough historical data for this category.",aiFound:"Suggested price with confidence",
+tabLessons:"📚 Lessons Learned",
+riskTitle:"⚠️ Change Risk Register",rhDesc:"Risk Description",rhProb:"Probability (1-5)",
+rhImpact:"Impact (1-5)",rhScore:"Score",rhMitigation:"Mitigation Plan",addRiskBtn:"+ Add Risk",
+stTechnical:"Technical Review",stFinancial:"Financial Review",stContractsStage:"Contracts Review",stClient:"Client Approval",
+doaBtn:"🔑 Delegation of Authority (DOA)",doaModalTitle:"🔑 Delegation of Authority Matrix",
+doaIntro:"Maximum cost each role may approve. Any change order exceeding a role's limit is auto-blocked and must be escalated to a higher role.",
+doaSaveBtn:"💾 Save Limits",doaBlocked:"⛔ Cost exceeds the selected role's authority. Please pick a higher-authority role to approve.",
+approveAsRole:"Approve as:",currentStage:"Current Stage",stageAdvanced:"Approved and moved to stage:",
+lessonsTitle:"📚 Lessons Learned Log & Cost Erosion Indicator",
+lessonsIntro:"This log is auto-built from approved/rejected change order reasons to improve future estimates and designs.",
+lessonsFreqTitle:"Change Reason Frequency",lessonsCount:"Count",lessonsCostShare:"Total Cost",
+lessonsTopTitle:"💡 Automated Recommendation",erosionTitle:"Cost Erosion Indicator",
+erosionOk:"Within safe limits (under 5% of original budget).",
+erosionWarn:"Warning: approved changes exceeded 5% of the original budget — review recurring causes.",
+erosionDanger:"⚠️ Danger: approved changes exceeded 10% of the original budget — requires immediate executive intervention.",
+tabIPC:"💳 IPC Records",
+lblLinkType:"Entitlement Classification",linkOwner:"Owner Entitled - RFI",linkNCR:"Contractor NCR (not charged to owner)",
+lblCreditMemo:"💳 Returned/Scrapped Material Credit $",grossCost:"Gross Estimated Cost",creditMemoLbl:"Material Credit Deduction",
+netOwnerCharge:"Net Owner Charge",ncrBadge:"NCR - Contractor Fault",
+closeBtn:"🔒 Final Settlement & Close",settlementBtn:"📄 Settlement Certificate",confirmClose:"Close this change order permanently and issue the final settlement certificate?",
+verifyBtn:"🔍 Verify Integrity",integrityOk:"Log is intact and untampered (all hash fingerprints match).",
+integrityFail:"⚠️ Warning: a mismatch was found in the hash chain — the log may have been altered!",
+ipcTitle:"💳 Link Approved Change Orders to IPC Records",
+ipcIntro:"No change item may appear on a payment certificate unless linked to an approved IPC number; this blocks payment of undocumented items.",
+ipcOwnerCharge:"Owner Charge",ipcNumber:"IPC Number",ipcDate:"Linked Date",ipcSummaryTitle:"IPC Summary",
+ipcUnlinked:"Not linked",ipcLink:"🔗 Link to IPC",ipcRelink:"✏️ Edit Link",ipcTotalLinked:"Total Linked",
+ipcPromptNumber:"Enter IPC number:",ipcNumberRequired:"IPC number is required.",
+exportCsv:"⬇️ Export Excel/CSV",
+docFilterAll:"All Types",addDocBtn:"+ Add New Document",docColType:"Type",docColNumber:"Number",
+docColLinkedCR:"Linked Change Order",docColDate:"Date",docsRefTitle:"📚 Document Types Reference Guide",
+docFormTitle:"📝 Add New Document",docLinkCR:"Link to Change Order (optional)",docDate:"Date",
+docAmount:"Financial Value $ (if any)",docDays:"Number of Days (if any)",docChargeable:"Chargeable to Owner",
+docSaveBtn:"💾 Save Document",docAddBtn:"+ Add",docConvertBtn:"🔄 Convert to Change Request",docNone:"No documents recorded yet.",
+docConfirmDelete:"Delete this document?",docSaved:"Document saved successfully.",
+voiceBtn:"Voice Dictation",voiceListening:"Listening...",voiceNotSupported:"Your browser doesn't support voice dictation.",voiceError:"Voice dictation failed, please try again.",
+geoTagBtn:"📍 Add GPS Location",geoNotSupported:"Your browser doesn't support geolocation.",geoError:"Could not get your location.",
+lastSaved:"Last saved:",offlineMsg:"No internet connection — data is saved locally on your device and will keep working normally.",
+backupExportBtn:"⬇️ Export Full Backup (JSON)",backupImportBtn:"⬆️ Import Backup",
+importConfirm:"This will replace all current projects and change requests with the imported backup. Continue?",
+importSuccess:"Backup imported successfully.",importError:"⚠️ Invalid file, import failed.",
+kpiAging:"Overdue Approvals",agingBadge:"Overdue",
+}};
+let lang = localStorage.getItem('coms_lang') || 'ar';
+
+function setLang(l){
+  lang = l; localStorage.setItem('coms_lang', l);
+  document.documentElement.lang = l;
+  document.documentElement.dir = l==='ar' ? 'rtl' : 'ltr';
+  document.getElementById('langSelect').value = l;
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key = el.getAttribute('data-t');
+    if(I18N[l][key]) el.textContent = I18N[l][key];
+  });
+  renderAll();
+}
+function t(key){ return (I18N[lang] && I18N[lang][key]) || key; }
+
+/* ================== DATA LAYER (localStorage) ================== */
+const LS_PROJECTS = 'coms_projects_v1';
+const LS_CRS = 'coms_change_requests_v1';
+
+function loadProjects(){ return JSON.parse(localStorage.getItem(LS_PROJECTS) || '[]'); }
+function saveProjects(p){ localStorage.setItem(LS_PROJECTS, JSON.stringify(p)); touchLastSaved(); }
+function loadCRs(){ return JSON.parse(localStorage.getItem(LS_CRS) || '[]'); }
+function saveCRs(c){ localStorage.setItem(LS_CRS, JSON.stringify(c)); touchLastSaved(); }
+
+let currentProjectId = localStorage.getItem('coms_current_project') || null;
+let itemCounter = 0;
+
+/* Seed demo data on first run */
+(function seed(){
+  if(loadProjects().length === 0){
+    const demo = [{
+      id:'PRJ-'+Date.now(), code:'DC-B01', name:'مشروع مركز البيانات - Tier IV',
+      budget:5000000, duration:365, contingency:250000, approvedCost:0, approvedDays:0
+    }];
+    saveProjects(demo);
+    currentProjectId = demo[0].id;
+    localStorage.setItem('coms_current_project', currentProjectId);
+  }
+})();
+
+/* Historical pricing DB for AI suggestion (from spec) */
+const HIST_DB = [
+  {category:'MEP', item:'CRAC Unit', unit:'Unit', cost:42000, ohp:15},
+  {category:'Electrical', item:'MV Cable Reroute', unit:'LM', cost:180, ohp:12},
+  {category:'Finishes', item:'Raised Floor', unit:'M2', cost:95, ohp:10},
+  {category:'Civil', item:'Concrete Slab Mod', unit:'M3', cost:220, ohp:12},
+];
+
+/* ===== Multi-stage approval workflow ===== */
+const STAGES = ['Technical_Review','Financial_Review','Contracts_Review','Client_Approval'];
+const STAGE_ICON = {Technical_Review:'👷',Financial_Review:'💵',Contracts_Review:'🧾',Client_Approval:'🏢'};
+
+/* ===== DOA (Delegation of Authority) limits — editable & persisted ===== */
+const LS_DOA = 'coms_doa_limits_v1';
+const DOA_ROLES = ['Site_Engineer','Cost_Engineer','Contracts_Manager','Project_Manager','Sponsor'];
+function loadDOA(){
+  const saved = JSON.parse(localStorage.getItem(LS_DOA) || 'null');
+  if(saved) return saved;
+  return {Site_Engineer:0, Cost_Engineer:20000, Contracts_Manager:75000, Project_Manager:200000, Sponsor:999999999};
+}
+function saveDOA(d){ localStorage.setItem(LS_DOA, JSON.stringify(d)); touchLastSaved(); }
+
+/* ===== Cost erosion thresholds ===== */
+const EROSION_WARN_PCT = 5;
+const EROSION_DANGER_PCT = 10;
+
+/* ===== Immutable (hash-chained) audit trail ===== */
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function appendSecureLog(cr, entry){
+  entry.date = entry.date || new Date().toISOString();
+  const prevHash = (cr.approvalLog.length ? cr.approvalLog[cr.approvalLog.length-1].hash : null) || 'GENESIS';
+  const payload = prevHash + '|' + entry.action + '|' + entry.by + '|' + (entry.comment||'') + '|' + entry.date;
+  entry.prevHash = prevHash;
+  entry.hash = await sha256(payload);
+  cr.approvalLog.push(entry);
+}
+async function verifyIntegrity(id){
+  const cr = loadCRs().find(c=>c.id===id);
+  if(!cr || !cr.approvalLog.length){ alert(t('noLog')); return; }
+  let prevHash = 'GENESIS';
+  for(const entry of cr.approvalLog){
+    const payload = prevHash + '|' + entry.action + '|' + entry.by + '|' + (entry.comment||'') + '|' + entry.date;
+    const h = await sha256(payload);
+    if(h !== entry.hash){ alert('❌ ' + t('integrityFail')); return; }
+    prevHash = entry.hash;
+  }
+  alert('✅ ' + t('integrityOk'));
+}
+function ownerChargeOf(cr){
+  return cr.ownerCharge!=null ? cr.ownerCharge : (cr.estimatedCost||0);
+}
+
+/* ================== NAV ================== */
+function showView(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.tab-btn[data-view="'+v+'"]').classList.add('active');
+  if(v==='newcr') prepareNewCRForm();
+  if(v==='dashboard') renderDashboard();
+  if(v==='approvals') renderApprovals();
+  if(v==='archive') renderArchive();
+  if(v==='docs'){ renderDocs(); renderDocuments(); }
+  if(v==='lessons') renderLessons();
+  if(v==='ipc') renderIPC();
+}
+function openModal(id){
+  document.getElementById(id).classList.add('active');
+  if(id==='projectModal') renderProjectsTable();
+  if(id==='doaModal') renderDOAForm();
+}
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+
+/* ================== PROJECTS ================== */
+function renderProjectSelect(){
+  const projects = loadProjects();
+  const sel = document.getElementById('projectSelect');
+  sel.innerHTML = '';
+  if(projects.length===0){
+    const o = document.createElement('option'); o.textContent = lang==='ar'?'لا توجد مشاريع':'No projects'; sel.appendChild(o);
+    return;
+  }
+  projects.forEach(p=>{
+    const o = document.createElement('option');
+    o.value = p.id; o.textContent = p.code + ' — ' + p.name;
+    if(p.id === currentProjectId) o.selected = true;
+    sel.appendChild(o);
+  });
+  if(!projects.find(p=>p.id===currentProjectId)){
+    currentProjectId = projects[0].id;
+    localStorage.setItem('coms_current_project', currentProjectId);
+  }
+}
+function onProjectChange(){
+  currentProjectId = document.getElementById('projectSelect').value;
+  localStorage.setItem('coms_current_project', currentProjectId);
+  renderAll();
+}
+function addProject(){
+  const code = document.getElementById('npCode').value.trim();
+  const name = document.getElementById('npName').value.trim();
+  const budget = parseFloat(document.getElementById('npBudget').value)||0;
+  const duration = parseInt(document.getElementById('npDuration').value)||0;
+  const contingency = parseFloat(document.getElementById('npContingency').value)||0;
+  if(!code || !name){ alert(lang==='ar'?'يرجى إدخال الكود والاسم':'Please enter code and name'); return; }
+  const projects = loadProjects();
+  const p = {id:'PRJ-'+Date.now(), code, name, budget, duration, contingency, approvedCost:0, approvedDays:0};
+  projects.push(p); saveProjects(projects);
+  currentProjectId = p.id; localStorage.setItem('coms_current_project', currentProjectId);
+  document.getElementById('npCode').value=''; document.getElementById('npName').value='';
+  document.getElementById('npBudget').value=0; document.getElementById('npDuration').value=0; document.getElementById('npContingency').value=0;
+  renderProjectSelect(); renderProjectsTable(); renderAll();
+}
+function deleteProject(id){
+  if(!confirm(lang==='ar'?'حذف المشروع وكل أوامر التغيير المرتبطة به؟':'Delete project and all its change requests?')) return;
+  let projects = loadProjects().filter(p=>p.id!==id);
+  saveProjects(projects);
+  let crs = loadCRs().filter(c=>c.projectId!==id);
+  saveCRs(crs);
+  if(currentProjectId===id) currentProjectId = projects[0] ? projects[0].id : null;
+  localStorage.setItem('coms_current_project', currentProjectId||'');
+  renderProjectSelect(); renderProjectsTable(); renderAll();
+}
+function renderProjectsTable(){
+  const projects = loadProjects();
+  const tb = document.getElementById('projectsTable');
+  tb.innerHTML = projects.map(p=>`<tr><td>${p.code}</td><td>${p.name}</td><td>$${p.budget.toLocaleString()}</td>
+    <td><button class="btn btn-red btn-sm" onclick="deleteProject('${p.id}')">🗑️</button></td></tr>`).join('');
+}
+
+/* ================== NEW CR FORM ================== */
+function prepareNewCRForm(){
+  const projects = loadProjects();
+  const proj = projects.find(p=>p.id===currentProjectId);
+  document.getElementById('crProjectShow').value = proj ? (proj.code+' — '+proj.name) : t('selectProjectFirst');
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId);
+  const num = crs.length + 1;
+  document.getElementById('crNumber').value = proj ? `CR-${proj.code}-2026-${String(num).padStart(3,'0')}` : '—';
+  document.getElementById('itemsContainer').innerHTML = '';
+  itemCounter = 0;
+  addItemRow();
+  document.getElementById('risksContainer').innerHTML = '';
+  riskCounter = 0;
+  addRiskRow();
+  document.getElementById('crTitle').value='';
+  document.getElementById('crDesc').value='';
+  document.getElementById('crRef').value='';
+  document.getElementById('crContract').value='';
+  document.getElementById('crTimeImpact').value=0;
+  document.getElementById('crCritical').checked=false;
+  document.getElementById('crCreatedBy').value='';
+  document.getElementById('crAttachInput').value='';
+  document.getElementById('aiResult').textContent='';
+  document.getElementById('crLinkType').value='Owner_Entitled';
+  document.getElementById('crCreditMemo').value=0;
+  if(pendingDocPrefill){
+    document.getElementById('crRef').value = pendingDocPrefill.docNumber;
+    document.getElementById('crTitle').value = pendingDocPrefill.title;
+    document.getElementById('crDesc').value = pendingDocPrefill.description;
+    if(pendingDocPrefill.type==='NCR'){
+      document.getElementById('crLinkType').value = pendingDocPrefill.chargeable ? 'Owner_Entitled' : 'Contractor_NCR';
+    } else if(pendingDocPrefill.type==='RFI'){
+      document.getElementById('crReason').value = 'Design_Error_Omission';
+    }
+  }
+  refreshTotals();
+}
+function addItemRow(desc,qty,unit,cost,ohp){
+  itemCounter++;
+  const id = 'it'+itemCounter;
+  const row = document.createElement('div');
+  row.className='item-row'; row.id=id;
+  row.innerHTML = `
+    <input type="text" class="it-desc" value="${desc||''}" placeholder="${t('ihDesc')}">
+    <input type="number" class="it-qty" value="${qty||1}" min="0" oninput="refreshTotals()">
+    <input type="text" class="it-unit" value="${unit||''}" placeholder="${t('ihUnit')}">
+    <input type="number" class="it-cost" value="${cost||0}" min="0" oninput="refreshTotals()">
+    <input type="number" class="it-ohp" value="${ohp||15}" min="0" oninput="refreshTotals()">
+    <input type="text" class="it-total" value="0" disabled>
+    <button class="btn btn-red btn-sm" onclick="document.getElementById('${id}').remove(); refreshTotals();">🗑️</button>`;
+  document.getElementById('itemsContainer').appendChild(row);
+  refreshTotals();
+}
+function updateTotal(){
+  let grand = 0;
+  document.querySelectorAll('#itemsContainer .item-row').forEach(row=>{
+    const qty = parseFloat(row.querySelector('.it-qty').value)||0;
+    const cost = parseFloat(row.querySelector('.it-cost').value)||0;
+    const ohp = parseFloat(row.querySelector('.it-ohp').value)||0;
+    const total = qty * cost * (1 + ohp/100);
+    row.querySelector('.it-total').value = total.toFixed(2);
+    grand += total;
+  });
+  document.getElementById('crTotalCost').textContent = grand.toLocaleString(undefined,{maximumFractionDigits:2});
+  return grand;
+}
+function refreshTotals(){
+  const total = updateTotal();
+  const creditEl = document.getElementById('crCreditMemo');
+  const linkEl = document.getElementById('crLinkType');
+  const line = document.getElementById('netCostLine');
+  if(!creditEl || !linkEl || !line) return total;
+  const credit = parseFloat(creditEl.value)||0;
+  const net = Math.max(0, total - credit);
+  const linkType = linkEl.value;
+  const ownerCharge = linkType==='Contractor_NCR' ? 0 : net;
+  line.innerHTML = `${t('grossCost')}: <b>$${total.toLocaleString(undefined,{maximumFractionDigits:2})}</b>`
+    + (credit>0 ? ` &nbsp;·&nbsp; ${t('creditMemoLbl')}: -$${credit.toLocaleString()}` : '')
+    + ` &nbsp;·&nbsp; <b style="color:var(--primary-dark)">${t('netOwnerCharge')}: $${ownerCharge.toLocaleString(undefined,{maximumFractionDigits:2})}</b>`
+    + (linkType==='Contractor_NCR' ? ` &nbsp; <span class="pill" style="background:#fdecea;color:#c82333;">${t('ncrBadge')}</span>` : '');
+  return total;
+}
+let riskCounter = 0;
+function addRiskRow(desc,prob,impact,mitigation){
+  riskCounter++;
+  const id = 'rk'+riskCounter;
+  const row = document.createElement('div');
+  row.className='item-row'; row.id=id;
+  row.style.gridTemplateColumns = '2.4fr .8fr .8fr .9fr 1.6fr auto';
+  row.innerHTML = `
+    <input type="text" class="rk-desc" value="${desc||''}" placeholder="${t('rhDesc')}">
+    <input type="number" class="rk-prob" value="${prob||1}" min="1" max="5" oninput="updateRiskScore('${id}')">
+    <input type="number" class="rk-impact" value="${impact||1}" min="1" max="5" oninput="updateRiskScore('${id}')">
+    <input type="text" class="rk-score" value="1" disabled>
+    <input type="text" class="rk-mitigation" value="${mitigation||''}" placeholder="${t('rhMitigation')}">
+    <button class="btn btn-red btn-sm" onclick="document.getElementById('${id}').remove();">🗑️</button>`;
+  document.getElementById('risksContainer').appendChild(row);
+  updateRiskScore(id);
+}
+function updateRiskScore(id){
+  const row = document.getElementById(id);
+  const p = parseFloat(row.querySelector('.rk-prob').value)||1;
+  const i = parseFloat(row.querySelector('.rk-impact').value)||1;
+  const score = p*i;
+  const field = row.querySelector('.rk-score');
+  field.value = score;
+  field.style.color = score>=12 ? 'var(--red)' : (score>=6 ? 'var(--accent)' : 'var(--green)');
+  field.style.fontWeight = 'bold';
+}
+function riskLevel(score){
+  if(score>=12) return {ar:'عالٍ',en:'High',cls:'var(--red)'};
+  if(score>=6) return {ar:'متوسط',en:'Medium',cls:'var(--accent)'};
+  return {ar:'منخفض',en:'Low',cls:'var(--green)'};
+}
+function aiSuggest(){
+  const cat = document.getElementById('aiCategory').value;
+  const matches = HIST_DB.filter(h=>h.category===cat);
+  if(matches.length===0){ document.getElementById('aiResult').textContent = t('aiNoMatch'); return; }
+  const avgCost = matches.reduce((s,m)=>s+m.cost,0)/matches.length;
+  const avgOhp = matches.reduce((s,m)=>s+m.ohp,0)/matches.length;
+  const confidence = Math.min(95, 70 + matches.length*5);
+  addItemRow(matches[0].item + ' ('+cat+')', 1, matches[0].unit, avgCost.toFixed(2), avgOhp.toFixed(0));
+  document.getElementById('aiResult').textContent = `🤖 ${t('aiFound')} ${confidence}% — ${matches[0].item}: $${avgCost.toFixed(2)}/${matches[0].unit}`;
+}
+async function saveCR(status){
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  if(!proj){ alert(t('selectProjectFirst')); return; }
+  const title = document.getElementById('crTitle').value.trim();
+  if(!title){ alert(t('fillRequired')); return; }
+  const items = [];
+  document.querySelectorAll('#itemsContainer .item-row').forEach(row=>{
+    items.push({
+      desc: row.querySelector('.it-desc').value,
+      qty: parseFloat(row.querySelector('.it-qty').value)||0,
+      unit: row.querySelector('.it-unit').value,
+      cost: parseFloat(row.querySelector('.it-cost').value)||0,
+      ohp: parseFloat(row.querySelector('.it-ohp').value)||0,
+      total: parseFloat(row.querySelector('.it-total').value)||0,
+    });
+  });
+  const totalCost = updateTotal();
+  const creditMemo = parseFloat(document.getElementById('crCreditMemo').value)||0;
+  const linkType = document.getElementById('crLinkType').value;
+  const netCost = Math.max(0, totalCost - creditMemo);
+  const ownerCharge = linkType==='Contractor_NCR' ? 0 : netCost;
+  const risks = [];
+  document.querySelectorAll('#risksContainer .item-row').forEach(row=>{
+    const prob = parseFloat(row.querySelector('.rk-prob').value)||1;
+    const impact = parseFloat(row.querySelector('.rk-impact').value)||1;
+    const desc = row.querySelector('.rk-desc').value;
+    if(!desc.trim()) return;
+    risks.push({desc, prob, impact, score: prob*impact, mitigation: row.querySelector('.rk-mitigation').value});
+  });
+  const crs = loadCRs();
+  const num = crs.filter(c=>c.projectId===currentProjectId).length + 1;
+  const cr = {
+    id:'CR-'+Date.now(),
+    crNumber: `CR-${proj.code}-2026-${String(num).padStart(3,'0')}`,
+    projectId: currentProjectId,
+    title,
+    reason: document.getElementById('crReason').value,
+    priority: document.getElementById('crPriority').value,
+    ref: document.getElementById('crRef').value,
+    contractBasis: document.getElementById('crContract').value,
+    description: document.getElementById('crDesc').value,
+    timeImpactDays: parseInt(document.getElementById('crTimeImpact').value)||0,
+    affectsCriticalPath: document.getElementById('crCritical').checked,
+    createdBy: document.getElementById('crCreatedBy').value || 'Eng. Wael Oweis',
+    attachments: document.getElementById('crAttachInput').value.split(',').map(s=>s.trim()).filter(Boolean),
+    items,
+    risks,
+    linkType,
+    creditMemo,
+    estimatedCost: totalCost,
+    netCost,
+    ownerCharge,
+    approvedCost: 0,
+    approvedTimeDays: 0,
+    status,
+    stageIndex: status==='Under_Review' ? 0 : -1,
+    createdAt: new Date().toISOString(),
+    ipc: null,
+    approvalLog: []
+  };
+  await appendSecureLog(cr, {action: status==='Draft' ? 'Draft Saved':'Submitted — Technical Review', by: cr.createdBy, comment:''});
+  crs.push(cr); saveCRs(crs);
+  if(pendingDocPrefill){
+    const docs = loadDocs();
+    const d = docs.find(x=>x.id===pendingDocPrefill.id);
+    if(d){ d.linkedCrId = cr.id; saveDocsList(docs); }
+    pendingDocPrefill = null;
+  }
+  alert(status==='Draft' ? t('savedDraft') : t('savedSubmit'));
+  showView('dashboard');
+}
+
+/* ================== APPROVALS (multi-stage + DOA) ================== */
+function stageLabel(stageKey){
+  const map = {Technical_Review:'stTechnical',Financial_Review:'stFinancial',Contracts_Review:'stContractsStage',Client_Approval:'stClient'};
+  return t(map[stageKey] || stageKey);
+}
+function renderApprovals(){
+  const filter = document.getElementById('approvalFilter') ? document.getElementById('approvalFilter').value : 'all';
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId);
+  let list = crs.filter(c=> c.status==='Under_Review' && c.stageIndex>=0 && c.stageIndex<STAGES.length);
+  if(filter!=='all') list = list.filter(c=>STAGES[c.stageIndex]===filter);
+  const container = document.getElementById('approvalsList');
+  if(list.length===0){ container.innerHTML = `<div class="empty">${t('noPending')}</div>`; return; }
+  const doa = loadDOA();
+  container.innerHTML = list.map(cr=>{
+    const stageKey = STAGES[cr.stageIndex];
+    const charge = ownerChargeOf(cr);
+    const aging = isAging(cr);
+    const lastDate = cr.approvalLog[cr.approvalLog.length-1].date;
+    const flowHtml = STAGES.map((s,i)=>`<div class="stage ${i<cr.stageIndex?'done':''}">${STAGE_ICON[s]} ${stageLabel(s)}</div>`).join('<div class="arrow">➔</div>');
+    const roleOptions = DOA_ROLES.map(r=>`<option value="${r}" ${doa[r]>=charge?'':'disabled'}>${r.replace(/_/g,' ')} (≤ $${doa[r].toLocaleString()})</option>`).join('');
+    return `
+    <div class="card" style="margin-bottom:10px;${aging?'border-inline-start:5px solid var(--red);':''}">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:flex-start;">
+        <div>
+          <b>${cr.crNumber}</b> — ${cr.title}
+          <div style="font-size:12px;color:var(--gray);margin:4px 0;">
+            <span class="pill">${cr.reason.replace(/_/g,' ')}</span>
+            <span class="pill">${t('ipcOwnerCharge')}: $${charge.toLocaleString()}</span>
+            <span class="pill">${cr.timeImpactDays} ${lang==='ar'?'يوم':'days'}</span>
+            ${cr.risks && cr.risks.length ? `<span class="pill" style="background:#fdecea;color:#c82333;">⚠️ ${cr.risks.length} ${lang==='ar'?'مخاطر':'risks'}</span>`:''}
+            ${cr.linkType==='Contractor_NCR' ? `<span class="pill" style="background:#fdecea;color:#c82333;">${t('ncrBadge')}</span>`:''}
+            ${aging ? `<span class="pill" style="background:#f8d7da;color:#721c24;">⏰ ${t('agingBadge')} ${daysSince(lastDate)} ${lang==='ar'?'يوم':'d'}</span>`:''}
+          </div>
+          <div class="flow" style="margin:6px 0;">${flowHtml}</div>
+          <div style="font-size:12px;"><b>${t('currentStage')}:</b> ${stageLabel(stageKey)}</div>
+        </div>
+        <div class="row-actions" style="flex-direction:column;align-items:stretch;min-width:220px;">
+          <label style="font-size:11px" data-t="approveAsRole">اعتماد بصفة:</label>
+          <select id="role_${cr.id}" style="margin-bottom:6px;">${roleOptions}</select>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm" onclick="viewCR('${cr.id}')">${t('view')}</button>
+            <button class="btn btn-green btn-sm" onclick="approveCR('${cr.id}')">${t('approve')}</button>
+            <button class="btn btn-red btn-sm" onclick="rejectCR('${cr.id}')">${t('reject')}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function approveCR(id){
+  const crs = loadCRs();
+  const cr = crs.find(c=>c.id===id);
+  if(!cr) return;
+  const roleSel = document.getElementById('role_'+id);
+  const role = roleSel ? roleSel.value : 'Project_Manager';
+  const doa = loadDOA();
+  const charge = ownerChargeOf(cr);
+  if(doa[role] < charge){
+    alert(t('doaBlocked'));
+    await appendSecureLog(cr, {action:'Escalated — insufficient authority ('+role+')', by: role, comment:''});
+    saveCRs(crs);
+    renderApprovals();
+    return;
+  }
+  const comment = prompt(t('approveComment')) || '';
+  const stageKey = STAGES[cr.stageIndex];
+  await appendSecureLog(cr, {action:'Approved — '+stageLabel(stageKey), by: role.replace(/_/g,' '), comment});
+  cr.stageIndex++;
+  if(cr.stageIndex >= STAGES.length){
+    cr.status = 'Approved';
+    cr.approvedCost = charge;
+    cr.approvedTimeDays = cr.timeImpactDays;
+    const projects = loadProjects();
+    const proj = projects.find(p=>p.id===cr.projectId);
+    if(proj){
+      proj.approvedCost = (proj.approvedCost||0) + cr.approvedCost;
+      proj.approvedDays = (proj.approvedDays||0) + cr.approvedTimeDays;
+      proj.contingency = Math.max(0, (proj.contingency||0) - cr.approvedCost);
+      saveProjects(projects);
+    }
+    addLessonEntry(cr, 'Approved');
+    alert(t('approvedMsg'));
+  } else {
+    alert(t('stageAdvanced') + ' ' + stageLabel(STAGES[cr.stageIndex]));
+  }
+  saveCRs(crs);
+  renderAll();
+}
+async function rejectCR(id){
+  const crs = loadCRs();
+  const cr = crs.find(c=>c.id===id);
+  if(!cr) return;
+  const comment = prompt(t('enterComment')) || '';
+  cr.status = 'Rejected';
+  await appendSecureLog(cr, {action:'Rejected', by:'Reviewer', comment});
+  saveCRs(crs);
+  addLessonEntry(cr, 'Rejected');
+  alert(t('rejectedMsg'));
+  renderAll();
+}
+async function closeCR(id){
+  if(!confirm(t('confirmClose'))) return;
+  const crs = loadCRs();
+  const cr = crs.find(c=>c.id===id);
+  if(!cr) return;
+  cr.status = 'Closed';
+  await appendSecureLog(cr, {action:'Closed — Final Settlement Issued', by:'PM', comment:''});
+  saveCRs(crs);
+  renderAll();
+  printFinalSettlement(id);
+}
+
+/* ================== DOA MODAL ================== */
+function renderDOAForm(){
+  const doa = loadDOA();
+  document.getElementById('doaFields').innerHTML = DOA_ROLES.map(r=>`
+    <div class="field"><label>${r.replace(/_/g,' ')}</label>
+      <input type="number" id="doa_${r}" value="${doa[r]}" min="0"></div>`).join('');
+}
+function saveDOAFromForm(){
+  const doa = {};
+  DOA_ROLES.forEach(r=>{ doa[r] = parseFloat(document.getElementById('doa_'+r).value)||0; });
+  saveDOA(doa);
+  closeModal('doaModal');
+  renderApprovals();
+}
+
+/* ================== LESSONS LEARNED + COST EROSION ================== */
+function addLessonEntry(cr, outcome){
+  // Lessons are derived live from CR data (reason/status/cost) — nothing extra to persist separately.
+}
+function renderLessons(){
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId && (c.status==='Approved'||c.status==='Rejected'));
+  const reasons = ['Client_Request','Design_Error_Omission','Unforeseen_Site_Condition','Regulatory_Change','Value_Engineering'];
+  const rows = reasons.map(r=>{
+    const items = crs.filter(c=>c.reason===r);
+    const cost = items.reduce((s,c)=>s+(c.approvedCost||c.estimatedCost||0),0);
+    return {r, count: items.length, cost};
+  }).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);
+  const tb = document.getElementById('lessonsTable');
+  tb.innerHTML = rows.length ? rows.map(x=>`<tr><td>${x.r.replace(/_/g,' ')}</td><td>${x.count}</td><td>$${x.cost.toLocaleString()}</td></tr>`).join('')
+    : `<tr><td colspan="3" class="empty">${t('noCR')}</td></tr>`;
+  const topBox = document.getElementById('lessonsTop');
+  if(rows.length){
+    const top = rows[0];
+    topBox.innerHTML = `🤖 ${lang==='ar'
+      ? `السبب الأكثر تكراراً هو <b>${top.r.replace(/_/g,' ')}</b> بواقع ${top.count} مرة/مرات بتكلفة إجمالية $${top.cost.toLocaleString()}. يُنصح بمراجعة هذا السبب جذرياً لتقليل تكرار أوامر التغيير المستقبلية.`
+      : `The most recurring reason is <b>${top.r.replace(/_/g,' ')}</b> (${top.count} time(s), total cost $${top.cost.toLocaleString()}). Recommend a root-cause review to reduce future recurrence.`}`;
+  } else {
+    topBox.innerHTML = `<span style="color:var(--gray)">${t('noCR')}</span>`;
+  }
+  renderErosionBox('lessonsErosion');
+}
+function renderErosionBox(targetId){
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  const el = document.getElementById(targetId);
+  if(!el) return;
+  if(!proj){ el.innerHTML=''; return; }
+  const approvedCost = loadCRs().filter(c=>c.projectId===currentProjectId && c.status==='Approved').reduce((s,c)=>s+c.approvedCost,0);
+  const pct = proj.budget ? (approvedCost/proj.budget*100) : 0;
+  let color = 'var(--green)', msg = t('erosionOk');
+  if(pct >= EROSION_DANGER_PCT){ color='var(--red)'; msg = t('erosionDanger'); }
+  else if(pct >= EROSION_WARN_PCT){ color='var(--accent)'; msg = t('erosionWarn'); }
+  el.innerHTML = `<div class="card" style="border-inline-start:6px solid ${color};margin-bottom:16px;">
+    <b style="color:${color}">📉 ${t('erosionTitle')}: ${pct.toFixed(2)}%</b> — ${msg}
+  </div>`;
+}
+
+/* ================== VIEW CR MODAL ================== */
+function viewCR(id){
+  const cr = loadCRs().find(c=>c.id===id);
+  if(!cr) return;
+  const proj = loadProjects().find(p=>p.id===cr.projectId);
+  const itemsRows = cr.items.map(i=>`<tr><td>${i.desc}</td><td>${i.qty}</td><td>${i.unit}</td><td>$${i.cost}</td><td>${i.ohp}%</td><td>$${i.total.toFixed(2)}</td></tr>`).join('');
+  const risksRows = (cr.risks||[]).map(r=>{
+    const lvl = riskLevel(r.score);
+    return `<tr><td>${r.desc}</td><td>${r.prob}</td><td>${r.impact}</td><td style="color:${lvl.cls};font-weight:bold">${r.score} (${lang==='ar'?lvl.ar:lvl.en})</td><td>${r.mitigation||'-'}</td></tr>`;
+  }).join('');
+  const logRows = cr.approvalLog.map(l=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">
+      <b>${l.action}</b> — ${t('by')}: ${l.by} ${t('on')}: ${new Date(l.date).toLocaleString()} ${l.comment?'<br>💬 '+l.comment:''}
+      ${l.hash?`<br><span style="color:var(--gray);font-family:monospace;font-size:10px;">🔒 ${l.hash.slice(0,16)}…</span>`:''}
+    </div>`).join('') || `<div class="empty">${t('noLog')}</div>`;
+  const stageFlow = cr.status==='Under_Review' && cr.stageIndex>=0
+    ? `<div class="flow">${STAGES.map((s,i)=>`<div class="stage ${i<cr.stageIndex?'done':''}">${STAGE_ICON[s]} ${stageLabel(s)}</div>`).join('<div class="arrow">➔</div>')}</div>`
+    : '';
+  const charge = ownerChargeOf(cr);
+  document.getElementById('crModalBody').innerHTML = `
+    <h2>${t('crDetailsTitle')} — ${cr.crNumber}</h2>
+    <p><b>${proj?proj.name:''}</b> — <span class="status st-${cr.status}">${cr.status.replace(/_/g,' ')}</span>
+      ${cr.linkType==='Contractor_NCR' ? ` <span class="pill" style="background:#fdecea;color:#c82333;">${t('ncrBadge')}</span>`:''}</p>
+    ${stageFlow}
+    <p><b>${t('lblTitle')}:</b> ${cr.title}</p>
+    <p><b>${t('lblReason')}:</b> ${cr.reason.replace(/_/g,' ')} &nbsp; <b>${t('lblPriority')}:</b> ${cr.priority}</p>
+    <p><b>${t('lblRef')}:</b> ${cr.ref||'-'} &nbsp; <b>${t('lblContractBasis')}:</b> ${cr.contractBasis||'-'}</p>
+    <p><b>${t('lblDesc')}:</b> ${cr.description||'-'}</p>
+    <p><b>${t('lblTimeImpact')}:</b> ${cr.timeImpactDays} ${cr.affectsCriticalPath?'⚠️ Critical Path':''}</p>
+    <table><thead><tr><th>${t('ihDesc')}</th><th>${t('ihQty')}</th><th>${t('ihUnit')}</th><th>${t('ihCost')}</th><th>${t('ihOhp')}</th><th>${t('ihTotal')}</th></tr></thead>
+    <tbody>${itemsRows}</tbody></table>
+    <p class="total-line">${t('grossCost')}: $${cr.estimatedCost.toLocaleString()}
+      ${cr.creditMemo>0 ? ` · ${t('creditMemoLbl')}: -$${cr.creditMemo.toLocaleString()}`:''}
+      · <b>${t('netOwnerCharge')}: $${charge.toLocaleString()}</b></p>
+    ${(cr.risks && cr.risks.length) ? `<h3>${t('riskTitle')}</h3>
+    <table><thead><tr><th>${t('rhDesc')}</th><th>${t('rhProb')}</th><th>${t('rhImpact')}</th><th>${t('rhScore')}</th><th>${t('rhMitigation')}</th></tr></thead>
+    <tbody>${risksRows}</tbody></table>` : ''}
+    <p><b>${t('attachTitle')}:</b> ${cr.attachments.join(', ')||'-'}</p>
+    <p><b>${t('ipcNumber')}:</b> ${cr.ipc && cr.ipc.number ? cr.ipc.number : (lang==='ar'?'غير مرتبط':'Not linked')}</p>
+    <h3>${t('activityLog')}</h3>
+    ${logRows}
+    <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+      ${cr.status==='Approved' ? `<button class="btn btn-outline" onclick="closeCR('${cr.id}')">${t('closeBtn')}</button>`:''}
+      ${cr.status==='Closed' ? `<button class="btn btn-outline" onclick="printFinalSettlement('${cr.id}')">${t('settlementBtn')}</button>`:''}
+      <button class="btn btn-outline" onclick="verifyIntegrity('${cr.id}')">${t('verifyBtn')}</button>
+      <button class="btn btn-primary" onclick="printSingleCR('${cr.id}')">${t('print')}</button>
+    </div>`;
+  openModal('crModal');
+}
+
+/* ================== ARCHIVE ================== */
+function renderArchive(){
+  const search = (document.getElementById('archiveSearch')?document.getElementById('archiveSearch').value:'').toLowerCase();
+  const statusF = document.getElementById('archiveStatusFilter')?document.getElementById('archiveStatusFilter').value:'';
+  let crs = loadCRs().filter(c=>c.projectId===currentProjectId);
+  if(search) crs = crs.filter(c=>c.title.toLowerCase().includes(search) || c.crNumber.toLowerCase().includes(search));
+  if(statusF) crs = crs.filter(c=>c.status===statusF);
+  const tb = document.getElementById('archiveTable');
+  if(crs.length===0){ tb.innerHTML = `<tr><td colspan="7" class="empty">${t('noCR')}</td></tr>`; return; }
+  tb.innerHTML = crs.slice().reverse().map(cr=>`
+    <tr>
+      <td>${cr.crNumber}</td><td>${cr.title} ${cr.linkType==='Contractor_NCR'?`<span class="pill" style="background:#fdecea;color:#c82333;">${t('ncrBadge')}</span>`:''}</td>
+      <td>${cr.reason.replace(/_/g,' ')}</td>
+      <td>$${cr.estimatedCost.toLocaleString()}</td><td>${cr.timeImpactDays}</td>
+      <td><span class="status st-${cr.status}">${cr.status.replace(/_/g,' ')}</span></td>
+      <td class="row-actions">
+        <button class="btn btn-outline btn-sm" onclick="viewCR('${cr.id}')">${t('view')}</button>
+        <button class="btn btn-primary btn-sm" onclick="printSingleCR('${cr.id}')">${t('print')}</button>
+        ${cr.status==='Approved' ? `<button class="btn btn-green btn-sm" onclick="closeCR('${cr.id}')">${t('closeBtn')}</button>`:''}
+        ${cr.status==='Closed' ? `<button class="btn btn-outline btn-sm" onclick="printFinalSettlement('${cr.id}')">${t('settlementBtn')}</button>`:''}
+      </td>
+    </tr>`).join('');
+}
+function printSingleCR(id){
+  const cr = loadCRs().find(c=>c.id===id);
+  if(!cr) return;
+  const proj = loadProjects().find(p=>p.id===cr.projectId);
+  const w = window.open('', '_blank');
+  const charge = ownerChargeOf(cr);
+  const itemsRows = cr.items.map(i=>`<tr><td>${i.desc}</td><td>${i.qty}</td><td>${i.unit}</td><td>$${i.cost}</td><td>${i.ohp}%</td><td>$${i.total.toFixed(2)}</td></tr>`).join('');
+  const risksRows = (cr.risks||[]).map(r=>{
+    const lvl = riskLevel(r.score);
+    return `<tr><td>${r.desc}</td><td>${r.prob}</td><td>${r.impact}</td><td>${r.score} (${lang==='ar'?lvl.ar:lvl.en})</td><td>${r.mitigation||'-'}</td></tr>`;
+  }).join('');
+  const logRows = cr.approvalLog.map(l=>`<div>${l.action} — ${l.by} — ${new Date(l.date).toLocaleString()} ${l.comment?'— '+l.comment:''} ${l.hash?`<span style="color:#888;font-family:monospace;font-size:10px;"> [${l.hash.slice(0,12)}…]</span>`:''}</div>`).join('');
+  w.document.write(`<!DOCTYPE html><html dir="${lang==='ar'?'rtl':'ltr'}"><head><meta charset="UTF-8">
+    <title>${cr.crNumber}</title>
+    <style>
+      body{font-family:Tahoma,Arial,sans-serif;padding:30px;color:#1c2733;}
+      .header{text-align:center;border-bottom:3px solid #004085;padding-bottom:12px;margin-bottom:16px;}
+      table{width:100%;border-collapse:collapse;margin:14px 0;}
+      th,td{border:1px solid #ccc;padding:8px;text-align:${lang==='ar'?'right':'left'};font-size:13px;}
+      th{background:#004085;color:#fff;}
+      .status{padding:3px 10px;border-radius:16px;background:#e8f0fb;color:#004085;font-weight:bold;}
+      .sig{display:flex;justify-content:space-between;margin-top:40px;}
+      .sig div{width:30%;text-align:center;border-top:1px solid #333;padding-top:6px;font-size:12px;}
+    </style></head><body>
+    <div class="header">
+      <h2>${lang==='ar'?'تقرير أمر التغيير الرسمي':'Official Change Order Report'}</h2>
+      <p>COMS — Change Order Management System</p>
+    </div>
+    <p><b>${t('lblProject')}:</b> ${proj?proj.name:''} (${proj?proj.code:''})</p>
+    <p><b>${lang==='ar'?'رقم الطلب':'Request No.'}:</b> ${cr.crNumber} &nbsp; <b>${t('colStatus')}:</b> <span class="status">${cr.status.replace(/_/g,' ')}</span>
+      ${cr.linkType==='Contractor_NCR' ? ` <span class="status" style="background:#fdecea;color:#c82333;">${t('ncrBadge')}</span>`:''}</p>
+    <p><b>${t('lblTitle')}:</b> ${cr.title}</p>
+    <p><b>${t('lblReason')}:</b> ${cr.reason.replace(/_/g,' ')} &nbsp; <b>${t('lblPriority')}:</b> ${cr.priority}</p>
+    <p><b>${t('lblRef')}:</b> ${cr.ref||'-'} &nbsp; <b>${t('lblContractBasis')}:</b> ${cr.contractBasis||'-'}</p>
+    <p><b>${t('lblDesc')}:</b> ${cr.description||'-'}</p>
+    <p><b>${t('lblTimeImpact')}:</b> ${cr.timeImpactDays} ${cr.affectsCriticalPath? (lang==='ar'?'(يؤثر على المسار الحرج)':'(Affects Critical Path)'):''}</p>
+    <table><thead><tr><th>${t('ihDesc')}</th><th>${t('ihQty')}</th><th>${t('ihUnit')}</th><th>${t('ihCost')}</th><th>${t('ihOhp')}</th><th>${t('ihTotal')}</th></tr></thead>
+    <tbody>${itemsRows}</tbody></table>
+    <p style="font-weight:bold;font-size:16px;">${t('grossCost')}: $${cr.estimatedCost.toLocaleString()}
+      ${cr.creditMemo>0?` &nbsp;·&nbsp; ${t('creditMemoLbl')}: -$${cr.creditMemo.toLocaleString()}`:''}
+      &nbsp;·&nbsp; ${t('netOwnerCharge')}: $${charge.toLocaleString()}</p>
+    ${(cr.risks&&cr.risks.length) ? `<h3>${t('riskTitle')}</h3>
+    <table><thead><tr><th>${t('rhDesc')}</th><th>${t('rhProb')}</th><th>${t('rhImpact')}</th><th>${t('rhScore')}</th><th>${t('rhMitigation')}</th></tr></thead>
+    <tbody>${risksRows}</tbody></table>` : ''}
+    <p><b>${t('attachTitle')}:</b> ${cr.attachments.join(', ')||'-'}</p>
+    <p><b>${t('ipcNumber')}:</b> ${cr.ipc && cr.ipc.number ? cr.ipc.number : (lang==='ar'?'غير مرتبط':'Not linked')}</p>
+    <h3>${t('activityLog')}</h3>
+    ${logRows}
+    <div class="sig">
+      <div>${lang==='ar'?'توقيع المقاول':'Contractor Signature'}</div>
+      <div>${lang==='ar'?'توقيع الاستشاري':'Consultant Signature'}</div>
+      <div>${lang==='ar'?'توقيع المالك':'Client Signature'}</div>
+    </div>
+    <p style="text-align:center;margin-top:30px;font-size:11px;color:#666;">
+      ${lang==='ar'?'المهندس المسؤول: م. وائل علي عويس محمود — بناء للتطوير الاستراتيجي':'Engineer in Charge: Eng. Wael Ali Ewis Mahmoud — Bena Strategic Development'}
+    </p>
+    <script>window.onload=()=>window.print();<\/script>
+    </body></html>`);
+  w.document.close();
+}
+function printFinalSettlement(id){
+  const cr = loadCRs().find(c=>c.id===id);
+  if(!cr) return;
+  const proj = loadProjects().find(p=>p.id===cr.projectId);
+  const charge = ownerChargeOf(cr);
+  const w = window.open('', '_blank');
+  const waiverAr = `يقر الطرفان (المقاول والمالك) بأن أمر التغيير رقم ${cr.crNumber} قد تم تنفيذه واعتماده وصرف كامل قيمته المتفق عليها البالغة $${charge.toLocaleString()}، ولا يحق لأي من الطرفين المطالبة بأي حقوق أو تعويضات إضافية متعلقة بهذا البند مستقبلاً.`;
+  const waiverEn = `Both parties (Contractor and Owner) acknowledge that Change Order No. ${cr.crNumber} has been executed, approved, and fully paid at the agreed value of $${charge.toLocaleString()}. Neither party shall raise further claims or compensation related to this item in the future.`;
+  w.document.write(`<!DOCTYPE html><html dir="${lang==='ar'?'rtl':'ltr'}"><head><meta charset="UTF-8">
+    <title>${lang==='ar'?'شهادة تسوية نهائية':'Final Settlement'} — ${cr.crNumber}</title>
+    <style>
+      body{font-family:Tahoma,Arial,sans-serif;padding:40px;color:#1c2733;}
+      .header{text-align:center;border-bottom:3px solid #0c5460;padding-bottom:14px;margin-bottom:20px;}
+      .box{background:#d1ecf1;border:1px solid #0c5460;border-radius:8px;padding:16px;margin:16px 0;font-size:14px;line-height:1.8;}
+      .sig{display:flex;justify-content:space-between;margin-top:60px;}
+      .sig div{width:30%;text-align:center;border-top:1px solid #333;padding-top:6px;font-size:12px;}
+    </style></head><body>
+    <div class="header">
+      <h2>🔒 ${lang==='ar'?'شهادة التسوية النهائية':'Final Settlement & Release Certificate'}</h2>
+      <p>COMS — Change Order Management System</p>
+    </div>
+    <p><b>${t('lblProject')}:</b> ${proj?proj.name:''} (${proj?proj.code:''})</p>
+    <p><b>${lang==='ar'?'رقم أمر التغيير':'Change Order No.'}:</b> ${cr.crNumber} — ${cr.title}</p>
+    <p><b>${t('netOwnerCharge')}:</b> $${charge.toLocaleString()}</p>
+    <div class="box">${lang==='ar'?waiverAr:waiverEn}</div>
+    <div class="sig">
+      <div>${lang==='ar'?'توقيع المقاول':'Contractor Signature'}</div>
+      <div>${lang==='ar'?'توقيع الاستشاري':'Consultant Signature'}</div>
+      <div>${lang==='ar'?'توقيع المالك':'Client Signature'}</div>
+    </div>
+    <p style="text-align:center;margin-top:30px;font-size:11px;color:#666;">
+      ${lang==='ar'?'المهندس المسؤول: م. وائل علي عويس محمود — بناء للتطوير الاستراتيجي':'Engineer in Charge: Eng. Wael Ali Ewis Mahmoud — Bena Strategic Development'} — ${new Date().toLocaleDateString()}
+    </p>
+    <script>window.onload=()=>window.print();<\/script>
+    </body></html>`);
+  w.document.close();
+}
+function exportArchiveCSV(){
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId);
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  if(crs.length===0){ alert(t('noCR')); return; }
+  const headers = ['CR Number','Title','Reason','Priority','Status','Gross Cost','Credit Memo','Owner Charge','Time Impact Days','Link Type','IPC Number','Created By','Created At'];
+  const rows = crs.map(cr=>[
+    cr.crNumber, cr.title, cr.reason, cr.priority, cr.status,
+    cr.estimatedCost, cr.creditMemo||0, ownerChargeOf(cr),
+    cr.timeImpactDays, cr.linkType||'Owner_Entitled', (cr.ipc&&cr.ipc.number)||'', cr.createdBy, cr.createdAt
+  ]);
+  const csv = [headers, ...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `COMS_Archive_${proj?proj.code:'export'}_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ================== IPC LINKING ================== */
+function renderIPC(){
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId && c.status==='Approved');
+  const tb = document.getElementById('ipcTable');
+  tb.innerHTML = crs.length ? crs.map(cr=>`
+    <tr><td>${cr.crNumber}</td><td>${cr.title}</td><td>$${ownerChargeOf(cr).toLocaleString()}</td>
+    <td>${cr.ipc && cr.ipc.number ? cr.ipc.number : `<span style="color:var(--red)">${t('ipcUnlinked')}</span>`}</td>
+    <td>${cr.ipc && cr.ipc.date ? cr.ipc.date : '-'}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="linkIPC('${cr.id}')">${cr.ipc && cr.ipc.number ? t('ipcRelink') : t('ipcLink')}</button></td></tr>`).join('')
+    : `<tr><td colspan="6" class="empty">${t('noCR')}</td></tr>`;
+  const grouped = {};
+  crs.forEach(cr=>{
+    if(cr.ipc && cr.ipc.number){ grouped[cr.ipc.number] = (grouped[cr.ipc.number]||0) + ownerChargeOf(cr); }
+  });
+  const keys = Object.keys(grouped);
+  document.getElementById('ipcSummary').innerHTML = keys.length
+    ? `<table><thead><tr><th>${t('ipcNumber')}</th><th>${t('ipcTotalLinked')}</th></tr></thead><tbody>${
+        keys.map(k=>`<tr><td>${k}</td><td>$${grouped[k].toLocaleString()}</td></tr>`).join('')
+      }</tbody></table>`
+    : `<div class="empty">${t('noCR')}</div>`;
+}
+function linkIPC(id){
+  const crs = loadCRs();
+  const cr = crs.find(c=>c.id===id);
+  if(!cr) return;
+  const num = prompt(t('ipcPromptNumber'), (cr.ipc&&cr.ipc.number)||'');
+  if(num===null) return;
+  if(!num.trim()){ alert(t('ipcNumberRequired')); return; }
+  cr.ipc = { number: num.trim(), date: new Date().toISOString().slice(0,10) };
+  saveCRs(crs);
+  renderIPC();
+}
+function printArchiveReport(){
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId);
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  const w = window.open('', '_blank');
+  const rows = crs.map(cr=>`<tr><td>${cr.crNumber}</td><td>${cr.title}</td><td>${cr.reason.replace(/_/g,' ')}</td>
+    <td>$${cr.estimatedCost.toLocaleString()}</td><td>${cr.timeImpactDays}</td><td>${cr.status.replace(/_/g,' ')}</td></tr>`).join('');
+  w.document.write(`<!DOCTYPE html><html dir="${lang==='ar'?'rtl':'ltr'}"><head><meta charset="UTF-8"><title>Archive Report</title>
+    <style>body{font-family:Tahoma,Arial,sans-serif;padding:30px;} table{width:100%;border-collapse:collapse;}
+    th,td{border:1px solid #ccc;padding:8px;font-size:13px;text-align:${lang==='ar'?'right':'left'};} th{background:#004085;color:#fff;}
+    .header{text-align:center;border-bottom:3px solid #004085;padding-bottom:12px;margin-bottom:16px;}</style></head><body>
+    <div class="header"><h2>${lang==='ar'?'تقرير أوامر التغيير الشامل':'Comprehensive Change Order Report'}</h2>
+    <p>${proj?proj.name:''} — ${new Date().toLocaleDateString()}</p></div>
+    <table><thead><tr><th>${t('colCode')}</th><th>${t('colTitle')}</th><th>${t('colReason')}</th><th>${t('colCost')}</th><th>${t('colDays')}</th><th>${t('colStatus')}</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <script>window.onload=()=>window.print();<\/script></body></html>`);
+  w.document.close();
+}
+
+/* ================== DASHBOARD ================== */
+function renderDashboard(){
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId);
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  document.getElementById('kpiTotal').textContent = crs.length;
+  const approvedCost = crs.filter(c=>c.status==='Approved').reduce((s,c)=>s+c.approvedCost,0);
+  const approvedDays = crs.filter(c=>c.status==='Approved').reduce((s,c)=>s+c.approvedTimeDays,0);
+  const pending = crs.filter(c=>c.status==='Under_Review'||c.status==='Pending_Approval').length;
+  document.getElementById('kpiCost').textContent = '$'+approvedCost.toLocaleString();
+  document.getElementById('kpiDays').textContent = approvedDays;
+  document.getElementById('kpiPending').textContent = pending;
+  const agingCount = crs.filter(isAging).length;
+  document.getElementById('kpiAging').textContent = agingCount;
+  document.getElementById('kpiAgingCard').style.display = agingCount>0 ? 'block' : 'none';
+
+  const budgetBox = document.getElementById('budgetBox');
+  if(proj){
+    const currentBudget = proj.budget + approvedCost;
+    const pct = proj.budget ? Math.min(100, (approvedCost/proj.budget*100)) : 0;
+    budgetBox.innerHTML = `
+      <p><b>${t('originalBudget')}:</b> $${proj.budget.toLocaleString()}</p>
+      <p><b>${t('currentBudget')}:</b> $${currentBudget.toLocaleString()}</p>
+      <p><b>${t('contingencyRemain')}:</b> $${(proj.contingency||0).toLocaleString()}</p>
+      <div style="background:#eee;border-radius:8px;overflow:hidden;height:16px;margin-top:8px;">
+        <div style="background:${pct>10?'var(--red)':'var(--green)'};width:${pct}%;height:100%;"></div>
+      </div>
+      <small style="color:var(--gray)">${pct.toFixed(1)}% ${lang==='ar'?'من الميزانية الأصلية كتغييرات معتمدة':'of original budget as approved changes'}</small>`;
+  } else {
+    budgetBox.innerHTML = `<div class="empty">${t('selectProjectFirst')}</div>`;
+  }
+  renderErosionBox('erosionBanner');
+
+  // latest table
+  const latest = crs.slice().reverse().slice(0,5);
+  const lt = document.getElementById('latestTable');
+  lt.innerHTML = latest.length ? latest.map(cr=>`
+    <tr><td>${cr.crNumber}</td><td>${cr.title}</td><td>$${cr.estimatedCost.toLocaleString()}</td>
+    <td>${cr.timeImpactDays}</td><td><span class="status st-${cr.status}">${cr.status.replace(/_/g,' ')}</span></td>
+    <td><button class="btn btn-outline btn-sm" onclick="viewCR('${cr.id}')">${t('view')}</button></td></tr>`).join('')
+    : `<tr><td colspan="6" class="empty">${t('noCR')}</td></tr>`;
+
+  drawReasonChart(crs);
+}
+function drawReasonChart(crs){
+  const canvas = document.getElementById('reasonChart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth; canvas.height = 120;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const reasons = ['Client_Request','Design_Error_Omission','Unforeseen_Site_Condition','Regulatory_Change','Value_Engineering'];
+  const colors = ['#004085','#ff8f00','#1e7e34','#c82333','#6c757d'];
+  const counts = reasons.map(r=>crs.filter(c=>c.reason===r).length);
+  const max = Math.max(1, ...counts);
+  const barW = canvas.width / reasons.length - 14;
+  reasons.forEach((r,i)=>{
+    const h = (counts[i]/max) * 75;
+    const x = i*(barW+14)+10;
+    ctx.fillStyle = colors[i];
+    ctx.fillRect(x, 95-h, barW, h);
+    ctx.fillStyle = '#333';
+    ctx.font = '10px Tahoma';
+    ctx.textAlign = 'center';
+    ctx.fillText(counts[i], x+barW/2, 90-h-3);
+    ctx.save();
+    ctx.translate(x+barW/2, 110);
+    ctx.font='8px Tahoma';
+    ctx.fillText(r.split('_')[0], 0, 0);
+    ctx.restore();
+  });
+}
+
+/* ================== DOCS TAB (functional document log) ================== */
+const LS_DOCS = 'coms_documents_v1';
+const DOC_TYPES = ['NOC','SI','RFI','MAR','NCR','EOT','BOQ','MIN'];
+const DOC_TYPE_ICON = {NOC:'📝',SI:'📋',RFI:'❓',MAR:'🧾',NCR:'⚠️',EOT:'⏱️',BOQ:'💲',MIN:'🗣️'};
+let pendingDocPrefill = null;
+
+function loadDocs(){ return JSON.parse(localStorage.getItem(LS_DOCS) || '[]'); }
+function saveDocsList(d){ localStorage.setItem(LS_DOCS, JSON.stringify(d)); touchLastSaved(); }
+
+function openDocForm(presetType){
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  if(!proj){ alert(t('selectProjectFirst')); return; }
+  populateDocTypeSelect();
+  populateDocLinkedCRSelect();
+  document.getElementById('docType').value = presetType || 'NOC';
+  onDocTypeChange();
+  document.getElementById('docTitle').value='';
+  document.getElementById('docDesc').value='';
+  document.getElementById('docLinkedCR').value='';
+  document.getElementById('docDateField').value = new Date().toISOString().slice(0,10);
+  document.getElementById('docAmount').value=0;
+  document.getElementById('docDays').value=0;
+  document.getElementById('docChargeable').checked=false;
+  document.getElementById('docAttach').value='';
+  openModal('docFormModal');
+}
+function populateDocTypeSelect(){
+  const sel = document.getElementById('docType');
+  sel.innerHTML = DOC_TYPES.map(ty=>`<option value="${ty}">${DOC_TYPE_ICON[ty]} ${t('doc'+ty)}</option>`).join('');
+}
+function populateDocLinkedCRSelect(){
+  const crs = loadCRs().filter(c=>c.projectId===currentProjectId);
+  const sel = document.getElementById('docLinkedCR');
+  sel.innerHTML = `<option value="">${lang==='ar'?'— بدون —':'— None —'}</option>` +
+    crs.map(cr=>`<option value="${cr.id}">${cr.crNumber} — ${cr.title}</option>`).join('');
+}
+function onDocTypeChange(){
+  const ty = document.getElementById('docType').value;
+  document.getElementById('docNumber').value = nextDocNumber(ty);
+  document.getElementById('docChargeField').style.display = ty==='NCR' ? 'flex' : 'none';
+  document.getElementById('docDaysField').style.display = ty==='EOT' ? 'block' : 'none';
+}
+function nextDocNumber(ty){
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  const count = loadDocs().filter(d=>d.projectId===currentProjectId && d.type===ty).length + 1;
+  return `${ty}-${proj?proj.code:'PRJ'}-2026-${String(count).padStart(3,'0')}`;
+}
+function saveDocument(){
+  const proj = loadProjects().find(p=>p.id===currentProjectId);
+  if(!proj){ alert(t('selectProjectFirst')); return; }
+  const title = document.getElementById('docTitle').value.trim();
+  if(!title){ alert(t('fillRequired')); return; }
+  const type = document.getElementById('docType').value;
+  const doc = {
+    id:'DOC-'+Date.now(),
+    projectId: currentProjectId,
+    type,
+    docNumber: document.getElementById('docNumber').value,
+    title,
+    description: document.getElementById('docDesc').value,
+    linkedCrId: document.getElementById('docLinkedCR').value || null,
+    date: document.getElementById('docDateField').value || new Date().toISOString().slice(0,10),
+    amount: parseFloat(document.getElementById('docAmount').value)||0,
+    days: parseFloat(document.getElementById('docDays').value)||0,
+    chargeable: document.getElementById('docChargeable').checked,
+    attachments: document.getElementById('docAttach').value.split(',').map(s=>s.trim()).filter(Boolean),
+    createdBy: 'Eng. Wael Oweis',
+    createdAt: new Date().toISOString()
+  };
+  const docs = loadDocs();
+  docs.push(doc);
+  saveDocsList(docs);
+  closeModal('docFormModal');
+  renderDocuments();
+  alert(t('docSaved'));
+}
+function deleteDocument(id){
+  if(!confirm(t('docConfirmDelete'))) return;
+  saveDocsList(loadDocs().filter(d=>d.id!==id));
+  renderDocuments();
+}
+function convertDocToCR(id){
+  const doc = loadDocs().find(d=>d.id===id);
+  if(!doc) return;
+  pendingDocPrefill = doc;
+  showView('newcr');
+}
+function renderDocuments(){
+  const filter = document.getElementById('docTypeFilter') ? document.getElementById('docTypeFilter').value : '';
+  let docs = loadDocs().filter(d=>d.projectId===currentProjectId);
+  if(filter) docs = docs.filter(d=>d.type===filter);
+  const crs = loadCRs();
+  const tb = document.getElementById('documentsTable');
+  tb.innerHTML = docs.length ? docs.slice().reverse().map(d=>{
+    const cr = d.linkedCrId ? crs.find(c=>c.id===d.linkedCrId) : null;
+    return `<tr>
+      <td>${DOC_TYPE_ICON[d.type]} ${t('doc'+d.type)}</td>
+      <td>${d.docNumber}</td><td>${d.title}</td>
+      <td>${cr ? cr.crNumber : '-'}</td>
+      <td>${d.date}</td>
+      <td class="row-actions">
+        <button class="btn btn-outline btn-sm" onclick="printDocument('${d.id}')">${t('view')}</button>
+        ${(d.type==='RFI'||d.type==='NCR') && !d.linkedCrId ? `<button class="btn btn-primary btn-sm" onclick="convertDocToCR('${d.id}')">${t('docConvertBtn')}</button>`:''}
+        <button class="btn btn-red btn-sm" onclick="deleteDocument('${d.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="6" class="empty">${t('docNone')}</td></tr>`;
+}
+function printDocument(id){
+  const doc = loadDocs().find(d=>d.id===id);
+  if(!doc) return;
+  const proj = loadProjects().find(p=>p.id===doc.projectId);
+  const cr = doc.linkedCrId ? loadCRs().find(c=>c.id===doc.linkedCrId) : null;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html dir="${lang==='ar'?'rtl':'ltr'}"><head><meta charset="UTF-8">
+    <title>${doc.docNumber}</title>
+    <style>
+      body{font-family:Tahoma,Arial,sans-serif;padding:30px;color:#1c2733;}
+      .header{text-align:center;border-bottom:3px solid #004085;padding-bottom:12px;margin-bottom:16px;}
+      .sig{display:flex;justify-content:space-between;margin-top:50px;}
+      .sig div{width:30%;text-align:center;border-top:1px solid #333;padding-top:6px;font-size:12px;}
+    </style></head><body>
+    <div class="header"><h2>${DOC_TYPE_ICON[doc.type]} ${t('doc'+doc.type)}</h2><p>COMS — ${proj?proj.name:''}</p></div>
+    <p><b>${t('docColNumber')}:</b> ${doc.docNumber} &nbsp; <b>${t('docDate')}:</b> ${doc.date}</p>
+    <p><b>${t('lblTitle')}:</b> ${doc.title}</p>
+    <p><b>${t('lblDesc')}:</b> ${doc.description||'-'}</p>
+    ${cr ? `<p><b>${lang==='ar'?'مرتبط بأمر التغيير':'Linked Change Order'}:</b> ${cr.crNumber} — ${cr.title}</p>` : ''}
+    ${doc.amount>0 ? `<p><b>${t('docAmount')}:</b> $${doc.amount.toLocaleString()}</p>` : ''}
+    ${doc.days>0 ? `<p><b>${t('docDays')}:</b> ${doc.days}</p>` : ''}
+    ${doc.type==='NCR' ? `<p><b>${t('docChargeable')}:</b> ${doc.chargeable ? (lang==='ar'?'نعم':'Yes') : (lang==='ar'?'لا - خطأ المقاول':'No - Contractor Fault')}</p>` : ''}
+    <p><b>${t('attachTitle')}:</b> ${doc.attachments.join(', ')||'-'}</p>
+    <div class="sig">
+      <div>${lang==='ar'?'توقيع المُعِد':'Prepared By'}</div>
+      <div>${lang==='ar'?'توقيع الاستشاري':'Consultant'}</div>
+      <div>${lang==='ar'?'توقيع المالك':'Client'}</div>
+    </div>
+    <script>window.onload=()=>window.print();<\/script>
+    </body></html>`);
+  w.document.close();
+}
+function renderDocs(){
+  const docs = [
+    ['docNOC','docNOCd','📝','NOC'],['docSI','docSId','📋','SI'],['docRFI','docRFId','❓','RFI'],
+    ['docMAR','docMARd','🧾','MAR'],['docNCR','docNCRd','⚠️','NCR'],['docEOT','docEOTd','⏱️','EOT'],
+    ['docBOQ','docBOQd','💲','BOQ'],['docMIN','docMINd','🗣️','MIN'],
+    ['docIPC','docIPCd','💳',null],['docFSR','docFSRd','🔒',null],['docLL','docLLd','📚',null],['docDOA','docDOAd','🔑',null],
+  ];
+  document.getElementById('docsGrid').innerHTML = docs.map(([tt,dd,icon,type])=>`
+    <div class="doc-card"><h4>${icon} ${t(tt)}</h4><p>${t(dd)}</p>
+    ${type ? `<button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="openDocForm('${type}')">${t('docAddBtn')}</button>` : ''}
+    </div>`).join('');
+}
+
+/* ================== INIT ================== */
+function renderAll(){
+  renderProjectSelect();
+  renderDashboard();
+  renderApprovals();
+  renderArchive();
+  renderDocs();
+  renderDocuments();
+  renderLessons();
+  renderIPC();
+}
+/* ================== VOICE-TO-TEXT ================== */
+function startVoiceInput(targetId, btnId){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById(btnId);
+  if(!SpeechRecognition){ alert(t('voiceNotSupported')); return; }
+  const recog = new SpeechRecognition();
+  recog.lang = lang==='ar' ? 'ar-EG' : 'en-US';
+  recog.interimResults = false;
+  recog.maxAlternatives = 1;
+  if(btn){ btn.disabled = true; btn.textContent = '🔴 ' + t('voiceListening'); }
+  recog.onresult = (e)=>{
+    const transcript = e.results[0][0].transcript;
+    const field = document.getElementById(targetId);
+    if(field) field.value = field.value ? field.value + ' ' + transcript : transcript;
+  };
+  recog.onerror = ()=>{ alert(t('voiceError')); };
+  recog.onend = ()=>{ if(btn){ btn.disabled=false; btn.textContent = '🎙️ ' + t('voiceBtn'); } };
+  try{ recog.start(); }catch(e){ alert(t('voiceError')); if(btn){ btn.disabled=false; btn.textContent = '🎙️ ' + t('voiceBtn'); } }
+}
+
+/* ================== GEO-TAGGING ================== */
+function addGeoTag(targetInputId){
+  if(!navigator.geolocation){ alert(t('geoNotSupported')); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude, longitude} = pos.coords;
+    const tag = `GPS:${latitude.toFixed(5)},${longitude.toFixed(5)}@${new Date().toLocaleString(lang==='ar'?'ar-EG':'en-US')}`;
+    const field = document.getElementById(targetInputId);
+    if(field) field.value = field.value ? field.value + ', ' + tag : tag;
+  }, ()=>{ alert(t('geoError')); }, {enableHighAccuracy:true, timeout:10000});
+}
+
+/* ================== AUTO-SAVE INDICATOR & OFFLINE MODE ================== */
+function touchLastSaved(){
+  const el = document.getElementById('lastSavedIndicator');
+  if(!el) return;
+  const timeStr = new Date().toLocaleTimeString(lang==='ar'?'ar-EG':'en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  el.textContent = '🔒 ' + t('lastSaved') + ' ' + timeStr;
+}
+function updateOnlineStatus(){
+  const banner = document.getElementById('offlineBanner');
+  if(!banner) return;
+  if(!navigator.onLine){
+    banner.classList.remove('hidden');
+    banner.textContent = '📡 ' + t('offlineMsg');
+  } else {
+    banner.classList.add('hidden');
+  }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+/* ================== DARK MODE ================== */
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('coms_theme', theme);
+  const btn = document.getElementById('themeToggleBtn');
+  if(btn) btn.textContent = theme==='dark' ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current==='dark' ? 'light' : 'dark');
+}
+
+/* ================== BACKUP / RESTORE ================== */
+function exportBackup(){
+  const data = {
+    projects: loadProjects(),
+    changeRequests: loadCRs(),
+    documents: loadDocs(),
+    doa: loadDOA(),
+    exportedAt: new Date().toISOString(),
+    app: 'COMS'
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `COMS_Backup_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function importBackup(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!confirm(t('importConfirm'))){ input.value=''; return; }
+      if(Array.isArray(data.projects)) saveProjects(data.projects);
+      if(Array.isArray(data.changeRequests)) saveCRs(data.changeRequests);
+      if(Array.isArray(data.documents)) saveDocsList(data.documents);
+      if(data.doa) saveDOA(data.doa);
+      alert(t('importSuccess'));
+      currentProjectId = (data.projects && data.projects[0]) ? data.projects[0].id : currentProjectId;
+      localStorage.setItem('coms_current_project', currentProjectId||'');
+      closeModal('projectModal');
+      renderAll();
+    }catch(err){
+      alert(t('importError'));
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* ================== AGING ALERT ================== */
+const AGING_THRESHOLD_DAYS = 7;
+function daysSince(dateStr){
+  return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000*60*60*24));
+}
+function isAging(cr){
+  if(cr.status!=='Under_Review' || !cr.approvalLog || !cr.approvalLog.length) return false;
+  const lastDate = cr.approvalLog[cr.approvalLog.length-1].date;
+  return daysSince(lastDate) > AGING_THRESHOLD_DAYS;
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  applyTheme(localStorage.getItem('coms_theme') || 'light');
+  updateOnlineStatus();
+  setLang(lang);
+  renderAll();
+});
+</script>
+</body>
+</html>
