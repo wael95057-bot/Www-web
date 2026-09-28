@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منظومة التواصل | Communication Management</title>
+<style>
+:root{
+  --primary:#0b3d5c; --primary-light:#12588a; --accent:#c9973a;
+  --bg:#f4f6f9; --card:#ffffff; --text:#1b2733; --muted:#66768a;
+  --border:#e1e6ec; --ok:#1e8a4c; --warn:#c98a12; --danger:#c0392b;
+  --radius:10px;
+}
+[data-theme="dark"]{
+  --bg:#101820; --card:#182432; --text:#e7edf3; --muted:#93a3b5;
+  --border:#2b3949; --primary:#1a5f8c; --primary-light:#2478b3;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);transition:.2s;}
+html[dir="rtl"] body{font-family:'Segoe UI',Tahoma,'Cairo',Arial,sans-serif;}
+header.topbar{
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .logo{width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:bold;color:#0b3d5c;font-size:18px;}
+.brand h1{font-size:16px;margin:0;line-height:1.3;}
+.brand small{display:block;font-size:11px;opacity:.85;font-weight:normal;}
+.topbar-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+button, select, input{font-family:inherit;}
+.btn{background:#fff;color:var(--primary);border:none;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
+.btn.ghost{background:rgba(255,255,255,.15);color:#fff;}
+.btn.small{padding:4px 8px;font-size:12px;}
+.btn.danger{background:var(--danger);color:#fff;}
+.btn.ok{background:var(--ok);color:#fff;}
+.btn.warn{background:var(--warn);color:#fff;}
+.btn:hover{filter:brightness(1.08);}
+.hamburger{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;}
+.layout{display:flex;min-height:calc(100vh - 66px);}
+nav.side{
+  width:220px;background:var(--card);border-inline-end:1px solid var(--border);
+  padding:14px 8px;flex-shrink:0;transition:.25s;
+}
+nav.side button.navitem{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:inherit;background:none;border:none;
+  color:var(--text);padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;margin-bottom:2px;
+}
+nav.side button.navitem.active{background:var(--primary);color:#fff;}
+nav.side button.navitem:hover:not(.active){background:var(--border);}
+main{flex:1;padding:18px;max-width:1200px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+.card h2{margin-top:0;font-size:16px;color:var(--primary-light);border-bottom:1px solid var(--border);padding-bottom:8px;}
+.grid{display:grid;gap:12px;}
+.grid.cols-2{grid-template-columns:1fr 1fr;}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:800px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:13px;margin-bottom:10px;
+}
+textarea{min-height:80px;resize:vertical;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th,td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:start;vertical-align:top;}
+th{background:var(--bg);color:var(--muted);font-size:11.5px;text-transform:uppercase;}
+tr:hover td{background:rgba(0,0,0,.02);}
+.badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block;white-space:nowrap;}
+.badge.ok{background:#d7f3e1;color:var(--ok);}
+.badge.warn{background:#fbecd0;color:var(--warn);}
+.badge.danger{background:#fbdedb;color:var(--danger);}
+.badge.info{background:#dbeafe;color:#1d4ed8;}
+[data-theme="dark"] .badge.ok{background:#12351f;}
+[data-theme="dark"] .badge.warn{background:#3a2a0c;}
+[data-theme="dark"] .badge.danger{background:#3a1512;}
+[data-theme="dark"] .badge.info{background:#0e2540;}
+.kpi{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:var(--radius);background:var(--card);border:1px solid var(--border);}
+.kpi .num{font-size:26px;font-weight:800;color:var(--primary-light);}
+.kpi .lbl{font-size:12px;color:var(--muted);}
+.actions-row{display:flex;gap:6px;flex-wrap:wrap;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:60;}
+.overlay.show{display:block;}
+.modal{position:fixed;top:50%;inset-inline-start:50%;transform:translate(-50%,-50%);background:var(--card);
+  border-radius:var(--radius);padding:20px;z-index:70;display:none;max-width:600px;width:92%;max-height:85vh;overflow:auto;
+  border:1px solid var(--border);box-shadow:0 10px 40px rgba(0,0,0,.3);}
+.modal.show{display:block;}
+html[dir="rtl"] .modal{transform:translate(50%,-50%);}
+.letterhead{border:2px solid var(--primary);border-radius:8px;padding:16px;background:#fff;color:#111;}
+.letterhead pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.7;}
+.small-muted{font-size:11px;color:var(--muted);}
+.tag{display:inline-block;background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:11px;margin-inline-end:4px;}
+select.lang-select{width:auto;margin:0;padding:6px 8px;}
+.project-select{width:auto;margin:0;padding:6px 8px;max-width:180px;}
+footer.foot{text-align:center;padding:14px;color:var(--muted);font-size:11.5px;}
+@media(max-width:900px){
+  nav.side{position:fixed;top:0;bottom:0;inset-inline-start:0;z-index:65;transform:translateX(-110%);width:230px;box-shadow:4px 0 20px rgba(0,0,0,.2);}
+  html[dir="rtl"] nav.side{transform:translateX(110%);}
+  nav.side.open{transform:translateX(0);}
+  html[dir="rtl"] nav.side.open{transform:translateX(0);}
+  .hamburger{display:block;}
+  .grid.cols-4{grid-template-columns:repeat(2,1fr);}
+}
+@media print{
+  header.topbar,nav.side,.no-print,.hamburger{display:none !important;}
+  main{padding:0;max-width:100%;}
+  body{background:#fff;}
+  .card{border:none;box-shadow:none;}
+  .print-only-section{display:block !important;}
+  .tab-content{display:none !important;}
+  .tab-content.printing{display:block !important;}
+}
+</style>
+</head>
+<body data-theme="light">
+<div class="overlay" id="overlay"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <button class="hamburger" id="hamBtn">☰</button>
+    <div class="logo">SL</div>
+    <div>
+      <h1 id="appTitle" data-i18n="appTitle">منظومة التواصل</h1>
+      <small id="appSub" data-i18n="appSub">منظومة إدارة التواصل والمراسلات — إشراف: المهندس/ وائل عويس</small>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <select class="project-select" id="projectSelect" title="المشروع الحالي"></select>
+    <button class="btn small" id="newProjectBtn">+ <span data-i18n="newProject">مشروع جديد</span></button>
+    <select class="lang-select" id="langSelect">
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+    </select>
+    <button class="btn ghost small" id="themeBtn">🌙</button>
+    <button class="btn ghost small" id="exportBtn" data-i18n="exportJson">تصدير</button>
+    <button class="btn ghost small" id="importBtn" data-i18n="importJson">استيراد</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="side" id="sideNav">
+    <button class="navitem active" data-tab="dashboard">📊 <span data-i18n="nav_dashboard">لوحة التحكم</span></button>
+    <button class="navitem" data-tab="stakeholders">🗂️ <span data-i18n="nav_stakeholders">أصحاب المصلحة</span></button>
+    <button class="navitem" data-tab="commplan">🔀 <span data-i18n="nav_commplan">خطة التواصل</span></button>
+    <button class="navitem" data-tab="correspondence">✉️ <span data-i18n="nav_correspondence">سجل المراسلات</span></button>
+    <button class="navitem" data-tab="meetings">📝 <span data-i18n="nav_meetings">محاضر الاجتماعات</span></button>
+    <button class="navitem" data-tab="raci">🧭 <span data-i18n="nav_raci">مصفوفة RACI</span></button>
+    <button class="navitem" data-tab="claims">⚖️ <span data-i18n="nav_claims">مسودات المطالبات</span></button>
+    <button class="navitem" data-tab="templates">📄 <span data-i18n="nav_templates">القوالب الجاهزة</span></button>
+    <button class="navitem" data-tab="reports">📈 <span data-i18n="nav_reports">التقارير والطباعة</span></button>
+    <button class="navitem" data-tab="cloud">☁️ <span data-i18n="nav_cloud">النسخ السحابي</span></button>
+    <button class="navitem" data-tab="settings">⚙️ <span data-i18n="nav_settings">الإعدادات</span></button>
+    <button class="navitem" data-tab="archive">🗄️ <span data-i18n="nav_archive">أرشيف المشاريع</span></button>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section class="tab-content" data-tab="dashboard">
+      <div class="grid cols-4" id="kpiRow"></div>
+      <div class="card">
+        <h2 data-i18n="dash_overdue">المراسلات المتأخرة والعاجلة</h2>
+        <table id="dashOverdueTable"><thead></thead><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h2 data-i18n="dash_actions">آخر المهام المفتوحة من الاجتماعات</h2>
+        <table id="dashActionsTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- STAKEHOLDERS -->
+    <section class="tab-content" data-tab="stakeholders" style="display:none">
+      <div class="card">
+        <h2 data-i18n="sh_add">إضافة صاحب مصلحة</h2>
+        <div class="grid cols-3">
+          <div><label data-i18n="sh_name">الاسم / الجهة</label><input type="text" id="shName"></div>
+          <div><label data-i18n="sh_role">الصفة</label>
+            <select id="shRole">
+              <option value="owner" data-i18n="role_owner">المالك</option>
+              <option value="consultant" data-i18n="role_consultant">الاستشاري</option>
+              <option value="contractor" data-i18n="role_contractor">المقاول الرئيسي</option>
+              <option value="subcontractor" data-i18n="role_sub">مقاول باطن</option>
+              <option value="gov" data-i18n="role_gov">جهة حكومية</option>
+              <option value="other" data-i18n="role_other">أخرى</option>
+            </select>
+          </div>
+          <div><label data-i18n="sh_contact">جهة الاتصال / البريد</label><input type="text" id="shContact"></div>
+          <div><label data-i18n="sh_influence">مستوى التأثير</label>
+            <select id="shInfluence">
+              <option value="high" data-i18n="lvl_high">مرتفع</option>
+              <option value="medium" data-i18n="lvl_medium">متوسط</option>
+              <option value="low" data-i18n="lvl_low">منخفض</option>
+            </select>
+          </div>
+          <div><label data-i18n="sh_interest">مستوى الاهتمام</label>
+            <select id="shInterest">
+              <option value="high" data-i18n="lvl_high">مرتفع</option>
+              <option value="medium" data-i18n="lvl_medium">متوسط</option>
+              <option value="low" data-i18n="lvl_low">منخفض</option>
+            </select>
+          </div>
+          <div><label data-i18n="sh_notes">ملاحظات</label><input type="text" id="shNotes"></div>
+        </div>
+        <button class="btn ok" id="shAddBtn" data-i18n="btn_add">إضافة</button>
+      </div>
+      <div class="card">
+        <h2 data-i18n="sh_list">مصفوفة أصحاب المصلحة</h2>
+        <table id="shTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- COMM PLAN -->
+    <section class="tab-content" data-tab="commplan" style="display:none">
+      <div class="card">
+        <h2 data-i18n="cp_add">إضافة بند في خطة التواصل</h2>
+        <div class="grid cols-3">
+          <div><label data-i18n="cp_doc">نوع المستند/التقرير</label><input type="text" id="cpDoc"></div>
+          <div><label data-i18n="cp_from">المرسل</label><input type="text" id="cpFrom"></div>
+          <div><label data-i18n="cp_to">المستلم</label><input type="text" id="cpTo"></div>
+          <div><label data-i18n="cp_channel">الوسيلة المعتمدة</label><input type="text" id="cpChannel"></div>
+          <div><label data-i18n="cp_freq">التواتر / الموعد</label><input type="text" id="cpFreq"></div>
+        </div>
+        <button class="btn ok" id="cpAddBtn" data-i18n="btn_add">إضافة</button>
+      </div>
+      <div class="card">
+        <h2 data-i18n="cp_list">مصفوفة تدفق الاتصالات</h2>
+        <table id="cpTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- CORRESPONDENCE -->
+    <section class="tab-content" data-tab="correspondence" style="display:none">
+      <div class="card">
+        <h2 data-i18n="cr_add">تسجيل مراسلة جديدة</h2>
+        <div class="grid cols-3">
+          <div><label data-i18n="cr_ref">الرقم المرجعي</label><input type="text" id="crRef"></div>
+          <div><label data-i18n="cr_type">النوع</label>
+            <select id="crType">
+              <option value="in" data-i18n="cr_in">وارد</option>
+              <option value="out" data-i18n="cr_out">صادر</option>
+            </select>
+          </div>
+          <div><label data-i18n="cr_category">التصنيف</label>
+            <select id="crCategory">
+              <option value="rfi" data-i18n="cat_rfi">طلب معلومات RFI</option>
+              <option value="submittal" data-i18n="cat_submittal">اعتماد مواد/مخططات</option>
+              <option value="letter" data-i18n="cat_letter">خطاب رسمي</option>
+              <option value="notice" data-i18n="cat_notice">إشعار تعاقدي</option>
+              <option value="other" data-i18n="cat_other">أخرى</option>
+            </select>
+          </div>
+          <div><label data-i18n="cr_sender">المرسل</label><input type="text" id="crSender"></div>
+          <div><label data-i18n="cr_recipient">المستلم</label><input type="text" id="crRecipient"></div>
+          <div><label data-i18n="cr_date">تاريخ المراسلة</label><input type="date" id="crDate"></div>
+          <div><label data-i18n="cr_deadline">مهلة الرد (أيام)</label><input type="number" id="crDeadline" value="14"></div>
+          <div><label data-i18n="cr_priority">الأولوية</label>
+            <select id="crPriority">
+              <option value="normal" data-i18n="pr_normal">عادية</option>
+              <option value="high" data-i18n="pr_high">عالية</option>
+              <option value="urgent" data-i18n="pr_urgent">عاجلة</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1"><label data-i18n="cr_subject">الموضوع</label><input type="text" id="crSubject"></div>
+        </div>
+        <button class="btn ok" id="crAddBtn" data-i18n="btn_add">إضافة</button>
+      </div>
+      <div class="card">
+        <h2 data-i18n="cr_list">سجل الصادر والوارد <span class="small-muted" data-i18n="cr_auto">(المهلة والحالة تُحسب آلياً)</span></h2>
+        <table id="crTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- MEETINGS -->
+    <section class="tab-content" data-tab="meetings" style="display:none">
+      <div class="card">
+        <h2 data-i18n="mt_add">محضر اجتماع جديد</h2>
+        <div class="grid cols-3">
+          <div><label data-i18n="mt_title">عنوان الاجتماع</label><input type="text" id="mtTitle"></div>
+          <div><label data-i18n="mt_date">التاريخ</label><input type="date" id="mtDate"></div>
+          <div><label data-i18n="mt_place">المكان</label><input type="text" id="mtPlace"></div>
+        </div>
+        <label data-i18n="mt_attendees">الحضور (افصل بفاصلة)</label><input type="text" id="mtAttendees">
+        <label data-i18n="mt_discussion">أهم النقاط المناقشة</label><textarea id="mtDiscussion"></textarea>
+        <h3 style="font-size:13px" data-i18n="mt_actions_title">بنود القرار / المهام</h3>
+        <div class="grid cols-4">
+          <input type="text" id="actTask" placeholder="المهمة" data-i18n-ph="ph_task">
+          <input type="text" id="actOwner" placeholder="المسؤول" data-i18n-ph="ph_owner">
+          <input type="date" id="actDue">
+          <button class="btn" id="actAddBtn" data-i18n="btn_addRow">إضافة بند</button>
+        </div>
+        <table id="actDraftTable"><thead></thead><tbody></tbody></table>
+        <button class="btn ok" id="mtSaveBtn" style="margin-top:10px" data-i18n="btn_save">حفظ المحضر</button>
+      </div>
+      <div class="card">
+        <h2 data-i18n="mt_list">سجل المحاضر</h2>
+        <div id="mtList"></div>
+      </div>
+    </section>
+
+    <!-- RACI -->
+    <section class="tab-content" data-tab="raci" style="display:none">
+      <div class="card">
+        <h2 data-i18n="raci_add">إضافة نشاط لمصفوفة الصلاحيات</h2>
+        <div class="grid cols-4">
+          <input type="text" id="raciActivity" placeholder="النشاط" data-i18n-ph="ph_activity">
+          <input type="text" id="raciR" placeholder="R - المسؤول التنفيذي" data-i18n-ph="ph_r">
+          <input type="text" id="raciA" placeholder="A - المعتمد" data-i18n-ph="ph_a">
+          <input type="text" id="raciC" placeholder="C - يُستشار" data-i18n-ph="ph_c">
+          <input type="text" id="raciI" placeholder="I - يُخطر" data-i18n-ph="ph_i">
+        </div>
+        <button class="btn ok" id="raciAddBtn" data-i18n="btn_add">إضافة</button>
+      </div>
+      <div class="card">
+        <h2 data-i18n="raci_list">مصفوفة RACI</h2>
+        <table id="raciTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- CLAIMS -->
+    <section class="tab-content" data-tab="claims" style="display:none">
+      <div class="card">
+        <h2 data-i18n="cl_info">مسودات المطالبات الزمنية/المالية</h2>
+        <p class="small-muted" data-i18n="cl_desc">تُنشأ تلقائياً عند تحويل مراسلة متأخرة من سجل المراسلات (زر "تحويل لمطالبة").</p>
+        <table id="clTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- TEMPLATES -->
+    <section class="tab-content" data-tab="templates" style="display:none">
+      <div class="card">
+        <h2 data-i18n="tpl_letter">قالب خطاب رسمي / رد فني</h2>
+        <div class="grid cols-3">
+          <input type="text" id="tplTo" placeholder="إلى" data-i18n-ph="ph_to">
+          <input type="text" id="tplSubject" placeholder="الموضوع" data-i18n-ph="ph_subject">
+          <input type="text" id="tplRefLetter" placeholder="رقم/تاريخ الخطاب المشار إليه" data-i18n-ph="ph_refletter">
+          <input type="number" id="tplDays" placeholder="عدد الأيام" data-i18n-ph="ph_days" value="7">
+        </div>
+        <button class="btn" id="tplGenBtn" data-i18n="btn_generate">توليد الخطاب</button>
+        <div class="letterhead" id="tplLetterOut" style="display:none;margin-top:10px"></div>
+        <button class="btn no-print" id="tplPrintBtn" style="display:none;margin-top:8px" data-i18n="btn_print">طباعة / حفظ PDF</button>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="tab-content" data-tab="reports" style="display:none">
+      <div class="card">
+        <h2 data-i18n="rp_kpi">مؤشرات أداء التواصل (KPIs)</h2>
+        <div class="grid cols-4" id="rpKpiRow"></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="rp_final">التقرير الختامي للأرشيف</h2>
+        <p class="small-muted" data-i18n="rp_final_desc">يجمع كافة السجلات (المراسلات، الاجتماعات، RACI) في تقرير واحد جاهز للطباعة.</p>
+        <button class="btn ok" id="rpPrintAllBtn" data-i18n="btn_print_final">طباعة التقرير الختامي</button>
+      </div>
+    </section>
+
+    <!-- CLOUD -->
+    <section class="tab-content" data-tab="cloud" style="display:none">
+      <div class="card">
+        <h2 data-i18n="cloud_title">النسخ الاحتياطي السحابي (Supabase)</h2>
+        <p class="small-muted" data-i18n="cloud_desc">أنشئ جدولاً باسم comm_backups بالأعمدة (id text primary key, payload jsonb, updated_at timestamptz) وفعّل RLS بسياسة allow-all، ثم أدخل بياناتك أدناه.</p>
+        <div class="grid cols-3">
+          <input type="text" id="sbUrl" placeholder="Supabase URL">
+          <input type="text" id="sbKey" placeholder="Anon Key">
+          <input type="text" id="sbId" placeholder="Record ID (مثلاً project-1)">
+        </div>
+        <div class="actions-row">
+          <button class="btn ok" id="sbPush" data-i18n="btn_push">رفع نسخة للسحابة</button>
+          <button class="btn" id="sbPull" data-i18n="btn_pull">استرجاع من السحابة</button>
+        </div>
+        <p class="small-muted" id="sbStatus"></p>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="tab-content" data-tab="settings" style="display:none">
+      <div class="card">
+        <h2 data-i18n="set_title">إعدادات عامة</h2>
+        <label data-i18n="set_project_name">اسم المشروع الحالي</label>
+        <input type="text" id="settingsProjectName">
+        <label data-i18n="set_sla">مهلة الرد الافتراضية (أيام)</label>
+        <input type="number" id="settingsDefaultSla" value="14">
+        <button class="btn ok" id="settingsSaveBtn" data-i18n="btn_save">حفظ</button>
+      </div>
+      <div class="card">
+        <h2 data-i18n="set_danger">إدارة البيانات</h2>
+        <button class="btn danger" id="clearProjectBtn" data-i18n="btn_clear_project">تفريغ بيانات هذا المشروع</button>
+      </div>
+    </section>
+
+    <!-- ARCHIVE -->
+    <section class="tab-content" data-tab="archive" style="display:none">
+      <div class="card">
+        <h2 data-i18n="ar_title">أرشيف المشاريع</h2>
+        <table id="archiveTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal"><div id="modalBody"></div></div>
+
+<footer class="foot">منظومة التواصل — © <span id="yearNow"></span> — <span data-i18n="footer_sup">إشراف وإدارة: المهندس/ وائل عويس</span></footer>
+
+<script>
+/* ============ i18n dictionary ============ */
+const DICT = {
+ appTitle:{ar:"منظومة التواصل",en:"Stakeholder Smart-Link"},
+ appSub:{ar:"منظومة إدارة التواصل والمراسلات — إشراف: المهندس/ وائل عويس",en:"Communication Management System — Supervised by Eng. Wael Oweis"},
+ newProject:{ar:"مشروع جديد",en:"New Project"},
+ exportJson:{ar:"تصدير",en:"Export"},
+ importJson:{ar:"استيراد",en:"Import"},
+ nav_dashboard:{ar:"لوحة التحكم",en:"Dashboard"},
+ nav_stakeholders:{ar:"أصحاب المصلحة",en:"Stakeholders"},
+ nav_commplan:{ar:"خطة التواصل",en:"Communication Plan"},
+ nav_correspondence:{ar:"سجل المراسلات",en:"Correspondence Log"},
+ nav_meetings:{ar:"محاضر الاجتماعات",en:"Meeting Minutes"},
+ nav_raci:{ar:"مصفوفة RACI",en:"RACI Matrix"},
+ nav_claims:{ar:"مسودات المطالبات",en:"Claim Drafts"},
+ nav_templates:{ar:"القوالب الجاهزة",en:"Templates"},
+ nav_reports:{ar:"التقارير والطباعة",en:"Reports & Print"},
+ nav_cloud:{ar:"النسخ السحابي",en:"Cloud Backup"},
+ nav_settings:{ar:"الإعدادات",en:"Settings"},
+ nav_archive:{ar:"أرشيف المشاريع",en:"Project Archive"},
+ dash_overdue:{ar:"المراسلات المتأخرة والعاجلة",en:"Overdue & Urgent Correspondence"},
+ dash_actions:{ar:"آخر المهام المفتوحة من الاجتماعات",en:"Open Action Items from Meetings"},
+ sh_add:{ar:"إضافة صاحب مصلحة",en:"Add Stakeholder"},
+ sh_name:{ar:"الاسم / الجهة",en:"Name / Entity"},
+ sh_role:{ar:"الصفة",en:"Role"},
+ sh_contact:{ar:"جهة الاتصال / البريد",en:"Contact / Email"},
+ sh_influence:{ar:"مستوى التأثير",en:"Influence Level"},
+ sh_interest:{ar:"مستوى الاهتمام",en:"Interest Level"},
+ sh_notes:{ar:"ملاحظات",en:"Notes"},
+ sh_list:{ar:"مصفوفة أصحاب المصلحة",en:"Stakeholder Matrix"},
+ role_owner:{ar:"المالك",en:"Owner"}, role_consultant:{ar:"الاستشاري",en:"Consultant"},
+ role_contractor:{ar:"المقاول الرئيسي",en:"Main Contractor"}, role_sub:{ar:"مقاول باطن",en:"Subcontractor"},
+ role_gov:{ar:"جهة حكومية",en:"Government"}, role_other:{ar:"أخرى",en:"Other"},
+ lvl_high:{ar:"مرتفع",en:"High"}, lvl_medium:{ar:"متوسط",en:"Medium"}, lvl_low:{ar:"منخفض",en:"Low"},
+ cp_add:{ar:"إضافة بند في خطة التواصل",en:"Add Communication Plan Item"},
+ cp_doc:{ar:"نوع المستند/التقرير",en:"Document/Report Type"},
+ cp_from:{ar:"المرسل",en:"From"}, cp_to:{ar:"المستلم",en:"To"},
+ cp_channel:{ar:"الوسيلة المعتمدة",en:"Channel"}, cp_freq:{ar:"التواتر / الموعد",en:"Frequency"},
+ cp_list:{ar:"مصفوفة تدفق الاتصالات",en:"Communication Flow Matrix"},
+ cr_add:{ar:"تسجيل مراسلة جديدة",en:"Log New Correspondence"},
+ cr_ref:{ar:"الرقم المرجعي",en:"Reference No."}, cr_type:{ar:"النوع",en:"Type"},
+ cr_in:{ar:"وارد",en:"Inbound"}, cr_out:{ar:"صادر",en:"Outbound"},
+ cr_category:{ar:"التصنيف",en:"Category"},
+ cat_rfi:{ar:"طلب معلومات RFI",en:"RFI"}, cat_submittal:{ar:"اعتماد مواد/مخططات",en:"Submittal"},
+ cat_letter:{ar:"خطاب رسمي",en:"Formal Letter"}, cat_notice:{ar:"إشعار تعاقدي",en:"Contractual Notice"},
+ cat_other:{ar:"أخرى",en:"Other"},
+ cr_sender:{ar:"المرسل",en:"Sender"}, cr_recipient:{ar:"المستلم",en:"Recipient"},
+ cr_date:{ar:"تاريخ المراسلة",en:"Date"}, cr_deadline:{ar:"مهلة الرد (أيام)",en:"Response SLA (days)"},
+ cr_priority:{ar:"الأولوية",en:"Priority"},
+ pr_normal:{ar:"عادية",en:"Normal"}, pr_high:{ar:"عالية",en:"High"}, pr_urgent:{ar:"عاجلة",en:"Urgent"},
+ cr_subject:{ar:"الموضوع",en:"Subject"},
+ cr_list:{ar:"سجل الصادر والوارد",en:"Transmittals & Correspondence Log"},
+ cr_auto:{ar:"(المهلة والحالة تُحسب آلياً)",en:"(due date & status auto-calculated)"},
+ mt_add:{ar:"محضر اجتماع جديد",en:"New Meeting Minutes"},
+ mt_title:{ar:"عنوان الاجتماع",en:"Meeting Title"}, mt_date:{ar:"التاريخ",en:"Date"},
+ mt_place:{ar:"المكان",en:"Location"}, mt_attendees:{ar:"الحضور (افصل بفاصلة)",en:"Attendees (comma separated)"},
+ mt_discussion:{ar:"أهم النقاط المناقشة",en:"Discussion Summary"},
+ mt_actions_title:{ar:"بنود القرار / المهام",en:"Decisions / Action Items"},
+ btn_addRow:{ar:"إضافة بند",en:"Add Row"}, btn_save:{ar:"حفظ",en:"Save"},
+ mt_list:{ar:"سجل المحاضر",en:"Minutes Log"},
+ raci_add:{ar:"إضافة نشاط لمصفوفة الصلاحيات",en:"Add RACI Activity"},
+ raci_list:{ar:"مصفوفة RACI",en:"RACI Matrix"},
+ cl_info:{ar:"مسودات المطالبات الزمنية/المالية",en:"Delay / Financial Claim Drafts"},
+ cl_desc:{ar:"تُنشأ تلقائياً عند تحويل مراسلة متأخرة من سجل المراسلات (زر \"تحويل لمطالبة\").",en:"Auto-generated by converting an overdue item from the Correspondence Log (\"Convert to Claim\")."},
+ tpl_letter:{ar:"قالب خطاب رسمي / رد فني",en:"Formal Letter Template"},
+ btn_generate:{ar:"توليد الخطاب",en:"Generate Letter"}, btn_print:{ar:"طباعة / حفظ PDF",en:"Print / Save PDF"},
+ rp_kpi:{ar:"مؤشرات أداء التواصل (KPIs)",en:"Communication KPIs"},
+ rp_final:{ar:"التقرير الختامي للأرشيف",en:"Final Archive Report"},
+ rp_final_desc:{ar:"يجمع كافة السجلات (المراسلات، الاجتماعات، RACI) في تقرير واحد جاهز للطباعة.",en:"Combines all records (correspondence, meetings, RACI) into one printable report."},
+ btn_print_final:{ar:"طباعة التقرير الختامي",en:"Print Final Report"},
+ cloud_title:{ar:"النسخ الاحتياطي السحابي (Supabase)",en:"Cloud Backup (Supabase)"},
+ cloud_desc:{ar:"أنشئ جدولاً باسم comm_backups بالأعمدة (id text primary key, payload jsonb, updated_at timestamptz) وفعّل RLS بسياسة allow-all، ثم أدخل بياناتك أدناه.",en:"Create a table named comm_backups with columns (id text primary key, payload jsonb, updated_at timestamptz), enable RLS with an allow-all policy, then enter your details below."},
+ btn_push:{ar:"رفع نسخة للسحابة",en:"Push to Cloud"}, btn_pull:{ar:"استرجاع من السحابة",en:"Pull from Cloud"},
+ set_title:{ar:"إعدادات عامة",en:"General Settings"},
+ set_project_name:{ar:"اسم المشروع الحالي",en:"Current Project Name"},
+ set_sla:{ar:"مهلة الرد الافتراضية (أيام)",en:"Default Response SLA (days)"},
+ set_danger:{ar:"إدارة البيانات",en:"Data Management"},
+ btn_clear_project:{ar:"تفريغ بيانات هذا المشروع",en:"Clear This Project's Data"},
+ ar_title:{ar:"أرشيف المشاريع",en:"Project Archive"},
+ footer_sup:{ar:"إشراف وإدارة: المهندس/ وائل عويس",en:"Supervised & Managed by Eng. Wael Oweis"},
+ btn_add:{ar:"إضافة",en:"Add"},
+ col_status:{ar:"الحالة",en:"Status"}, col_due:{ar:"تاريخ الاستحقاق",en:"Due Date"},
+ col_action:{ar:"إجراء",en:"Action"}, col_delete:{ar:"حذف",en:"Delete"},
+ status_ok:{ar:"في الموعد",en:"On Track"}, status_warn:{ar:"اقترب الموعد",en:"Due Soon"}, status_over:{ar:"متأخر",en:"Overdue"},
+ btn_convert_claim:{ar:"تحويل لمطالبة",en:"Convert to Claim"},
+ kpi_total:{ar:"إجمالي المراسلات",en:"Total Correspondence"},
+ kpi_overdue:{ar:"متأخرة",en:"Overdue"}, kpi_ontime:{ar:"في الموعد",en:"On Time"},
+ kpi_meetings:{ar:"عدد المحاضر",en:"Meetings Logged"},
+ ph_task:{ar:"المهمة",en:"Task"}, ph_owner:{ar:"المسؤول",en:"Owner"},
+ ph_activity:{ar:"النشاط",en:"Activity"},
+ ph_r:{ar:"R - المسؤول التنفيذي",en:"R - Responsible"}, ph_a:{ar:"A - المعتمد",en:"A - Accountable"},
+ ph_c:{ar:"C - يُستشار",en:"C - Consulted"}, ph_i:{ar:"I - يُخطر",en:"I - Informed"},
+ ph_to:{ar:"إلى",en:"To"}, ph_subject:{ar:"الموضوع",en:"Subject"},
+ ph_refletter:{ar:"رقم/تاريخ الخطاب المشار إليه",en:"Referenced letter no./date"},
+ ph_days:{ar:"عدد الأيام",en:"Number of days"},
+};
+let LANG = localStorage.getItem('ssl_lang') || 'ar';
+function t(key){ return (DICT[key] && DICT[key][LANG]) || key; }
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = LANG==='ar' ? 'rtl':'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent = t(el.getAttribute('data-i18n'));});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder = t(el.getAttribute('data-i18n-ph'));});
+}
+
+/* ============ storage / project model ============ */
+const LS_PROJECTS = 'ssl_projects_v1';
+const LS_CURRENT = 'ssl_current_v1';
+
+function loadAll(){
+  try{ return JSON.parse(localStorage.getItem(LS_PROJECTS)) || {}; }catch(e){ return {}; }
+}
+function saveAll(all){ localStorage.setItem(LS_PROJECTS, JSON.stringify(all)); }
+
+function blankProject(name){
+  return {
+    id: 'p_'+Date.now(), name: name || 'مشروع جديد', createdAt: new Date().toISOString(),
+    defaultSla: 14,
+    stakeholders: [], commplan: [], correspondence: [], meetings: [], raci: [], claims: []
+  };
+}
+
+let ALL = loadAll();
+let CURRENT_ID = localStorage.getItem(LS_CURRENT);
+if(!CURRENT_ID || !ALL[CURRENT_ID]){
+  const p = blankProject('مشروع تجريبي / Demo Project');
+  ALL[p.id] = p; CURRENT_ID = p.id;
+  saveAll(ALL); localStorage.setItem(LS_CURRENT, CURRENT_ID);
+}
+function cur(){ return ALL[CURRENT_ID]; }
+function persist(){ saveAll(ALL); }
+
+/* ============ project selector ============ */
+function renderProjectSelect(){
+  const sel = document.getElementById('projectSelect');
+  sel.innerHTML = '';
+  Object.values(ALL).forEach(p=>{
+    const o = document.createElement('option');
+    o.value = p.id; o.textContent = p.name;
+    if(p.id===CURRENT_ID) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+document.getElementById('projectSelect').addEventListener('change', e=>{
+  CURRENT_ID = e.target.value; localStorage.setItem(LS_CURRENT, CURRENT_ID);
+  renderAllTabs();
+});
+document.getElementById('newProjectBtn').addEventListener('click', ()=>{
+  const name = prompt(LANG==='ar'?'اسم المشروع الجديد:':'New project name:');
+  if(!name) return;
+  const p = blankProject(name);
+  ALL[p.id]=p; CURRENT_ID=p.id; persist(); localStorage.setItem(LS_CURRENT,CURRENT_ID);
+  renderProjectSelect(); renderAllTabs();
+});
+
+/* ============ language / theme ============ */
+document.getElementById('langSelect').value = LANG;
+document.getElementById('langSelect').addEventListener('change', e=>{
+  LANG = e.target.value; localStorage.setItem('ssl_lang', LANG);
+  applyI18n(); renderAllTabs();
+});
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(th){
+  document.body.setAttribute('data-theme', th);
+  themeBtn.textContent = th==='dark' ? '☀️' : '🌙';
+  localStorage.setItem('ssl_theme', th);
+}
+applyTheme(localStorage.getItem('ssl_theme') || 'light');
+themeBtn.addEventListener('click', ()=>{
+  applyTheme(document.body.getAttribute('data-theme')==='dark' ? 'light':'dark');
+});
+
+/* ============ nav / tabs ============ */
+document.querySelectorAll('.navitem').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.navitem').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('.tab-content').forEach(sec=>{
+      sec.style.display = sec.getAttribute('data-tab')===tab ? 'block':'none';
+    });
+    document.getElementById('sideNav').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+    if(tab==='settings'){
+      document.getElementById('settingsProjectName').value = cur().name;
+      document.getElementById('settingsDefaultSla').value = cur().defaultSla;
+    }
+  });
+});
+const hamBtn = document.getElementById('hamBtn');
+hamBtn.addEventListener('click', ()=>{
+  document.getElementById('sideNav').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+});
+document.getElementById('overlay').addEventListener('click', ()=>{
+  document.getElementById('sideNav').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+});
+
+/* ============ helpers ============ */
+function uid(prefix){ return prefix+'_'+Math.random().toString(36).slice(2,9); }
+function fmtDate(d){ return d || ''; }
+function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+function computeStatus(item){
+  if(item.responded) return 'ok';
+  const due = new Date(item.dueDate);
+  const now = new Date();
+  const diff = daysBetween(now, due);
+  if(diff < 0) return 'over';
+  if(diff <= 2) return 'warn';
+  return 'ok';
+}
+function statusBadge(status){
+  const map = {ok:['ok', LANG==='ar'?'في الموعد':'On Track'], warn:['warn', LANG==='ar'?'اقترب الموعد':'Due Soon'], over:['danger', LANG==='ar'?'متأخر':'Overdue']};
+  const [cls,label] = map[status];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+function el(tag, attrs, html){
+  const e = document.createElement(tag);
+  if(attrs) Object.entries(attrs).forEach(([k,v])=> e.setAttribute(k,v));
+  if(html!==undefined) e.innerHTML = html;
+  return e;
+}
+
+/* ============ STAKEHOLDERS ============ */
+document.getElementById('shAddBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('shName').value.trim();
+  if(!name) return alert(LANG==='ar'?'أدخل الاسم':'Enter a name');
+  cur().stakeholders.push({
+    id: uid('sh'), name,
+    role: document.getElementById('shRole').value,
+    contact: document.getElementById('shContact').value,
+    influence: document.getElementById('shInfluence').value,
+    interest: document.getElementById('shInterest').value,
+    notes: document.getElementById('shNotes').value
+  });
+  document.getElementById('shName').value=''; document.getElementById('shContact').value=''; document.getElementById('shNotes').value='';
+  persist(); renderStakeholders();
+});
+function renderStakeholders(){
+  const tb = document.querySelector('#shTable tbody');
+  const th = document.querySelector('#shTable thead');
+  th.innerHTML = `<tr><th>${t('sh_name')}</th><th>${t('sh_role')}</th><th>${t('sh_contact')}</th><th>${t('sh_influence')}</th><th>${t('sh_interest')}</th><th>${t('sh_notes')}</th><th>${t('col_delete')}</th></tr>`;
+  tb.innerHTML='';
+  cur().stakeholders.forEach(s=>{
+    const tr = el('tr',{},`<td>${s.name}</td><td>${t('role_'+({owner:'owner',consultant:'consultant',contractor:'contractor',subcontractor:'sub',gov:'gov',other:'other'}[s.role]||'other'))}</td><td>${s.contact||''}</td><td>${t('lvl_'+s.influence)}</td><td>${t('lvl_'+s.interest)}</td><td>${s.notes||''}</td><td><button class="btn small danger" data-id="${s.id}">×</button></td>`);
+    tr.querySelector('button').addEventListener('click', ()=>{
+      cur().stakeholders = cur().stakeholders.filter(x=>x.id!==s.id); persist(); renderStakeholders();
+    });
+    tb.appendChild(tr);
+  });
+}
+
+/* ============ COMM PLAN ============ */
+document.getElementById('cpAddBtn').addEventListener('click', ()=>{
+  const doc = document.getElementById('cpDoc').value.trim();
+  if(!doc) return;
+  cur().commplan.push({
+    id: uid('cp'), doc,
+    from: document.getElementById('cpFrom').value,
+    to: document.getElementById('cpTo').value,
+    channel: document.getElementById('cpChannel').value,
+    freq: document.getElementById('cpFreq').value
+  });
+  ['cpDoc','cpFrom','cpTo','cpChannel','cpFreq'].forEach(i=>document.getElementById(i).value='');
+  persist(); renderCommPlan();
+});
+function renderCommPlan(){
+  const tb = document.querySelector('#cpTable tbody');
+  const th = document.querySelector('#cpTable thead');
+  th.innerHTML = `<tr><th>${t('cp_doc')}</th><th>${t('cp_from')}</th><th>${t('cp_to')}</th><th>${t('cp_channel')}</th><th>${t('cp_freq')}</th><th>${t('col_delete')}</th></tr>`;
+  tb.innerHTML='';
+  cur().commplan.forEach(c=>{
+    const tr = el('tr',{},`<td>${c.doc}</td><td>${c.from||''}</td><td>${c.to||''}</td><td>${c.channel||''}</td><td>${c.freq||''}</td><td><button class="btn small danger" data-id="${c.id}">×</button></td>`);
+    tr.querySelector('button').addEventListener('click', ()=>{ cur().commplan = cur().commplan.filter(x=>x.id!==c.id); persist(); renderCommPlan(); });
+    tb.appendChild(tr);
+  });
+}
+
+/* ============ CORRESPONDENCE ============ */
+document.getElementById('crAddBtn').addEventListener('click', ()=>{
+  const subject = document.getElementById('crSubject').value.trim();
+  const date = document.getElementById('crDate').value || new Date().toISOString().slice(0,10);
+  const deadline = parseInt(document.getElementById('crDeadline').value)||14;
+  if(!subject) return alert(LANG==='ar'?'أدخل الموضوع':'Enter subject');
+  const due = new Date(date); due.setDate(due.getDate()+deadline);
+  cur().correspondence.push({
+    id: uid('cr'),
+    ref: document.getElementById('crRef').value || ('CORR-'+Date.now()),
+    type: document.getElementById('crType').value,
+    category: document.getElementById('crCategory').value,
+    sender: document.getElementById('crSender').value,
+    recipient: document.getElementById('crRecipient').value,
+    date, deadlineDays: deadline,
+    dueDate: due.toISOString().slice(0,10),
+    priority: document.getElementById('crPriority').value,
+    subject, responded:false
+  });
+  ['crRef','crSender','crRecipient','crSubject'].forEach(i=>document.getElementById(i).value='');
+  persist(); renderCorrespondence(); renderDashboard();
+});
+function renderCorrespondence(){
+  const tb = document.querySelector('#crTable tbody');
+  const th = document.querySelector('#crTable thead');
+  th.innerHTML = `<tr><th>${t('cr_ref')}</th><th>${t('cr_type')}</th><th>${t('cr_category')}</th><th>${t('cr_subject')}</th><th>${t('cr_date')}</th><th>${t('col_due')}</th><th>${t('col_status')}</th><th>${t('col_action')}</th></tr>`;
+  tb.innerHTML='';
+  cur().correspondence.forEach(c=>{
+    const status = computeStatus(c);
+    const tr = el('tr',{},`<td>${c.ref}</td><td>${t(c.type==='in'?'cr_in':'cr_out')}</td><td>${t('cat_'+c.category)}</td><td>${c.subject}</td><td>${c.date}</td><td>${c.dueDate}</td><td>${statusBadge(status)}</td><td class="actions-row"></td>`);
+    const actionsTd = tr.querySelector('td:last-child');
+    if(!c.responded){
+      const doneBtn = el('button',{class:'btn small ok'}, LANG==='ar'?'تم الرد':'Mark Replied');
+      doneBtn.addEventListener('click', ()=>{ c.responded=true; persist(); renderCorrespondence(); renderDashboard(); });
+      actionsTd.appendChild(doneBtn);
+    }
+    if(status==='over' && !c.claimed){
+      const claimBtn = el('button',{class:'btn small warn'}, t('btn_convert_claim'));
+      claimBtn.addEventListener('click', ()=>{
+        c.claimed = true;
+        cur().claims.push({
+          id: uid('cl'), sourceRef: c.ref, subject: c.subject,
+          createdAt: new Date().toISOString().slice(0,10),
+          days: daysBetween(c.dueDate, new Date().toISOString().slice(0,10)),
+          notes: ''
+        });
+        persist(); renderCorrespondence(); renderClaims();
+        alert(LANG==='ar'?'تم إنشاء مسودة مطالبة، راجع تبويب "مسودات المطالبات".':'Claim draft created — see the Claim Drafts tab.');
+      });
+      actionsTd.appendChild(claimBtn);
+    }
+    const delBtn = el('button',{class:'btn small danger'},'×');
+    delBtn.addEventListener('click', ()=>{ cur().correspondence = cur().correspondence.filter(x=>x.id!==c.id); persist(); renderCorrespondence(); renderDashboard(); });
+    actionsTd.appendChild(delBtn);
+    tb.appendChild(tr);
+  });
+}
+
+/* ============ MEETINGS ============ */
+let draftActions = [];
+document.getElementById('actAddBtn').addEventListener('click', ()=>{
+  const task = document.getElementById('actTask').value.trim();
+  if(!task) return;
+  draftActions.push({task, owner:document.getElementById('actOwner').value, due:document.getElementById('actDue').value, done:false});
+  document.getElementById('actTask').value=''; document.getElementById('actOwner').value=''; document.getElementById('actDue').value='';
+  renderDraftActions();
+});
+function renderDraftActions(){
+  const tb = document.querySelector('#actDraftTable tbody');
+  const th = document.querySelector('#actDraftTable thead');
+  th.innerHTML = `<tr><th>${LANG==='ar'?'المهمة':'Task'}</th><th>${LANG==='ar'?'المسؤول':'Owner'}</th><th>${t('col_due')}</th></tr>`;
+  tb.innerHTML='';
+  draftActions.forEach(a=>{ tb.appendChild(el('tr',{},`<td>${a.task}</td><td>${a.owner||''}</td><td>${a.due||''}</td>`)); });
+}
+document.getElementById('mtSaveBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('mtTitle').value.trim();
+  if(!title) return alert(LANG==='ar'?'أدخل عنوان الاجتماع':'Enter meeting title');
+  cur().meetings.push({
+    id: uid('mt'), title,
+    date: document.getElementById('mtDate').value || new Date().toISOString().slice(0,10),
+    place: document.getElementById('mtPlace').value,
+    attendees: document.getElementById('mtAttendees').value,
+    discussion: document.getElementById('mtDiscussion').value,
+    actions: draftActions
+  });
+  draftActions = [];
+  ['mtTitle','mtPlace','mtAttendees','mtDiscussion'].forEach(i=>document.getElementById(i).value='');
+  renderDraftActions();
+  persist(); renderMeetings(); renderDashboard();
+});
+function renderMeetings(){
+  const wrap = document.getElementById('mtList'); wrap.innerHTML='';
+  cur().meetings.slice().reverse().forEach(m=>{
+    const box = el('div',{class:'card', style:'background:var(--bg)'});
+    box.innerHTML = `<b>${m.title}</b> — ${m.date} — ${m.place||''}<br>
+      <span class="small-muted">${LANG==='ar'?'الحضور':'Attendees'}: ${m.attendees||'-'}</span>
+      <p>${(m.discussion||'').replace(/\n/g,'<br>')}</p>
+      <table><thead><tr><th>${LANG==='ar'?'المهمة':'Task'}</th><th>${LANG==='ar'?'المسؤول':'Owner'}</th><th>${t('col_due')}</th><th></th></tr></thead><tbody>
+      ${m.actions.map((a,i)=>`<tr><td>${a.task}</td><td>${a.owner||''}</td><td>${a.due||''}</td><td><label><input type="checkbox" data-mid="${m.id}" data-idx="${i}" ${a.done?'checked':''}> ${LANG==='ar'?'منجز':'Done'}</label></td></tr>`).join('')}
+      </tbody></table>
+      <div class="actions-row" style="margin-top:6px">
+        <button class="btn small" data-print="${m.id}">${t('btn_print')}</button>
+        <button class="btn small danger" data-del="${m.id}">${t('col_delete')}</button>
+      </div>`;
+    box.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+      cb.addEventListener('change', e=>{
+        const mid = e.target.getAttribute('data-mid'), idx = e.target.getAttribute('data-idx');
+        const mm = cur().meetings.find(x=>x.id===mid);
+        mm.actions[idx].done = e.target.checked; persist(); renderDashboard();
+      });
+    });
+    box.querySelector('[data-print]').addEventListener('click', ()=> printMeeting(m));
+    box.querySelector('[data-del]').addEventListener('click', ()=>{
+      cur().meetings = cur().meetings.filter(x=>x.id!==m.id); persist(); renderMeetings(); renderDashboard();
+    });
+    wrap.appendChild(box);
+  });
+}
+function printMeeting(m){
+  const w = window.open('', '_blank');
+  w.document.write(`<html dir="${LANG==='ar'?'rtl':'ltr'}"><head><meta charset="utf-8"><title>MOM</title>
+  <style>body{font-family:Arial,sans-serif;padding:30px}h1{color:#0b3d5c}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}</style></head><body>
+  <h1>${cur().name} — ${m.title}</h1>
+  <p><b>${t('mt_date')}:</b> ${m.date} &nbsp; <b>${t('mt_place')}:</b> ${m.place||''}</p>
+  <p><b>${t('mt_attendees')}:</b> ${m.attendees||''}</p>
+  <p>${(m.discussion||'').replace(/\n/g,'<br>')}</p>
+  <table><thead><tr><th>#</th><th>${LANG==='ar'?'المهمة':'Task'}</th><th>${LANG==='ar'?'المسؤول':'Owner'}</th><th>${t('col_due')}</th></tr></thead><tbody>
+  ${m.actions.map((a,i)=>`<tr><td>${i+1}</td><td>${a.task}</td><td>${a.owner||''}</td><td>${a.due||''}</td></tr>`).join('')}
+  </tbody></table>
+  <p style="margin-top:40px">${t('footer_sup')}</p>
+  </body></html>`);
+  w.document.close(); w.print();
+}
+
+/* ============ RACI ============ */
+document.getElementById('raciAddBtn').addEventListener('click', ()=>{
+  const activity = document.getElementById('raciActivity').value.trim();
+  if(!activity) return;
+  cur().raci.push({id:uid('ra'), activity,
+    r:document.getElementById('raciR').value, a:document.getElementById('raciA').value,
+    c:document.getElementById('raciC').value, i:document.getElementById('raciI').value});
+  ['raciActivity','raciR','raciA','raciC','raciI'].forEach(x=>document.getElementById(x).value='');
+  persist(); renderRaci();
+});
+function renderRaci(){
+  const tb = document.querySelector('#raciTable tbody');
+  const th = document.querySelector('#raciTable thead');
+  th.innerHTML = `<tr><th>${LANG==='ar'?'النشاط':'Activity'}</th><th>R</th><th>A</th><th>C</th><th>I</th><th>${t('col_delete')}</th></tr>`;
+  tb.innerHTML='';
+  cur().raci.forEach(r=>{
+    const tr = el('tr',{},`<td>${r.activity}</td><td>${r.r||''}</td><td>${r.a||''}</td><td>${r.c||''}</td><td>${r.i||''}</td><td><button class="btn small danger" data-id="${r.id}">×</button></td>`);
+    tr.querySelector('button').addEventListener('click', ()=>{ cur().raci = cur().raci.filter(x=>x.id!==r.id); persist(); renderRaci(); });
+    tb.appendChild(tr);
+  });
+}
+
+/* ============ CLAIMS ============ */
+function renderClaims(){
+  const tb = document.querySelector('#clTable tbody');
+  const th = document.querySelector('#clTable thead');
+  th.innerHTML = `<tr><th>${t('cr_ref')}</th><th>${t('cr_subject')}</th><th>${LANG==='ar'?'تاريخ الإنشاء':'Created'}</th><th>${LANG==='ar'?'أيام التأخير':'Delay Days'}</th><th>${LANG==='ar'?'ملاحظات':'Notes'}</th><th>${t('col_action')}</th></tr>`;
+  tb.innerHTML='';
+  cur().claims.forEach(c=>{
+    const tr = el('tr',{},`<td>${c.sourceRef}</td><td>${c.subject}</td><td>${c.createdAt}</td><td>${c.days}</td><td><input type="text" value="${c.notes||''}" data-id="${c.id}" class="claimNote"></td><td><button class="btn small" data-print="${c.id}">${t('btn_print')}</button> <button class="btn small danger" data-del="${c.id}">×</button></td>`);
+    tr.querySelector('.claimNote').addEventListener('input', e=>{ c.notes = e.target.value; persist(); });
+    tr.querySelector('[data-print]').addEventListener('click', ()=> printClaim(c));
+    tr.querySelector('[data-del]').addEventListener('click', ()=>{ cur().claims = cur().claims.filter(x=>x.id!==c.id); persist(); renderClaims(); });
+    tb.appendChild(tr);
+  });
+}
+function printClaim(c){
+  const w = window.open('', '_blank');
+  w.document.write(`<html dir="${LANG==='ar'?'rtl':'ltr'}"><head><meta charset="utf-8"><title>Claim Draft</title>
+  <style>body{font-family:Arial,sans-serif;padding:30px;line-height:1.8}</style></head><body>
+  <h2>${LANG==='ar'?'مسودة إشعار تأخير / مطالبة':'Delay Notice / Claim Draft'}</h2>
+  <p>${LANG==='ar'?'المشروع':'Project'}: ${cur().name}</p>
+  <p>${LANG==='ar'?'المرجع':'Reference'}: ${c.sourceRef}</p>
+  <p>${LANG==='ar'?'الموضوع':'Subject'}: ${c.subject}</p>
+  <p>${LANG==='ar'?'عدد أيام التأخير عن المهلة التعاقدية':'Delay days beyond contractual SLA'}: ${c.days}</p>
+  <p>${LANG==='ar'?'ملاحظات':'Notes'}: ${c.notes||'-'}</p>
+  <p style="margin-top:50px">${t('footer_sup')}</p>
+  </body></html>`);
+  w.document.close(); w.print();
+}
+
+/* ============ TEMPLATES ============ */
+document.getElementById('tplGenBtn').addEventListener('click', ()=>{
+  const to = document.getElementById('tplTo').value || (LANG==='ar'?'[اسم الجهة]':'[Recipient]');
+  const subject = document.getElementById('tplSubject').value || (LANG==='ar'?'[الموضوع]':'[Subject]');
+  const ref = document.getElementById('tplRefLetter').value || '[.......]';
+  const days = document.getElementById('tplDays').value || 7;
+  const today = new Date().toISOString().slice(0,10);
+  const out = document.getElementById('tplLetterOut');
+  const bodyAr = `====================================================================
+منظومة إدارة التواصل والمراسلات (Stakeholder Smart-Link)
+إشراف وإدارة: المهندس/ وائل عويس
+التاريخ: ${today}
+====================================================================
+
+إلى السادة: ${to}
+المحترمين،،
+
+الموضوع: ${subject}
+
+بالإشارة إلى خطابكم رقم ${ref}، وحرصاً منا على الالتزام بالبرنامج الزمني المعتمد للمشروع، نود إفادتكم بالتالي:
+
+1. تم استلام المرفقات ودراستها فنياً من قبل الفريق الهندسي المختص.
+2. نؤكد أن أي تأخير في الرد بعد المهلة التعاقدية قد يترتب عليه آثار زمنية ومالية سيتم إثباتها في سجل المطالبات.
+3. نرجو التكرم بسرعة الاعتماد خلال مدة أقصاها ${days} يوماً من تاريخه.
+
+ولكم جزيل الشكر والتقدير،،
+--------------------------------------------------------------------
+المسؤول المعتمد: المهندس/ وائل عويس
+====================================================================`;
+  const bodyEn = `====================================================================
+Stakeholder Smart-Link — Communication Management System
+Supervised by: Eng. Wael Oweis
+Date: ${today}
+====================================================================
+
+To: ${to}
+
+Subject: ${subject}
+
+With reference to your letter No. ${ref}, and in line with our commitment to the approved project schedule, please note the following:
+
+1. The attachments have been received and reviewed technically by the engineering team.
+2. Any delay in response beyond the contractual SLA may result in time/cost impacts to be recorded in the claims register.
+3. Kindly expedite your approval within ${days} days from the date hereof.
+
+Regards,
+--------------------------------------------------------------------
+Approved by: Eng. Wael Oweis
+====================================================================`;
+  out.style.display='block';
+  out.innerHTML = `<pre>${LANG==='ar'?bodyAr:bodyEn}</pre>`;
+  document.getElementById('tplPrintBtn').style.display='inline-block';
+});
+document.getElementById('tplPrintBtn').addEventListener('click', ()=>{
+  const w = window.open('','_blank');
+  w.document.write(`<html dir="${LANG==='ar'?'rtl':'ltr'}"><head><meta charset="utf-8"></head><body style="font-family:Arial;padding:30px">${document.getElementById('tplLetterOut').innerHTML}</body></html>`);
+  w.document.close(); w.print();
+});
+
+/* ============ DASHBOARD / REPORTS ============ */
+function renderDashboard(){
+  const c = cur();
+  const total = c.correspondence.length;
+  const overdue = c.correspondence.filter(x=>computeStatus(x)==='over').length;
+  const ontime = c.correspondence.filter(x=>computeStatus(x)==='ok').length;
+  const kpis = [
+    [t('kpi_total'), total],
+    [t('kpi_overdue'), overdue],
+    [t('kpi_ontime'), ontime],
+    [t('kpi_meetings'), c.meetings.length]
+  ];
+  const row = document.getElementById('kpiRow'); row.innerHTML='';
+  kpis.forEach(([lbl,num])=>{ row.appendChild(el('div',{class:'kpi'}, `<div class="num">${num}</div><div class="lbl">${lbl}</div>`)); });
+
+  const rpRow = document.getElementById('rpKpiRow'); if(rpRow){ rpRow.innerHTML = row.innerHTML; }
+
+  const th1 = document.querySelector('#dashOverdueTable thead');
+  const tb1 = document.querySelector('#dashOverdueTable tbody');
+  th1.innerHTML = `<tr><th>${t('cr_ref')}</th><th>${t('cr_subject')}</th><th>${t('col_due')}</th><th>${t('col_status')}</th></tr>`;
+  tb1.innerHTML='';
+  c.correspondence.filter(x=>{const s=computeStatus(x); return s==='over'||s==='warn';}).forEach(x=>{
+    tb1.appendChild(el('tr',{},`<td>${x.ref}</td><td>${x.subject}</td><td>${x.dueDate}</td><td>${statusBadge(computeStatus(x))}</td>`));
+  });
+
+  const th2 = document.querySelector('#dashActionsTable thead');
+  const tb2 = document.querySelector('#dashActionsTable tbody');
+  th2.innerHTML = `<tr><th>${LANG==='ar'?'المهمة':'Task'}</th><th>${LANG==='ar'?'المسؤول':'Owner'}</th><th>${t('col_due')}</th><th>${LANG==='ar'?'الاجتماع':'Meeting'}</th></tr>`;
+  tb2.innerHTML='';
+  c.meetings.forEach(m=> m.actions.filter(a=>!a.done).forEach(a=>{
+    tb2.appendChild(el('tr',{},`<td>${a.task}</td><td>${a.owner||''}</td><td>${a.due||''}</td><td>${m.title}</td>`));
+  }));
+}
+document.getElementById('rpPrintAllBtn').addEventListener('click', ()=>{
+  const c = cur();
+  const w = window.open('','_blank');
+  let html = `<html dir="${LANG==='ar'?'rtl':'ltr'}"><head><meta charset="utf-8"><title>Final Report</title>
+  <style>body{font-family:Arial;padding:30px}h1{color:#0b3d5c}table{width:100%;border-collapse:collapse;margin-bottom:20px}td,th{border:1px solid #ccc;padding:5px;font-size:12px}</style></head><body>
+  <h1>${c.name} — ${LANG==='ar'?'التقرير الختامي':'Final Report'}</h1>
+  <p>${t('footer_sup')} — ${new Date().toISOString().slice(0,10)}</p>
+  <h2>${t('cr_list')}</h2>
+  <table><tr><th>${t('cr_ref')}</th><th>${t('cr_subject')}</th><th>${t('cr_date')}</th><th>${t('col_due')}</th><th>${t('col_status')}</th></tr>
+  ${c.correspondence.map(x=>`<tr><td>${x.ref}</td><td>${x.subject}</td><td>${x.date}</td><td>${x.dueDate}</td><td>${x.responded?t('status_ok'):(computeStatus(x)==='over'?t('status_over'):t('status_warn'))}</td></tr>`).join('')}
+  </table>
+  <h2>${t('mt_list')}</h2>
+  ${c.meetings.map(m=>`<h3>${m.title} — ${m.date}</h3><p>${(m.discussion||'').replace(/\n/g,'<br>')}</p>`).join('')}
+  <h2>${t('raci_list')}</h2>
+  <table><tr><th>Activity</th><th>R</th><th>A</th><th>C</th><th>I</th></tr>
+  ${c.raci.map(r=>`<tr><td>${r.activity}</td><td>${r.r||''}</td><td>${r.a||''}</td><td>${r.c||''}</td><td>${r.i||''}</td></tr>`).join('')}
+  </table>
+  </body></html>`;
+  w.document.write(html); w.document.close(); w.print();
+});
+
+/* ============ CLOUD (Supabase) ============ */
+document.getElementById('sbPush').addEventListener('click', async ()=>{
+  const url = document.getElementById('sbUrl').value.trim();
+  const key = document.getElementById('sbKey').value.trim();
+  const id = document.getElementById('sbId').value.trim() || cur().id;
+  const status = document.getElementById('sbStatus');
+  if(!url||!key) return status.textContent = LANG==='ar'?'أدخل بيانات Supabase':'Enter Supabase details';
+  try{
+    const res = await fetch(`${url}/rest/v1/comm_backups`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+key,'Prefer':'resolution=merge-duplicates'},
+      body: JSON.stringify({id, payload: cur(), updated_at: new Date().toISOString()})
+    });
+    status.textContent = res.ok ? (LANG==='ar'?'تم الرفع بنجاح ✅':'Uploaded successfully ✅') : (LANG==='ar'?'فشل الرفع':'Upload failed');
+  }catch(e){ status.textContent = (LANG==='ar'?'خطأ: ':'Error: ')+e.message; }
+});
+document.getElementById('sbPull').addEventListener('click', async ()=>{
+  const url = document.getElementById('sbUrl').value.trim();
+  const key = document.getElementById('sbKey').value.trim();
+  const id = document.getElementById('sbId').value.trim() || cur().id;
+  const status = document.getElementById('sbStatus');
+  if(!url||!key) return status.textContent = LANG==='ar'?'أدخل بيانات Supabase':'Enter Supabase details';
+  try{
+    const res = await fetch(`${url}/rest/v1/comm_backups?id=eq.${encodeURIComponent(id)}&select=payload`, {
+      headers:{'apikey':key,'Authorization':'Bearer '+key}
+    });
+    const data = await res.json();
+    if(data && data[0] && data[0].payload){
+      const p = data[0].payload; p.id = CURRENT_ID; ALL[CURRENT_ID] = p; persist(); renderAllTabs();
+      status.textContent = LANG==='ar'?'تم الاسترجاع بنجاح ✅':'Restored successfully ✅';
+    } else { status.textContent = LANG==='ar'?'لا توجد بيانات':'No data found'; }
+  }catch(e){ status.textContent = (LANG==='ar'?'خطأ: ':'Error: ')+e.message; }
+});
+
+/* ============ SETTINGS ============ */
+document.getElementById('settingsSaveBtn').addEventListener('click', ()=>{
+  cur().name = document.getElementById('settingsProjectName').value || cur().name;
+  cur().defaultSla = parseInt(document.getElementById('settingsDefaultSla').value)||14;
+  persist(); renderProjectSelect(); alert(LANG==='ar'?'تم الحفظ':'Saved');
+});
+document.getElementById('clearProjectBtn').addEventListener('click', ()=>{
+  if(!confirm(LANG==='ar'?'هل أنت متأكد من تفريغ كل بيانات هذا المشروع؟':'Clear all data for this project?')) return;
+  const name = cur().name, id = cur().id, createdAt = cur().createdAt;
+  ALL[CURRENT_ID] = Object.assign(blankProject(name), {id, createdAt});
+  persist(); renderAllTabs();
+});
+
+/* ============ ARCHIVE ============ */
+function renderArchive(){
+  const tb = document.querySelector('#archiveTable tbody');
+  const th = document.querySelector('#archiveTable thead');
+  th.innerHTML = `<tr><th>${LANG==='ar'?'اسم المشروع':'Project'}</th><th>${LANG==='ar'?'تاريخ الإنشاء':'Created'}</th><th>${t('kpi_total')}</th><th>${t('col_action')}</th></tr>`;
+  tb.innerHTML='';
+  Object.values(ALL).forEach(p=>{
+    const tr = el('tr',{},`<td>${p.name}</td><td>${(p.createdAt||'').slice(0,10)}</td><td>${p.correspondence.length}</td><td class="actions-row"></td>`);
+    const td = tr.querySelector('td:last-child');
+    const openBtn = el('button',{class:'btn small'}, LANG==='ar'?'فتح':'Open');
+    openBtn.addEventListener('click', ()=>{ CURRENT_ID=p.id; localStorage.setItem(LS_CURRENT,CURRENT_ID); renderProjectSelect(); renderAllTabs(); });
+    td.appendChild(openBtn);
+    if(Object.keys(ALL).length>1){
+      const delBtn = el('button',{class:'btn small danger'}, t('col_delete'));
+      delBtn.addEventListener('click', ()=>{
+        if(!confirm(LANG==='ar'?'حذف هذا المشروع نهائياً؟':'Delete this project permanently?')) return;
+        delete ALL[p.id];
+        if(CURRENT_ID===p.id){ CURRENT_ID = Object.keys(ALL)[0]; localStorage.setItem(LS_CURRENT,CURRENT_ID); }
+        persist(); renderProjectSelect(); renderAllTabs();
+      });
+      td.appendChild(delBtn);
+    }
+    tb.appendChild(tr);
+  });
+}
+
+/* ============ export / import ============ */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(ALL,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'stakeholder-smart-link-backup.json'; a.click();
+});
+document.getElementById('importBtn').addEventListener('click', ()=> document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try{
+      const data = JSON.parse(ev.target.result);
+      ALL = data; CURRENT_ID = Object.keys(ALL)[0];
+      persist(); localStorage.setItem(LS_CURRENT, CURRENT_ID);
+      renderProjectSelect(); renderAllTabs();
+      alert(LANG==='ar'?'تم الاستيراد بنجاح':'Imported successfully');
+    }catch(err){ alert('Invalid file'); }
+  };
+  reader.readAsText(file);
+});
+
+/* ============ master render ============ */
+function renderAllTabs(){
+  renderProjectSelect();
+  renderStakeholders(); renderCommPlan(); renderCorrespondence();
+  renderMeetings(); renderRaci(); renderClaims(); renderDashboard(); renderArchive();
+  applyI18n();
+}
+document.getElementById('yearNow').textContent = new Date().getFullYear();
+applyI18n();
+renderAllTabs();
+</script>
+</body>
+</html>
