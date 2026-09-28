@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>محرك المعايير الدولية والحوكمة الشاملة | Global Standards &amp; Compliance Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Almarai:wght@400;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1420; --bg-2:#111d2e; --panel:#15243a; --panel-2:#1b2f4a;
+  --line:#28405e; --line-soft:#1e3552;
+  --gold:#c9a227; --gold-soft:#e4c866; --teal:#2ab7a9; --teal-soft:#7fe0d4;
+  --amber2:#d98a3d; --amber2-soft:#f0b877;
+  --text:#eef3f8; --text-dim:#a9bdd4; --text-faint:#6f88a4;
+  --red:#e0654f; --green:#4fbf85; --amber:#e0b94f;
+  --radius:10px; --serif-num:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:
+    radial-gradient(1100px 600px at 85% -10%, rgba(201,162,39,0.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(42,183,169,0.08), transparent 60%),
+    var(--bg);
+  color:var(--text); font-family:'Tajawal','Almarai',sans-serif; line-height:1.6;
+}
+body.lang-en{font-family:'Almarai','Tajawal',sans-serif;}
+::selection{background:var(--gold); color:#0b1420;}
+a{color:inherit;} button{font-family:inherit;}
+
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:208px; flex:0 0 208px;
+  background:linear-gradient(180deg, var(--bg-2), #0c1522);
+  border-inline-end:1px solid var(--line-soft);
+  padding:16px 12px; display:flex; flex-direction:column; gap:10px;
+  position:sticky; top:0; height:100vh; overflow-y:auto; overflow-x:hidden;
+  transition:width .18s ease, flex-basis .18s ease;
+}
+.brand{display:flex; align-items:center; gap:9px; padding:0 2px 12px; border-bottom:1px solid var(--line-soft);}
+.brand-mark{width:32px; height:32px; border-radius:8px; background:linear-gradient(145deg, var(--gold), #8a6d16);
+  display:flex; align-items:center; justify-content:center; font-weight:900; color:#1a1400; font-size:14px; flex:none;
+  box-shadow:0 4px 14px rgba(201,162,39,.35);}
+.brand-text{font-size:12.5px; font-weight:800; line-height:1.25;}
+.brand-text small{display:block; font-weight:500; font-size:9px; color:var(--text-faint); letter-spacing:.02em; margin-top:2px;}
+
+.nav{display:flex; flex-direction:column; gap:2px;}
+.nav-item{display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px; cursor:pointer;
+  color:var(--text-dim); font-size:12.5px; font-weight:600; border:1px solid transparent; transition:background .15s, color .15s;
+  white-space:nowrap; overflow:hidden;}
+.nav-item .ic{width:16px; text-align:center; flex:none; font-size:13.5px;}
+.nav-item:hover{background:var(--panel); color:var(--text);}
+.nav-item.active{background:var(--panel-2); color:var(--gold-soft); border-color:var(--line);}
+.nav-sep{font-size:9.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.07em; margin:7px 3px 0; white-space:nowrap; overflow:hidden;}
+
+.role-badge{font-size:10px; padding:4px 8px; border-radius:6px; background:var(--panel); border:1px solid var(--line); color:var(--text-dim); text-align:center; font-weight:700;}
+.sidebar-foot{margin-top:auto; padding-top:10px; border-top:1px solid var(--line-soft); font-size:10.5px; color:var(--text-faint);}
+.lang-switch{display:flex; gap:5px; margin-top:8px;}
+.lang-btn{flex:1; padding:6px 0; text-align:center; border-radius:6px; border:1px solid var(--line); background:var(--panel); color:var(--text-dim); font-size:11.5px; font-weight:700; cursor:pointer;}
+.lang-btn.active{background:var(--gold); color:#1a1400; border-color:var(--gold);}
+
+.main{flex:1; min-width:0; padding:22px 26px 60px;}
+.topbar{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:22px; flex-wrap:wrap;}
+.page-title{font-size:22px; font-weight:900; margin:0 0 4px;}
+.page-sub{color:var(--text-dim); font-size:13.5px; margin:0;}
+.topbar-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+.btn{display:inline-flex; align-items:center; gap:7px; padding:9px 15px; border-radius:8px; border:1px solid var(--line);
+  background:var(--panel); color:var(--text); font-size:13.5px; font-weight:700; cursor:pointer; transition:transform .1s, border-color .15s, background .15s;}
+.btn:hover{border-color:var(--gold); background:var(--panel-2);}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:linear-gradient(180deg, var(--gold-soft), var(--gold)); color:#1a1400; border-color:#8a6d16;}
+.btn-teal{background:linear-gradient(180deg, var(--teal-soft), var(--teal)); color:#03211d; border-color:#0f5a52;}
+.btn-danger{color:var(--red); border-color:#5c2a24;}
+.btn-sm{padding:6px 11px; font-size:12.5px;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+
+.view{display:none;} .view.active{display:block;}
+
+.kpi-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px; margin-bottom:22px;}
+.kpi{background:var(--panel); border:1px solid var(--line-soft); border-radius:var(--radius); padding:16px 18px;}
+.kpi .lbl{font-size:12px; color:var(--text-dim); font-weight:600; margin-bottom:8px;}
+.kpi .val{font-family:var(--serif-num); font-size:26px; font-weight:600; color:var(--gold-soft);}
+.kpi .val small{font-size:14px; color:var(--text-dim); font-weight:500;}
+.kpi.teal .val{color:var(--teal-soft);}
+.kpi.amber .val{color:var(--amber2-soft);}
+
+.panel{background:var(--panel); border:1px solid var(--line-soft); border-radius:var(--radius); padding:18px 20px; margin-bottom:18px;}
+.panel-title{font-size:15px; font-weight:800; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+.panel-title span.hint{font-size:12px; color:var(--text-faint); font-weight:500;}
+.panel.alert{border-color:#5c3a1e; background:linear-gradient(180deg, rgba(217,138,61,.08), var(--panel));}
+
+.filters{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+.field{display:flex; flex-direction:column; gap:5px;}
+.field label{font-size:11.5px; color:var(--text-dim); font-weight:700;}
+input[type=text], input[type=search], input[type=number], input[type=date], select, textarea{
+  background:var(--bg-2); border:1px solid var(--line); color:var(--text);
+  padding:9px 11px; border-radius:7px; font-size:13.5px; font-family:inherit;}
+input:focus, select:focus, textarea:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold);}
+textarea{resize:vertical; min-height:64px;}
+.grow{flex:1; min-width:180px;}
+
+.std-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:12px;}
+.std-card{background:var(--bg-2); border:1px solid var(--line-soft); border-radius:9px; padding:14px 15px;
+  cursor:pointer; transition:border-color .15s, transform .1s; display:flex; flex-direction:column; gap:7px;}
+.std-card:hover{border-color:var(--gold); transform:translateY(-1px);}
+.std-card .code{font-family:var(--serif-num); font-size:11px; color:var(--gold-soft); letter-spacing:.03em;}
+.std-card .name{font-size:14.5px; font-weight:800; line-height:1.35;}
+.std-card .name-en{font-size:11.5px; color:var(--text-faint); font-style:italic;}
+.tag{display:inline-flex; align-items:center; padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:700; width:fit-content;}
+.tag.dc{background:rgba(42,183,169,.14); color:var(--teal-soft); border:1px solid rgba(42,183,169,.35);}
+.tag.cons{background:rgba(201,162,39,.14); color:var(--gold-soft); border:1px solid rgba(201,162,39,.35);}
+.tag.energy{background:rgba(217,138,61,.16); color:var(--amber2-soft); border:1px solid rgba(217,138,61,.4);}
+.tag.cat{background:var(--panel-2); color:var(--text-dim); border:1px solid var(--line);}
+
+.overlay{position:fixed; inset:0; background:rgba(4,9,16,.72); display:none; align-items:flex-start; justify-content:center; padding:5vh 16px; z-index:50; overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:var(--bg-2); border:1px solid var(--line); border-radius:14px; max-width:740px; width:100%; padding:26px 28px; box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.modal-head{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:6px;}
+.modal-close{background:none; border:none; color:var(--text-dim); font-size:20px; cursor:pointer; line-height:1;}
+.modal h2{font-size:19px; margin:0 0 2px;}
+.modal .sub-en{color:var(--text-faint); font-size:12.5px; font-style:italic; margin-bottom:16px;}
+.detail-row{margin-bottom:14px;}
+.detail-row .k{font-size:11.5px; font-weight:800; color:var(--gold-soft); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;}
+.detail-row .v{font-size:13.8px; color:var(--text); line-height:1.7;}
+.detail-row .v.quote{font-family:var(--serif-num); font-size:12px; background:var(--panel); border:1px solid var(--line-soft); border-radius:7px; padding:10px 12px; color:var(--text-dim); direction:ltr; text-align:left;}
+.quicklink-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%; border-collapse:collapse; font-size:13px;}
+th,td{padding:9px 11px; text-align:start; border-bottom:1px solid var(--line-soft); white-space:nowrap;}
+th{color:var(--text-dim); font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.02em; background:var(--bg-2); position:sticky; top:0;}
+tr:hover td{background:rgba(255,255,255,.02);}
+td.wrap{white-space:normal; min-width:160px;}
+.badge{display:inline-flex; padding:3px 10px; border-radius:99px; font-size:11.5px; font-weight:800;}
+.badge.ok{background:rgba(79,191,133,.15); color:var(--green);}
+.badge.warn{background:rgba(224,185,79,.15); color:var(--amber);}
+.badge.bad{background:rgba(224,101,79,.15); color:var(--red);}
+.badge.info{background:rgba(42,183,169,.15); color:var(--teal-soft);}
+.row-actions{display:flex; gap:6px;}
+.icon-btn{background:none; border:1px solid var(--line); color:var(--text-dim); border-radius:6px; padding:4px 8px; cursor:pointer; font-size:12px;}
+.icon-btn:hover{color:var(--gold-soft); border-color:var(--gold);}
+
+.empty{padding:40px 20px; text-align:center; color:var(--text-faint); font-size:13.5px;}
+
+.proj-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(270px,1fr)); gap:14px;}
+.proj-card{background:var(--bg-2); border:1px solid var(--line-soft); border-radius:11px; padding:16px 18px;}
+.proj-card h3{margin:0 0 4px; font-size:15.5px;}
+.proj-meta{font-size:12px; color:var(--text-faint); margin-bottom:12px;}
+.progress-track{height:7px; background:var(--panel-2); border-radius:99px; overflow:hidden; margin-bottom:6px;}
+.progress-fill{height:100%; border-radius:99px; background:linear-gradient(90deg, var(--teal), var(--gold));}
+.proj-foot{display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:8px;}
+
+.chart-wrap{overflow-x:auto;}
+.bar-row{display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:12.5px;}
+.bar-label{width:150px; flex:none; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.bar-track{flex:1; background:var(--panel-2); border-radius:5px; height:16px; overflow:hidden;}
+.bar-fill{height:100%; background:linear-gradient(90deg, var(--teal), var(--gold-soft)); display:flex; align-items:center;}
+.bar-val{width:48px; flex:none; font-family:var(--serif-num); text-align:end; color:var(--text-dim);}
+
+.exec-hero{padding:26px 10px; text-align:center; border-bottom:1px solid var(--line-soft); margin-bottom:20px;}
+.exec-hero .big{font-family:var(--serif-num); font-size:52px; font-weight:600; color:var(--gold-soft); line-height:1;}
+.exec-hero .lbl{color:var(--text-dim); margin-top:6px;}
+.reco-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;}
+.reco-list li{padding:10px 14px; background:var(--bg-2); border-inline-start:3px solid var(--amber2); border-radius:6px; font-size:13.5px;}
+
+.settings-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+@media (max-width:760px){.settings-grid{grid-template-columns:1fr;}}
+
+.print-only{display:none;}
+footer.credit{margin-top:34px; padding-top:16px; border-top:1px solid var(--line-soft); color:var(--text-faint); font-size:11.5px; text-align:center;}
+
+@media print{
+  body:not(.cert-print-mode) .sidebar, body:not(.cert-print-mode) .topbar-actions,
+  body:not(.cert-print-mode) .filters, body:not(.cert-print-mode) .btn, .no-print{display:none !important;}
+  body{background:#fff; color:#000;}
+  .panel, .kpi, .std-card, .proj-card{border:1px solid #ccc; background:#fff; box-shadow:none;}
+  .main{padding:0;}
+  .print-only{display:block;}
+  body.cert-print-mode > *:not(#certPrintOverlay){display:none !important;}
+  body.cert-print-mode #certPrintOverlay{position:static; background:#fff; padding:0; display:block;}
+  body.cert-print-mode .modal{box-shadow:none; border:none; max-width:100%;}
+}
+@media (max-width:900px){
+  .sidebar{position:fixed; inset-inline-start:0; top:0; height:100vh; width:250px; max-width:82vw; flex:none;
+    z-index:70; box-shadow:0 0 40px rgba(0,0,0,.55); transform:translateX(0); display:none;}
+  .sidebar.mobile-open{display:flex;}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(4,9,16,.6); z-index:60; display:none;}
+  .sidebar-backdrop.show{display:block;}
+  .mobileTopbar{display:flex !important;}
+  .shell{flex-direction:column;} .main{padding:16px;}
+}
+.mobileTopbar{display:none; align-items:center; gap:12px; padding:12px 14px; background:var(--bg-2);
+  border-bottom:1px solid var(--line-soft); position:sticky; top:0; z-index:40;}
+.hamburgerBtn{background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:8px;
+  width:36px; height:36px; flex:none; cursor:pointer; font-size:16px;}
+.hamburgerBtn:hover{border-color:var(--gold);}
+.mobileTopbar .mtb-title{font-size:13px; font-weight:800; color:var(--gold-soft);}
+.role-readonly .no-readonly{display:none !important;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="mobileTopbar no-print">
+    <button class="hamburgerBtn" id="hamburgerBtn">☰</button>
+    <span class="mtb-title" data-t="nav.dashboard">لوحة القيادة</span>
+  </div>
+  <div class="sidebar-backdrop no-print" id="sidebarBackdrop"></div>
+  <aside class="sidebar no-print" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">GS</div>
+      <div class="brand-text" id="brandText">محرك المعايير والحوكمة<small>Global Standards &amp; Compliance Engine</small></div>
+    </div>
+    <nav class="nav" id="mainNav">
+      <div class="nav-item active" data-view="dashboard" data-t-title="nav.dashboard"><span class="ic">◆</span><span data-t="nav.dashboard">لوحة القيادة</span></div>
+      <div class="nav-item" data-view="library" data-t-title="nav.library"><span class="ic">▤</span><span data-t="nav.library">مكتبة المعايير (150)</span></div>
+      <div class="nav-item" data-view="crossref" data-t-title="nav.crossref"><span class="ic">⇄</span><span data-t="nav.crossref">مصفوفة التداخل</span></div>
+      <div class="nav-sep" data-t="nav.sepWork">العمل التشغيلي</div>
+      <div class="nav-item" data-view="projects" data-t-title="nav.projects"><span class="ic">▣</span><span data-t="nav.projects">سجل المشاريع</span></div>
+      <div class="nav-item" data-view="assess" data-t-title="nav.assess"><span class="ic">✎</span><span data-t="nav.assess">معالج التقييم</span></div>
+      <div class="nav-item" data-view="actions" data-t-title="nav.actions"><span class="ic">☑</span><span data-t="nav.actions">خطط العمل التصحيحية</span></div>
+      <div class="nav-item" data-view="archive" data-t-title="nav.archive"><span class="ic">▥</span><span data-t="nav.archive">الأرشيف الرقمي</span></div>
+      <div class="nav-sep" data-t="nav.sepReports">التقارير</div>
+      <div class="nav-item" data-view="report" data-t-title="nav.report"><span class="ic">▦</span><span data-t="nav.report">التقرير الشامل</span></div>
+      <div class="nav-item" data-view="exec" data-t-title="nav.exec"><span class="ic">◈</span><span data-t="nav.exec">الملخص التنفيذي</span></div>
+      <div class="nav-item" data-view="settings" data-t-title="nav.settings"><span class="ic">⚙</span><span data-t="nav.settings">الإعدادات والروابط</span></div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="role-badge" id="roleBadge"></div>
+      <div style="font-weight:700; color:var(--text-dim); margin:10px 0 2px;" id="orgNameDisplay" data-t="foot.brand">م. وائل عويس — استشارات الحوكمة الهندسية</div>
+      <div data-t="foot.tag">Eng. Wael Oweis — Engineering Governance Consulting</div>
+      <div class="lang-switch">
+        <button class="lang-btn active" data-lang="ar">AR</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="dash.title">لوحة القيادة العامة</h1>
+          <p class="page-sub" data-t="dash.sub">نظرة شاملة على جاهزية الامتثال عبر كل المشاريع والمعايير الدولية</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary no-readonly" id="btnNewProjectDash" data-t="btn.newProject">+ مشروع جديد</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="lbl" data-t="kpi.standards">إجمالي المعايير المرجعية</div><div class="val">150</div></div>
+        <div class="kpi teal"><div class="lbl" data-t="kpi.projects">عدد المشاريع المسجلة</div><div class="val" id="kpiProjects">0</div></div>
+        <div class="kpi"><div class="lbl" data-t="kpi.assessments">عمليات التقييم المنجزة</div><div class="val" id="kpiAssessments">0</div></div>
+        <div class="kpi teal"><div class="lbl" data-t="kpi.avg">متوسط الامتثال العام</div><div class="val" id="kpiAvg">0<small>%</small></div></div>
+        <div class="kpi amber"><div class="lbl" data-t="kpi.expiring">شهادات قريبة الانتهاء</div><div class="val" id="kpiExpiring">0</div></div>
+        <div class="kpi amber"><div class="lbl" data-t="kpi.openTasks">بنود تصحيحية مفتوحة</div><div class="val" id="kpiOpenTasks">0</div></div>
+      </div>
+
+      <div class="panel alert" id="expiryPanel">
+        <div class="panel-title"><span data-t="dash.expiring">شهادات قريبة من الانتهاء أو منتهية</span></div>
+        <div class="table-wrap" id="expiryTable"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><span data-t="dash.byProject">جاهزية الامتثال حسب المشروع</span></div>
+        <div id="dashProjectChart"><div class="empty" data-t="empty.noProjects">لا توجد مشاريع مسجلة بعد. أنشئ مشروعك الأول من سجل المشاريع.</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><span data-t="dash.recent">آخر عمليات التقييم</span></div>
+        <div class="table-wrap" id="dashRecentTable"></div>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section class="view" id="view-library">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="lib.title">مكتبة المعايير الدولية</h1>
+          <p class="page-sub" data-t="lib.sub">150 معياراً دولياً معتمداً عبر ثلاثة قطاعات: مراكز البيانات، الإنشاءات، والطاقة والنقل</p>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="field grow"><label data-t="lib.search">بحث بالاسم أو الرمز</label><input type="search" id="libSearch" placeholder="ISO 27001 / FIDIC / API ..."></div>
+        <div class="field">
+          <label data-t="lib.sector">القطاع</label>
+          <select id="libSector">
+            <option value="" data-t="opt.all">كل القطاعات</option>
+            <option value="dc" data-t="opt.dc">مراكز البيانات والمنشآت الحرجة</option>
+            <option value="cons" data-t="opt.cons">الإنشاءات وإدارة المشاريع</option>
+            <option value="energy" data-t="opt.energy">الطاقة والنفط والغاز والنقل</option>
+          </select>
+        </div>
+        <div class="field"><label data-t="lib.cat">التصنيف</label><select id="libCat"></select></div>
+      </div>
+      <div class="std-grid" id="libGrid"></div>
+    </section>
+
+    <!-- CROSSREF -->
+    <section class="view" id="view-crossref">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="cref.title">مصفوفة التداخل بين المعايير</h1>
+          <p class="page-sub" data-t="cref.sub">علاقات تكامل وتداخل موثقة بين المعايير لتقليل ازدواجية التدقيق وتوجيه خطط التنفيذ</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="table-wrap" id="crossrefTable"></div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="view" id="view-projects">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="proj.title">سجل المشاريع والمنشآت</h1>
+          <p class="page-sub" data-t="proj.sub">إدارة المشاريع الخاضعة للتقييم ومتابعة جاهزيتها للاعتماد الدولي</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary no-readonly" id="btnNewProject" data-t="btn.newProject">+ مشروع جديد</button>
+        </div>
+      </div>
+      <div class="proj-grid" id="projGrid"></div>
+    </section>
+
+    <!-- ASSESS -->
+    <section class="view" id="view-assess">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="assess.title">معالج التقييم الذكي</h1>
+          <p class="page-sub" data-t="assess.sub">اختر المشروع والمعيار وأدخل نسبة التطبيق الميداني لتوليد شهادة المطابقة</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="filters">
+          <div class="field grow"><label data-t="assess.project">المشروع</label><select id="asProject"></select></div>
+          <div class="field">
+            <label data-t="lib.sector">القطاع</label>
+            <select id="asSector">
+              <option value="" data-t="opt.all">كل القطاعات</option>
+              <option value="dc" data-t="opt.dc">مراكز البيانات والمنشآت الحرجة</option>
+              <option value="cons" data-t="opt.cons">الإنشاءات وإدارة المشاريع</option>
+              <option value="energy" data-t="opt.energy">الطاقة والنفط والغاز والنقل</option>
+            </select>
+          </div>
+          <div class="field grow"><label data-t="assess.standard">المعيار</label><select id="asStandard"></select></div>
+        </div>
+        <div id="asDetail"></div>
+        <div id="asQuickLinks"></div>
+      </div>
+      <div class="panel" id="asFormPanel" style="display:none;">
+        <div class="panel-title"><span data-t="assess.formTitle">بيانات التقييم</span></div>
+        <div class="filters">
+          <div class="field grow"><label data-t="assess.auditor">اسم المدقق / المسؤول</label><input type="text" id="asAuditor" placeholder="Eng. ..."></div>
+          <div class="field">
+            <label data-t="assess.docStatus">حالة التوثيق المؤسسي</label>
+            <select id="asDocStatus">
+              <option data-t="opt.docFull">مكتمل بالكامل</option>
+              <option data-t="opt.docPartial">يحتاج تحديث</option>
+              <option data-t="opt.docNone">غير متوفر</option>
+            </select>
+          </div>
+          <div class="field"><label data-t="assess.validity">مدة صلاحية الاعتماد (سنوات)</label><input type="number" id="asValidity" min="1" max="10" value="3" style="width:100px;"></div>
+        </div>
+        <div class="field" style="margin-bottom:14px;">
+          <label data-t="assess.rate">نسبة التطبيق الميداني الفعلي: <b id="asRateVal">75</b>%</label>
+          <input type="range" id="asRate" min="0" max="100" value="75" style="width:100%;">
+        </div>
+        <div id="asIndicator" class="detail-row"></div>
+        <div id="asImprovementLinks"></div>
+        <div class="field" style="margin-bottom:14px;">
+          <label data-t="assess.notes">ملاحظات التدقيق وتوصيات المعالجة</label>
+          <textarea id="asNotes"></textarea>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary no-readonly" id="btnSaveAssessment" data-t="btn.saveAssessment">💾 حفظ التقييم وتوليد شهادة المطابقة</button>
+        </div>
+        <div id="asCertResult"></div>
+        <div id="asActionPlanBox" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- ACTIONS (corrective action plans) -->
+    <section class="view" id="view-actions">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="acts.title">خطط العمل التصحيحية</h1>
+          <p class="page-sub" data-t="acts.sub">جميع بنود المعالجة المفتوحة والمغلقة عبر كل التقييمات، مرتبة حسب تاريخ الاستحقاق</p>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="field grow"><label data-t="arch.search">بحث (مشروع / معيار / مسؤول)</label><input type="search" id="actSearch"></div>
+        <div class="field">
+          <label data-t="acts.status">الحالة</label>
+          <select id="actStatusFilter">
+            <option value="" data-t="opt.all">الكل</option>
+            <option value="open" data-t="acts.open">مفتوح</option>
+            <option value="done" data-t="acts.done">مغلق</option>
+          </select>
+        </div>
+      </div>
+      <div class="panel"><div class="table-wrap" id="actionsTable"></div></div>
+    </section>
+
+    <!-- ARCHIVE -->
+    <section class="view" id="view-archive">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="arch.title">الأرشيف الرقمي للتقييمات</h1>
+          <p class="page-sub" data-t="arch.sub">سجل كامل وقابل للبحث لجميع عمليات التدقيق والتقييم عبر كل المشاريع</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn" id="btnExportCsv" data-t="btn.exportCsv">📥 تصدير CSV</button>
+          <button class="btn" id="btnPrintArchive" data-t="btn.print">🖨️ طباعة</button>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="field grow"><label data-t="arch.search">بحث (مشروع / معيار / مدقق)</label><input type="search" id="archSearch"></div>
+        <div class="field"><label data-t="proj.field">المشروع</label><select id="archProjectFilter"><option value="" data-t="opt.all">كل المشاريع</option></select></div>
+      </div>
+      <div class="panel"><div class="table-wrap" id="archiveTable"></div></div>
+    </section>
+
+    <!-- REPORT -->
+    <section class="view" id="view-report">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="rep.title">التقرير الشامل والتحليلات المؤسسية</h1>
+          <p class="page-sub" data-t="rep.sub">مؤشرات أداء تراكمية لجاهزية الامتثال عبر كل المشاريع والقطاعات</p>
+        </div>
+        <div class="topbar-actions"><button class="btn" id="btnPrintReport" data-t="btn.print">🖨️ طباعة / تصدير PDF</button></div>
+      </div>
+      <div class="kpi-grid" id="repKpis"></div>
+      <div class="panel"><div class="panel-title"><span data-t="rep.bySector">متوسط الامتثال حسب القطاع</span></div><div class="chart-wrap" id="repSectorChart"></div></div>
+      <div class="panel"><div class="panel-title"><span data-t="rep.byCat">متوسط الامتثال حسب التصنيف (أعلى 12)</span></div><div class="chart-wrap" id="repCatChart"></div></div>
+      <div class="panel"><div class="panel-title"><span data-t="rep.byProject">أداء المشاريع</span></div><div class="table-wrap" id="repProjectTable"></div></div>
+      <div class="print-only" style="margin-top:20px; font-size:11px; color:#555;"><span data-t="foot.brand">م. وائل عويس — استشارات الحوكمة الهندسية</span> · <span id="printDate"></span></div>
+    </section>
+
+    <!-- EXEC SUMMARY -->
+    <section class="view" id="view-exec">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="exec.title">الملخص التنفيذي</h1>
+          <p class="page-sub" data-t="exec.sub">صفحة واحدة موجزة لعرض جاهزية الامتثال على الإدارة العليا أو الجهة المانحة</p>
+        </div>
+        <div class="topbar-actions"><button class="btn" id="btnPrintExec" data-t="btn.print">🖨️ طباعة / تصدير PDF</button></div>
+      </div>
+      <div class="panel">
+        <div class="exec-hero">
+          <div style="font-weight:800; font-size:15px; margin-bottom:4px;" id="execOrgName">—</div>
+          <div class="big" id="execAvg">0%</div>
+          <div class="lbl" data-t="exec.avgLabel">متوسط الجاهزية العامة للامتثال</div>
+        </div>
+        <div class="kpi-grid" id="execKpis"></div>
+        <div class="panel-title" style="margin-top:10px;"><span data-t="exec.risks">أعلى 3 معايير تحتاج معالجة عاجلة</span></div>
+        <div class="table-wrap" id="execRisks"></div>
+        <div class="panel-title" style="margin-top:16px;"><span data-t="exec.reco">التوصيات</span></div>
+        <ul class="reco-list" id="execReco"></ul>
+        <div class="print-only" style="margin-top:20px; font-size:11px; color:#555;"><span data-t="foot.brand">م. وائل عويس — استشارات الحوكمة الهندسية</span> · <span id="execPrintDate"></span></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="topbar">
+        <div>
+          <h1 class="page-title" data-t="set.title">الإعدادات والروابط السريعة</h1>
+          <p class="page-sub" data-t="set.sub">إدارة صلاحيات العرض، الروابط لأدواتك الأخرى، والنسخ الاحتياطي للبيانات</p>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="panel">
+          <div class="panel-title"><span data-t="set.org">بيانات الجهة</span></div>
+          <div class="field" style="margin-bottom:12px;"><label data-t="set.orgName">اسم الجهة / الشركة (يظهر في التقارير)</label><input type="text" id="setOrgName"></div>
+          <div class="field" style="margin-bottom:12px;">
+            <label data-t="set.role">دور المستخدم الحالي (يتحكم في ظهور أزرار التعديل)</label>
+            <select id="setRole">
+              <option value="auditor" data-t="set.roleAuditor">مدقق / محرر كامل الصلاحية</option>
+              <option value="manager" data-t="set.roleManager">مدير</option>
+              <option value="readonly" data-t="set.roleReadonly">قراءة فقط</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="btnSaveOrg" data-t="btn.save">حفظ الإعدادات</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><span data-t="set.links">روابط الأدوات الشقيقة</span></div>
+          <p class="page-sub" style="margin-bottom:12px;" data-t="set.linksHint">أدخل مسار أو رابط ملف كل أداة (مثلاً fidic-shield.html) لتظهر أزرار الفتح السريع داخل المعايير ذات الصلة.</p>
+          <div class="field" style="margin-bottom:12px;"><label>FIDIC Shield</label><input type="text" id="linkFidic" placeholder="fidic-shield-1.html"></div>
+          <div class="field" style="margin-bottom:12px;"><label data-t="set.sixSigma">Six Sigma DMAIC</label><input type="text" id="linkSixSigma" placeholder="six-sigma-dmaic.html"></div>
+          <div class="field" style="margin-bottom:12px;"><label data-t="set.changeMgmt">Change Management</label><input type="text" id="linkChange" placeholder="change-management-app.html"></div>
+          <button class="btn btn-primary" id="btnSaveLinks" data-t="btn.save">حفظ الروابط</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><span data-t="set.backup">النسخ الاحتياطي واستعادة البيانات</span></div>
+          <p class="page-sub" style="margin-bottom:12px;" data-t="set.backupHint">جميع بيانات المشاريع والتقييمات محفوظة محلياً في متصفحك فقط. صدّر نسخة احتياطية بانتظام.</p>
+          <div class="topbar-actions">
+            <button class="btn btn-teal" id="btnBackupExport">💾 <span data-t="set.exportBackup">تصدير نسخة احتياطية كاملة (JSON)</span></button>
+            <label class="btn no-readonly" style="cursor:pointer;">📤 <span data-t="set.importBackup">استيراد نسخة احتياطية</span><input type="file" id="btnBackupImport" accept="application/json" style="display:none;"></label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><span data-t="set.sharedReg">سجل المشاريع المشترك</span></div>
+          <p class="page-sub" style="margin-bottom:12px;" data-t="set.sharedRegHint">صدّر سجل المشاريع بصيغة موحدة لاستيرادها لاحقاً في تطبيقاتك الأخرى (بمجرد إضافة نفس ميزة الاستيراد لها).</p>
+          <div class="topbar-actions">
+            <button class="btn" id="btnExportProjectsOnly">📤 <span data-t="set.exportProjects">تصدير سجل المشاريع فقط</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="credit no-print">
+      <div data-t="foot.brand">م. وائل عويس — استشارات الحوكمة الهندسية</div>
+      <div data-t="foot.copy">محرك المعايير الدولية والحوكمة الشاملة — بيانات محفوظة محلياً في متصفحك</div>
+    </footer>
+  </main>
+</div>
+
+<div class="overlay" id="stdOverlay"><div class="modal">
+  <div class="modal-head"><div><h2 id="mName"></h2><div class="sub-en" id="mNameEn"></div></div><button class="modal-close" id="mClose">✕</button></div>
+  <div id="mBody"></div>
+</div></div>
+
+<div class="overlay" id="projOverlay"><div class="modal" style="max-width:480px;">
+  <div class="modal-head"><h2 data-t="proj.newTitle">مشروع جديد</h2><button class="modal-close" id="projClose">✕</button></div>
+  <div class="field" style="margin-bottom:12px;"><label data-t="proj.name">اسم المشروع / المنشأة</label><input type="text" id="pfName"></div>
+  <div class="field" style="margin-bottom:12px;"><label data-t="proj.client">الجهة المالكة / العميل</label><input type="text" id="pfClient"></div>
+  <div class="field" style="margin-bottom:12px;"><label data-t="proj.location">الموقع</label><input type="text" id="pfLocation"></div>
+  <div class="field" style="margin-bottom:18px;">
+    <label data-t="proj.sector">القطاع المستهدف</label>
+    <select id="pfSector">
+      <option value="dc" data-t="opt.dc">مراكز البيانات والمنشآت الحرجة</option>
+      <option value="cons" data-t="opt.cons">الإنشاءات وإدارة المشاريع</option>
+      <option value="energy" data-t="opt.energy">الطاقة والنفط والغاز والنقل</option>
+      <option value="both" data-t="opt.both">أكثر من قطاع</option>
+    </select>
+  </div>
+  <div class="topbar-actions"><button class="btn btn-primary" id="pfSave" data-t="btn.save">حفظ المشروع</button></div>
+</div></div>
+
+<div class="overlay" id="certOverlay"><div class="modal" id="certPrintOverlay" style="max-width:600px;">
+  <div class="modal-head no-print"><h2 data-t="cert.previewTitle">معاينة شهادة المطابقة الرسمية</h2><button class="modal-close" id="certClose">✕</button></div>
+  <div id="certBody"></div>
+  <div class="topbar-actions no-print" style="margin-top:16px;"><button class="btn btn-primary" id="btnDoPrintCert">🖨️ <span data-t="btn.print">طباعة</span> / PDF</button></div>
+</div></div>
+
+<script>
+const STANDARDS = [{"code":"UPTIME-TIER","cat":"مراكز البيانات","name_ar":"معيار Uptime Institute (Tier Standard)","name_en":"Uptime Institute Tier Standard","definition":"الهيئة العالمية الأبرز لاعتماد وتقييم موثوقية مراكز البيانات، وتقسّم المنشآت إلى أربعة مستويات (Tier I-IV).","benchmark":"التوفرية: Tier I 99.671% | Tier II 99.741% | Tier III 99.982% | Tier IV 99.995%. PUE المستهدف 1.1-1.3.","technical":"مسارات مستقلة ومتزامنة للطاقة والتبريد (Concurrently Maintainable / Fault Tolerant)، مولدات احتياطية بمخزون وقود 24-72 ساعة، فصل مسارات الكابلات لمنع نقطة الفشل المفردة.","howto":"تقديم طلب عبر منصة Uptime Institute أو استشاريين معتمدين، وإرسال المخططات الهندسية الكاملة للتدقيق.","cert":"This is to certify that [Facility] has been reviewed by Uptime Institute and found to conform to the Tier [I-IV] Standard for [Design/Constructed Facility].","stages":"1) مراجعة تصميم 2) فحص ميداني أثناء الإنشاء 3) اختبارات تشغيل شاملة IST 4) الاعتماد النهائي وإصدار الشهادة.","id":1,"sector":"dc"},{"code":"TIA-942","cat":"مراكز البيانات","name_ar":"معيار TIA-942","name_en":"TIA-942 Telecommunications Infrastructure Standard","definition":"معيار البنية التحتية للاتصالات ومراكز البيانات الصادر عن TIA، من Rated 1 إلى Rated 4.","benchmark":"مستويات Rated 1-4؛ حد أدنى 30 سم فصل بين كابلات الطاقة والاتصالات.","technical":"تصميم غرف MDF/IDF بتكييف وتأمين متطور، كابلات ألياف ونحاس عالية السرعة (OS2, OM4/OM5)، مساحات كافية للممرات ومسارات الكابلات.","howto":"التعاقد مع مدقق معتمد لـ TIA لتقييم المخططات والمنشأة القائمة.","cert":"Certificate of Compliance: TIA-942-B Rated [1-4] for [Facility].","stages":"1) تدقيق مكتبي 2) تقييم ميداني بعد التنفيذ 3) معالجة الملاحظات 4) إصدار شهادة المطابقة.","id":2,"sector":"dc"},{"code":"ASHRAE-TC99","cat":"مراكز البيانات","name_ar":"معيار ASHRAE TC 9.9","name_en":"ASHRAE Thermal Guidelines for Data Processing Environments","definition":"المرجع العالمي لتحديد الظروف الحرارية داخل قاعات مراكز البيانات.","benchmark":"النطاق الموصى به 18-27°م، رطوبة نسبية 40-60%، نطاقات مقبولة A1-A4 (مثلاً 15-32°م).","technical":"احتواء الممرات الساخنة/الباردة، تصميم وحدات CRAC/CRAH لتدفق هواء متساوٍ، مستشعرات دقيقة عند مدخل/مخرج الخوادم.","howto":"دراسة محاكاة CFD وإعداد تقارير أداء حراري من مهندسين معتمدين.","cert":"Thermal Compliance Report: [Facility] operates within ASHRAE TC 9.9 Envelope, maintaining inlet temperatures 18-27°C.","stages":"1) نمذجة CFD في التصميم 2) فحص التوازن الهوائي 3) مراقبة DCIM مستمرة 4) إصدار تقرير الاعتماد.","id":3,"sector":"dc"},{"code":"NFPA","cat":"مراكز البيانات","name_ar":"معيار NFPA 75/2001/70","name_en":"NFPA Fire Protection Standards","definition":"أهم المعايير لحماية الحريق والإطفاء النظيف والكود الكهربائي الوطني.","benchmark":"كشف VESDA خلال ثوانٍ، تركيز الغاز النظيف خلال 10 ثوانٍ والاحتفاظ 10-20 دقيقة، مقاومة تأريض <1 أوم.","technical":"غازات إطفاء نظيفة (Novec 1230/FM-200)، بوابات مقاومة حريق ≥ساعتين، فصل مزدوج لمسارات الكابلات واللوحات.","howto":"اعتماد مخططات السلامة من مهندسين معتمدين وتقديمها للدفاع المدني، وإجراء اختبار إحكام الغرفة.","cert":"Certificate of Room Integrity and Fire Suppression Compliance for [Facility] per NFPA 2001/75.","stages":"1) مراجعة مخططات الإنذار والإطفاء 2) التركيب الميداني 3) اختبار Door Fan وتزامن الإطفاء 4) الفحص النهائي والترخيص.","id":4,"sector":"dc"},{"code":"ISO27001","cat":"أمن المعلومات","name_ar":"معيار ISO/IEC 27001","name_en":"Information Security Management System","definition":"المعيار الدولي لإدارة أمن المعلومات وحماية سرية وسلامة وتوافر البيانات.","benchmark":"صفر ثغرات حرجة غير معالجة، MTTR أقل من ساعة للحوادث عالية الأولوية، امتثال 100% لضوابط الملحق A.","technical":"تحكم حيوي في الدخول وتشفير متقدم، إدارة هوية وصلاحيات صارمة (IAM)، نسخ احتياطي معزول (Air-Gapped).","howto":"بناء نظام ISMS داخلي والتعاقد مع جهة اعتماد مستقلة للتدقيق.","cert":"Certificate of Registration: ISMS of [Org] conforms to ISO/IEC 27001:2022.","stages":"1) مراجعة وثائق ومخاطر (Stage 1) 2) تدقيق ميداني (Stage 2) 3) معالجة عدم المطابقة 4) إصدار الشهادة لثلاث سنوات.","id":5,"sector":"dc"},{"code":"LEED","cat":"الاستدامة","name_ar":"معيار LEED","name_en":"Leadership in Energy and Environmental Design","definition":"نظام USGBC العالمي لتصنيف المباني الخضراء والمستدامة.","benchmark":"توفير طاقة 30-50%، ترشيد مياه ≥40%، مواد معاد تدويرها ≥20%.","technical":"إضاءة LED ذكية وطاقة متجددة، جودة هواء داخلي بفلاتر متطورة، إدارة نفايات إنشائية صارمة.","howto":"تسجيل المشروع عبر USGBC وتعيين LEED AP لجمع الوثائق.","cert":"USGBC certifies [Facility] achieved [Certified/Silver/Gold/Platinum] under LEED.","stages":"1) تسجيل وتحديد الهدف 2) مراجعة تصميم 3) مراجعة تنفيذ 4) المراجعة النهائية ومنح الشهادة.","id":6,"sector":"dc"},{"code":"JCI","cat":"الرعاية الصحية","name_ar":"معيار JCI","name_en":"Joint Commission International","definition":"المرجع الذهبي لاعتماد المستشفيات وسلامة المرضى ومنع العدوى.","benchmark":"تغيير هواء 20-25 مرة/ساعة بفلترة HEPA 99.97%، نسبة عدوى مكتسبة قريبة من الصفر، التزام أدوية 100%.","technical":"مسارات نظيفة/ملوثة منفصلة، طاقة ومياه وغازات طبية مضاعفة، معايير NFPA 99 للمنشآت الصحية.","howto":"تقديم طلب اعتماد لـ JCI وتشكيل فرق جودة داخلية.","cert":"JCI accreditation for [Hospital] recognizing patient safety and clinical quality standards.","stages":"1) تقييم ذاتي 2) زيارة مقيّمين دوليين 3) خطة تصحيحية 4) منح الاعتماد.","id":7,"sector":"dc"},{"code":"ISO45001","cat":"السلامة المهنية","name_ar":"معيار ISO 45001 / OSHA","name_en":"Occupational Health & Safety","definition":"إدارة السلامة والصحة المهنية ومنع إصابات وأمراض العمل.","benchmark":"TRIR أقل من 0.5/100 عامل سنوياً، التزام PPE 100%، صفر إصابات جسيمة.","technical":"تصاريح عمل للأنشطة عالية الخطورة، إسعافات أولية وعيادة طوارئ، صيانة دورية للمعدات الثقيلة.","howto":"تعيين مسؤولي سلامة معتمدين (NEBOSH/OSHA) والتعاقد مع جهة تدقيق خارجية.","cert":"Certificate of Approval: OH&S System of [Org] conforms to ISO 45001:2018.","stages":"1) تحليل مخاطر HIRA 2) تدقيق داخلي 3) تدقيق خارجي (Stage1&2) 4) إصدار الشهادة.","id":8,"sector":"dc"},{"code":"ITIL","cat":"تقنية المعلومات","name_ar":"معيار ITIL","name_en":"Information Technology Infrastructure Library","definition":"الإطار الأبرز لإدارة خدمات تقنية المعلومات (ITSM).","benchmark":"نسبة نجاح تغيير ≥99%، توفر خدمات ≥99.9%، التزام SLA لحل الأعطال.","technical":"إدارة حوادث/مشاكل/تغيير، قاعدة بيانات أصول CMDB، فريق مؤهل لاستمرارية الخدمة.","howto":"حصول الكوادر على شهادات ITIL وإعادة هندسة العمليات.","cert":"ITIL Managing Professional/Service Management Certificate for [Org/Individual].","stages":"1) تدريب واعتماد 2) تصميم العمليات 3) تطبيق أدوات ITSM 4) تحسين مستمر.","id":9,"sector":"dc"},{"code":"IEC61215","cat":"الطاقة المتجددة","name_ar":"معيار IEC 61215 / IEEE 1547","name_en":"Renewable Energy & Grid Interconnection","definition":"معايير جودة الألواح الشمسية وربط الطاقة المتجددة بالشبكة.","benchmark":"تدهور كفاءة ≤0.5%/سنة، فصل عاكسات <100ms، كفاءة تحويل ≥98%.","technical":"اختبارات تحمل حراري وصدمات ميكانيكية، حماية جهد عالي/منخفض وفصل تزامن تلقائي (Anti-Islanding).","howto":"توريد عينات لمختبرات معتمدة (TÜV/UL) وإرسال مستندات التصميم.","cert":"Type Approval Certificate for PV modules/inverters per IEC 61215/IEEE 1547.","stages":"1) تقديم عينات ومستندات 2) فحوصات معملية 3) تفتيش خط الإنتاج 4) إصدار شهادة المطابقة.","id":10,"sector":"dc"},{"code":"NIST-ISA62443","cat":"الأمن السيبراني","name_ar":"معيار NIST SP 800 / ISA-IEC 62443","name_en":"Advanced Cybersecurity for Industrial Systems","definition":"حماية أنظمة التحكم الصناعي والبنية التحتية الحرجة سيبرانياً.","benchmark":"MTTD أقل من دقيقتين، MTTR أقل من 15 دقيقة، مستويات أمان SL1-SL4.","technical":"فصل OT/IT بجدران نار وصمامات بيانات، تشفير ومصادقة ثنائية، مراقبة SIEM/SOC مستمرة.","howto":"اختبارات اختراق VAPT وتوثيق سياسات الأمان الصناعي.","cert":"Cybersecurity Compliance Attestation for IACS per ISA/IEC 62443 & NIST SP 800-82.","stages":"1) تحليل فجوات 2) تطبيق معالجات تقنية 3) اختبار اختراق 4) إصدار تقرير الاعتماد.","id":11,"sector":"dc"},{"code":"ISO41001","cat":"إدارة المرافق","name_ar":"معيار ISO 41001 / BOMA","name_en":"Facility Management","definition":"إدارة المرافق والأصول العقارية والخدمات التشغيلية.","benchmark":"توفر أصول ≥98%، التزام صيانة وقائية ≥95%.","technical":"نظام CMMS/CAFM محوسب، فرق تشغيلية مدربة، خطط استهلاك وكفاءة مساحات.","howto":"توثيق نظام إدارة المرافق والتعاقد مع جهة اعتماد.","cert":"Facility Management System Certificate: [Org] conforms to ISO 41001:2018.","stages":"1) توثيق الهيكل 2) تطبيق CMMS 3) تدقيق خارجي 4) إصدار الشهادة.","id":12,"sector":"dc"},{"code":"ISPS","cat":"الموانئ","name_ar":"معيار IMO/ISPS Code","name_en":"Maritime & Port Security","definition":"أمن الموانئ والمنشآت البحرية ضد المخاطر الأمنية.","benchmark":"تقليل زمن دوران السفن 20%، فحص 100% للحاويات الحساسة، امتثال أمني 100%.","technical":"أسوار وأبراج مراقبة ذكية، منصة رقمية مركزية للتجارة، ضابط أمن معتمد (PFSO).","howto":"إعداد تقييم أمني PFSA وخطة أمن PFSP وتقديمها للسلطات البحرية.","cert":"ISPS Compliance Certificate: [Port] complies with SOLAS Chapter XI-2 & ISPS Code.","stages":"1) تقييم أمني PFSA 2) إعداد خطة PFSP 3) تدقيق ميداني 4) إصدار شهادة الامتثال.","id":13,"sector":"dc"},{"code":"ISO37120","cat":"المدن الذكية","name_ar":"معيار ISO 37120 / IEEE 2413","name_en":"Smart Cities & IoT","definition":"مؤشرات استدامة المدن الذكية والبنية المرجعية لإنترنت الأشياء.","benchmark":"استجابة IoT أقل من ثانيتين، تغطية خدمات ≥90%، دقة بيانات ≥99%.","technical":"بروتوكولات موحدة (MQTT/LoRaWAN)، منصة تشغيل مركزية، تأمين سيبراني للشبكات.","howto":"قياس مؤشرات الأداء الحضرية وتقديمها للتدقيق الدولي.","cert":"City & Smart Infrastructure Certification per ISO 37120 & IEEE 2413.","stages":"1) جمع بيانات 2) نشر بنية IoT 3) تدقيق دولي 4) إصدار التصنيف.","id":14,"sector":"dc"},{"code":"IAEA-API","cat":"الطاقة والصناعات الثقيلة","name_ar":"معيار IAEA & API","name_en":"Nuclear, Oil & Gas Compliance","definition":"سلامة المرافق الصناعية الكبرى ومنشآت الطاقة والنفط والغاز.","benchmark":"أمان هيكلي 3-5 أضعاف الحمل التشغيلي، صفر تسربات بيئية، استجابة ESD بأجزاء الثانية.","technical":"سبائك مقاومة للتآكل والحرارة، حماية متعددة الطبقات، مراكز تحكم حصينة.","howto":"استيفاء تراخيص التشغيل السيادية واختبارات تصنيع صارمة.","cert":"Sovereign Operating License per IAEA & API safety codes.","stages":"1) تقرير تحليل أمان SAR 2) تصنيع وتدقيق فني 3) اختبار هيدروستاتيك 4) ترخيص التشغيل.","id":15,"sector":"dc"},{"code":"ISO22301-DC","cat":"استمرارية الأعمال","name_ar":"معيار ISO 22301","name_en":"Business Continuity Management","definition":"حماية المؤسسات من الاضطرابات وضمان استمرار العمليات الحيوية.","benchmark":"RTO أقل من ساعتين للأنظمة الحرجة، RPO قريب من الصفر، نجاح اختبارات محاكاة 100%.","technical":"تحليل تأثير الأعمال BIA، مواقع تعافي بديلة، تمارين محاكاة دورية.","howto":"توثيق نظام BCMS والتعاقد مع جهة اعتماد.","cert":"Certificate of Registration: BCMS of [Org] conforms to ISO 22301:2019.","stages":"1) BIA وتقييم مخاطر 2) صياغة خطط 3) تدقيق خارجي 4) إصدار شهادة لثلاث سنوات.","id":16,"sector":"dc"},{"code":"TIA606","cat":"الاتصالات","name_ar":"معيار TIA-606-C","name_en":"Administration Standard for Telecom Infrastructure","definition":"ترميز وتوثيق مكونات ومسارات شبكات الاتصالات لتسهيل الصيانة.","benchmark":"دقة سجلات As-Built 100%، تتبع كابل تالف أقل من 3 دقائق.","technical":"ترميز آلي (Barcode/RFID)، ربط بنظام DCIM، ألوان موحدة للفايبر والنحاس.","howto":"تطبيق معايير الترميز أثناء التصميم والتركيب.","cert":"TIA-606-C Compliance Certification Class [1-4] for [Facility].","stages":"1) تصميم الترميز 2) تنفيذ ميداني 3) تدقيق مطابقة 4) شهادة التسليم.","id":17,"sector":"dc"},{"code":"BICSI","cat":"الاتصالات","name_ar":"معيار BICSI (RCDD/DCRD)","name_en":"Telecom & Data Center Design","definition":"اعتماد مهندسي تصميم البنية التحتية للاتصالات ومراكز البيانات.","benchmark":"استغلال رفوف 70-85%، خلو من اختناقات المسارات.","technical":"مسارات كابلات علوية/أرضية قابلة للتوسع، حساب فقد الإشارة لدعم 100G/400G.","howto":"اجتياز اختبارات RCDD/DCRD المعتمدة من BICSI.","cert":"BICSI Design Certification for [Project] by RCDD/DCRD professional.","stages":"1) مخططات أولية 2) مراجعة معتمد BICSI 3) اعتماد التصميم 4) مطابقة التنفيذ.","id":18,"sector":"dc"},{"code":"EN50600","cat":"مراكز البيانات","name_ar":"معيار EN 50600","name_en":"European Data Centre Facilities Standard","definition":"المعيار الأوروبي الشامل لمرافق وبنية مراكز البيانات.","benchmark":"فئات توافرية 1-4، مؤشرات PUE/REF/ERF، فئات حماية 1-4.","technical":"مسارات طاقة/تبريد مضاعفة مستقلة، مراقبة بيئية وأمنية متكاملة.","howto":"مراجعة هندسية وفق أجزاء EN 50600-1 إلى -5 من جهة تفتيش معتمدة.","cert":"EN 50600 Compliance Certificate for [Facility] Availability/Protection Class [1-4].","stages":"1) مراجعة تصميم 2) تدقيق ميداني 3) تشغيل تجريبي 4) شهادة الاعتماد الأوروبي.","id":19,"sector":"dc"},{"code":"LEED-DC","cat":"الاستدامة","name_ar":"معيار LEED for Data Centers","name_en":"LEED Data Centers Rating","definition":"نسخة LEED المتخصصة لمراكز البيانات المستدامة.","benchmark":"PUE مستهدف 1.3-1.4، توفير طاقة 25-45%، توفير مياه ≥30%.","technical":"تبريد حراري طبيعي (Free Cooling)، طاقة شمسية/نظيفة، إدارة نفايات إلكترونية.","howto":"تسجيل المشروع في USGBC ورفع حسابات كفاءة PUE.","cert":"LEED for Data Centers Certification: [Facility] achieved [Level].","stages":"1) تسجيل وهدف 2) دراسات PUE 3) مراجعة تنفيذ 4) شهادة نهائية.","id":20,"sector":"dc"},{"code":"SOC2","cat":"ضوابط الخدمات","name_ar":"معيار SOC 2 / SSAE 18","name_en":"Service Organization Control","definition":"تدقيق ضوابط الأمان والتوافر والسرية لمراكز البيانات ومزودي الخدمات.","benchmark":"امتثال Type II 100%، مراجعة ربع سنوية، صفر حوادث غير معالجة.","technical":"معايير الثقة الخمسة (TSC)، تشفير بيانات السكون والحركة، سجلات تدقيق موثقة.","howto":"التعاقد مع مكتب CPA معتمد لفترة مراقبة 3-6 أشهر.","cert":"SOC 2 Type II Independent Service Auditor's Report for [Org] per AICPA TSC.","stages":"1) تحليل فجوات 2) جمع أدلة تشغيلية 3) تدقيق مستقل 4) إصدار التقرير.","id":21,"sector":"dc"},{"code":"PCIDSS","cat":"أمن المدفوعات","name_ar":"معيار PCI-DSS","name_en":"Payment Card Industry Data Security Standard","definition":"تأمين بيانات بطاقات الدفع والمعاملات المالية الرقمية.","benchmark":"تشفير AES-256 100%، صفر ثغرات حرجة، فحص اختراق ربع سنوي.","technical":"فصل شبكة CDE بجدران نار متقدمة، منع تخزين CVV، تتبع أحداث Audit Trails.","howto":"التعاقد مع QSA معتمد لإجراء ROC/SAQ.","cert":"Attestation of Compliance (AoC) for PCI-DSS v4.0 for [Facility].","stages":"1) تحديد نطاق CDE 2) تطبيق المتطلبات 12 3) تدقيق QSA 4) شهادة AoC.","id":22,"sector":"dc"},{"code":"HIPAA","cat":"الرعاية الصحية","name_ar":"معيار HIPAA","name_en":"Health Insurance Portability and Accountability Act","definition":"حماية سرية وسلامة معلومات الصحة الشخصية (PHI).","benchmark":"تشفير 100% AES-256، صفر انتهاكات خصوصية، استجابة فورية للاختراق.","technical":"تحكم وصول قائم على الأدوار، اتفاقيات BAA مع الموردين، سجلات تدقيق غير قابلة للتعديل.","howto":"تقييم مخاطر دوري والتعاقد مع مكاتب استشارية معتمدة.","cert":"HIPAA Security & Privacy Compliance Attestation for [Facility].","stages":"1) PHI Mapping وفجوات 2) تطبيق ضوابط وBAA 3) تدقيق مستقل 4) تقرير الاعتماد.","id":23,"sector":"dc"},{"code":"FEDRAMP","cat":"الحوسبة السحابية الحكومية","name_ar":"معيار FedRAMP","name_en":"Federal Risk and Authorization Management Program","definition":"اعتماد أمان الخدمات السحابية للجهات الحكومية الأمريكية.","benchmark":"أكثر من 400 ضابط أمني (High Baseline)، تصحيح ثغرات حرجة خلال 30 يوماً.","technical":"ضوابط NIST SP 800-53، عزل تام عن البيئات العامة، مصادقة متعددة العوامل بالشهادات الرقمية.","howto":"تقديم حزمة SAP والتعاقد مع 3PAO معتمد.","cert":"FedRAMP Authorization to Operate (ATO) [Low/Moderate/High] for [Platform].","stages":"1) إعداد SSP 2) تدقيق 3PAO 3) مراجعة JAB 4) إصدار ATO.","id":24,"sector":"dc"},{"code":"ISO27017-18","cat":"أمن السحابة","name_ar":"معيار ISO/IEC 27017 & 27018","name_en":"Cloud Security & Privacy Controls","definition":"ضوابط أمن وخصوصية إضافية للحوسبة السحابية وحماية PII.","benchmark":"التزام فصل بيانات وخصوصية 100%، إبلاغ حوادث خلال 24 ساعة.","technical":"أمان الشبكات الافتراضية وHypervisor، عدم استخدام بيانات العملاء تسويقياً دون إذن، عزل المستأجرين.","howto":"دمج الضوابط ضمن ISMS القائم والتعاقد مع جهة اعتماد.","cert":"ISO/IEC 27017 & 27018 Certification for [Cloud Provider].","stages":"1) تحليل فجوات 2) تطبيق تقني 3) تدقيق خارجي 4) شهادات المطابقة.","id":25,"sector":"dc"},{"code":"CMMC","cat":"الأمن الدفاعي","name_ar":"معيار CMMC","name_en":"Cybersecurity Maturity Model Certification","definition":"نضج الأمن السيبراني لموردي وزارة الدفاع الأمريكية لحماية CUI.","benchmark":"مستويات 1-3، امتثال 100% لعدم وجود ثغرات حرجة.","technical":"ضوابط NIST SP 800-171/172، تشفير CUI في السكون والحركة، رصد أحداث مستمر.","howto":"التعاقد مع C3PAO معتمد لإجراء التدقيق.","cert":"CMMC Compliance & Maturity Certification Level [1-3] for [Org].","stages":"1) تحديد نطاق CUI 2) تطبيق ومعالجة POA&M 3) تدقيق C3PAO 4) إصدار الشهادة.","id":26,"sector":"dc"},{"code":"ISO22237","cat":"مراكز البيانات","name_ar":"معيار ISO/IEC 22237","name_en":"Data Centre Facilities and Infrastructures","definition":"المعادل الدولي لـ EN 50600 لتصميم وتشغيل مراكز البيانات.","benchmark":"فئات توافرية 1-4، مؤشرات PUE/REF مثلى، فئات حماية 1-4.","technical":"مسارات مزدوجة/متعددة، دمج DCIM، مقاومة زلزالية وحريق.","howto":"مراجعة وفق أقسام المعيار التسعة من مكتب استشاري دولي.","cert":"ISO/IEC 22237 International Compliance Certification for [Facility].","stages":"1) مراجعة تصميم 2) تدقيق ميداني 3) تشغيل تجريبي شامل 4) شهادة الاعتماد.","id":27,"sector":"dc"},{"code":"TIA942R4","cat":"مراكز البيانات","name_ar":"معيار TIA-942 Rated 4","name_en":"Certified Design & Facility Rated 4","definition":"أعلى اعتماد TIA-942 (Fault Tolerant) شامل التصميم والإنشاء.","benchmark":"توافرية 99.995%، مسارات 2N+1 أو 4 مسارات معزولة، Zero Downtime.","technical":"فصل مادي كامل لمسارات الاتصالات، غرف مقاومة حريق وانفجار، تحكم دخول متعدد المستويات.","howto":"إرسال المخططات الكاملة لجهة اعتماد TIA-942.","cert":"TIA-942 Rated 4 Certified Facility Certificate for [Facility].","stages":"1) اعتماد التصميم 2) تنفيذ واختبار 3) تفتيش نهائي 4) شهادة Certified Facility.","id":28,"sector":"dc"},{"code":"LEEDZERO","cat":"الاستدامة","name_ar":"معيار LEED Zero","name_en":"Net Zero Carbon, Energy, Water, Waste","definition":"اعتماد صافي انبعاثات/استهلاك صفري.","benchmark":"Net Zero Carbon = 0، تغطية طاقة متجددة 100%، Zero Waste to Landfill.","technical":"طاقة متجددة وPPA، تبريد حراري طبيعي، تدوير مياه مغلق.","howto":"توثيق أداء 12 شهراً ورفعه عبر LEED AP.","cert":"LEED Zero Certification for [Facility] over 12-month operational period.","stages":"1) تحسين كفاءة 2) تركيب متجددات 3) مراقبة 12 شهراً 4) شهادة LEED Zero.","id":29,"sector":"dc"},{"code":"UPTIME-MO","cat":"مراكز البيانات","name_ar":"معيار Uptime M&O","name_en":"Management and Operations Stamp of Approval","definition":"تميز إدارة وتشغيل مراكز البيانات وتقليل الخطأ البشري.","benchmark":"تقليل أخطاء بشرية للحد الأدنى، مطابقة SOPs/MOPs 100%، استجابة طوارئ <5 دقائق.","technical":"برامج تدريب واختبار دورية، توثيق صيانة وإغلاق آمن، إدارة تغيير صارمة.","howto":"دعوة مقيمي Uptime لتدقيق ميداني ومكتبي.","cert":"Uptime Institute M&O Stamp of Approval for [Facility].","stages":"1) مراجعة SOPs 2) تقييم جاهزية 3) تدقيق ميداني 4) منح الختم.","id":30,"sector":"dc"},{"code":"ISO50001-DC","cat":"الطاقة","name_ar":"معيار ISO 50001","name_en":"Energy Management System","definition":"إدارة الطاقة وخفض الاستهلاك والانبعاثات.","benchmark":"خفض استهلاك 10-25% سنوياً، مراقبة EnPIs 100%.","technical":"عدادات ذكية لحظية، مراجعة معدات جديدة طاقياً قبل الشراء.","howto":"تطبيق PDCA والتعاقد مع جهة اعتماد.","cert":"ISO 50001 Certification for EnMS of [Facility].","stages":"1) مراجعة طاقة أولية 2) سياسات وتطبيق 3) تدقيق خارجي 4) شهادة المطابقة.","id":31,"sector":"dc"},{"code":"LEED-OM","cat":"الاستدامة","name_ar":"معيار LEED O+M","name_en":"Operations and Maintenance for Existing Buildings","definition":"اعتماد استدامة المباني القائمة أثناء التشغيل.","benchmark":"Score 80+ للبلاتيني/الذهبي، خفض طاقة/مياه 15-30%.","technical":"صيانة وقائية ذكية، إدارة نفايات Zero Waste، مواد تنظيف صديقة للبيئة.","howto":"جمع بيانات أداء 12 شهراً ورفعها لـ GBCI.","cert":"LEED O+M Certification for [Facility].","stages":"1) تسجيل وجمع بيانات 2) تحسينات تشغيلية 3) رفع تقارير 4) شهادة نهائية.","id":32,"sector":"dc"},{"code":"ISO14001-DC","cat":"البيئة","name_ar":"معيار ISO 14001","name_en":"Environmental Management System","definition":"إدارة الآثار البيئية وتقليل الانبعاثات والنفايات.","benchmark":"امتثال قانوني 100%، خفض نفايات مدافن 20-40%.","technical":"سياسة بيئية موثقة، إدارة مبردات ونفايات إلكترونية، خطط طوارئ بيئية.","howto":"تطبيق PDCA بيئي والتعاقد مع جهة اعتماد.","cert":"ISO 14001 Certification for EMS of [Facility].","stages":"1) حصر جوانب بيئية 2) تطبيق ضوابط 3) تدقيق خارجي 4) شهادة المطابقة.","id":33,"sector":"dc"},{"code":"ISO41001-2","cat":"إدارة المرافق","name_ar":"معيار ISO 41001 (تشغيل متكامل)","name_en":"Integrated Facility Management","definition":"إطار استراتيجي لإدارة الأصول والخدمات المساندة.","benchmark":"التزام SLAs ≥98%، رضا مستفيدين ≥90%، صيانة وقائية تفوق التصحيحية 80%.","technical":"دمج تشغيل كهروميكانيكي وأمن ونظافة تحت إدارة واحدة، CMMS لمتابعة الصيانة.","howto":"توثيق الهيكل والتعاقد مع جهة اعتماد.","cert":"ISO 41001 Certification for [Facility] integrated FM services.","stages":"1) تحليل فجوات 2) تطبيق أدلة موحدة 3) تدقيق خارجي 4) شهادة المطابقة.","id":34,"sector":"dc"},{"code":"ISO22301-2","cat":"استمرارية الأعمال","name_ar":"معيار ISO 22301 (BCMS تفصيلي)","name_en":"Business Continuity - Detailed","definition":"جاهزية التعافي من الكوارث واستمرار العمليات الحرجة.","benchmark":"RTO <4 ساعات، RPO قريب من الصفر، نجاح تمارين 100%.","technical":"BIA وخطط طوارئ، مواقع DR مع مزامنة لحظية، تمارين محاكاة دورية.","howto":"بناء نظام BCMS والتعاقد مع جهة اعتماد.","cert":"ISO 22301 Certification for BCMS of [Facility].","stages":"1) BIA وتقييم مخاطر 2) استراتيجيات وخطط 3) تدريب وتدقيق 4) شهادة المطابقة.","id":35,"sector":"dc"},{"code":"ISO20000","cat":"تقنية المعلومات","name_ar":"معيار ISO/IEC 20000-1","name_en":"IT Service Management","definition":"إدارة تصميم وتسليم ومراقبة خدمات تقنية المعلومات.","benchmark":"التزام SLA ≥99.5%، استجابة حوادث <15 دقيقة، نجاح تغيير ≥98%.","technical":"دورة حياة ITSM كاملة، CMDB مركزي، دمج أمن المعلومات بالعمليات اليومية.","howto":"توثيق العمليات والتعاقد مع جهة اعتماد.","cert":"ISO/IEC 20000-1 Certification for [Org] ITSM system.","stages":"1) تحديد نطاق وفجوات 2) تطبيق العمليات 3) تدقيق مرحلي 4) شهادة المطابقة.","id":36,"sector":"dc"},{"code":"BICSI002","cat":"مراكز البيانات","name_ar":"معيار ANSI/BICSI 002","name_en":"Data Centre Design and Implementation Best Practices","definition":"أفضل ممارسات تصميم وتنفيذ البنية الفيزيائية والكهروميكانيكية.","benchmark":"فئات موثوقية F0-F4، خلو من EMI، نجاح Commissioning 100%.","technical":"تصميم تكييف وتوزيع طاقة لأحمال كثيفة، حماية فيزيائية من الكوارث، تخطيط MDF/IDF.","howto":"اعتماد استشاري RCDD/DCDC لمراجعة المخططات.","cert":"ANSI/BICSI 002 Compliance & Design Certification Reliability Class [F1-F4].","stages":"1) مراجعة تصميم 2) إشراف تنفيذ 3) اختبار قبول 4) شهادة التوافق.","id":37,"sector":"dc"},{"code":"ISO27701","cat":"الخصوصية","name_ar":"معيار ISO/IEC 27701","name_en":"Privacy Information Management System","definition":"امتداد لـ 27001/27002 لحماية بيانات الهوية الشخصية (PII) والامتثال لـ GDPR.","benchmark":"امتثال 100%، استجابة DSAR <30 يوماً، مراجعة كل 6 أشهر.","technical":"فصل مسؤوليات Controller/Processor، تشفير وترميز البيانات، سجل تدفقات بيانات مركزي.","howto":"دمج ضمن ISMS القائم والتعاقد مع جهة اعتماد.","cert":"ISO/IEC 27701 Certification for PIMS of [Org].","stages":"1) تحليل نطاق PII 2) تطبيق ضوابط 3) تدقيق خارجي 4) شهادة المطابقة.","id":38,"sector":"dc"},{"code":"SOC1","cat":"ضوابط الخدمات","name_ar":"معيار SOC 1 / SSAE 18","name_en":"Statement on Standards for Attestation Engagements","definition":"تقييم ضوابط داخلية تؤثر على التقارير المالية للعملاء.","benchmark":"رأي غير متحفظ، تغطية 6-12 شهراً، التزام ضوابط 100%.","technical":"ضوابط وصول فعلي ومنطقي، إدارة تغييرات، مسارات تدقيق موثقة.","howto":"التعاقد مع مكتب CPA لإجراء Attestation Engagement.","cert":"SOC 1 / SSAE 18 Independent Accountant's Report (Type II) for [Org].","stages":"1) تحديد نطاق الضوابط 2) فترة مراقبة 3) تدقيق مستقل 4) إصدار التقرير.","id":39,"sector":"dc"},{"code":"SOC3","cat":"ضوابط الخدمات","name_ar":"معيار SOC 3","name_en":"Trust Services Criteria for General Use","definition":"تقرير ثقة عام قابل للنشر التسويقي بدون تفاصيل حساسة.","benchmark":"رأي غير متحفظ، امتثال Trust Services 100%.","technical":"نفس ضوابط SOC 2 دون الإفصاح عن التفاصيل التقنية الدقيقة.","howto":"اجتياز تدقيق SOC 2 واستخراج تقرير عام.","cert":"SOC 3 Independent Accountant's Report for [Org], suitable for public distribution.","stages":"1) تجهيز معايير النشر 2) تدقيق مستقل 3) إصدار الختم العام 4) النشر التسويقي.","id":40,"sector":"dc"},{"code":"ISO27017-2","cat":"أمن السحابة","name_ar":"معيار ISO/IEC 27017","name_en":"Cloud Security Services","definition":"ضوابط أمنية إضافية مخصصة للحوسبة السحابية.","benchmark":"امتثال 37 ضابطاً 100%، تشفير AES-256.","technical":"عزل الموارد الافتراضية متعدد المستأجرين، سياسات إرجاع/إتلاف بيانات، مراقبة SIEM.","howto":"دمج ضمن ISMS القائم والتعاقد مع جهة اعتماد.","cert":"ISO/IEC 27017 Certification for cloud-specific controls.","stages":"1) تحديد نطاق 2) تطبيق ضوابط 3) تدقيق خارجي 4) شهادة المطابقة.","id":41,"sector":"dc"},{"code":"ISO27018","cat":"الخصوصية","name_ar":"معيار ISO/IEC 27018","name_en":"Protection of PII in Public Clouds","definition":"حماية بيانات الهوية الشخصية المعالجة عبر السحابة العامة.","benchmark":"امتثال 100%، حظر استخدام تسويقي دون إذن.","technical":"سجلات مواقع تخزين PII، تقييد وصول موظفي الدعم، إخطار فوري بالاختراق.","howto":"توسيع ISMS/PIMS القائم والتعاقد مع جهة اعتماد.","cert":"ISO/IEC 27018 Certification for public cloud PII processors.","stages":"1) PII Mapping 2) ضوابط خصوصية إضافية 3) تدقيق خارجي 4) شهادة المطابقة.","id":42,"sector":"dc"},{"code":"PCIDSS-2","cat":"أمن المدفوعات","name_ar":"معيار PCI-DSS (تفصيلي)","name_en":"Payment Card Industry - Detailed","definition":"متطلبات أمان اثنا عشر أساسية لمعالجة بيانات البطاقات.","benchmark":"امتثال 12 متطلباً 100%، فحوصات ضعف سنوية وربع سنوية.","technical":"جدران حماية للمحيط، تغيير كلمات مرور افتراضية، مراقبة SIEM لأحداث الوصول.","howto":"QSA معتمد لإجراء ROC/SAQ.","cert":"PCI-DSS Compliance Certification and Report on Compliance (ROC).","stages":"1) تقييم نطاق CDE 2) تطبيق ومعالجة 3) تدقيق QSA 4) شهادة ROC.","id":43,"sector":"dc"},{"code":"HIPAA-2","cat":"الرعاية الصحية","name_ar":"معيار HIPAA (تفصيلي)","name_en":"HIPAA - Detailed Compliance","definition":"ضوابط إدارية وفيزيائية وتقنية لحماية PHI.","benchmark":"امتثال 100%، تشفير AES-256، صفر حوادث.","technical":"ثلاثة ضوابط أساسية (Administrative/Physical/Technical)، اتفاقيات BAA، سجلات تدقيق.","howto":"تقييم مخاطر ومراجعة سياسات مع HHS.","cert":"HIPAA Compliance Assessment Report for [Facility].","stages":"1) نطاق ومخاطر 2) تطبيق ضوابط وBAA 3) تدقيق مستقل 4) تقرير الاعتماد.","id":44,"sector":"dc"},{"code":"FEDRAMP-2","cat":"الحوسبة السحابية الحكومية","name_ar":"معيار FedRAMP (تفصيلي)","name_en":"FedRAMP - Detailed","definition":"مسارات ترخيص Agency Authorization و JAB Provisional ATO.","benchmark":"أكثر من 320 ضابطاً أمنياً، مراقبة مستمرة شهرية.","technical":"ضوابط NIST SP 800-53، مراقبة ورصد اختراقات لحظية، تشفير AES-256.","howto":"3PAO معتمد وتقديم حزمة أمان كاملة.","cert":"FedRAMP Authorization [Low/Moderate/High] for [Cloud Service].","stages":"1) إعداد SSP ونطاق 2) تدقيق 3PAO 3) مراجعة PMO/JAB 4) مراقبة مستمرة.","id":45,"sector":"dc"},{"code":"CMMC-2","cat":"الأمن الدفاعي","name_ar":"معيار CMMC (تفصيلي)","name_en":"CMMC - Detailed","definition":"حماية معلومات الدفاع غير المصنفة CUI لدى المتعاقدين.","benchmark":"110 ضابط NIST SP 800-171 للمستوى 2، خلو من ثغرات حرجة.","technical":"تحكم وصول مكثف، تشفير وتغييرات موثقة، عزل الشبكات الدفاعية عن العامة.","howto":"C3PAO معتمد رسمياً لإجراء التدقيق.","cert":"CMMC Certification Level [1-3] verified maturity for [Contractor].","stages":"1) تحديد نطاق CUI 2) معالجة POA&M 3) تدقيق C3PAO 4) شهادة النضج.","id":46,"sector":"dc"},{"code":"CSASTAR","cat":"أمن السحابة","name_ar":"معيار CSA STAR","name_en":"Cloud Security Alliance STAR","definition":"تقييم ثقة شامل لمزودي الخدمات السحابية عبر مصفوفة CCM.","benchmark":"امتثال CCM 100%، مستويات 1 (ذاتي) أو 2 (طرف ثالث).","technical":"مواءمة مع 17 مجالاً لمصفوفة CCM، حوكمة بيانات وتشفير وإدارة هويات.","howto":"تقييم ذاتي أو تدقيق مستقل وفق ISO 27001 وCCM.","cert":"CSA STAR Certification/Attestation Level [1-2], listed in STAR Registry.","stages":"1) تقييم مطابقة CCM 2) تقييم ذاتي أو خارجي 3) رفع مستندات 4) الإدراج في السجل.","id":47,"sector":"dc"},{"code":"ITIL4","cat":"تقنية المعلومات","name_ar":"معيار ITIL 4","name_en":"ITIL 4 Modern Service Management","definition":"سلسلة القيمة للخدمة والتحسين المستمر لعمليات مراكز البيانات.","benchmark":"كفاءة تسليم قيمة عالية، التزام SLA ≥99%، رفع إنتاجية >25%.","technical":"34 ممارسة إدارية أساسية، تعاون متعدد الوظائف، مقاييس أداء مستمرة.","howto":"إعادة هندسة العمليات وتأهيل الفرق بشهادات ITIL 4.","cert":"ITIL 4 Operational Compliance & Framework Certification for [Org].","stages":"1) تقييم جاهزية 2) إعادة هندسة عمليات 3) تدريب واعتماد 4) تحسين مستمر.","id":48,"sector":"dc"},{"code":"ISO50001-2","cat":"الطاقة","name_ar":"معيار ISO 50001 (ختامي)","name_en":"Energy Management - Final","definition":"تحسين كفاءة الطاقة وخفض الانبعاثات الكربونية.","benchmark":"تحسين أداء طاقة 5-10% سنوياً، PUE <1.3.","technical":"مراجعة SEUs وEnPIs، أنظمة BMS وعدادات ذكية، خطط كفاءة تبريد وتوزيع طاقة.","howto":"بناء نظام EnMS والتعاقد مع جهة اعتماد.","cert":"ISO 50001 Certification for EnMS establishment and continuous improvement.","stages":"1) مراجعة طاقة وخط أساس 2) سياسة وأهداف 3) تدقيق خارجي 4) شهادة المطابقة.","id":49,"sector":"dc"},{"code":"ISO9001-DC","cat":"الجودة","name_ar":"معيار ISO 9001:2015","name_en":"Quality Management - Data Centers","definition":"نظام إدارة الجودة المؤسسي لمشغلي ومقدمي خدمات مراكز البيانات.","benchmark":"رضا عملاء ≥90%، إغلاق عدم مطابقة 100%، خلو من عيوب تسليم كبرى.","technical":"نهج عمليات وتفكير قائم على المخاطر، توثيق QC/QA للتشغيل والصيانة، مراجعات إدارية دورية.","howto":"توثيق نظام الجودة واجتياز تدقيق داخلي ثم خارجي (Stage 1&2).","cert":"ISO 9001:2015 Certification for [Data Center Operator] service quality.","stages":"1) إعداد توثيق 2) تطبيق وتدقيق داخلي 3) تدقيق خارجي 4) شهادة المطابقة.","id":50,"sector":"dc"},{"code":"ISO21502","cat":"إدارة المشاريع","name_ar":"معيار ISO 21502:2020","name_en":"Guidance on Project Management","definition":"إطار إرشادي شامل لإدارة المشاريع والبرامج والمحافظ عبر دورة الحياة الكاملة.","benchmark":"التزام نطاق/ميزانية/جدول ≥95%، اكتمال حوكمة 100%، مراجعة أداء شهرية.","technical":"مراحل دورة حياة واضحة مع Stage Gates، هياكل موارد ومخاطر وتغيير، إدارة القيمة المكتسبة EVM.","howto":"مواءمة العمليات الداخلية والخضوع لتدقيق داخلي ثم خارجي.","cert":"ISO 21502 Compliance Certification for project management excellence of [Org].","stages":"1) تقييم جاهزية وفجوات 2) إعادة هيكلة وتدريب 3) تدقيق خارجي 4) شهادة المطابقة.","id":51,"sector":"cons"},{"code":"FIDIC","cat":"العقود","name_ar":"عقود الفيديك","name_en":"FIDIC Contracts Suite","definition":"المعيار الأبرز لصياغة وإدارة العقود الهندسية الكبرى (Red/Yellow/Silver Books).","benchmark":"التزام إشعارات (28 يوماً) 100%، تسوية ودية عبر DAAB >80%، أوامر تغيير <10%.","technical":"نظام رصد برامج زمنية ومطالبات وتدفقات نقدية، إدارة قوة قاهرة ومخاطر، أرشفة قانونية دقيقة.","howto":"اعتماد نماذج الفيديك رسمياً وتأهيل فريق إدارة العقود.","cert":"FIDIC Contracts Governance Compliance for [Company] contractual systems.","stages":"1) تحليل فجوات تعاقدية 2) وحدة إدارة عقود 3) اعتماد مهني 4) حوكمة عقود مستمرة.","id":52,"sector":"cons"},{"code":"ISO9001-C","cat":"الجودة","name_ar":"معيار ISO 9001:2015","name_en":"Quality Management Systems","definition":"نظام إدارة الجودة المؤسسي لشركات المقاولات والهندسة.","benchmark":"رضا عملاء ≥90%، إغلاق عدم مطابقة 100%، خلو تسليم من عيوب كبرى ≥98%.","technical":"تفكير قائم على المخاطر، توثيق QC/QA بالموقع والمكتب، مراجعات إدارة دورية.","howto":"توثيق نظام الجودة واجتياز مرحلتي تدقيق (Stage 1&2).","cert":"ISO 9001:2015 Certification for [Company] design and construction services.","stages":"1) إعداد توثيق الجودة 2) تطبيق وتدقيق داخلي 3) تدقيق خارجي 4) الشهادة.","id":53,"sector":"cons"},{"code":"ISO45001-C","cat":"السلامة","name_ar":"معيار ISO 45001:2018","name_en":"Occupational Health & Safety - Construction","definition":"بيئة عمل آمنة في مواقع الإنشاءات ومنع الحوادث.","benchmark":"LTIFR = صفر، إغلاق ملاحظات سلامة 100%، تدريب طوارئ 100%.","technical":"HIRA مستمر، PPE وتأمين حفريات وسقالات، خطط طوارئ وتحليل Near Misses.","howto":"بناء نظام OH&S والتعاقد مع جهة اعتماد.","cert":"ISO 45001:2018 Certification for site safety of [Company].","stages":"1) تقييم مخاطر وسياسات 2) تطبيق وتدريب 3) تدقيق خارجي 4) شهادة ومراجعة دورية.","id":54,"sector":"cons"},{"code":"ISO14001-C","cat":"البيئة","name_ar":"معيار ISO 14001:2015","name_en":"Environmental Management - Construction","definition":"إدارة الآثار البيئية لأنشطة الإنشاء والتشييد.","benchmark":"امتثال قانوني 100%، إعادة تدوير نفايات ≥40%، صفر مخالفات بيئية.","technical":"تقييم جوانب بيئية (مياه، مخلفات، ضوضاء)، خطط مخلفات ومياه صرف، خطط طوارئ تلوث.","howto":"بناء نظام EMS والتعاقد مع جهة اعتماد خارجية.","cert":"ISO 14001:2015 Certification for [Company] construction environmental management.","stages":"1) حصر جوانب بيئية 2) تطبيق وتدريب 3) تدقيق خارجي 4) شهادة ومراجعة.","id":55,"sector":"cons"},{"code":"LEEDBDC","cat":"الاستدامة","name_ar":"معيار LEED v4.1 BD+C","name_en":"Building Design and Construction","definition":"اعتماد تصميم وبناء المباني الخضراء والمستدامة.","benchmark":"مستوى Certified-Platinum (80+ نقطة)، خفض طاقة 30-50%، خفض مياه ≥40%.","technical":"متطلبات إلزامية أساسية بكل مجال، مواد منخفضة الانبعاثات، أنظمة قياس طاقة وهواء داخلي.","howto":"تسجيل المشروع في LEED Online ورفع الوثائق لـ GBCI.","cert":"LEED BD+C Certification: [Project] achieved [Level].","stages":"1) تسجيل واستراتيجية 2) توثيق وتنفيذ 3) مراجعة GBCI 4) الشهادة النهائية.","id":56,"sector":"cons"},{"code":"ISO19650","cat":"النمذجة الرقمية","name_ar":"معيار ISO 19650 (BIM)","name_en":"Building Information Modelling","definition":"إدارة معلومات المشاريع الإنشائية رقمياً عبر دورة الحياة الكاملة.","benchmark":"امتثال CDE 100%، خلو تعارضات >98%، تقليل أوامر تغيير >25%.","technical":"بيئة بيانات مشتركة CDE آمنة، تحديد OIR/PIR/EIR، مستويات تفصيل LOD موحدة.","howto":"مواءمة العمليات الرقمية مع أجزاء المعيار (1 و2) والتدقيق المستقل.","cert":"ISO 19650 BIM Certification for [Firm] information management workflows.","stages":"1) تقييم جاهزية رقمية 2) إعداد CDE وتدريب 3) تدقيق خارجي 4) حوكمة رقمية مستمرة.","id":57,"sector":"cons"},{"code":"ACI","cat":"الخرسانة","name_ar":"معايير ACI","name_en":"American Concrete Institute Standards","definition":"تصميم وتنفيذ واختبار المنشآت الخرسانية المسلحة ومسبقة الصب.","benchmark":"مطابقة f'c 100%، خلو من تعشيش/انفصال حبيبي، التزام الغطاء الخرساني.","technical":"ACI 318 للتصميم، ACI 301 للتنفيذ، ACI 211 لتصميم الخلطات، اختبارات Slump ومكعبات.","howto":"اعتماد مواصفات ACI تعاقدياً وتأهيل فنيين معتمدين.","cert":"ACI Standards Compliance Certification for concrete works of [Project].","stages":"1) مراجعة تصميم وخلطات 2) اعتماد مختبرات وفنيين 3) مراقبة جودة ميدانية 4) شهادة المطابقة.","id":58,"sector":"cons"},{"code":"ASTM","cat":"المواد","name_ar":"معايير ASTM","name_en":"American Society for Testing and Materials","definition":"مواصفات قياسية وطرق اختبار لمواد البناء والمنشآت.","benchmark":"مطابقة اختبارات المواد 100%، خلو من توريدات مرفوضة.","technical":"اختبارات حديد A615، تربة وركام، أسمنت C-series، معايرة معدات دورية.","howto":"النص على ASTM في المواصفات واعتماد مختبرات ISO/IEC 17025.","cert":"ASTM Standards Compliance Certification for material testing of [Project].","stages":"1) تحديد نطاق الاختبارات 2) اعتماد مختبرات 3) مراقبة مستمرة 4) تقارير المطابقة.","id":59,"sector":"cons"},{"code":"PMBOK","cat":"إدارة المشاريع","name_ar":"دليل PMI PMBOK","name_en":"Project Management Body of Knowledge","definition":"أفضل الممارسات ومجالات المعرفة لإدارة المشاريع الاحترافية.","benchmark":"تسليم ضمن النطاق/الميزانية/الجدول >90%، امتثال مجموعات العمليات 100%.","technical":"10 مجالات معرفة، WBS وسجلات مخاطر، أدوات قياس وتحكم مؤسسي.","howto":"مواءمة النظم الداخلية وتأهيل الفريق بشهادات PMP/CAPM.","cert":"PMI PMBOK Methodology Compliance for [Company] project governance.","stages":"1) تقييم منهجي 2) تطوير أدلة وتدريب 3) اعتماد مهني 4) حوكمة وتحسين مستمر.","id":60,"sector":"cons"},{"code":"RICS","cat":"التقييم والمساحة","name_ar":"معايير RICS","name_en":"Royal Institution of Chartered Surveyors","definition":"تنظيم ممارسات تقييم الأصول ومساحة الكميات وإدارة العقارات.","benchmark":"دقة تقديرات تكاليف ±5%، التزام أخلاقي 100%.","technical":"معايير القياس الدولية ICMS، أنظمة مشتريات وقياس كميات، مبادئ RICS الخمسة.","howto":"اعتماد سياسات متوافقة وتأهيل الكوادر (MRICS/FRICS).","cert":"RICS Compliance Certification for [Firm] cost and valuation practices.","stages":"1) مراجعة إجراءات 2) تحديث أطر ومهارات 3) اعتماد مهني 4) حوكمة مستمرة.","id":61,"sector":"cons"},{"code":"OSHA1926","cat":"السلامة","name_ar":"معيار OSHA 29 CFR 1926","name_en":"OSHA Construction Standards","definition":"اشتراطات السلامة الأمريكية الإلزامية لمواقع البناء.","benchmark":"تفتيش يومي 100%، TRIR = صفر، تدريب 10/30-Hour 100%.","technical":"حماية سقوط لارتفاعات >6 أقدام، تأمين حفريات، LOTO للمخاطر الكهربائية.","howto":"مواءمة دليل السلامة وتأهيل مسؤولي السلامة بدورات OSHA.","cert":"OSHA Construction Safety Compliance for [Project] site protocols.","stages":"1) تقييم فجوات 2) تطبيق وتدريب 3) تفتيش دوري 4) برنامج صفر حوادث.","id":62,"sector":"cons"},{"code":"PMISP","cat":"الجدولة","name_ar":"معيار PMI-SP","name_en":"Scheduling Professional","definition":"احترافية إدارة وجدولة الوقت للمشاريع الكبرى (CPM).","benchmark":"دقة تنبؤ معالم ±5%، تحديث دوري 100%.","technical":"طريقة المسار الحرج CPM وPrimavera P6، محاكاة مونت كارلو للمخاطر الزمنية، مؤشر SPI.","howto":"اعتماد منهجية PMI وتأهيل مهندسي التخطيط (PMI-SP).","cert":"PMI-SP Scheduling Standards Compliance for [Company] time management.","stages":"1) تدقيق جدولة حالية 2) توحيد قوالب 3) اعتماد مهني 4) حوكمة زمنية مستمرة.","id":63,"sector":"cons"},{"code":"PMIRMP","cat":"إدارة المخاطر","name_ar":"معيار PMI-RMP","name_en":"Risk Management Professional","definition":"تحديد وتحليل والاستجابة للمخاطر الهندسية والمالية.","benchmark":"تغطية سجل المخاطر 100%، مراجعة شهرية، نجاح استجابة ≥90%.","technical":"تحليل نوعي وكمي، مصفوفة احتمالية وأثر، احتياطيات طوارئ Contingency.","howto":"مواءمة سياسات المخاطر وتأهيل الكوادر (PMI-RMP).","cert":"PMI-RMP Risk Management Compliance for [Company] mitigation strategies.","stages":"1) تقييم مخاطر حالي 2) بناء أدلة وتدريب 3) اعتماد مهني 4) حوكمة مخاطر مستمرة.","id":64,"sector":"cons"},{"code":"LEEDOM-C","cat":"الاستدامة","name_ar":"معيار LEED v4.1 O+M","name_en":"Operations and Maintenance","definition":"اعتماد استدامة المباني القائمة أثناء التشغيل والصيانة.","benchmark":"مستوى Certified-Platinum، Energy Star ≥75، تحويل نفايات ≥50%.","technical":"IPM وGreen Cleaning، مراقبة مستمرة للطاقة والمياه، استطلاعات جودة هواء داخلي.","howto":"تسجيل المبنى وجمع أداء 12 شهراً ورفعه لـ GBCI.","cert":"LEED O+M Certification for [Building] ongoing operations.","stages":"1) تقييم أداء وجمع بيانات 2) تحسينات تشغيلية 3) رفع ومراجعة GBCI 4) شهادة نهائية.","id":65,"sector":"cons"},{"code":"ISO50001-C","cat":"الطاقة","name_ar":"معيار ISO 50001:2018","name_en":"Energy Management - Construction","definition":"إدارة كفاءة الطاقة في مشاريع الإنشاءات الكبرى.","benchmark":"خفض استهلاك 5-10% سنوياً، رصد 100%.","technical":"مراجعات طاقة دورية، معدات منخفضة استهلاك، أنظمة مراقبة لحظية.","howto":"بناء نظام EnMS والتعاقد مع جهة اعتماد.","cert":"ISO 50001:2018 Certification for [Company] construction energy efficiency.","stages":"1) مراجعة استهلاك 2) سياسات وتدريب 3) تدقيق خارجي 4) شهادة المطابقة.","id":66,"sector":"cons"},{"code":"BREEAM","cat":"الاستدامة","name_ar":"معيار BREEAM","name_en":"Building Research Establishment Environmental Assessment","definition":"أقدم نظام عالمي لتقييم استدامة المباين والمشاريع.","benchmark":"مستوى Pass-Outstanding، خفض كربون ≥30%، مواد محلية/معاد تدويرها >25%.","technical":"فئات استدامة (طاقة، صحة، مواد، مياه، نفايات)، مقيّم معتمد منذ التصميم.","howto":"تسجيل المشروع وتعيين BREEAM Assessor مرخص.","cert":"BREEAM Certification: [Project] rated [Level].","stages":"1) تسجيل وتعيين مقيّم 2) تصميم وتنفيذ 3) مراجعة BRE 4) شهادة نهائية.","id":67,"sector":"cons"},{"code":"FIDIC-SUB","cat":"العقود","name_ar":"عقود الباطن FIDIC","name_en":"Conditions of Subcontract","definition":"تنظيم العلاقة بين المقاول الرئيسي ومقاولي الباطن.","benchmark":"امتثال بنود 100%، دفعات في الموعد، صفر نزاعات كبرى.","technical":"إدارة دفعات وتأمينات وخطابات ضمان، إجراءات أوامر تغيير شفافة.","howto":"صياغة العقود وفق نماذج FIDIC وتأهيل الفرق القانونية.","cert":"FIDIC Subcontract Compliance for [Main Contractor / Subcontractor].","stages":"1) صياغة ومراجعة 2) توقيع وتنفيذ 3) إدارة ميدانية 4) إغلاق تعاقدي.","id":68,"sector":"cons"},{"code":"ASCE","cat":"الهندسة المدنية","name_ar":"معايير ASCE","name_en":"American Society of Civil Engineers","definition":"متطلبات أحمال التصميم وسلامة المنشآت المدنية الكبرى.","benchmark":"مطابقة أحمال ASCE 7 بنسبة 100%، خلو من ملاحظات جوهرية بالمراجعة المستقلة.","technical":"أحمال رياح وزلازل وأحمال حية وميتة، هندسة جيوتقنية وأساسات، فحص ميداني للعناصر الحاملة.","howto":"اعتماد أكواد ASCE رسمياً في وثائق التصميم.","cert":"ASCE Standards Compliance Certification for [Project] structural design.","stages":"1) تحليل أحمال 2) مراجعة مستقلة 3) رقابة تنفيذ 4) شهادة المطابقة.","id":69,"sector":"cons"},{"code":"CMAA","cat":"إدارة الإنشاءات","name_ar":"معايير CMAA","name_en":"Construction Management Association of America","definition":"أفضل ممارسات إدارة التشييد عبر مراحل المشروع.","benchmark":"التزام أفضل الممارسات 100%، كفاءة تكلفة وجدول، رضا أصحاب مصلحة.","technical":"7 وظائف أساسية (نطاق، تكلفة، وقت، جودة، سلامة، عقود، استدامة)، مصفوفة RACI.","howto":"مواءمة الهياكل الإدارية وتأهيل مديري إنشاءات (CCM).","cert":"CMAA Standards Compliance for [Company] construction management.","stages":"1) تقييم أداء إداري 2) تحديث أدلة 3) اعتماد مهني 4) حوكمة تشييد مستمرة.","id":70,"sector":"cons"},{"code":"EN1090","cat":"الهياكل المعدنية","name_ar":"معيار EN 1090","name_en":"Execution of Steel and Aluminium Structures","definition":"تصنيع وتركيب الهياكل الفولاذية والمعدنية بعلامة CE الأوروبية.","benchmark":"اجتياز NDT 100%، فئات تنفيذ EXC1-EXC4، صفر عيوب إنشائية.","technical":"نظام ضبط إنتاج المصنع FPC، اعتماد لحّامين وWPS/WPQR، معالجة أسطح مقاومة للتآكل.","howto":"تأهيل المصنع وتدقيق جهة إخطار أوروبية (Notified Body).","cert":"EN 1090 Compliance Certification and CE Marking for [Factory].","stages":"1) تأهيل ورش 2) نظام FPC 3) تدقيق خارجي 4) علامة CE.","id":71,"sector":"cons"},{"code":"AACE","cat":"إدارة التكاليف","name_ar":"معايير AACE International","name_en":"Total Cost Management Framework","definition":"إدارة التكاليف الشاملة والجدولة وتحليل المطالبات.","benchmark":"دقة تقديرات ضمن فئات AACE، التزام مؤشرات EVM (CPI/SPI).","technical":"نظام TCM يربط التكلفة والوقت والجودة، فئات تصنيف تكاليف 5، تحليل مونت كارلو.","howto":"مواءمة أدلة التكاليف وتأهيل الكوادر (CCP/CFCC).","cert":"AACE International Standards Compliance for [Company] cost management.","stages":"1) تدقيق تكاليف حالي 2) تطوير قوالب وتدريب 3) اعتماد مهني 4) حوكمة تكاليف مستمرة.","id":72,"sector":"cons"},{"code":"ISO21500-2","cat":"إدارة المشاريع","name_ar":"معيار ISO 21500","name_en":"Guidance on Project Management - Construction","definition":"إرشادات موحدة لإدارة المشاريع لكل أنواع المنظمات الهندسية.","benchmark":"امتثال إرشادات 100%، تكامل حوكمة وموارد.","technical":"مفاهيم استراتيجية وبيئة المشروع، مراحل بدء/تخطيط/تنفيذ/إغلاق، قوالب موحدة.","howto":"مواءمة الأدلة الإدارية وتدريب الفرق.","cert":"ISO 21500 Guidance Compliance for [Company] project processes.","stages":"1) مراجعة فجوات 2) تحديث سياسات 3) تطبيق وتدقيق 4) شهادة التوافق.","id":73,"sector":"cons"},{"code":"ISO31000","cat":"إدارة المخاطر","name_ar":"معيار ISO 31000:2018","name_en":"Risk Management Guidelines","definition":"مبادئ وإطار عمل لإدارة المخاطر المؤسسية.","benchmark":"تغطية مخاطر 100%، خلو من أزمات غير مخططة.","technical":"دمج المخاطر في القرارات الاستراتيجية، إطار تصميم-تنفيذ-مراقبة-تحسين.","howto":"تأسيس نظام إدارة مخاطر وتدريب القيادات.","cert":"ISO 31000 Risk Management Compliance for [Company] governance.","stages":"1) تقييم نضج المخاطر 2) تطوير إطار 3) تطبيق وتدقيق 4) وثيقة مطابقة.","id":74,"sector":"cons"},{"code":"ISO37001","cat":"النزاهة","name_ar":"معيار ISO 37001:2016","name_en":"Anti-bribery Management Systems","definition":"مكافحة الرشوة وتعزيز النزاهة المؤسسية.","benchmark":"امتثال Due Diligence 100%، صفر بلاغات فساد، تدريب 100%.","technical":"سياسة Zero Tolerance، تقييم مخاطر رشوة دوري، قنوات إبلاغ آمنة (Whistleblowing).","howto":"بناء نظام ABMS والتعاقد مع جهة اعتماد.","cert":"ISO 37001:2016 Certification for ABMS of [Company].","stages":"1) تقييم مخاطر 2) سياسات وتدريب 3) تدقيق خارجي 4) شهادة المطابقة.","id":75,"sector":"cons"},{"code":"ISO22301-C","cat":"استمرارية الأعمال","name_ar":"معيار ISO 22301 (إنشاءات)","name_en":"Business Continuity - Construction","definition":"جاهزية الشركات الإنشائية للأزمات والاضطرابات.","benchmark":"RTO ضمن الحدود، RPO قريب من الصفر، تمارين سنوية 100%.","technical":"BIA لوجستي وتشغيلي، خطط طوارئ لتوقف سلاسل الإمداد، نسخ احتياطي للمستندات الهندسية.","howto":"بناء نظام BCMS والتعاقد مع جهة اعتماد.","cert":"ISO 22301:2019 Certification for [Company] operational resilience.","stages":"1) BIA وفجوات 2) خطط وتمارين 3) تدقيق خارجي 4) شهادة المطابقة.","id":76,"sector":"cons"},{"code":"ISO20400","cat":"المشتريات المستدامة","name_ar":"معيار ISO 20400:2017","name_en":"Sustainable Procurement","definition":"دمج الاستدامة في سياسات الشراء وسلاسل الإمداد.","benchmark":"تقييم موردين 100%، خفض انبعاثات سلسلة الإمداد.","technical":"تقييم دورة حياة المنتجات LCA، معايير عمل عادلة للموردين، مواد محلية صديقة للبيئة.","howto":"مواءمة سياسات المشتريات وتأهيل الفرق.","cert":"ISO 20400 Sustainable Procurement Compliance for [Company].","stages":"1) تدقيق سلسلة إمداد 2) إطار مشتريات مستدامة 3) تطبيق ومتابعة 4) تقارير مطابقة.","id":77,"sector":"cons"},{"code":"ACI318","cat":"الخرسانة","name_ar":"معيار ACI 318","name_en":"Building Code Requirements for Structural Concrete","definition":"كود أمريكي لتصميم وتنفيذ المنشآت الخرسانية المسلحة.","benchmark":"مطابقة f'c 100%، خلو من تعشيش وتشققات، التزام تفاصيل حديد التسليح.","technical":"تصميم لمقاومة العزوم والقص والفتل، اشتراطات متانة وغطاء خرساني، ضبط جودة الخلطات.","howto":"اعتماد ACI 318 رسمياً وتأهيل مهندسي إشراف.","cert":"ACI 318 Structural Concrete Compliance for [Project].","stages":"1) تحقق تصميم 2) خطة اختبار جودة 3) رقابة ميدانية 4) توثيق نهائي.","id":78,"sector":"cons"},{"code":"ASTM-2","cat":"المواد","name_ar":"معايير ASTM (إنشاءات)","name_en":"ASTM - Construction Materials","definition":"مواصفات ميكانيكية وكيميائية لمواد البناء وطرق فحصها.","benchmark":"اجتياز اختبارات 100%، خلو من مواد غير مطابقة.","technical":"مواصفات حديد A615/A706، اختبارات ركام وتربة وأسفلت، شهادات Mill Test.","howto":"إدراج المواصفات في الشروط الفنية واعتماد الموردين.","cert":"ASTM Standards Compliance Certification for [Project] materials.","stages":"1) تحديد مواصفات 2) اعتماد موردين ومختبرات 3) فحوصات ميدانية 4) شهادات مطابقة.","id":79,"sector":"cons"},{"code":"PMBOK-2","cat":"إدارة المشاريع","name_ar":"دليل PMI PMBOK (إنشاءات)","name_en":"PMBOK - Construction Sector","definition":"منهجية قياسية عالمية لإدارة مشاريع الإنشاءات.","benchmark":"نجاح تسليم >90%، امتثال مجالات الأداء الثمانية 100%.","technical":"ميثاق مشروع وWBS وخطة متكاملة، متابعة تغييرات ومخاطر ومالية.","howto":"اعتماد إطار PMBOK وتأهيل الكوادر (PMP).","cert":"PMI PMBOK Standards Compliance for [Company] project governance.","stages":"1) تقييم نضج 2) بناء أدلة وتدريب 3) تنفيذ ومراقبة 4) تحسين مستمر.","id":80,"sector":"cons"},{"code":"RICS-2","cat":"التقييم والمساحة","name_ar":"معايير RICS (تفصيلي)","name_en":"RICS - Detailed","definition":"خدمات مساحة الكميات والتقييم العقاري بمعايير مهنية دولية.","benchmark":"دقة BoQ عالية، التزام أخلاقي 100%، خلو تضارب مصالح.","technical":"قواعد قياس NRM وتقييم IVSC، إدارة عقود ومشتريات وتسوية نزاعات.","howto":"تبني معايير RICS وتأهيل مساحين معتمدين.","cert":"RICS Standards Professional Compliance for [Firm/Consultant].","stages":"1) مواءمة عمليات 2) اعتماد NRM ومدونة سلوك 3) تقديم خدمات 4) مراجعة عضوية.","id":81,"sector":"cons"},{"code":"ISO9001-2","cat":"الجودة","name_ar":"معيار ISO 9001 (إنشاءات تفصيلي)","name_en":"Quality Management - Detailed","definition":"نظام جودة شامل للعمليات الإدارية والتنفيذية الهندسية.","benchmark":"امتثال 100%، صفر عدم مطابقة كبرى، رضا عملاء مرتفع.","technical":"نهج العمليات والتفكير القائم على المخاطر، توثيق شامل ومراجعات إدارية.","howto":"بناء نظام الجودة والتدقيق الداخلي ثم الخارجي.","cert":"ISO 9001:2015 Quality Management Certification for [Company].","stages":"1) تقييم فجوات 2) توثيق وتدريب 3) تدقيق داخلي وخارجي 4) شهادة رسمية.","id":82,"sector":"cons"},{"code":"ISO45001-2","cat":"السلامة","name_ar":"معيار ISO 45001 (تفصيلي)","name_en":"OH&S - Detailed","definition":"نظام سلامة مهنية شامل لمواقع الإنشاءات.","benchmark":"LTI = صفر، التزام PPE 100%، تغطية مخاطر 100%.","technical":"HIRA لكل نشاط، خطط طوارئ وToolbox Talks، لجان سلامة فعالة.","howto":"بناء النظام واجتياز تدقيق خارجي ميداني.","cert":"ISO 45001:2018 OHS Certification for [Company] site operations.","stages":"1) تقييم فجوات 2) توثيق وتدريب 3) تطبيق وتدقيق داخلي 4) تدقيق خارجي وشهادة.","id":83,"sector":"cons"},{"code":"ISO14001-2","cat":"البيئة","name_ar":"معيار ISO 14001 (تفصيلي)","name_en":"EMS - Detailed","definition":"نظام بيئي متكامل لمشاريع الإنشاء الكبرى.","benchmark":"امتثال قانوني 100%، إعادة تدوير مخلفات بناء وفق المستهدف، صفر مخالفات.","technical":"تقييم آثار بيئية، خطط إدارة نفايات ومياه، برامج توعية بيئية للعاملين.","howto":"بناء النظام واجتياز تدقيق خارجي.","cert":"ISO 14001:2015 Environmental Certification for [Company] operations.","stages":"1) مراجعة بيئية 2) توثيق وتدريب 3) تطبيق وتدقيق داخلي 4) تدقيق خارجي وشهادة.","id":84,"sector":"cons"},{"code":"LEEDBDC-2","cat":"الاستدامة","name_ar":"معيار LEED BD+C (تفصيلي)","name_en":"LEED BD+C - Detailed","definition":"اعتماد شامل لتصميم وبناء مباني جديدة مستدامة.","benchmark":"مستوى Certified-Platinum، خفض طاقة/مياه ضمن النماذج المحاكية.","technical":"متطلبات إلزامية أساسية، نقاط استراتيجيات مناخية ومواد وطاقة متجددة.","howto":"تعيين LEED AP وتسجيل المشروع ورفع الملفات لـ GBCI.","cert":"LEED BD+C Certification: [Project] evaluated by GBCI.","stages":"1) تسجيل وهدف 2) توثيق تصميم 3) توثيق تنفيذ 4) مراجعة GBCI وشهادة.","id":85,"sector":"cons"},{"code":"ISO19650-2","cat":"النمذجة الرقمية","name_ar":"معيار ISO 19650 (BIM تفصيلي)","name_en":"BIM - Detailed","definition":"إدارة معلومات رقمية متكاملة لتقليل الهدر وسوء التنسيق.","benchmark":"امتثال CDE 100%، Zero Clash Rate، دقة تسليم COBie.","technical":"بيئة بيانات مشتركة، متطلبات OIR/AIR/PIR، مستويات LOIN وكشف تعارضات.","howto":"مواءمة تقنيات التصميم مع ISO 19650 وتأهيل إدارة BIM.","cert":"ISO 19650 Information Management Compliance for [Company/Project].","stages":"1) تقييم رقمي 2) بروتوكولات وCDE 3) تنفيذ وتنسيق 4) تدقيق واعتماد.","id":86,"sector":"cons"},{"code":"ASCE-2","cat":"الهندسة المدنية","name_ar":"معايير ASCE (تفصيلي)","name_en":"ASCE - Detailed Codes","definition":"أكواد الأحمال والتحليل الإنشائي والجيوتقني للمنشآت المدنية.","benchmark":"مطابقة ASCE 7 بالكامل، دقة تحليل أحمال الرياح والزلازل والثلوج.","technical":"أكواد أساسات ومنشآت مائية ونقل، مراجعة حسابات وتقارير جيوتقنية.","howto":"اعتماد أكواد ASCE في العقود وتوفير أحدث الإصدارات لفرق التصميم.","cert":"ASCE Standards Compliance Certification for [Project] structural/geotechnical work.","stages":"1) مواءمة أكواد 2) تحليل إنشائي 3) مراجعة مستقلة 4) اعتماد حزمة تصاميم.","id":87,"sector":"cons"},{"code":"CMAA-2","cat":"إدارة الإنشاءات","name_ar":"معايير CMAA (تفصيلي)","name_en":"CMAA - Detailed","definition":"إطار احترافي لكفاءات ومسؤوليات مديري الإنشاءات.","benchmark":"امتثال مجالات الممارسة السبعة 100%، ضبط تكاليف وتغييرات فعال.","technical":"عقود إدارة إنشاءات واضحة، تقارير أداء ميدانية ومالية دورية وربطها بـ KPIs.","howto":"تبني أطر CMAA وتأهيل مديري إنشاءات معتمدين (CCM).","cert":"CMAA Standards Compliance for [Company] construction management practices.","stages":"1) تقييم عمليات 2) تحديث أدلة تعاقدية 3) تطبيق ميداني 4) مراجعة واعتماد CCM.","id":88,"sector":"cons"},{"code":"EN1090-2","cat":"الهياكل المعدنية","name_ar":"معيار EN 1090 (تفصيلي)","name_en":"Steel Structures - Detailed","definition":"ضبط إنتاج المصنع وجودة اللحام للهياكل الفولاذية.","benchmark":"اجتياز NDT 100%، التزام فئات EXC، خلو من عيوب تصنيع.","technical":"نظام FPC، مؤهلات لحّامين WPS، شهادات مطابقة مواد خام (ألواح، قطاعات، مسامير).","howto":"تأهيل المصانع وتدقيق Notified Body للحصول على CE.","cert":"EN 1090 Certification of Steel Structures for [Factory] Execution Class [EXC].","stages":"1) تقييم جاهزية تصنيع 2) نظام FPC وإجراءات لحام 3) تدقيق أوروبي 4) علامة CE.","id":89,"sector":"cons"},{"code":"AACE-2","cat":"إدارة التكاليف","name_ar":"AACE (تكاليف وجدولة تفصيلي)","name_en":"AACE - Cost & Schedule Detailed","definition":"منهجية شاملة لتقدير التكاليف والجدولة والتحكم في المشاريع.","benchmark":"دقة تقدير ضمن الفئات القياسية، التزام مؤشرات EVM.","technical":"ربط التكلفة بالوقت والجودة (TCM)، تحليل مخاطر مالية بمونت كارلو، تحكم في التغيير.","howto":"تبني ممارسات AACE وتأهيل الكوادر (CEP/PSP).","cert":"AACE International Standards Compliance for [Company] TCM framework.","stages":"1) تقييم فجوات 2) تحديث قوالب وتدريب 3) تطبيق EVM 4) مراجعة واعتماد مهني.","id":90,"sector":"cons"},{"code":"ISO21500-3","cat":"إدارة المشاريع","name_ar":"معيار ISO 21500 (نهائي)","name_en":"Guidance on PM - Final","definition":"إرشادات موحدة تُستخدم كمرجع لمواءمة ممارسات الإدارة المؤسسية.","benchmark":"امتثال إرشادي 100%، كفاءة توثيق حوكمة المشروع.","technical":"مفاهيم موحدة لإدارة المشاريع، أطر واضحة للمسؤوليات والقرار.","howto":"مواءمة الأدلة الإدارية والخضوع لتدقيق مؤسسي.","cert":"ISO 21500 Guidance Compliance Certification for [Company] methodologies.","stages":"1) مراجعة فجوات 2) تحديث سياسات وتدريب 3) تطبيق وتدقيق 4) شهادة التوافق.","id":91,"sector":"cons"},{"code":"ISO31000-2","cat":"إدارة المخاطر","name_ar":"معيار ISO 31000 (نهائي)","name_en":"Risk Management - Final","definition":"مبادئ وإرشادات إدارة المخاطر المؤسسية والمشروعات.","benchmark":"تغطية سجل مخاطر 100%، خلو من مفاجآت غير مدارة.","technical":"إطار عمل يربط الاستراتيجية بالثقافة والقرار، تحليل نوعي وكمي مستمر.","howto":"تبني المبادئ وتدريب الكوادر على أدوات التحليل الحديثة.","cert":"ISO 31000 Risk Management Compliance for [Company] mitigation frameworks.","stages":"1) تقييم نضج مخاطر 2) تطوير إطار وتدريب 3) تفعيل ومتابعة 4) مراجعة دورية.","id":92,"sector":"cons"},{"code":"ISO37001-2","cat":"النزاهة","name_ar":"معيار ISO 37001 (نهائي)","name_en":"Anti-bribery - Final","definition":"نظام مكافحة رشوة شامل ومستدام للشركات الهندسية.","benchmark":"امتثال Due Diligence 100%، صفر شبهات فساد، تدريب شامل 100%.","technical":"وظيفة امتثال مسؤولة، تقييم مخاطر رشوة دوري، تدقيق مالي وقانوني مستمر.","howto":"بناء نظام ABMS شامل والتعاقد مع جهة اعتماد.","cert":"ISO 37001:2016 Certification for [Company] business integrity.","stages":"1) تقييم مخاطر شامل 2) سياسات وتدريب 3) تدقيق خارجي 4) شهادة ومراجعة مستمرة.","id":93,"sector":"cons"},{"code":"ISO22301-3","cat":"استمرارية الأعمال","name_ar":"معيار ISO 22301 (نهائي)","name_en":"BCMS - Final","definition":"حماية أعمال شركات الإنشاءات من الاضطرابات غير المتوقعة.","benchmark":"RTO/RPO ضمن الحدود المعتمدة، جاهزية اختبار محاكاة 100%.","technical":"BIA شامل، خطط طوارئ ومواقع بديلة، نسخ احتياطي آمن للمستندات الهندسية.","howto":"بناء نظام BCMS شامل والتعاقد مع جهة اعتماد.","cert":"ISO 22301:2019 Certification for [Company] resilience and crisis management.","stages":"1) BIA وتقييم مخاطر 2) خطط وتدريب وتمارين 3) تدقيق خارجي 4) شهادة ومراجعة.","id":94,"sector":"cons"},{"code":"ACI318-2","cat":"الخرسانة","name_ar":"معيار ACI 318 (نهائي)","name_en":"Structural Concrete - Final","definition":"متطلبات نهائية للتصميم والتنفيذ الآمن للمنشآت الخرسانية.","benchmark":"مطابقة اختبارات ضغط 100%، خلو من عيوب جوهرية.","technical":"تحليل إنشائي متقدم لمقاومة الأحمال، اشتراطات تفاصيل حديد ومتانة، ضبط جودة صب ومعالجة.","howto":"اعتماد الكود رسمياً وتوثيق تقارير الاختبار.","cert":"ACI 318 Structural Concrete Compliance for [Project] final acceptance.","stages":"1) تحقق تصميم نهائي 2) اعتماد خلطات 3) رقابة ميدانية شاملة 4) توثيق وإغلاق.","id":95,"sector":"cons"},{"code":"ASTM-3","cat":"المواد","name_ar":"معايير ASTM (نهائي)","name_en":"ASTM - Final Compliance","definition":"ضمان جودة ومطابقة كافة مدخلات المشروع من المواد الخام.","benchmark":"اجتياز فحوصات 100%، خلو سجلات من مواد غير مطابقة.","technical":"بروتوكولات أخذ عينات وظروف حفظ موثقة، شهادات Mill Test لكل توريد.","howto":"اعتماد المواصفات في جداول الكميات وتعيين معامل مستقلة.","cert":"ASTM Standards Compliance Certification for [Project] final material verification.","stages":"1) خريطة مواصفات 2) اعتماد موردين ومعامل 3) توريد وفحص 4) شهادات نهائية.","id":96,"sector":"cons"},{"code":"OSHA-2","cat":"السلامة","name_ar":"معيار OSHA (نهائي)","name_en":"OSHA - Final Compliance","definition":"تطبيق شامل ومستمر للوائح السلامة الأمريكية في مواقع البناء.","benchmark":"صفر مخالفات جسيمة، تغطية تدريب 100%.","technical":"حماية سقوط وحفريات وكهرباء بمعايير صارمة، معدات وقاية شخصية معتمدة.","howto":"إدراج لوائح OSHA إلزامياً وتأهيل مشرفي السلامة.","cert":"OSHA Standards Compliance Certification for [Project] final safety program.","stages":"1) تقييم مخاطر ميدانية 2) خطط وتدريب 3) تنفيذ وتفتيش 4) توثيق وبرنامج صفر حوادث.","id":97,"sector":"cons"},{"code":"RICS-3","cat":"التقييم والمساحة","name_ar":"معايير RICS (نهائي)","name_en":"RICS - Final Global Standards","definition":"المعايير المهنية العالمية الشاملة لتقييم الأصول وإدارة الإنشاءات.","benchmark":"امتثال أخلاقي 100%، دقة تقييم أصول عالية.","technical":"كتاب التقييم الأحمر RICS Red Book، معايير ICMS وNRM، حوكمة وشفافية مالية.","howto":"اعتماد السياسات وتأهيل الكوادر المهنية (MRICS/FRICS).","cert":"RICS Global Standards Compliance for [Company] valuation and QS services.","stages":"1) تقييم خدمات حالية 2) تطوير قوالب 3) تنفيذ احترافي 4) مراجعة مهنية دورية.","id":98,"sector":"cons"},{"code":"ISO55001","cat":"إدارة الأصول","name_ar":"معيار ISO 55001:2014","name_en":"Asset Management Systems","definition":"إدارة الأصول الهندسية والبنية التحتية طوال دورة حياتها.","benchmark":"توفر أصول >99%، امتثال خطط صيانة 100%.","technical":"سياسة واستراتيجية أصول، سجل أصول موحد، صيانة استباقية وتنبؤية وخطط إحلال.","howto":"بناء نظام إدارة أصول والتعاقد مع جهة اعتماد.","cert":"ISO 55001 Asset Management Certification for [Company] physical/infrastructure assets.","stages":"1) تقييم نضج 2) بناء سجل وسياسات 3) تطبيق وتدقيق داخلي 4) تدقيق خارجي وشهادة.","id":99,"sector":"cons"},{"code":"PMBOK-3","cat":"إدارة المشاريع","name_ar":"دليل PMI PMBOK (ختامي)","name_en":"PMBOK - Final Governance","definition":"منهجية ختامية موحدة لقيادة المشاريع الهندسية الكبرى بكفاءة.","benchmark":"امتثال 100% لعمليات ومجالات معرفة PMBOK، تسليم في الموعد والموازنة.","technical":"ميثاق مشروع وWBS وخطط إدارة شاملة، نهج تنبؤي أو مرن (Agile)، قياس أداء KPI.","howto":"تبني الأدلة القياسية وتأهيل الكوادر (PMP).","cert":"PMI PMBOK Compliance Certification for [Company] final project governance.","stages":"1) تقييم نضج 2) تطوير أدلة وتدريب 3) تنفيذ ومتابعة 4) مراجعة ودعم اعتماد PMP.","id":100,"sector":"cons"},{"code":"ICAO-A14","cat":"الطيران والمطارات","name_ar":"معيار ICAO Annex 14","name_en":"Aerodrome Design and Operations","definition":"معايير منظمة الطيران المدني الدولي لتصميم وتشغيل المطارات ومدارج الإقلاع.","benchmark":"التزام أبعاد المدرج والمناطق الآمنة 100%، توفر إضاءة ملاحية بلا انقطاع.","technical":"تصميم مدارج وممرات وفق فئة المطار (Code 1-4F)، أنظمة إنارة وعلامات ملاحية، مناطق أمان نهاية المدرج.","howto":"تدقيق هندسي من مكتب معتمد ومطابقة الرسومات لملحق 14.","cert":"ICAO Annex 14 Compliance Certificate for [Airport] aerodrome design.","stages":"1) مراجعة تصميم 2) تدقيق ميداني 3) تشغيل تجريبي 4) اعتماد التشغيل.","id":101,"sector":"energy"},{"code":"IOSA","cat":"الطيران والمطارات","name_ar":"معيار IATA IOSA","name_en":"IATA Operational Safety Audit","definition":"برنامج تدقيق السلامة التشغيلية لشركات الطيران المعتمد من IATA.","benchmark":"اجتياز جميع بنود التدقيق دون ملاحظات حرجة، تجديد كل سنتين.","technical":"أنظمة إدارة سلامة (SMS) موثقة، تدريب طواقم معتمد، صيانة طائرات وفق الجدول.","howto":"التسجيل عبر IATA والتعاقد مع مدقق IOSA معتمد.","cert":"IOSA Registration Certificate for [Airline].","stages":"1) تقييم ذاتي 2) تدقيق ميداني 3) معالجة ملاحظات 4) التسجيل.","id":102,"sector":"energy"},{"code":"FAA139","cat":"الطيران والمطارات","name_ar":"معيار FAA Part 139","name_en":"Certification of Airports","technical":"خطط طوارئ ومكافحة حريق مطاري، صيانة أرصفة ومدارج، إدارة الحياة البرية بالمحيط.","definition":"اشتراطات الطيران الفيدرالي الأمريكي لترخيص تشغيل المطارات التجارية.","benchmark":"التزام 100% بخطط الطوارئ ARFF، تفتيش يومي للمدرج.","howto":"تقديم دليل تشغيل المطار (Airport Certification Manual) لـ FAA.","cert":"FAA Part 139 Airport Operating Certificate for [Airport].","stages":"1) إعداد دليل التشغيل 2) تفتيش FAA 3) معالجة ملاحظات 4) إصدار الترخيص.","id":103,"sector":"energy"},{"code":"ICAO-A17","cat":"أمن الطيران","name_ar":"معيار ICAO Annex 17","name_en":"Aviation Security","definition":"أمن الطيران المدني ضد التدخل غير المشروع والإرهاب.","benchmark":"فحص 100% للركاب والبضائع، صفر اختراقات أمنية.","technical":"أنظمة فحص أشعة وكشف متفجرات، تحكم دخول مناطق حساسة، خطط استجابة طوارئ أمنية.","howto":"اعتماد برنامج أمن وطني للمطار ومراجعته دورياً.","cert":"ICAO Annex 17 Aviation Security Compliance for [Airport].","stages":"1) تقييم أمني 2) تطبيق ضوابط 3) تدقيق دوري 4) اعتماد البرنامج.","id":104,"sector":"energy"},{"code":"EASA-CS","cat":"الطيران والمطارات","name_ar":"معيار EASA Certification Specifications","name_en":"European Aviation Safety Standards","definition":"مواصفات السلامة الأوروبية لتصميم وتشغيل الطائرات والمطارات.","benchmark":"امتثال كامل لمواصفات الصلاحية للطيران (Airworthiness).","technical":"اعتماد تصميم هيكلي وأنظمة طائرة، برامج صيانة معتمدة، تدريب طواقم فني.","howto":"التقديم لـ EASA للحصول على شهادة النوع (Type Certificate).","cert":"EASA Type Certificate / Compliance for [Aircraft/Facility].","stages":"1) تقديم ملف تصميم 2) اختبارات واعتماد 3) تدقيق دوري 4) إصدار الشهادة.","id":105,"sector":"energy"},{"code":"IMO-SOLAS","cat":"الملاحة البحرية","name_ar":"معيار IMO SOLAS","name_en":"Safety of Life at Sea","definition":"أهم اتفاقية دولية لسلامة السفن والملاحة البحرية.","benchmark":"التزام معدات الإنقاذ والإطفاء 100%، صفر حوادث غرق غير مبررة.","technical":"أنظمة إنقاذ وإطفاء بحرية، استقرار وسلامة إنشائية للسفينة، أنظمة اتصال طوارئ GMDSS.","howto":"تفتيش دوري من إدارة العلم (Flag State) أو المجتمعة المعتمدة.","cert":"SOLAS Safety Certificate for [Vessel].","stages":"1) تفتيش تصميم 2) تفتيش دوري 3) معالجة ملاحظات 4) إصدار الشهادة.","id":106,"sector":"energy"},{"code":"IMO-MARPOL","cat":"الملاحة البحرية","name_ar":"معيار IMO MARPOL","name_en":"Marine Pollution Prevention","definition":"منع التلوث البحري الناتج عن السفن (نفط، نفايات، انبعاثات).","benchmark":"صفر تسرب زيتي، التزام حدود انبعاثات كبريت 100%.","technical":"أنظمة فصل مياه الصابورة، معالجة نفايات على متن السفينة، وقود منخفض الكبريت.","howto":"تفتيش شهادة منع التلوث الزيتي (IOPP) من إدارة العلم.","cert":"MARPOL Certificate of Compliance for [Vessel].","stages":"1) تفتيش أنظمة 2) اختبار معدات 3) تدقيق دوري 4) إصدار الشهادة.","id":107,"sector":"energy"},{"code":"IMO-ISM","cat":"الملاحة البحرية","name_ar":"معيار IMO ISM Code","name_en":"International Safety Management Code","definition":"نظام إدارة السلامة التشغيلية للسفن وشركات التشغيل البحري.","benchmark":"امتثال 100% لإجراءات السلامة الموثقة، صفر حوادث تشغيلية كبرى.","technical":"دليل إدارة سلامة موثق، تدريب طاقم وتمارين طوارئ، تدقيق داخلي دوري.","howto":"الحصول على شهادة الامتثال (DOC) للشركة وشهادة إدارة السلامة (SMC) للسفينة.","cert":"ISM Code Document of Compliance (DOC) / Safety Management Certificate (SMC).","stages":"1) بناء نظام SMS 2) تدقيق داخلي 3) تدقيق خارجي 4) إصدار الشهادات.","id":108,"sector":"energy"},{"code":"PIANC","cat":"الموانئ","name_ar":"معيار PIANC","name_en":"Waterborne Transport Infrastructure Guidelines","definition":"إرشادات هندسية عالمية لتصميم الموانئ والأرصفة والمجاري المائية.","benchmark":"مطابقة تصميم الأرصفة لأحمال السفن الحديثة، عمق ملاحي آمن.","technical":"تصميم أرصفة ومصدات ارتطام، جرف قنوات ملاحية، أنظمة إرشاد ملاحي.","howto":"مراجعة هندسية وفق إرشادات PIANC من استشاري بحري معتمد.","cert":"PIANC Guidelines Compliance Report for [Port] infrastructure design.","stages":"1) مراجعة تصميم 2) دراسات هيدروليكية 3) تنفيذ ومراقبة 4) تقرير مطابقة.","id":109,"sector":"energy"},{"code":"ISO28000","cat":"سلاسل الإمداد","name_ar":"معيار ISO 28000","name_en":"Supply Chain Security Management","definition":"إدارة أمن سلاسل الإمداد والخدمات اللوجستية والموانئ.","benchmark":"تقييم مخاطر أمنية 100% للشحنات، صفر اختراقات أمنية لوجستية.","technical":"تقييم مخاطر أمن الشحن، تتبع ومراقبة الحاويات، خطط استجابة لحوادث أمنية.","howto":"بناء نظام إدارة أمن سلسلة الإمداد والتعاقد مع جهة اعتماد.","cert":"ISO 28000 Certification for [Port/Logistics Company] supply chain security.","stages":"1) تقييم مخاطر 2) تطبيق ضوابط 3) تدقيق خارجي 4) شهادة المطابقة.","id":110,"sector":"energy"},{"code":"IAEA-SS","cat":"الطاقة النووية","name_ar":"معيار IAEA Safety Standards","name_en":"Nuclear Safety Standards","definition":"معايير السلامة النووية الشاملة لتصميم وتشغيل المحطات والمرافق النووية.","benchmark":"أمان احتواء مضاعف، صفر تسرب إشعاعي، استجابة ESD بأجزاء الثانية.","technical":"طبقات حماية متعددة (Defense in Depth)، ملاجئ تحكم حصينة، أنظمة تبريد طوارئ.","howto":"ترخيص سيادي من الهيئة النووية الوطنية بعد دراسات أمان شاملة.","cert":"Nuclear Operating License per IAEA Safety Standards for [Facility].","stages":"1) دراسة أمان SAR 2) تدقيق فني 3) تشغيل تجريبي مراقب 4) ترخيص التشغيل.","id":111,"sector":"energy"},{"code":"API1104","cat":"النفط والغاز","name_ar":"معيار API 1104","name_en":"Welding of Pipelines","definition":"مواصفات لحام خطوط الأنابيب الناقلة للنفط والغاز.","benchmark":"اجتياز فحص NDT للحام 100%، صفر عيوب لحام حرجة.","technical":"اعتماد لحّامين ومؤهلات WPS، فحص شعاعي وموجات فوق صوتية للحامات، معايرة معدات لحام.","howto":"اعتماد إجراءات اللحام واختبار عينات في مختبر معتمد.","cert":"API 1104 Welding Qualification Certificate for [Pipeline Project].","stages":"1) اعتماد إجراءات 2) اختبار لحّامين 3) فحص ميداني NDT 4) شهادة القبول.","id":112,"sector":"energy"},{"code":"API510","cat":"النفط والغاز","name_ar":"معيار API 510/570/653","name_en":"Pressure Vessel, Piping & Tank Inspection","definition":"فحص وصيانة أوعية الضغط وخطوط الأنابيب وخزانات التخزين في المنشآت النفطية.","benchmark":"جدولة فحص دوري 100%، صفر تسربات أو انفجارات.","technical":"فحص سماكة جدران بالموجات فوق الصوتية، تقييم تآكل، تجديد ترخيص التشغيل الدوري.","howto":"تعيين مفتش معتمد (API 510/570/653 Inspector) لإجراء الفحوصات الدورية.","cert":"API Inspection Certificate for [Vessel/Pipeline/Tank].","stages":"1) جدولة فحص 2) فحص ميداني 3) تقييم نتائج 4) تجديد ترخيص التشغيل.","id":113,"sector":"energy"},{"code":"NACE-AMPP","cat":"حماية التآكل","name_ar":"معيار NACE / AMPP","name_en":"Corrosion Control Standards","definition":"حماية الأصول والمعدات الثقيلة من التآكل في البيئات القاسية.","benchmark":"فعالية الحماية الكاثودية ≥95%، صفر تسربات ناتجة عن تآكل.","technical":"أنظمة حماية كاثودية (SP0169)، طلاءات مقاومة للتآكل، مراقبة دورية لمعدلات التآكل.","howto":"تأهيل مهندسي تآكل معتمدين (NACE/AMPP Certified) وتطبيق برامج مراقبة.","cert":"NACE/AMPP Corrosion Control Compliance Certificate for [Facility].","stages":"1) تقييم مخاطر تآكل 2) تصميم حماية 3) تركيب ومراقبة 4) تقرير مطابقة دوري.","id":114,"sector":"energy"},{"code":"ASME-B31","cat":"النفط والغاز","name_ar":"معيار ASME B31 (أنابيب الضغط)","name_en":"Pressure Piping Codes","definition":"أكواد تصميم وتنفيذ خطوط أنابيب النفط والغاز والمرافق الصناعية.","benchmark":"مطابقة سماكة وضغط تصميم 100%، اجتياز اختبار هيدروستاتيكي.","technical":"حسابات إجهاد وضغط تصميم (B31.3/31.4/31.8)، اختيار مواد مقاومة، دعامات ومرونة الأنابيب.","howto":"اعتماد الكود في التصميم التعاقدي وتنفيذ اختبارات القبول.","cert":"ASME B31 Piping Code Compliance Certificate for [Project].","stages":"1) تصميم ومراجعة 2) تصنيع وتركيب 3) اختبار هيدروستاتيكي 4) شهادة القبول.","id":115,"sector":"energy"},{"code":"ASME-BPVC","cat":"أوعية الضغط","name_ar":"معيار ASME BPVC","name_en":"Boiler and Pressure Vessel Code","definition":"كود تصميم وتصنيع واختبار المراجل وأوعية الضغط.","benchmark":"اجتياز اختبار ضغط 100%، صفر تسريبات عند التشغيل التجريبي.","technical":"حسابات سماكة جدران للضغط والحرارة، فحص لحام NDT، صمامات أمان معايرة.","howto":"تصنيع وفق الكود واعتماد من هيئة تفتيش مرخصة (Authorized Inspector).","cert":"ASME BPVC Stamp Certification for [Vessel/Boiler].","stages":"1) تصميم ومراجعة 2) تصنيع وفحص 3) اختبار ضغط 4) ختم ASME.","id":116,"sector":"energy"},{"code":"IEC61850","cat":"الطاقة الكهربائية","name_ar":"معيار IEC 61850","name_en":"Substation Automation Communication","definition":"بروتوكولات اتصال أنظمة أتمتة محطات التحويل الكهربائية.","benchmark":"زمن استجابة اتصال أقل من 4 مللي ثانية للحماية الحرجة.","technical":"بنية اتصال موحدة بين أجهزة الوقاية والتحكم، اختبار تشغيل بيني (Interoperability)، أمان سيبراني للشبكة.","howto":"تصميم واختبار الشبكة وفق المعيار من مهندس معتمد.","cert":"IEC 61850 Interoperability Compliance for [Substation].","stages":"1) تصميم شبكة اتصال 2) اختبار بيني 3) تشغيل تجريبي 4) شهادة الامتثال.","id":117,"sector":"energy"},{"code":"NERC-CIP","cat":"أمن الشبكات الكهربائية","name_ar":"معيار NERC CIP","name_en":"Critical Infrastructure Protection","definition":"حماية البنية التحتية الحرجة لشبكات الكهرباء من التهديدات السيبرانية والفيزيائية.","benchmark":"تصحيح ثغرات حرجة خلال المهل المحددة، تدقيق أمني سنوي.","technical":"تصنيف أصول حرجة (BES Cyber Systems)، ضوابط وصول ومراقبة مستمرة، أمن فيزيائي للمحطات.","howto":"تصنيف الأصول والتعاقد مع مدقق NERC معتمد.","cert":"NERC CIP Compliance Certification for [Utility].","stages":"1) تصنيف أصول 2) تطبيق ضوابط 3) تدقيق سنوي 4) شهادة الامتثال.","id":118,"sector":"energy"},{"code":"IEC61511","cat":"السلامة الوظيفية","name_ar":"معيار IEC 61511","name_en":"Functional Safety - Safety Instrumented Systems","definition":"أنظمة الأمان الآلي (SIS) لصناعات العمليات النفطية والكيميائية.","benchmark":"مستوى تكامل أمان SIL 1-4 محقق حسب تقييم المخاطر.","technical":"تحليل طبقات الحماية (LOPA)، اختبار دوري لدوائر الإيقاف الطارئ، توثيق دورة حياة الأمان.","howto":"دراسة SIL وتصميم واختبار أنظمة SIS من مهندس أمان وظيفي معتمد.","cert":"IEC 61511 Functional Safety Compliance Certificate for [Plant].","stages":"1) تحليل LOPA وتحديد SIL 2) تصميم SIS 3) اختبار دوري 4) شهادة الأمان الوظيفي.","id":119,"sector":"energy"},{"code":"IEC61508","cat":"السلامة الوظيفية","name_ar":"معيار IEC 61508","name_en":"Functional Safety of Electrical/Electronic Systems","definition":"المعيار الأم للسلامة الوظيفية لأنظمة التحكم الإلكترونية الحرجة.","benchmark":"تحقيق مستوى SIL المطلوب مع معدل فشل خطر محسوب (PFD).","technical":"دورة حياة أمان كاملة من التصميم للتقاعد، تحليل أنماط الفشل FMEDA، اختبارات دورية.","howto":"اعتماد المصمم لممارسات IEC 61508 واختبار الأجهزة في مختبر معتمد.","cert":"IEC 61508 Certified Safety Component/System for [Product/Plant].","stages":"1) تحليل مخاطر 2) تصميم SIL 3) اختبار واعتماد 4) شهادة الأمان.","id":120,"sector":"energy"},{"code":"NFPA30","cat":"سلامة الحريق","name_ar":"معيار NFPA 30","name_en":"Flammable and Combustible Liquids Code","definition":"تخزين ومناولة السوائل القابلة للاشتعال في المنشآت الصناعية.","benchmark":"التزام مسافات أمان تخزين 100%، صفر حرائق ناتجة عن سوائل قابلة للاشتعال.","technical":"أحواض احتواء ثانوية للخزانات، أنظمة تهوية وكشف أبخرة، فصل مناطق التخزين عن مصادر الاشتعال.","howto":"مراجعة تصميم التخزين من مهندس سلامة معتمد وتقديمه للدفاع المدني.","cert":"NFPA 30 Compliance Certificate for [Storage Facility].","stages":"1) مراجعة تصميم تخزين 2) تركيب أنظمة حماية 3) فحص ميداني 4) ترخيص التشغيل.","id":121,"sector":"energy"},{"code":"NFPA850","cat":"سلامة الحريق","name_ar":"معيار NFPA 850","name_en":"Fire Protection for Electric Generating Plants","definition":"الحماية من الحريق لمحطات توليد الكهرباء ومحطات التحويل.","benchmark":"أنظمة إطفاء تلقائي 100% للمناطق الحرجة (مولدات، محولات).","technical":"أنظمة إطفاء رذاذ مائي للمحولات، فصل كابلات الطاقة عن مصادر الاشتعال، كشف حريق مبكر.","howto":"مراجعة تصميم السلامة من الحريق للمحطة من مهندس معتمد.","cert":"NFPA 850 Fire Protection Compliance for [Power Plant].","stages":"1) مراجعة تصميم 2) تركيب أنظمة إطفاء 3) اختبار تشغيل 4) شهادة السلامة.","id":122,"sector":"energy"},{"code":"IEC60079","cat":"المناطق الخطرة","name_ar":"معيار IEC 60079 / ATEX","name_en":"Explosive Atmospheres Equipment","definition":"تصنيف واعتماد المعدات الكهربائية العاملة في المناطق ذات الأجواء المتفجرة.","benchmark":"تصنيف مناطق Zone 0/1/2 دقيق 100%، معدات معتمدة Ex-rated فقط.","technical":"تصنيف مناطق خطرة حسب احتمال وجود غازات قابلة للانفجار، معدات كهربائية مقاومة للانفجار (Ex d/Ex e/Ex i)، فحص دوري للأختام.","howto":"دراسة تصنيف المناطق الخطرة واعتماد المعدات من مختبر معتمد (ATEX/IECEx).","cert":"IEC 60079 / ATEX Certificate of Conformity for [Equipment/Facility].","stages":"1) دراسة تصنيف مناطق 2) اختيار معدات معتمدة 3) تركيب وفحص 4) شهادة المطابقة.","id":123,"sector":"energy"},{"code":"ISO20815","cat":"النفط والغاز","name_ar":"معيار ISO 20815","name_en":"Petroleum Production Assurance and Reliability","definition":"ضمان الإنتاج والموثوقية لمنشآت إنتاج النفط والغاز.","benchmark":"توفرية إنتاج مستهدفة ≥95%، تحليل موثوقية دوري RAM.","technical":"تحليل موثوقية وتوفرية وقابلية صيانة (RAM Analysis)، خطط صيانة قائمة على المخاطر.","howto":"إجراء دراسة RAM من مهندسي موثوقية معتمدين.","cert":"ISO 20815 Production Assurance Compliance Report for [Facility].","stages":"1) دراسة RAM أولية 2) تطبيق توصيات 3) مراقبة أداء 4) تقرير مطابقة دوري.","id":124,"sector":"energy"},{"code":"API6A","cat":"النفط والغاز","name_ar":"معيار API 6A","name_en":"Wellhead and Christmas Tree Equipment","definition":"مواصفات تصميم وتصنيع معدات رأس البئر وأشجار عيد الميلاد النفطية.","benchmark":"اجتياز اختبار ضغط تصنيعي 100%، صفر تسربات عند التشغيل.","technical":"اختبار ضغط هيدروستاتيكي للمعدات، مواد مقاومة للتآكل وكبريتيد الهيدروجين، معايرة صمامات أمان.","howto":"تصنيع واختبار المعدات من مصنع معتمد API Monogram.","cert":"API 6A Monogram Certification for [Equipment].","stages":"1) تصميم واعتماد 2) تصنيع واختبار 3) تفتيش جهة معتمدة 4) شهادة API Monogram.","id":125,"sector":"energy"},{"code":"ISO13623","cat":"خطوط الأنابيب","name_ar":"معيار ISO 13623","name_en":"Pipeline Transportation Systems","definition":"تصميم وتشغيل أنظمة نقل النفط والغاز عبر الأنابيب.","benchmark":"مطابقة تصميم ضغط وسماكة 100%، مراقبة تسرب مستمرة.","technical":"حماية كاثودية ومراقبة تآكل، أنظمة كشف تسرب وإغلاق طوارئ، ممرات حماية للأنابيب.","howto":"تصميم وتنفيذ وفق المعيار مع اعتماد استشاري متخصص.","cert":"ISO 13623 Pipeline Compliance Certificate for [Project].","stages":"1) تصميم هندسي 2) تنفيذ وتفتيش 3) اختبار هيدروستاتيكي 4) شهادة القبول.","id":126,"sector":"energy"},{"code":"DNV-OFFSHORE","cat":"المنشآت البحرية","name_ar":"معيار DNV Offshore Standards","name_en":"Offshore Structures Standards","definition":"معايير DNV لتصميم وتشغيل المنشآت البحرية النفطية والرياح البحرية.","benchmark":"مطابقة تحليل أحمال موجية ورياح 100%، عمر تصميم إنشائي محقق.","technical":"تحليل ديناميكي للهياكل البحرية، حماية كاثودية تحت الماء، فحص دوري للأساسات.","howto":"مراجعة تصميم واعتماد من DNV أو جهة تصنيف بحرية معتمدة.","cert":"DNV Verification Certificate for [Offshore Structure].","stages":"1) مراجعة تصميم 2) تفتيش تصنيع 3) تفتيش تركيب بحري 4) شهادة التصنيف.","id":127,"sector":"energy"},{"code":"ISO19901","cat":"المنشآت البحرية","name_ar":"معيار ISO 19901","name_en":"Offshore Structures Design Requirements","definition":"متطلبات تصميم المنشآت البحرية الثابتة والعائمة لصناعة النفط.","benchmark":"مطابقة تحليل إجهاد وتعب المواد (Fatigue) 100%.","technical":"تحليل بيئي (أمواج، رياح، تيارات)، تصميم أساسات بحرية، برامج فحص وصيانة دورية تحت الماء.","howto":"اعتماد التصميم من هيئة تصنيف بحرية معتمدة.","cert":"ISO 19901 Design Verification Certificate for [Platform].","stages":"1) تحليل بيئي وهيكلي 2) مراجعة تصميم 3) تفتيش تنفيذ 4) شهادة التصنيف.","id":128,"sector":"energy"},{"code":"ISO14224","cat":"الموثوقية","name_ar":"معيار ISO 14224","name_en":"Reliability Data Collection (RAM)","definition":"جمع وتبادل بيانات الموثوقية والصيانة لمعدات صناعة النفط والغاز.","benchmark":"دقة تسجيل بيانات الأعطال 100%، تحديث قاعدة بيانات دوري.","technical":"تصنيف موحد للمعدات والأعطال، قاعدة بيانات MTBF/MTTR، تحليل اتجاهات الأعطال.","howto":"تطبيق نظام تصنيف موحد وربطه بنظام CMMS.","cert":"ISO 14224 Data Quality Compliance for [Facility] reliability program.","stages":"1) تصنيف معدات 2) بناء قاعدة بيانات 3) تحليل دوري 4) تقرير موثوقية.","id":129,"sector":"energy"},{"code":"TSA-PIPELINE","cat":"أمن الطاقة","name_ar":"معيار TSA Pipeline Security","name_en":"Pipeline Security Guidelines","definition":"إرشادات أمنية أمريكية لحماية خطوط أنابيب النفط والغاز من التهديدات.","benchmark":"تقييم مخاطر أمنية سنوي، صفر اختراقات فيزيائية أو سيبرانية.","technical":"تصنيف أصول حرجة، مراقبة ميدانية وسيبرانية للمحطات، خطط استجابة حوادث أمنية.","howto":"تقديم خطة أمن الأنابيب وتحديثها دورياً لهيئة النقل الأمريكية.","cert":"TSA Pipeline Security Compliance Report for [Operator].","stages":"1) تقييم مخاطر 2) تطبيق ضوابط 3) تدقيق دوري 4) تقرير الامتثال.","id":130,"sector":"energy"},{"code":"ISO39001","cat":"النقل والسلامة المرورية","name_ar":"معيار ISO 39001","name_en":"Road Traffic Safety Management","definition":"إدارة سلامة الطرق للمؤسسات المشغلة لأساطيل النقل.","benchmark":"خفض حوادث مرورية سنوياً، التزام تدريب سائقين 100%.","technical":"تقييم مخاطر الطرق والمركبات، برامج تدريب وتقييم سائقين، تحليل حوادث وإجراءات تصحيحية.","howto":"بناء نظام RTSMS والتعاقد مع جهة اعتماد.","cert":"ISO 39001 Certification for [Operator] Road Traffic Safety Management.","stages":"1) تقييم مخاطر طرق 2) تطبيق برامج سلامة 3) تدقيق خارجي 4) شهادة المطابقة.","id":131,"sector":"energy"},{"code":"API580","cat":"النفط والغاز","name_ar":"معيار API 580/581","name_en":"Risk-Based Inspection Methodology","definition":"منهجية التفتيش القائم على المخاطر لمعدات المصافي والمصانع الكيميائية.","benchmark":"تغطية تقييم مخاطر 100% للمعدات الحرجة، جدولة تفتيش محسّنة.","technical":"حساب احتمالية وتأثير الفشل (PoF/CoF)، ترتيب أولويات التفتيش حسب المخاطر، تحديث دوري لبيانات التآكل.","howto":"إجراء دراسة RBI من مهندسي تفتيش معتمدين (API 580/581).","cert":"API RBI Assessment Report for [Refinery/Plant].","stages":"1) جمع بيانات معدات 2) تحليل مخاطر PoF/CoF 3) خطة تفتيش محدثة 4) تقرير RBI.","id":132,"sector":"energy"},{"code":"IOGP","cat":"النفط والغاز","name_ar":"إرشادات IOGP","name_en":"International Oil & Gas Producers Guidelines","definition":"أفضل الممارسات الدولية لسلامة وبيئة صناعة النفط والغاز الصادرة عن IOGP.","benchmark":"التزام مؤشرات سلامة العمليات (Process Safety) الدولية، صفر حوادث كبرى (Tier 1).","technical":"مؤشرات أداء سلامة عمليات (PSPI)، برامج قيادة السلامة، مراجعة حوادث شبه فائتة.","howto":"تبني إرشادات IOGP ضمن نظام إدارة السلامة المؤسسي.","cert":"IOGP Guidelines Alignment Statement for [Operator].","stages":"1) مواءمة مؤشرات 2) تطبيق برامج قيادة سلامة 3) مراجعة دورية 4) تقرير الالتزام.","id":133,"sector":"energy"},{"code":"GRI-ENERGY","cat":"الاستدامة والـESG","name_ar":"معيار GRI للطاقة","name_en":"Global Reporting Initiative - Energy Sector","definition":"إطار التقارير العالمي للاستدامة والأداء البيئي والاجتماعي لقطاع الطاقة.","benchmark":"نشر تقرير استدامة سنوي كامل، تغطية مؤشرات GRI 100%.","technical":"قياس انبعاثات كربونية (Scope 1/2/3)، مؤشرات سلامة وصحة مهنية، حوكمة ومشاركة مجتمعية.","howto":"إعداد تقرير استدامة وفق معايير GRI ونشره علناً.","cert":"GRI Standards Referenced Sustainability Report for [Company].","stages":"1) جمع بيانات ESG 2) إعداد التقرير 3) مراجعة داخلية 4) نشر التقرير السنوي.","id":134,"sector":"energy"},{"code":"ISO55000","cat":"إدارة الأصول","name_ar":"معيار ISO 55000","name_en":"Asset Management - Overview and Principles","definition":"المبادئ العامة لإدارة الأصول الهندسية في قطاعي الطاقة والنقل.","benchmark":"مواءمة استراتيجية الأصول مع أهداف المنظمة 100%.","technical":"خطة إدارة أصول استراتيجية (SAMP)، تقييم قيمة ومخاطر الأصول طوال دورة الحياة.","howto":"اعتماد المبادئ كإطار عام قبل تطبيق ISO 55001 التفصيلي.","cert":"ISO 55000 Framework Alignment Statement for [Organization].","stages":"1) تقييم استراتيجية أصول 2) إعداد SAMP 3) تطبيق مبدئي 4) الانتقال لـISO 55001.","id":135,"sector":"energy"},{"code":"OSHA-PSM","cat":"سلامة العمليات","name_ar":"معيار OSHA PSM 1910.119","name_en":"Process Safety Management","definition":"إدارة سلامة العمليات للمواد الكيميائية شديدة الخطورة في المنشآت النفطية.","benchmark":"صفر حوادث إطلاق كيميائي كبرى، تدقيق سلامة عمليات كل 3 سنوات.","technical":"تحليل مخاطر عمليات (PHA)، إدارة تغيير هندسي صارمة، تحقيق في الحوادث وشبه الحوادث.","howto":"بناء برنامج PSM موثق وإجراء تدقيق دوري.","cert":"OSHA PSM Compliance Audit Report for [Facility].","stages":"1) تحليل مخاطر PHA 2) بناء برنامج PSM 3) تدريب وتطبيق 4) تدقيق دوري.","id":136,"sector":"energy"},{"code":"API754","cat":"سلامة العمليات","name_ar":"معيار API RP 754","name_en":"Process Safety Performance Indicators","definition":"مؤشرات أداء سلامة العمليات لصناعة التكرير والبتروكيماويات.","benchmark":"تتبع مؤشرات Tier 1-4 شهرياً، خفض حوادث Tier 1 تدريجياً.","technical":"تصنيف حوادث حسب الخطورة (Tier 1-4)، تحليل اتجاهات الأداء، مراجعة إدارية دورية.","howto":"تطبيق نظام تتبع مؤشرات API 754 ضمن برنامج PSM.","cert":"API RP 754 Performance Indicator Tracking Report for [Facility].","stages":"1) تصنيف حوادث 2) بناء نظام تتبع 3) مراجعة شهرية 4) تقرير أداء سنوي.","id":137,"sector":"energy"},{"code":"ISO45001-ENG","cat":"السلامة","name_ar":"معيار ISO 45001 (طاقة)","name_en":"OH&S - Energy Sector","definition":"تطبيق إدارة الصحة والسلامة المهنية في بيئات الطاقة والنفط والغاز عالية الخطورة.","benchmark":"TRIR أقل من 0.3، صفر إصابات جسيمة في العمليات الحرجة.","technical":"تصاريح عمل للأنشطة عالية الخطورة (Hot Work/Confined Space)، معدات وقاية متخصصة، خطط إخلاء طوارئ.","howto":"بناء نظام OH&S متخصص للقطاع والتعاقد مع جهة اعتماد.","cert":"ISO 45001:2018 Certification for [Energy Company] operations.","stages":"1) تقييم مخاطر متخصص 2) تطبيق وتدريب 3) تدقيق خارجي 4) شهادة المطابقة.","id":138,"sector":"energy"},{"code":"IATA-AHM","cat":"الطيران والمطارات","name_ar":"معيار IATA AHM","name_en":"Airport Handling Manual","definition":"إجراءات مناولة الطائرات والركاب والبضائع الموحدة عالمياً.","benchmark":"التزام زمن مناولة قياسي (Turnaround Time)، صفر حوادث مناولة أرضية.","technical":"إجراءات تحميل/تفريغ آمنة، تنسيق أرضي بين الشركات، معايير سلامة معدات المناولة (GSE).","howto":"تدريب فرق المناولة على إجراءات AHM المعتمدة.","cert":"IATA AHM Compliance Attestation for [Ground Handling Company].","stages":"1) تدريب فرق 2) تطبيق إجراءات 3) تدقيق داخلي 4) شهادة الالتزام.","id":139,"sector":"energy"},{"code":"ISO29001","cat":"جودة النفط والغاز","name_ar":"معيار ISO 29001","name_en":"Petroleum & Petrochemical Quality Management","definition":"نظام إدارة الجودة المتخصص لصناعات النفط والغاز والبتروكيماويات.","benchmark":"امتثال متطلبات القطاع الإضافية فوق ISO 9001 بنسبة 100%.","technical":"متطلبات جودة إضافية للموردين الحرجين، تتبع دقيق للمواد ذات المواصفات الحرجة.","howto":"بناء نظام جودة مطابق لـISO 9001 مع الملحقات القطاعية والتعاقد مع جهة اعتماد.","cert":"ISO 29001 Certification for [Company] petroleum sector QMS.","stages":"1) فجوات مقارنة بـISO 9001 2) تطبيق متطلبات إضافية 3) تدقيق خارجي 4) شهادة المطابقة.","id":140,"sector":"energy"},{"code":"IEC62443-OT","cat":"الأمن السيبراني الصناعي","name_ar":"معيار IEC 62443 (طاقة)","name_en":"Industrial Cybersecurity - Energy OT","definition":"حماية أنظمة التحكم الصناعي والسكادا في شبكات الطاقة وخطوط الأنابيب.","benchmark":"مستويات أمان SL 1-4 محققة حسب حساسية الأصل.","technical":"فصل شبكات OT/IT، مراقبة مستمرة لحركة مرور السكادا، تحديث أنظمة حماية دوري.","howto":"تقييم مخاطر سيبرانية صناعية وتطبيق ضوابط IEC 62443.","cert":"IEC 62443 Compliance Attestation for [Energy Facility] OT security.","stages":"1) تقييم مخاطر 2) تطبيق ضوابط 3) اختبار اختراق 4) تقرير الاعتماد.","id":141,"sector":"energy"},{"code":"ISO22301-ENG","cat":"استمرارية الأعمال","name_ar":"معيار ISO 22301 (طاقة)","name_en":"Business Continuity - Energy Sector","definition":"استمرارية العمليات الحرجة لمرافق الطاقة والنقل عند الأزمات والكوارث.","benchmark":"RTO للأنظمة الحرجة أقل من ساعة، جاهزية مواقع بديلة 100%.","technical":"تحليل تأثير أعمال لمرافق حرجة، مراكز تحكم بديلة، تمارين محاكاة انقطاع إمداد.","howto":"بناء نظام BCMS متخصص للقطاع والتعاقد مع جهة اعتماد.","cert":"ISO 22301:2019 Certification for [Utility/Operator] resilience.","stages":"1) BIA متخصص 2) خطط ومواقع بديلة 3) تدقيق خارجي 4) شهادة المطابقة.","id":142,"sector":"energy"},{"code":"API2003","cat":"السلامة الكهربائية","name_ar":"معيار API RP 2003","name_en":"Static Electricity Protection","definition":"الحماية من الكهرباء الساكنة أثناء عمليات تحميل وتفريغ المواد البترولية.","benchmark":"تأريض 100% لمعدات النقل والتحميل، صفر حوادث اشتعال ساكن.","technical":"أنظمة تأريض وربط كهربائي (Bonding/Grounding) للصهاريج والأنابيب، فحص دوري لمقاومة التأريض.","howto":"تصميم أنظمة تأريض وفق المعيار وفحصها دورياً.","cert":"API RP 2003 Static Electricity Compliance for [Loading Facility].","stages":"1) تصميم تأريض 2) تركيب وفحص 3) فحص دوري 4) تقرير المطابقة.","id":143,"sector":"energy"},{"code":"ISO50001-ENG","cat":"الطاقة","name_ar":"معيار ISO 50001 (قطاع الطاقة)","name_en":"Energy Management - Energy Sector","definition":"إدارة كفاءة استهلاك الطاقة في مرافق الإنتاج والنقل والتوزيع.","benchmark":"تحسين كفاءة طاقة 5-10% سنوياً، تقليل فاقد الشبكة.","technical":"مراجعة طاقة شاملة للمرافق، تحديث معدات منخفضة الكفاءة، أنظمة مراقبة استهلاك لحظية.","howto":"بناء نظام EnMS متخصص والتعاقد مع جهة اعتماد.","cert":"ISO 50001:2018 Certification for [Utility] energy efficiency program.","stages":"1) مراجعة طاقة 2) سياسات وأهداف 3) تدقيق خارجي 4) شهادة المطابقة.","id":144,"sector":"energy"},{"code":"ISO37101","cat":"المدن والنقل المستدام","name_ar":"معيار ISO 37101","name_en":"Sustainable Development in Communities","definition":"إدارة التنمية المستدامة للمجتمعات المرتبطة بالبنية التحتية للطاقة والنقل.","benchmark":"تحقيق أهداف استدامة مجتمعية محددة، مراجعة أداء سنوية.","technical":"إطار إدارة تنمية مستدامة، مؤشرات جودة حياة، مشاركة مجتمعية في قرارات البنية التحتية.","howto":"بناء نظام إدارة تنمية مستدامة والتعاقد مع جهة اعتماد.","cert":"ISO 37101 Certification for [Community/Operator] sustainable development.","stages":"1) تقييم أولي 2) بناء إطار إدارة 3) تطبيق ومتابعة 4) شهادة المطابقة.","id":145,"sector":"energy"},{"code":"ISO14090","cat":"التكيف المناخي","name_ar":"معيار ISO 14090","name_en":"Climate Change Adaptation","definition":"تكييف مرافق الطاقة والبنية التحتية مع تغير المناخ والمخاطر المناخية.","benchmark":"تقييم مخاطر مناخية شامل لكل الأصول الحرجة، خطط تكيف موثقة.","technical":"تقييم تعرض الأصول للمخاطر المناخية (فيضانات، حرارة قصوى)، خطط تعزيز مقاومة البنية التحتية.","howto":"إجراء تقييم مخاطر مناخية وإعداد خطة تكيف مؤسسية.","cert":"ISO 14090 Climate Adaptation Assessment Report for [Facility].","stages":"1) تقييم مخاطر مناخية 2) خطة تكيف 3) تنفيذ إجراءات 4) مراجعة دورية.","id":146,"sector":"energy"},{"code":"API570","cat":"النفط والغاز","name_ar":"معيار API 570 (تفصيلي)","name_en":"Piping Inspection Code","definition":"فحص وصيانة وتقييم عمر خطوط الأنابيب الصناعية أثناء الخدمة.","benchmark":"جدولة فحص حسب معدل تآكل محسوب، صفر تسربات غير مكتشفة.","technical":"فحص سماكة دوري بالموجات فوق الصوتية، حساب معدل تآكل وعمر متبقي، تجديد ترخيص التشغيل.","howto":"تعيين مفتش API 570 معتمد لبرنامج الفحص الدوري.","cert":"API 570 Piping Inspection Certificate for [Plant].","stages":"1) جدولة فحص 2) فحص ميداني 3) حساب عمر متبقي 4) تجديد ترخيص.","id":147,"sector":"energy"},{"code":"ISO19011-ENG","cat":"التدقيق","name_ar":"معيار ISO 19011","name_en":"Guidelines for Auditing Management Systems","definition":"إرشادات موحدة لتدقيق أنظمة الإدارة في منشآت الطاقة والنقل.","benchmark":"كفاءة برنامج تدقيق موحد عبر كل الأنظمة (جودة، بيئة، سلامة، طاقة).","technical":"برنامج تدقيق سنوي موحد، تأهيل مدققين داخليين معتمدين، تقارير تدقيق موحدة الصيغة.","howto":"بناء برنامج تدقيق داخلي موحد وفق إرشادات المعيار.","cert":"ISO 19011 Aligned Internal Audit Program for [Organization].","stages":"1) تصميم برنامج تدقيق 2) تأهيل مدققين 3) تنفيذ تدقيقات 4) تقرير سنوي موحد.","id":148,"sector":"energy"},{"code":"ISO31000-ENG","cat":"إدارة المخاطر","name_ar":"معيار ISO 31000 (طاقة)","name_en":"Risk Management - Energy Sector","definition":"إدارة مخاطر مشاريع الطاقة الكبرى (تشغيلية، مالية، بيئية، سيادية).","benchmark":"تغطية سجل مخاطر 100% للمشاريع الاستراتيجية، مراجعة ربع سنوية.","technical":"تحليل مخاطر سيادية وسعرية وتشغيلية، مصفوفة احتمالية وأثر متخصصة للقطاع، خطط تحوط ومعالجة.","howto":"بناء إطار إدارة مخاطر متخصص وتدريب القيادات.","cert":"ISO 31000 Risk Management Alignment for [Energy Company].","stages":"1) تقييم مخاطر استراتيجية 2) إطار إدارة 3) مراقبة وتقارير 4) مراجعة سنوية.","id":149,"sector":"energy"},{"code":"ISO45001-OFFSHORE","cat":"السلامة البحرية","name_ar":"معيار ISO 45001 (منصات بحرية)","name_en":"OH&S - Offshore Platforms","definition":"السلامة والصحة المهنية للعاملين على المنصات البحرية النفطية.","benchmark":"TRIR = صفر للعمليات البحرية، جاهزية إخلاء طوارئ 100%.","technical":"خطط إخلاء بحري (Helideck/Lifeboats)، تدريب بقاء بحري للعاملين، تفتيش دوري لمعدات الإنقاذ.","howto":"بناء نظام OH&S بحري متخصص والتعاقد مع جهة اعتماد.","cert":"ISO 45001:2018 Certification for [Offshore Operator] platform safety.","stages":"1) تقييم مخاطر بحرية 2) تدريب وتجهيز 3) تدقيق خارجي 4) شهادة المطابقة.","id":150,"sector":"energy"}];
+const CROSSREF = [["ISO27001", "ISO27017-2", "يوسّع ISO 27017 ضوابط ISO 27001 لتغطي بيئات الحوسبة السحابية تحديداً."], ["ISO27001", "ISO27018", "يوسّع ISO 27018 ضوابط ISO 27001/27017 لحماية بيانات الهوية الشخصية في السحابة العامة."], ["ISO27001", "ISO27701", "يضيف ISO 27701 طبقة إدارة خصوصية كاملة فوق نظام ISO 27001 القائم."], ["TIA-942", "BICSI002", "يتقاطع التصميم الفيزيائي في BICSI 002 مع متطلبات التصنيف في TIA-942 لمراكز البيانات."], ["TIA-942", "EN50600", "EN 50600 هو المعادل الأوروبي لمنهجية التصنيف في TIA-942 وISO/IEC 22237."], ["TIA-942", "ISO22237", "ISO/IEC 22237 معادل دولي مباشر لمعيار TIA-942 من حيث فئات التوافرية والحماية."], ["UPTIME-TIER", "TIA942R4", "كلا المعيارين يصنّف موثوقية مراكز البيانات؛ Rated 4 يقابل عملياً Tier IV من Uptime."], ["SOC2", "ISO27001", "تتشابه ضوابط الثقة الخمس في SOC 2 مع ضوابط الملحق A في ISO 27001 بشكل كبير — يمكن دمج التدقيق."], ["SOC2", "SOC3", "تقرير SOC 3 هو نسخة عامة مختصرة من نتائج تدقيق SOC 2 دون كشف التفاصيل الحساسة."], ["SOC1", "SOC2", "SOC 1 يركز على الضوابط المالية بينما SOC 2 يركز على الأمان والتوافر والسرية لنفس المنشأة."], ["PCIDSS", "ISO27001", "متطلبات تجزئة الشبكة والتشفير في PCI-DSS تتقاطع مع ضوابط أمن الشبكات في ISO 27001."], ["HIPAA", "ISO27701", "ضوابط حماية البيانات الصحية في HIPAA تتوافق مع مبادئ إدارة الخصوصية في ISO 27701."], ["FEDRAMP", "NIST-ISA62443", "يعتمد كلاهما على أسرة ضوابط NIST SP 800 كمرجع أساسي للأمن السيبراني."], ["CMMC", "NIST-ISA62443", "تشترك متطلبات CMMC مع NIST SP 800-171/172 في حماية المعلومات غير المصنفة الحساسة."], ["ISO45001", "ISO14001-DC", "يتشابه الهيكل عالي المستوى (HLS) للمعيارين، مما يسمح بتدقيق مدمج (Integrated Audit)."], ["ISO45001-C", "ISO14001-2", "نفس الملاحظة تنطبق على نسختي القطاع الإنشائي — تدقيق مدمج ممكن لخفض التكلفة."], ["ISO9001-C", "ISO45001-2", "يمكن دمج نظامي الجودة والسلامة في نظام إدارة متكامل واحد (IMS) للشركات الإنشائية."], ["FIDIC", "ISO21502", "تحدد عقود الفيديك الإطار القانوني بينما يوفر ISO 21502 إطار الحوكمة الإدارية لنفس المشروع."], ["FIDIC", "PMBOK", "يمكن استخدام مجالات معرفة PMBOK لإدارة تنفيذ التزامات عقود الفيديك عملياً."], ["ISO19650", "BICSI002", "يتقاطع تنظيم بيانات BIM في ISO 19650 مع متطلبات التصميم الفيزيائي في BICSI 002 لمراكز البيانات."], ["LEED", "BREEAM", "نظامان متكافئان لتقييم استدامة المباني؛ نادراً ما يُطلب كلاهما لنفس المشروع."], ["LEEDBDC", "BREEAM", "نفس الملاحظة تنطبق على نسخة الإنشاءات — يُختار عادة أحدهما حسب السوق المستهدف (أمريكي/أوروبي)."], ["ISO22301-DC", "ISO22301-2", "نفس معيار استمرارية الأعمال يُطبَّق بمنهجية متطابقة على مراكز البيانات وقطاع الإنشاءات."], ["AACE", "PMISP", "تكمّل ممارسات AACE للتكاليف ممارسات PMI-SP للجدولة ضمن إدارة القيمة المكتسبة (EVM) الواحدة."], ["API510", "API580", "تُستخدم منهجية RBI في API 580/581 لتحديد أولويات وجدولة فحوصات API 510/570/653."], ["IEC61511", "IEC61508", "IEC 61508 هو المعيار الأم العام؛ IEC 61511 تطبيق متخصص منه لصناعات العمليات."], ["IAEA-API", "IAEA-SS", "نفس النطاق — معايير السلامة النووية تُطبَّق سواء ضمن قائمة مراكز البيانات أو قطاع الطاقة."], ["ISO50001-DC", "ISO50001-ENG", "نفس معيار إدارة الطاقة يُطبَّق بمنهجية متطابقة على مراكز البيانات ومرافق الطاقة."], ["ISO31000", "ISO31000-2", "نفس مبادئ إدارة المخاطر تتكرر بمنهجية واحدة عبر قطاعي الإنشاءات والطاقة."], ["NERC-CIP", "IEC62443-OT", "يتشارك المعياران هدف حماية أنظمة SCADA/OT الحرجة في قطاع الطاقة سيبرانياً."]];
+
+const I18N = {
+ ar: {
+  "nav.dashboard":"لوحة القيادة","nav.library":"مكتبة المعايير (150)","nav.crossref":"مصفوفة التداخل",
+  "nav.sepWork":"العمل التشغيلي","nav.projects":"سجل المشاريع","nav.assess":"معالج التقييم","nav.actions":"خطط العمل التصحيحية",
+  "nav.archive":"الأرشيف الرقمي","nav.sepReports":"التقارير","nav.report":"التقرير الشامل","nav.exec":"الملخص التنفيذي","nav.settings":"الإعدادات والروابط",
+  "foot.brand":"م. وائل عويس — استشارات الحوكمة الهندسية","foot.tag":"Eng. Wael Oweis — Engineering Governance Consulting",
+  "foot.copy":"محرك المعايير الدولية والحوكمة الشاملة — بيانات محفوظة محلياً في متصفحك",
+  "dash.title":"لوحة القيادة العامة","dash.sub":"نظرة شاملة على جاهزية الامتثال عبر كل المشاريع والمعايير الدولية",
+  "dash.byProject":"جاهزية الامتثال حسب المشروع","dash.recent":"آخر عمليات التقييم","dash.expiring":"شهادات قريبة من الانتهاء أو منتهية",
+  "kpi.standards":"إجمالي المعايير المرجعية","kpi.projects":"عدد المشاريع المسجلة","kpi.assessments":"عمليات التقييم المنجزة","kpi.avg":"متوسط الامتثال العام",
+  "kpi.expiring":"شهادات قريبة الانتهاء","kpi.openTasks":"بنود تصحيحية مفتوحة",
+  "btn.newProject":"+ مشروع جديد","btn.save":"حفظ المشروع","btn.saveAssessment":"💾 حفظ التقييم وتوليد شهادة المطابقة",
+  "btn.exportCsv":"📥 تصدير CSV","btn.print":"🖨️ طباعة",
+  "lib.title":"مكتبة المعايير الدولية","lib.sub":"150 معياراً دولياً معتمداً عبر ثلاثة قطاعات: مراكز البيانات، الإنشاءات، والطاقة والنقل",
+  "lib.search":"بحث بالاسم أو الرمز","lib.sector":"القطاع","lib.cat":"التصنيف",
+  "opt.all":"كل القطاعات","opt.dc":"مراكز البيانات والمنشآت الحرجة","opt.cons":"الإنشاءات وإدارة المشاريع","opt.energy":"الطاقة والنفط والغاز والنقل","opt.both":"أكثر من قطاع",
+  "cref.title":"مصفوفة التداخل بين المعايير","cref.sub":"علاقات تكامل وتداخل موثقة بين المعايير لتقليل ازدواجية التدقيق وتوجيه خطط التنفيذ",
+  "proj.title":"سجل المشاريع والمنشآت","proj.sub":"إدارة المشاريع الخاضعة للتقييم ومتابعة جاهزيتها للاعتماد الدولي",
+  "proj.newTitle":"مشروع جديد","proj.name":"اسم المشروع / المنشأة","proj.client":"الجهة المالكة / العميل",
+  "proj.location":"الموقع","proj.sector":"القطاع المستهدف","proj.field":"المشروع",
+  "assess.title":"معالج التقييم الذكي","assess.sub":"اختر المشروع والمعيار وأدخل نسبة التطبيق الميداني لتوليد شهادة المطابقة",
+  "assess.project":"المشروع","assess.standard":"المعيار","assess.formTitle":"بيانات التقييم",
+  "assess.auditor":"اسم المدقق / المسؤول","assess.docStatus":"حالة التوثيق المؤسسي","assess.rate":"نسبة التطبيق الميداني الفعلي:",
+  "assess.notes":"ملاحظات التدقيق وتوصيات المعالجة","assess.validity":"مدة صلاحية الاعتماد (سنوات)",
+  "opt.docFull":"مكتمل بالكامل","opt.docPartial":"يحتاج تحديث","opt.docNone":"غير متوفر",
+  "acts.title":"خطط العمل التصحيحية","acts.sub":"جميع بنود المعالجة المفتوحة والمغلقة عبر كل التقييمات، مرتبة حسب تاريخ الاستحقاق",
+  "acts.status":"الحالة","acts.open":"مفتوح","acts.done":"مغلق","acts.addTitle":"إضافة بند لخطة العمل التصحيحية",
+  "acts.task":"وصف المهمة التصحيحية","acts.owner":"المسؤول","acts.due":"تاريخ الاستحقاق","acts.add":"+ إضافة البند",
+  "arch.title":"الأرشيف الرقمي للتقييمات","arch.sub":"سجل كامل وقابل للبحث لجميع عمليات التدقيق والتقييم عبر كل المشاريع","arch.search":"بحث (مشروع / معيار / مدقق)",
+  "rep.title":"التقرير الشامل والتحليلات المؤسسية","rep.sub":"مؤشرات أداء تراكمية لجاهزية الامتثال عبر كل المشاريع والقطاعات",
+  "rep.bySector":"متوسط الامتثال حسب القطاع","rep.byCat":"متوسط الامتثال حسب التصنيف (أعلى 12)","rep.byProject":"أداء المشاريع",
+  "exec.title":"الملخص التنفيذي","exec.sub":"صفحة واحدة موجزة لعرض جاهزية الامتثال على الإدارة العليا أو الجهة المانحة",
+  "exec.avgLabel":"متوسط الجاهزية العامة للامتثال","exec.risks":"أعلى 3 معايير تحتاج معالجة عاجلة","exec.reco":"التوصيات",
+  "set.title":"الإعدادات والروابط السريعة","set.sub":"إدارة صلاحيات العرض، الروابط لأدواتك الأخرى، والنسخ الاحتياطي للبيانات",
+  "set.org":"بيانات الجهة","set.orgName":"اسم الجهة / الشركة (يظهر في التقارير)","set.role":"دور المستخدم الحالي (يتحكم في ظهور أزرار التعديل)",
+  "set.roleAuditor":"مدقق / محرر كامل الصلاحية","set.roleManager":"مدير","set.roleReadonly":"قراءة فقط",
+  "set.links":"روابط الأدوات الشقيقة","set.linksHint":"أدخل مسار أو رابط ملف كل أداة (مثلاً fidic-shield.html) لتظهر أزرار الفتح السريع داخل المعايير ذات الصلة.",
+  "set.sixSigma":"Six Sigma DMAIC","set.changeMgmt":"Change Management",
+  "set.backup":"النسخ الاحتياطي واستعادة البيانات","set.backupHint":"جميع بيانات المشاريع والتقييمات محفوظة محلياً في متصفحك فقط. صدّر نسخة احتياطية بانتظام.",
+  "set.exportBackup":"تصدير نسخة احتياطية كاملة (JSON)","set.importBackup":"استيراد نسخة احتياطية",
+  "set.sharedReg":"سجل المشاريع المشترك","set.sharedRegHint":"صدّر سجل المشاريع بصيغة موحدة لاستيرادها لاحقاً في تطبيقاتك الأخرى (بمجرد إضافة نفس ميزة الاستيراد لها).","set.exportProjects":"تصدير سجل المشاريع فقط",
+  "empty.noProjects":"لا توجد مشاريع مسجلة بعد. أنشئ مشروعك الأول من سجل المشاريع.",
+  "d.definition":"التعريف الإجرائي","d.benchmark":"البنش مارك (معايير القياس)","d.technical":"الاشتراطات الفنية",
+  "d.howto":"كيفية الحصول عليه","d.cert":"نص صيغة الوثيقة / الشهادة","d.stages":"مراحل الحصول عليه",
+  "status.full":"مطابقة تامة","status.mid":"امتثال متوسط","status.low":"حرج — يتطلب معالجة عاجلة",
+  "status.expired":"منتهية الصلاحية","status.expiringSoon":"قريبة من الانتهاء",
+  "th.date":"التاريخ","th.project":"المشروع","th.standard":"المعيار","th.rate":"النسبة","th.status":"الحالة","th.auditor":"المدقق","th.actions":"إجراءات",
+  "th.sector":"القطاع","th.count":"عدد التقييمات","th.avg":"متوسط الامتثال","th.expiry":"تاريخ الانتهاء","th.task":"المهمة","th.owner":"المسؤول","th.due":"الاستحقاق",
+  "confirm.delete":"هل تريد حذف هذا السجل؟","alert.pickProjectStandard":"يرجى اختيار مشروع ومعيار أولاً.",
+  "alert.projectSaved":"تم حفظ المشروع بنجاح.","alert.needName":"يرجى إدخال اسم المشروع.","alert.settingsSaved":"تم الحفظ بنجاح.",
+  "alert.backupRestored":"تم استيراد النسخة الاحتياطية بنجاح.","confirm.restore":"سيتم استبدال جميع البيانات الحالية بالنسخة المستوردة. متابعة؟",
+  "cert.previewTitle":"معاينة شهادة المطابقة الرسمية","link.open":"فتح","link.fidic":"🔗 فتح أداة الفيديك (FIDIC Shield)",
+  "link.sixSigma":"🔗 خطة تحسين عبر Six Sigma DMAIC","link.change":"🔗 خطة تغيير عبر Change Management","link.notConfigured":"لم يتم تهيئة الرابط بعد — الإعدادات ⚙",
+  "improve.suggest":"نسبة الامتثال منخفضة — أدوات مقترحة للمعالجة:"
+ },
+ en: {
+  "nav.dashboard":"Dashboard","nav.library":"Standards Library (150)","nav.crossref":"Cross-Reference Matrix",
+  "nav.sepWork":"Operations","nav.projects":"Projects Register","nav.assess":"Assessment Wizard","nav.actions":"Corrective Action Plans",
+  "nav.archive":"Digital Archive","nav.sepReports":"Reports","nav.report":"Comprehensive Report","nav.exec":"Executive Summary","nav.settings":"Settings & Links",
+  "foot.brand":"Eng. Wael Oweis — Engineering Governance Consulting","foot.tag":"م. وائل عويس — استشارات الحوكمة الهندسية",
+  "foot.copy":"Global Standards & Compliance Engine — data stored locally in your browser",
+  "dash.title":"Executive Dashboard","dash.sub":"A unified view of compliance readiness across all projects and international standards",
+  "dash.byProject":"Compliance Readiness by Project","dash.recent":"Recent Assessments","dash.expiring":"Certificates Expiring or Expired",
+  "kpi.standards":"Total Reference Standards","kpi.projects":"Registered Projects","kpi.assessments":"Assessments Completed","kpi.avg":"Overall Avg. Compliance",
+  "kpi.expiring":"Expiring Certificates","kpi.openTasks":"Open Action Items",
+  "btn.newProject":"+ New Project","btn.save":"Save","btn.saveAssessment":"💾 Save Assessment & Generate Certificate",
+  "btn.exportCsv":"📥 Export CSV","btn.print":"🖨️ Print",
+  "lib.title":"International Standards Library","lib.sub":"150 certified international standards across three sectors: data centers, construction, and energy & transport",
+  "lib.search":"Search by name or code","lib.sector":"Sector","lib.cat":"Category",
+  "opt.all":"All Sectors","opt.dc":"Data Centers & Critical Facilities","opt.cons":"Construction & Project Management","opt.energy":"Energy, Oil & Gas, Transport","opt.both":"Multiple Sectors",
+  "cref.title":"Standards Cross-Reference Matrix","cref.sub":"Documented overlap and integration relationships between standards to reduce duplicate audits and guide implementation",
+  "proj.title":"Projects & Facilities Register","proj.sub":"Manage projects under assessment and track their readiness for international certification",
+  "proj.newTitle":"New Project","proj.name":"Project / Facility Name","proj.client":"Owner / Client",
+  "proj.location":"Location","proj.sector":"Target Sector","proj.field":"Project",
+  "assess.title":"Smart Assessment Wizard","assess.sub":"Select a project and standard, enter the field implementation rate to generate a compliance certificate",
+  "assess.project":"Project","assess.standard":"Standard","assess.formTitle":"Assessment Details",
+  "assess.auditor":"Auditor / Responsible Name","assess.docStatus":"Institutional Documentation Status","assess.rate":"Actual Field Implementation Rate:",
+  "assess.notes":"Audit Notes & Remediation Recommendations","assess.validity":"Certification Validity (Years)",
+  "opt.docFull":"Fully Complete","opt.docPartial":"Needs Update","opt.docNone":"Missing",
+  "acts.title":"Corrective Action Plans","acts.sub":"All remediation items across every assessment, sorted by due date",
+  "acts.status":"Status","acts.open":"Open","acts.done":"Done","acts.addTitle":"Add Corrective Action Item",
+  "acts.task":"Corrective Task Description","acts.owner":"Owner","acts.due":"Due Date","acts.add":"+ Add Item",
+  "arch.title":"Digital Assessment Archive","arch.sub":"A complete, searchable record of all audits and assessments across every project","arch.search":"Search (project / standard / auditor)",
+  "rep.title":"Comprehensive Institutional Report","rep.sub":"Cumulative performance indicators for compliance readiness across projects and sectors",
+  "rep.bySector":"Average Compliance by Sector","rep.byCat":"Average Compliance by Category (Top 12)","rep.byProject":"Project Performance",
+  "exec.title":"Executive Summary","exec.sub":"A concise one-page view of compliance readiness for senior management or the certifying body",
+  "exec.avgLabel":"Overall Compliance Readiness","exec.risks":"Top 3 Standards Needing Urgent Remediation","exec.reco":"Recommendations",
+  "set.title":"Settings & Quick Links","set.sub":"Manage view permissions, links to your other tools, and data backup",
+  "set.org":"Organization Details","set.orgName":"Organization / Company Name (shown on reports)","set.role":"Current User Role (controls edit button visibility)",
+  "set.roleAuditor":"Auditor / Full Editor","set.roleManager":"Manager","set.roleReadonly":"Read-only",
+  "set.links":"Sister Tool Links","set.linksHint":"Enter a path or URL for each tool's file (e.g. fidic-shield.html) to show quick-open buttons within related standards.",
+  "set.sixSigma":"Six Sigma DMAIC","set.changeMgmt":"Change Management",
+  "set.backup":"Backup & Restore","set.backupHint":"All project and assessment data is stored locally in your browser only. Export a backup regularly.",
+  "set.exportBackup":"Export Full Backup (JSON)","set.importBackup":"Import Backup",
+  "set.sharedReg":"Shared Project Registry","set.sharedRegHint":"Export the project registry in a unified format to import later into your other apps (once they get the matching import feature).","set.exportProjects":"Export Projects Only",
+  "empty.noProjects":"No projects registered yet. Create your first project from the Projects Register.",
+  "d.definition":"Definition","d.benchmark":"Benchmark Criteria","d.technical":"Technical Requirements",
+  "d.howto":"How to Obtain","d.cert":"Certificate / Document Text","d.stages":"Certification Stages",
+  "status.full":"Fully Compliant","status.mid":"Moderate Compliance","status.low":"Critical — Immediate Action Required",
+  "status.expired":"Expired","status.expiringSoon":"Expiring Soon",
+  "th.date":"Date","th.project":"Project","th.standard":"Standard","th.rate":"Rate","th.status":"Status","th.auditor":"Auditor","th.actions":"Actions",
+  "th.sector":"Sector","th.count":"Assessments","th.avg":"Avg. Compliance","th.expiry":"Expiry Date","th.task":"Task","th.owner":"Owner","th.due":"Due",
+  "confirm.delete":"Delete this record?","alert.pickProjectStandard":"Please select a project and a standard first.",
+  "alert.projectSaved":"Project saved successfully.","alert.needName":"Please enter a project name.","alert.settingsSaved":"Saved successfully.",
+  "alert.backupRestored":"Backup imported successfully.","confirm.restore":"This will replace all current data with the imported backup. Continue?",
+  "cert.previewTitle":"Official Compliance Certificate Preview","link.open":"Open","link.fidic":"🔗 Open FIDIC Shield Tool",
+  "link.sixSigma":"🔗 Improvement Plan via Six Sigma DMAIC","link.change":"🔗 Change Plan via Change Management","link.notConfigured":"Link not configured yet — Settings ⚙",
+  "improve.suggest":"Compliance rate is low — suggested remediation tools:"
+ }
+};
+let LANG = localStorage.getItem('gsc_lang') || 'ar';
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || key; }
+
+/* ---------------- storage ---------------- */
+const DB = {
+  get projects(){ return JSON.parse(localStorage.getItem('gsc_projects')||'[]'); },
+  set projects(v){ localStorage.setItem('gsc_projects', JSON.stringify(v)); },
+  get assessments(){ return JSON.parse(localStorage.getItem('gsc_assessments')||'[]'); },
+  set assessments(v){ localStorage.setItem('gsc_assessments', JSON.stringify(v)); },
+  get settings(){ return JSON.parse(localStorage.getItem('gsc_settings')||'{}'); },
+  set settings(v){ localStorage.setItem('gsc_settings', JSON.stringify(v)); },
+  get links(){ return JSON.parse(localStorage.getItem('gsc_links')||'{}'); },
+  set links(v){ localStorage.setItem('gsc_links', JSON.stringify(v)); }
+};
+function uid(){ return 'x'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
+function getRole(){ return DB.settings.role || 'auditor'; }
+function applyRole(){ document.body.classList.toggle('role-readonly', getRole()==='readonly'); document.getElementById('roleBadge').textContent = ({auditor:t('set.roleAuditor'),manager:t('set.roleManager'),readonly:t('set.roleReadonly')})[getRole()]; }
+
+/* ---------------- i18n apply ---------------- */
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = LANG === 'ar' ? 'rtl' : 'ltr';
+  document.body.classList.toggle('lang-en', LANG==='en');
+  document.querySelectorAll('[data-t]').forEach(el=>{ el.textContent = t(el.getAttribute('data-t')); });
+  document.querySelectorAll('[data-t-title]').forEach(el=>{ el.title = t(el.getAttribute('data-t-title')); });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===LANG));
+  renderLibCatOptions();
+  applyRole();
+  loadSettingsIntoForm();
+  renderAll();
+}
+
+/* ---------------- nav ---------------- */
+function closeMobileSidebar(){
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebarBackdrop').classList.remove('show');
+}
+document.getElementById('hamburgerBtn').addEventListener('click', ()=>{
+  document.getElementById('sidebar').classList.add('mobile-open');
+  document.getElementById('sidebarBackdrop').classList.add('show');
+});
+document.getElementById('sidebarBackdrop').addEventListener('click', closeMobileSidebar);
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+item.dataset.view).classList.add('active');
+    const titleKey = item.getAttribute('data-t-title') || item.querySelector('[data-t]').getAttribute('data-t');
+    document.querySelector('.mtb-title').textContent = t(titleKey);
+    if(item.dataset.view==='report') renderReport();
+    if(item.dataset.view==='exec') renderExec();
+    if(item.dataset.view==='archive') renderArchive();
+    if(item.dataset.view==='actions') renderActions();
+    if(item.dataset.view==='crossref') renderCrossref();
+    if(item.dataset.view==='assess'){ populateAssessProjects(); populateAssessStandards(); }
+    closeMobileSidebar();
+  });
+});
+document.querySelectorAll('.lang-btn').forEach(b=>{ b.addEventListener('click', ()=>{ LANG=b.dataset.lang; localStorage.setItem('gsc_lang',LANG); applyI18n(); }); });
+
+/* ---------------- Library ---------------- */
+function sectorLabel(s){ return s==='dc'?t('opt.dc'):(s==='cons'?t('opt.cons'):(s==='energy'?t('opt.energy'):t('opt.both'))); }
+function sectorTagClass(s){ return s==='dc'?'dc':(s==='cons'?'cons':'energy'); }
+function sectorTagHtml(s){ return `<span class="tag ${sectorTagClass(s)}">${sectorLabel(s)}</span>`; }
+
+function renderLibCatOptions(){
+  const sel = document.getElementById('libCat'); const cur = sel.value;
+  const cats = [...new Set(STANDARDS.map(s=>s.cat))].sort();
+  sel.innerHTML = `<option value="">${t('opt.all')}</option>` + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.value = cur;
+}
+function renderLibrary(){
+  const q = (document.getElementById('libSearch').value||'').toLowerCase();
+  const sector = document.getElementById('libSector').value;
+  const cat = document.getElementById('libCat').value;
+  const grid = document.getElementById('libGrid');
+  const list = STANDARDS.filter(s=>{
+    if(sector && s.sector!==sector) return false;
+    if(cat && s.cat!==cat) return false;
+    if(q && !(s.name_ar.toLowerCase().includes(q) || s.name_en.toLowerCase().includes(q) || s.code.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if(!list.length){ grid.innerHTML = `<div class="empty">—</div>`; return; }
+  grid.innerHTML = list.map(s=>`
+    <div class="std-card" data-id="${s.id}">
+      <div class="code">${s.code}</div><div class="name">${s.name_ar}</div><div class="name-en">${s.name_en}</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:2px;">${sectorTagHtml(s.sector)}<span class="tag cat">${s.cat}</span></div>
+    </div>`).join('');
+  grid.querySelectorAll('.std-card').forEach(c=>{ c.addEventListener('click', ()=> openStandardModal(parseInt(c.dataset.id))); });
+}
+['libSearch','libSector','libCat'].forEach(id=>{ document.getElementById(id).addEventListener('input', renderLibrary); document.getElementById(id).addEventListener('change', renderLibrary); });
+
+function quickLinkButtonsForStandard(s){
+  const links = DB.links;
+  let btns = '';
+  if(s.code==='FIDIC'){
+    btns += links.fidic ? `<a class="btn btn-sm" target="_blank" href="${links.fidic}">${t('link.fidic')}</a>` : `<span class="btn btn-sm" style="opacity:.6; cursor:not-allowed;" title="${t('link.notConfigured')}">${t('link.fidic')}</span>`;
+  }
+  return btns ? `<div class="quicklink-row">${btns}</div>` : '';
+}
+
+function openStandardModal(id){
+  const s = STANDARDS.find(x=>x.id===id); if(!s) return;
+  document.getElementById('mName').textContent = s.name_ar;
+  document.getElementById('mNameEn').textContent = s.name_en + ' · ' + s.code;
+  document.getElementById('mBody').innerHTML = `
+    <div style="display:flex; gap:6px; margin-bottom:14px;">${sectorTagHtml(s.sector)}<span class="tag cat">${s.cat}</span></div>
+    <div class="detail-row"><div class="k">${t('d.definition')}</div><div class="v">${s.definition}</div></div>
+    <div class="detail-row"><div class="k">${t('d.benchmark')}</div><div class="v">${s.benchmark}</div></div>
+    <div class="detail-row"><div class="k">${t('d.technical')}</div><div class="v">${s.technical}</div></div>
+    <div class="detail-row"><div class="k">${t('d.howto')}</div><div class="v">${s.howto}</div></div>
+    <div class="detail-row"><div class="k">${t('d.cert')}</div><div class="v quote">${s.cert}</div></div>
+    <div class="detail-row"><div class="k">${t('d.stages')}</div><div class="v">${s.stages}</div></div>
+    ${quickLinkButtonsForStandard(s)}
+  `;
+  document.getElementById('stdOverlay').classList.add('open');
+}
+document.getElementById('mClose').addEventListener('click', ()=>document.getElementById('stdOverlay').classList.remove('open'));
+document.getElementById('stdOverlay').addEventListener('click', e=>{ if(e.target.id==='stdOverlay') e.currentTarget.classList.remove('open'); });
+
+/* ---------------- Cross-reference ---------------- */
+function renderCrossref(){
+  const wrap = document.getElementById('crossrefTable');
+  const byCode = {}; STANDARDS.forEach(s=>byCode[s.code]=s);
+  wrap.innerHTML = `<table><thead><tr><th>${t('th.standard')} A</th><th>${t('th.standard')} B</th><th class="wrap">${LANG==='ar'?'طبيعة التداخل':'Relationship'}</th></tr></thead>
+    <tbody>${CROSSREF.map(([a,b,note])=>{
+      const sa=byCode[a], sb=byCode[b];
+      return `<tr><td>${a}${sa?' — '+(LANG==='ar'?sa.name_ar:sa.name_en):''}</td><td>${b}${sb?' — '+(LANG==='ar'?sb.name_ar:sb.name_en):''}</td><td class="wrap">${note}</td></tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+/* ---------------- Projects ---------------- */
+function openProjectModal(){
+  document.getElementById('pfName').value=''; document.getElementById('pfClient').value='';
+  document.getElementById('pfLocation').value=''; document.getElementById('pfSector').value='dc';
+  document.getElementById('projOverlay').classList.add('open');
+}
+document.getElementById('btnNewProject').addEventListener('click', openProjectModal);
+document.getElementById('btnNewProjectDash').addEventListener('click', ()=>{ document.querySelector('.nav-item[data-view="projects"]').click(); openProjectModal(); });
+document.getElementById('projClose').addEventListener('click', ()=>document.getElementById('projOverlay').classList.remove('open'));
+document.getElementById('projOverlay').addEventListener('click', e=>{ if(e.target.id==='projOverlay') e.currentTarget.classList.remove('open'); });
+document.getElementById('pfSave').addEventListener('click', ()=>{
+  const name = document.getElementById('pfName').value.trim();
+  if(!name){ alert(t('alert.needName')); return; }
+  const projects = DB.projects;
+  projects.push({ id: uid(), name, client: document.getElementById('pfClient').value.trim(),
+    location: document.getElementById('pfLocation').value.trim(), sector: document.getElementById('pfSector').value, createdAt: new Date().toISOString() });
+  DB.projects = projects;
+  document.getElementById('projOverlay').classList.remove('open');
+  renderAll();
+});
+function projectStats(projectId){
+  const list = DB.assessments.filter(a=>a.projectId===projectId);
+  const avg = list.length ? Math.round(list.reduce((s,a)=>s+a.rate,0)/list.length) : 0;
+  return { count:list.length, avg };
+}
+function renderProjects(){
+  const grid = document.getElementById('projGrid'); const projects = DB.projects;
+  if(!projects.length){ grid.innerHTML = `<div class="empty">${t('empty.noProjects')}</div>`; return; }
+  grid.innerHTML = projects.map(p=>{
+    const st = projectStats(p.id);
+    return `<div class="proj-card" data-id="${p.id}">
+      <h3>${p.name}</h3>
+      <div class="proj-meta">${p.client||'—'} · ${p.location||'—'} · ${sectorLabel(p.sector)}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${st.avg}%"></div></div>
+      <div style="font-size:12px; color:var(--text-dim);">${st.avg}% · ${st.count} ${t('th.count')}</div>
+      <div class="proj-foot">
+        <button class="btn btn-sm" data-act="assess" data-id="${p.id}">${LANG==='ar'?'تقييم':'Assess'}</button>
+        <button class="btn btn-sm btn-danger no-readonly" data-act="del" data-id="${p.id}">${LANG==='ar'?'حذف':'Delete'}</button>
+      </div></div>`;
+  }).join('');
+  grid.querySelectorAll('[data-act="assess"]').forEach(b=>{ b.addEventListener('click', ()=>{ document.querySelector('.nav-item[data-view="assess"]').click(); populateAssessProjects(); document.getElementById('asProject').value=b.dataset.id; populateAssessStandards(); }); });
+  grid.querySelectorAll('[data-act="del"]').forEach(b=>{ b.addEventListener('click', ()=>{ if(!confirm(t('confirm.delete')))return; DB.projects=DB.projects.filter(p=>p.id!==b.dataset.id); DB.assessments=DB.assessments.filter(a=>a.projectId!==b.dataset.id); renderAll(); }); });
+}
+
+/* ---------------- Assessment Wizard ---------------- */
+function populateAssessProjects(){
+  const sel = document.getElementById('asProject'); const cur = sel.value; const projects = DB.projects;
+  sel.innerHTML = projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('') || `<option value="">—</option>`;
+  if(cur) sel.value = cur;
+}
+function populateAssessStandards(){
+  const sector = document.getElementById('asSector').value;
+  const sel = document.getElementById('asStandard');
+  const list = STANDARDS.filter(s=> !sector || s.sector===sector);
+  sel.innerHTML = list.map(s=>`<option value="${s.id}">${s.code} — ${s.name_ar}</option>`).join('');
+  renderAsDetail();
+}
+document.getElementById('asSector').addEventListener('change', populateAssessStandards);
+document.getElementById('asStandard').addEventListener('change', renderAsDetail);
+document.getElementById('asProject').addEventListener('change', renderAsDetail);
+function currentStandard(){ const id = parseInt(document.getElementById('asStandard').value); return STANDARDS.find(s=>s.id===id); }
+
+function defaultValidity(code){
+  const oneYear = ['SOC1','SOC2','SOC3','PCIDSS','PCIDSS-2'];
+  if(oneYear.includes(code)) return 1;
+  return 3;
+}
+function renderAsDetail(){
+  const s = currentStandard(); const box = document.getElementById('asDetail'); const formPanel = document.getElementById('asFormPanel');
+  if(!s){ box.innerHTML=''; formPanel.style.display='none'; document.getElementById('asQuickLinks').innerHTML=''; return; }
+  box.innerHTML = `
+    <div class="detail-row" style="margin-top:14px;"><div class="k">${s.code} · ${s.cat}</div>
+      <div class="v"><b>${s.name_ar}</b> <span style="color:var(--text-faint); font-style:italic;">(${s.name_en})</span></div></div>
+    <div class="detail-row"><div class="k">${t('d.definition')}</div><div class="v">${s.definition}</div></div>
+    <div class="detail-row"><div class="k">${t('d.benchmark')}</div><div class="v">${s.benchmark}</div></div>`;
+  document.getElementById('asQuickLinks').innerHTML = quickLinkButtonsForStandard(s);
+  document.getElementById('asValidity').value = defaultValidity(s.code);
+  formPanel.style.display = document.getElementById('asProject').value ? 'block' : 'none';
+  document.getElementById('asCertResult').innerHTML = '';
+  document.getElementById('asActionPlanBox').style.display = 'none';
+  renderImprovementLinks();
+}
+const asRate = document.getElementById('asRate');
+asRate.addEventListener('input', ()=>{ document.getElementById('asRateVal').textContent = asRate.value; renderIndicator(); renderImprovementLinks(); });
+function renderIndicator(){
+  const v = parseInt(asRate.value); const box = document.getElementById('asIndicator');
+  let cls='bad', label=t('status.low');
+  if(v>=90){ cls='ok'; label=t('status.full'); } else if(v>=75){ cls='warn'; label=t('status.mid'); }
+  box.innerHTML = `<span class="badge ${cls}">${label}</span>`;
+}
+renderIndicator();
+function renderImprovementLinks(){
+  const v = parseInt(asRate.value); const box = document.getElementById('asImprovementLinks');
+  if(v>=75){ box.innerHTML=''; return; }
+  const links = DB.links;
+  const mk = (key, url) => url ? `<a class="btn btn-sm" target="_blank" href="${url}">${t(key)}</a>` : `<span class="btn btn-sm" style="opacity:.6; cursor:not-allowed;" title="${t('link.notConfigured')}">${t(key)}</span>`;
+  box.innerHTML = `<div class="detail-row"><div class="k">${t('improve.suggest')}</div>
+    <div class="quicklink-row">${mk('link.sixSigma', links.sixsigma)}${mk('link.change', links.change)}</div></div>`;
+}
+
+document.getElementById('btnSaveAssessment').addEventListener('click', ()=>{
+  const projectId = document.getElementById('asProject').value; const s = currentStandard();
+  if(!projectId || !s){ alert(t('alert.pickProjectStandard')); return; }
+  const rate = parseInt(asRate.value);
+  const validity = parseInt(document.getElementById('asValidity').value)||3;
+  const date = new Date();
+  const expiry = new Date(date); expiry.setFullYear(expiry.getFullYear()+validity);
+  const rec = { id: uid(), projectId, standardId: s.id, standardCode: s.code, standardName: s.name_ar,
+    rate, docStatus: document.getElementById('asDocStatus').value, auditor: document.getElementById('asAuditor').value.trim(),
+    notes: document.getElementById('asNotes').value.trim(), date: date.toISOString(), validityYears: validity,
+    expiryDate: expiry.toISOString(), actionPlan: [] };
+  const list = DB.assessments; list.unshift(rec); DB.assessments = list;
+  const proj = DB.projects.find(p=>p.id===projectId);
+  const projName = proj?proj.name:'';
+  document.getElementById('asCertResult').innerHTML = `
+    <div class="panel" style="margin-top:14px; border-color:var(--gold);">
+      <div class="panel-title"><span>📜 ${t('cert.previewTitle')}</span></div>
+      <div class="v quote">${s.cert.replace(/\[Facility\]|\[Org\]|\[Project\]|\[Company\]/g, projName)} — ${rate}% ${LANG==='ar'?'نسبة امتثال، صالحة حتى':'compliance, valid until'} ${expiry.toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}.</div>
+      <div class="topbar-actions" style="margin-top:10px;"><button class="btn btn-sm" onclick="printCertificate('${rec.id}')">🖨️ ${LANG==='ar'?'طباعة الشهادة':'Print Certificate'}</button></div>
+    </div>`;
+  document.getElementById('asActionPlanBox').style.display = 'block';
+  renderActionPlanAdder(rec.id);
+  renderAll();
+});
+
+function renderActionPlanAdder(assessmentId){
+  const box = document.getElementById('asActionPlanBox');
+  box.innerHTML = `<div class="panel" style="margin-top:10px;">
+    <div class="panel-title"><span>${t('acts.addTitle')}</span></div>
+    <div class="filters">
+      <div class="field grow"><label>${t('acts.task')}</label><input type="text" id="npTask"></div>
+      <div class="field"><label>${t('acts.owner')}</label><input type="text" id="npOwner"></div>
+      <div class="field"><label>${t('acts.due')}</label><input type="date" id="npDue"></div>
+    </div>
+    <button class="btn btn-teal no-readonly" id="npAddBtn">${t('acts.add')}</button>
+    <div id="npList" style="margin-top:10px;"></div>
+  </div>`;
+  document.getElementById('npAddBtn').addEventListener('click', ()=>{
+    const task = document.getElementById('npTask').value.trim(); if(!task) return;
+    const list = DB.assessments; const a = list.find(x=>x.id===assessmentId); if(!a) return;
+    a.actionPlan = a.actionPlan || [];
+    a.actionPlan.push({ id: uid(), task, owner: document.getElementById('npOwner').value.trim(), due: document.getElementById('npDue').value, status:'open' });
+    DB.assessments = list;
+    document.getElementById('npTask').value=''; document.getElementById('npOwner').value=''; document.getElementById('npDue').value='';
+    renderNpList(assessmentId); renderAll();
+  });
+  renderNpList(assessmentId);
+}
+function renderNpList(assessmentId){
+  const a = DB.assessments.find(x=>x.id===assessmentId); const box = document.getElementById('npList');
+  const items = (a && a.actionPlan) || [];
+  box.innerHTML = items.length ? items.map(i=>`<div class="badge ${i.status==='done'?'ok':'warn'}" style="margin:2px;">${i.task} — ${i.owner||'—'} — ${i.due||'—'}</div>`).join('') : '';
+}
+
+/* ---------------- Action Plans view ---------------- */
+function allActionItems(){
+  const projects = DB.projects; const out = [];
+  DB.assessments.forEach(a=>{ (a.actionPlan||[]).forEach(ai=>{
+    const proj = projects.find(p=>p.id===a.projectId);
+    out.push({ ...ai, projectName: proj?proj.name:'', standardCode: a.standardCode, standardName: a.standardName, assessmentId: a.id });
+  }); });
+  return out;
+}
+function renderActions(){
+  const q = (document.getElementById('actSearch').value||'').toLowerCase();
+  const statusF = document.getElementById('actStatusFilter').value;
+  let items = allActionItems();
+  if(statusF) items = items.filter(i=>i.status===statusF);
+  if(q) items = items.filter(i=> (i.task+' '+i.owner+' '+i.projectName+' '+i.standardCode).toLowerCase().includes(q));
+  items.sort((a,b)=> (a.due||'9999').localeCompare(b.due||'9999'));
+  const wrap = document.getElementById('actionsTable');
+  if(!items.length){ wrap.innerHTML = `<div class="empty">—</div>`; return; }
+  const today = new Date().toISOString().slice(0,10);
+  wrap.innerHTML = `<table><thead><tr><th>${t('th.due')}</th><th>${t('proj.field')}</th><th>${t('th.standard')}</th><th class="wrap">${t('th.task')}</th><th>${t('th.owner')}</th><th>${t('th.status')}</th><th>${t('th.actions')}</th></tr></thead>
+  <tbody>${items.map(i=>{
+    const overdue = i.status==='open' && i.due && i.due < today;
+    return `<tr data-aid="${i.assessmentId}" data-iid="${i.id}">
+      <td>${i.due||'—'}${overdue?` <span class="badge bad">${LANG==='ar'?'متأخر':'Overdue'}</span>`:''}</td>
+      <td>${i.projectName}</td><td>${i.standardCode}</td><td class="wrap">${i.task}</td><td>${i.owner||'—'}</td>
+      <td><span class="badge ${i.status==='done'?'ok':'warn'}">${i.status==='done'?t('acts.done'):t('acts.open')}</span></td>
+      <td class="row-actions"><button class="icon-btn no-readonly" data-toggle="1">${i.status==='done'?'↺':'✔'}</button><button class="icon-btn no-readonly" data-del="1">🗑</button></td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
+  wrap.querySelectorAll('[data-toggle]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const tr=b.closest('tr'); const list=DB.assessments; const a=list.find(x=>x.id===tr.dataset.aid);
+      const item=(a.actionPlan||[]).find(x=>x.id===tr.dataset.iid); item.status = item.status==='done'?'open':'done';
+      DB.assessments=list; renderActions(); renderDashboard();
+    });
+  });
+  wrap.querySelectorAll('[data-del]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      if(!confirm(t('confirm.delete')))return;
+      const tr=b.closest('tr'); const list=DB.assessments; const a=list.find(x=>x.id===tr.dataset.aid);
+      a.actionPlan = (a.actionPlan||[]).filter(x=>x.id!==tr.dataset.iid);
+      DB.assessments=list; renderActions(); renderDashboard();
+    });
+  });
+}
+document.getElementById('actSearch').addEventListener('input', renderActions);
+document.getElementById('actStatusFilter').addEventListener('change', renderActions);
+
+/* ---------------- Certificate print ---------------- */
+window.printCertificate = function(assessmentId){
+  const a = DB.assessments.find(x=>x.id===assessmentId); if(!a) return;
+  const s = STANDARDS.find(x=>x.id===a.standardId);
+  const proj = DB.projects.find(p=>p.id===a.projectId);
+  const org = DB.settings.orgName || '';
+  document.getElementById('certBody').innerHTML = `
+    <div style="text-align:center; padding:10px 0 20px; border-bottom:2px solid var(--gold); margin-bottom:18px;">
+      <div style="font-size:12px; letter-spacing:.08em; color:var(--text-faint);">GLOBAL STANDARDS &amp; COMPLIANCE ENGINE</div>
+      <div style="font-size:20px; font-weight:900; margin-top:6px;">${LANG==='ar'?'شهادة مطابقة':'Compliance Certificate'}</div>
+    </div>
+    <div class="detail-row"><div class="k">${t('proj.field')}</div><div class="v">${proj?proj.name:''} ${org?(' — '+org):''}</div></div>
+    <div class="detail-row"><div class="k">${t('th.standard')}</div><div class="v">${s?s.code+' — '+s.name_ar:a.standardCode+' — '+a.standardName}</div></div>
+    <div class="detail-row"><div class="k">${t('th.rate')}</div><div class="v">${a.rate}%</div></div>
+    <div class="detail-row"><div class="k">${t('th.date')}</div><div class="v">${new Date(a.date).toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}</div></div>
+    <div class="detail-row"><div class="k">${t('th.expiry')}</div><div class="v">${new Date(a.expiryDate).toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}</div></div>
+    <div class="detail-row"><div class="k">${t('th.auditor')}</div><div class="v">${a.auditor||'—'}</div></div>
+    <div class="detail-row"><div class="k">${t('d.cert')}</div><div class="v quote">${s?s.cert.replace(/\[Facility\]|\[Org\]|\[Project\]|\[Company\]/g, proj?proj.name:''):''}</div></div>
+    <div style="margin-top:26px; text-align:center; font-size:11.5px; color:var(--text-faint);">${LANG==='ar'?'م. وائل عويس — استشارات الحوكمة الهندسية':'Eng. Wael Oweis — Engineering Governance Consulting'}</div>
+  `;
+  document.getElementById('certOverlay').classList.add('open');
+};
+document.getElementById('certClose').addEventListener('click', ()=>document.getElementById('certOverlay').classList.remove('open'));
+document.getElementById('certOverlay').addEventListener('click', e=>{ if(e.target.id==='certOverlay') e.currentTarget.classList.remove('open'); });
+document.getElementById('btnDoPrintCert').addEventListener('click', ()=>{
+  document.body.classList.add('cert-print-mode');
+  window.print();
+});
+window.addEventListener('afterprint', ()=>document.body.classList.remove('cert-print-mode'));
+
+/* ---------------- Archive ---------------- */
+function populateArchiveProjectFilter(){
+  const sel = document.getElementById('archProjectFilter'); const cur = sel.value; const projects = DB.projects;
+  sel.innerHTML = `<option value="">${t('opt.all')}</option>` + projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  sel.value = cur;
+}
+function statusBadge(rate){
+  if(rate>=90) return `<span class="badge ok">${t('status.full')}</span>`;
+  if(rate>=75) return `<span class="badge warn">${t('status.mid')}</span>`;
+  return `<span class="badge bad">${t('status.low')}</span>`;
+}
+function expiryBadge(expiryDate){
+  if(!expiryDate) return '';
+  const days = Math.floor((new Date(expiryDate) - new Date())/86400000);
+  if(days<0) return `<span class="badge bad">${t('status.expired')}</span>`;
+  if(days<=90) return `<span class="badge warn">${t('status.expiringSoon')}</span>`;
+  return `<span class="badge info">${new Date(expiryDate).toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}</span>`;
+}
+function renderArchive(){
+  populateArchiveProjectFilter();
+  const q = (document.getElementById('archSearch').value||'').toLowerCase();
+  const pf = document.getElementById('archProjectFilter').value;
+  const projects = DB.projects;
+  const rows = DB.assessments.filter(a=>{
+    if(pf && a.projectId!==pf) return false;
+    const proj = projects.find(p=>p.id===a.projectId);
+    const hay = ((proj?proj.name:'')+' '+a.standardName+' '+a.standardCode+' '+a.auditor).toLowerCase();
+    if(q && !hay.includes(q)) return false;
+    return true;
+  });
+  const wrap = document.getElementById('archiveTable');
+  if(!rows.length){ wrap.innerHTML = `<div class="empty">—</div>`; return; }
+  wrap.innerHTML = `<table><thead><tr>
+      <th>${t('th.date')}</th><th>${t('th.project')}</th><th>${t('th.standard')}</th><th>${t('th.rate')}</th><th>${t('th.status')}</th>
+      <th>${t('th.expiry')}</th><th>${t('th.auditor')}</th><th class="wrap">${LANG==='ar'?'ملاحظات':'Notes'}</th><th>${t('th.actions')}</th></tr></thead>
+    <tbody>${rows.map(a=>{
+      const proj = projects.find(p=>p.id===a.projectId);
+      return `<tr data-id="${a.id}">
+        <td>${new Date(a.date).toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}</td>
+        <td>${proj?proj.name:'—'}</td><td>${a.standardCode} — ${a.standardName}</td><td>${a.rate}%</td><td>${statusBadge(a.rate)}</td>
+        <td>${expiryBadge(a.expiryDate)}</td><td>${a.auditor||'—'}</td><td class="wrap">${a.notes||'—'}</td>
+        <td class="row-actions"><button class="icon-btn" data-cert="${a.id}">🖨</button><button class="icon-btn no-readonly" data-del="${a.id}">🗑</button></td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+  wrap.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click', ()=>printCertificate(b.dataset.cert)));
+  wrap.querySelectorAll('[data-del]').forEach(b=>{ b.addEventListener('click', ()=>{ if(!confirm(t('confirm.delete')))return; DB.assessments=DB.assessments.filter(a=>a.id!==b.dataset.del); renderAll(); }); });
+}
+document.getElementById('archSearch').addEventListener('input', renderArchive);
+document.getElementById('archProjectFilter').addEventListener('change', renderArchive);
+document.getElementById('btnPrintArchive').addEventListener('click', ()=>window.print());
+document.getElementById('btnPrintReport').addEventListener('click', ()=>window.print());
+document.getElementById('btnPrintExec').addEventListener('click', ()=>window.print());
+document.getElementById('btnExportCsv').addEventListener('click', ()=>{
+  const projects = DB.projects;
+  const rows = DB.assessments.map(a=>{
+    const proj = projects.find(p=>p.id===a.projectId);
+    return [new Date(a.date).toLocaleDateString('en-GB'), proj?proj.name:'', a.standardCode, a.standardName, a.rate+'%', a.docStatus, a.auditor, new Date(a.expiryDate).toLocaleDateString('en-GB'), (a.notes||'').replace(/\n/g,' ')];
+  });
+  const header = ['Date','Project','Standard Code','Standard Name','Rate','Doc Status','Auditor','Expiry Date','Notes'];
+  const csv = [header, ...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='GSC_Archive_Export.csv'; a.click(); URL.revokeObjectURL(url);
+});
+
+/* ---------------- Dashboard ---------------- */
+function renderDashboard(){
+  const projects = DB.projects; const assessments = DB.assessments;
+  document.getElementById('kpiProjects').textContent = projects.length;
+  document.getElementById('kpiAssessments').textContent = assessments.length;
+  const avg = assessments.length ? Math.round(assessments.reduce((s,a)=>s+a.rate,0)/assessments.length) : 0;
+  document.getElementById('kpiAvg').innerHTML = avg+'<small>%</small>';
+  const expiringSoon = assessments.filter(a=>{ const d=Math.floor((new Date(a.expiryDate)-new Date())/86400000); return d<=90; });
+  document.getElementById('kpiExpiring').textContent = expiringSoon.length;
+  const openTasks = allActionItems().filter(i=>i.status==='open').length;
+  document.getElementById('kpiOpenTasks').textContent = openTasks;
+
+  const expTable = document.getElementById('expiryTable'); const expPanel = document.getElementById('expiryPanel');
+  if(!expiringSoon.length){ expPanel.style.display='none'; }
+  else{
+    expPanel.style.display='block';
+    expTable.innerHTML = `<table><thead><tr><th>${t('th.project')}</th><th>${t('th.standard')}</th><th>${t('th.expiry')}</th></tr></thead>
+    <tbody>${expiringSoon.sort((a,b)=>new Date(a.expiryDate)-new Date(b.expiryDate)).map(a=>{
+      const proj=projects.find(p=>p.id===a.projectId);
+      return `<tr><td>${proj?proj.name:'—'}</td><td>${a.standardCode} — ${a.standardName}</td><td>${expiryBadge(a.expiryDate)}</td></tr>`;
+    }).join('')}</tbody></table>`;
+  }
+
+  const chartBox = document.getElementById('dashProjectChart');
+  if(!projects.length){ chartBox.innerHTML = `<div class="empty">${t('empty.noProjects')}</div>`; }
+  else{ chartBox.innerHTML = projects.map(p=>{ const st = projectStats(p.id); return `<div class="bar-row"><div class="bar-label">${p.name}</div><div class="bar-track"><div class="bar-fill" style="width:${st.avg}%"></div></div><div class="bar-val">${st.avg}%</div></div>`; }).join(''); }
+
+  const recent = assessments.slice(0,8); const rt = document.getElementById('dashRecentTable');
+  if(!recent.length){ rt.innerHTML = `<div class="empty">—</div>`; }
+  else{ rt.innerHTML = `<table><thead><tr><th>${t('th.date')}</th><th>${t('th.project')}</th><th>${t('th.standard')}</th><th>${t('th.rate')}</th><th>${t('th.status')}</th></tr></thead>
+    <tbody>${recent.map(a=>{ const proj = projects.find(p=>p.id===a.projectId); return `<tr><td>${new Date(a.date).toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}</td><td>${proj?proj.name:'—'}</td><td>${a.standardCode}</td><td>${a.rate}%</td><td>${statusBadge(a.rate)}</td></tr>`; }).join('')}</tbody></table>`; }
+}
+
+/* ---------------- Report ---------------- */
+function renderReport(){
+  document.getElementById('printDate').textContent = new Date().toLocaleString(LANG==='ar'?'ar-EG':'en-GB');
+  const projects = DB.projects; const assessments = DB.assessments;
+  const avg = assessments.length ? Math.round(assessments.reduce((s,a)=>s+a.rate,0)/assessments.length) : 0;
+  document.getElementById('repKpis').innerHTML = `
+    <div class="kpi"><div class="lbl">${t('kpi.projects')}</div><div class="val">${projects.length}</div></div>
+    <div class="kpi teal"><div class="lbl">${t('kpi.assessments')}</div><div class="val">${assessments.length}</div></div>
+    <div class="kpi"><div class="lbl">${t('kpi.avg')}</div><div class="val">${avg}<small>%</small></div></div>
+    <div class="kpi teal"><div class="lbl">${t('kpi.standards')}</div><div class="val">150</div></div>`;
+  const bySector = {dc:[], cons:[], energy:[]};
+  assessments.forEach(a=>{ const s = STANDARDS.find(x=>x.id===a.standardId); if(s) bySector[s.sector].push(a.rate); });
+  const sectorHtml = ['dc','cons','energy'].map(sec=>{
+    const arr = bySector[sec]; const av = arr.length ? Math.round(arr.reduce((s,v)=>s+v,0)/arr.length) : 0;
+    return `<div class="bar-row"><div class="bar-label">${sectorLabel(sec)}</div><div class="bar-track"><div class="bar-fill" style="width:${av}%"></div></div><div class="bar-val">${av}%</div></div>`;
+  }).join('');
+  document.getElementById('repSectorChart').innerHTML = assessments.length ? sectorHtml : `<div class="empty">—</div>`;
+  const catMap = {};
+  assessments.forEach(a=>{ const s = STANDARDS.find(x=>x.id===a.standardId); if(!s) return; catMap[s.cat]=catMap[s.cat]||[]; catMap[s.cat].push(a.rate); });
+  const catRows = Object.entries(catMap).map(([cat,arr])=>({cat, avg:Math.round(arr.reduce((s,v)=>s+v,0)/arr.length), n:arr.length})).sort((a,b)=>b.avg-a.avg).slice(0,12);
+  document.getElementById('repCatChart').innerHTML = catRows.length ? catRows.map(r=>`<div class="bar-row"><div class="bar-label">${r.cat}</div><div class="bar-track"><div class="bar-fill" style="width:${r.avg}%"></div></div><div class="bar-val">${r.avg}%</div></div>`).join('') : `<div class="empty">—</div>`;
+  const projTable = document.getElementById('repProjectTable');
+  if(!projects.length){ projTable.innerHTML = `<div class="empty">${t('empty.noProjects')}</div>`; }
+  else{ projTable.innerHTML = `<table><thead><tr><th>${t('proj.field')}</th><th>${t('th.sector')}</th><th>${t('th.count')}</th><th>${t('th.avg')}</th></tr></thead>
+    <tbody>${projects.map(p=>{ const st=projectStats(p.id); return `<tr><td>${p.name}</td><td>${sectorLabel(p.sector)}</td><td>${st.count}</td><td>${st.avg}%</td></tr>`; }).join('')}</tbody></table>`; }
+}
+
+/* ---------------- Executive Summary ---------------- */
+function renderExec(){
+  document.getElementById('execPrintDate').textContent = new Date().toLocaleString(LANG==='ar'?'ar-EG':'en-GB');
+  document.getElementById('execOrgName').textContent = DB.settings.orgName || (LANG==='ar'?'—':'—');
+  const projects = DB.projects; const assessments = DB.assessments;
+  const avg = assessments.length ? Math.round(assessments.reduce((s,a)=>s+a.rate,0)/assessments.length) : 0;
+  document.getElementById('execAvg').textContent = avg+'%';
+  const openTasks = allActionItems().filter(i=>i.status==='open').length;
+  const expiringSoon = assessments.filter(a=>Math.floor((new Date(a.expiryDate)-new Date())/86400000)<=90).length;
+  document.getElementById('execKpis').innerHTML = `
+    <div class="kpi"><div class="lbl">${t('kpi.projects')}</div><div class="val">${projects.length}</div></div>
+    <div class="kpi teal"><div class="lbl">${t('kpi.assessments')}</div><div class="val">${assessments.length}</div></div>
+    <div class="kpi amber"><div class="lbl">${t('kpi.openTasks')}</div><div class="val">${openTasks}</div></div>
+    <div class="kpi amber"><div class="lbl">${t('kpi.expiring')}</div><div class="val">${expiringSoon}</div></div>`;
+  const risks = [...assessments].sort((a,b)=>a.rate-b.rate).slice(0,3);
+  const rt = document.getElementById('execRisks');
+  rt.innerHTML = risks.length ? `<table><thead><tr><th>${t('th.project')}</th><th>${t('th.standard')}</th><th>${t('th.rate')}</th></tr></thead>
+    <tbody>${risks.map(a=>{ const proj=projects.find(p=>p.id===a.projectId); return `<tr><td>${proj?proj.name:'—'}</td><td>${a.standardCode} — ${a.standardName}</td><td>${statusBadge(a.rate)} ${a.rate}%</td></tr>`; }).join('')}</tbody></table>` : `<div class="empty">—</div>`;
+  const reco = [];
+  if(!projects.length) reco.push(LANG==='ar'?'ابدأ بتسجيل مشروعك الأول لبدء رحلة قياس الامتثال.':'Register your first project to begin measuring compliance.');
+  if(openTasks>0) reco.push((LANG==='ar'?`يوجد ${openTasks} بند تصحيحي مفتوح يحتاج متابعة فورية.`:`${openTasks} open corrective action item(s) need immediate follow-up.`));
+  if(expiringSoon>0) reco.push((LANG==='ar'?`${expiringSoon} شهادة/شهادات ستنتهي صلاحيتها خلال 90 يوماً — يجب جدولة إعادة التقييم.`:`${expiringSoon} certificate(s) expiring within 90 days — schedule reassessment.`));
+  if(avg && avg<75) reco.push(LANG==='ar'?'متوسط الامتثال العام أقل من 75% — يوصى بخطة تحسين مؤسسية عاجلة.':'Overall compliance average is below 75% — an urgent institutional improvement plan is recommended.');
+  if(!reco.length) reco.push(LANG==='ar'?'لا توجد مخاطر عاجلة حالياً — استمر في المراجعة الدورية.':'No urgent risks at this time — continue periodic review.');
+  document.getElementById('execReco').innerHTML = reco.map(r=>`<li>${r}</li>`).join('');
+}
+
+/* ---------------- Settings ---------------- */
+function loadSettingsIntoForm(){
+  const s = DB.settings; const l = DB.links;
+  document.getElementById('setOrgName').value = s.orgName || '';
+  document.getElementById('setRole').value = s.role || 'auditor';
+  document.getElementById('linkFidic').value = l.fidic || '';
+  document.getElementById('linkSixSigma').value = l.sixsigma || '';
+  document.getElementById('linkChange').value = l.change || '';
+}
+document.getElementById('btnSaveOrg').addEventListener('click', ()=>{
+  const s = DB.settings; s.orgName = document.getElementById('setOrgName').value.trim(); s.role = document.getElementById('setRole').value;
+  DB.settings = s; applyRole(); alert(t('alert.settingsSaved')); renderAll();
+});
+document.getElementById('btnSaveLinks').addEventListener('click', ()=>{
+  DB.links = { fidic: document.getElementById('linkFidic').value.trim(), sixsigma: document.getElementById('linkSixSigma').value.trim(), change: document.getElementById('linkChange').value.trim() };
+  alert(t('alert.settingsSaved'));
+});
+document.getElementById('btnBackupExport').addEventListener('click', ()=>{
+  const payload = { version:1, exportedAt:new Date().toISOString(), projects:DB.projects, assessments:DB.assessments, settings:DB.settings, links:DB.links };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='GSC_Backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); URL.revokeObjectURL(url);
+});
+document.getElementById('btnBackupImport').addEventListener('change', (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  if(!confirm(t('confirm.restore'))){ e.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      if(data.projects) DB.projects = data.projects;
+      if(data.assessments) DB.assessments = data.assessments;
+      if(data.settings) DB.settings = data.settings;
+      if(data.links) DB.links = data.links;
+      alert(t('alert.backupRestored'));
+      applyI18n();
+    }catch(err){ alert('Error: '+err.message); }
+    e.target.value='';
+  };
+  reader.readAsText(file);
+});
+document.getElementById('btnExportProjectsOnly').addEventListener('click', ()=>{
+  const payload = { schema:'gsc-shared-projects-v1', exportedAt:new Date().toISOString(), projects:DB.projects };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='GSC_Shared_Projects.json'; a.click(); URL.revokeObjectURL(url);
+});
+
+/* ---------------- init ---------------- */
+function renderAll(){
+  renderDashboard(); renderLibrary(); renderProjects(); populateAssessProjects(); populateAssessStandards();
+  if(document.getElementById('view-archive').classList.contains('active')) renderArchive();
+  if(document.getElementById('view-report').classList.contains('active')) renderReport();
+  if(document.getElementById('view-exec').classList.contains('active')) renderExec();
+  if(document.getElementById('view-actions').classList.contains('active')) renderActions();
+  if(document.getElementById('view-crossref').classList.contains('active')) renderCrossref();
+}
+applyI18n();
+</script>
+</body>
+</html>
